@@ -1,0 +1,174 @@
+#!/usr/bin/env python
+#=========================================================================
+# gcd-sim [options]
+#=========================================================================
+#
+#  -h --help           Display this message
+#
+#  --impl              {fl,cl,rtl}
+#  --input <dataset>   {random,small,zeros}
+#  --trace             Display line tracing
+#  --stats             Display statistics
+#  --translate         Translate RTL model to Verilog
+#  --dump-vcd          Dump VCD to gcd-<impl>-<input>.vcd
+#
+# Author : Christopher Batten
+# Date   : February 5, 2015
+#
+
+from __future__ import print_function
+
+# Hack to add project root to python path
+
+import os
+import sys
+
+sim_dir = os.path.dirname( os.path.abspath( __file__ ) )
+while sim_dir:
+  if os.path.exists( sim_dir + os.path.sep + ".pymtl-python-path" ):
+    sys.path.insert(0,sim_dir)
+    break
+  sim_dir = os.path.dirname(sim_dir)
+
+import argparse
+import re
+
+from random         import randint
+from fractions      import gcd
+
+from pymtl          import *
+
+from GcdUnitFL      import GcdUnitFL
+from GcdUnitCL      import GcdUnitCL
+from GcdUnitRTL     import GcdUnitRTL
+
+from GcdUnitFL_test import TestHarness
+
+#-------------------------------------------------------------------------
+# Command line processing
+#-------------------------------------------------------------------------
+
+class ArgumentParserWithCustomError(argparse.ArgumentParser):
+  def error( self, msg = "" ):
+    if ( msg ): print("\n ERROR: %s" % msg)
+    print("")
+    file = open( sys.argv[0] )
+    for ( lineno, line ) in enumerate( file ):
+      if ( line[0] != '#' ): sys.exit(msg != "")
+      if ( (lineno == 2) or (lineno >= 4) ): print( line[1:].rstrip("\n") )
+
+def parse_cmdline():
+  p = ArgumentParserWithCustomError( add_help=False )
+
+  # Standard command line arguments
+
+  p.add_argument( "-h", "--help",    action="store_true" )
+
+  # Additional commane line arguments for the simulator
+
+  p.add_argument( "--impl", default="fl",
+    choices=["fl","cl","rtl"] )
+
+  p.add_argument( "--input", default="random",
+    choices=["random","small","zeros"] )
+
+  p.add_argument( "--trace",     action="store_true" )
+  p.add_argument( "--stats",     action="store_true" )
+  p.add_argument( "--translate", action="store_true" )
+  p.add_argument( "--dump-vcd",  action="store_true" )
+
+  opts = p.parse_args()
+  if opts.help: p.error()
+  return opts
+
+#-------------------------------------------------------------------------
+# Main
+#-------------------------------------------------------------------------
+
+def main():
+  opts = parse_cmdline()
+
+  # Create the input pattern
+
+  ninputs = 100
+  inputs  = []
+
+  if opts.input == "random":
+    for i in xrange(ninputs):
+      a = Bits( 16, randint(0,0xffff) )
+      b = Bits( 16, randint(0,0xffff) )
+      c = Bits( 16, gcd( a, b ) )
+      inputs.extend( [ concat( a, b ), c ] )
+
+  elif opts.input == "small":
+    for i in xrange(ninputs):
+      a = Bits( 16, randint(0,0xff)    )
+      b = Bits( 16, a * randint(0,0xf) )
+      c = Bits( 16, gcd( a, b )        )
+      inputs.extend( [ concat( a, b ), c ] )
+
+  elif opts.input == "zeros":
+    for i in xrange(ninputs):
+      inputs.extend( [ Bits(16,0), Bits(16,0) ] )
+
+  # Determine which model to use in the simulator
+
+  model_impl_dict = {
+    'fl'  : GcdUnitFL,
+    'cl'  : GcdUnitCL,
+    'rtl' : GcdUnitRTL,
+  }
+
+  # Check if translation is valid
+
+  if opts.translate and not opts.impl.startswith("rtl"):
+    print("\n ERROR: --translate only works with RTL models \n")
+    exit(1)
+
+  # Create VCD filename
+
+  dump_vcd = ""
+  if opts.dump_vcd:
+    dump_vcd = "gcd-" + opts.impl + "-" + opts.input + ".vcd"
+
+  # Create test harness (we can reuse the harness from unit testing)
+
+  th = TestHarness( model_impl_dict[ opts.impl ],
+                    inputs[::2], inputs[1::2], 0, 0,
+                    dump_vcd, opts.translate )
+
+  # Setup the test harness
+
+  th.vcd_file = dump_vcd
+  th.elaborate()
+
+  # Create a simulator
+
+  sim = SimulationTool( th )
+
+  # Reset test harness
+
+  sim.reset()
+
+  # Run simulation
+
+  while not th.done():
+
+    if opts.trace:
+      sim.print_line_trace()
+
+    sim.cycle()
+
+  # Extra ticks to make VCD easier to read
+
+  sim.cycle()
+  sim.cycle()
+  sim.cycle()
+
+  # Display statistics
+
+  if opts.stats:
+    print( "num_cycles         = {}".format( sim.ncycles ) )
+    print( "num_cycles_per_gcd = {:1.2f}".format( sim.ncycles/(1.0*ninputs) ) )
+
+main()

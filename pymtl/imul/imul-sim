@@ -1,0 +1,214 @@
+#!/usr/bin/env python
+#=========================================================================
+# lab1-sim [options]
+#=========================================================================
+#
+#  -h --help           Display this message
+#
+#  --impl              {base,alt}
+#  --input <dataset>   {small,large,lomask,himask,lohimask,sparse}
+#  --trace             Display line tracing
+#  --stats             Display statistics
+#  --translate         Translate RTL model to Verilog
+#  --dump-vcd          Dump VCD to imul-<impl>-<input>.vcd
+#
+# Author : Christopher Batten
+# Date   : February 5, 2015
+#
+
+from __future__ import print_function
+
+# Hack to add project root to python path
+
+import os
+import sys
+
+sim_dir = os.path.dirname( os.path.abspath( __file__ ) )
+while sim_dir:
+  if os.path.exists( sim_dir + os.path.sep + ".pymtl-python-path" ):
+    sys.path.insert(0,sim_dir)
+    break
+  sim_dir = os.path.dirname(sim_dir)
+
+import argparse
+import re
+
+import random
+
+random.seed(0xdeadbeef)
+
+from pymtl         import *
+
+from IntMulBaseRTL import IntMulBaseRTL
+from IntMulAltRTL  import IntMulAltRTL
+
+from IntMulFL_test import TestHarness
+
+#-------------------------------------------------------------------------
+# mk_req_msg
+#-------------------------------------------------------------------------
+
+def req( a, b ):
+  msg = Bits( 64 )
+  msg[32:64] = Bits( 32, a, trunc=True )
+  msg[ 0:32] = Bits( 32, b, trunc=True )
+  return msg
+
+def resp( a ):
+  return Bits( 32, a, trunc=True )
+
+#----------------------------------------------------------------------
+# Data Set: random small
+#----------------------------------------------------------------------
+
+random_small_msgs = []
+for i in xrange(50):
+  a = random.randint(0,100)
+  b = random.randint(0,100)
+  random_small_msgs.extend([ req( a, b ), resp( a * b ) ])
+
+# ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# You should add more datasets for evaluation. Remember these datasets
+# are not for testing; your design should already be thoroughly tested
+# before you begin your evaluation.
+# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
+
+from IntMulFL_test import random_large_msgs
+from IntMulFL_test import random_lomask_msgs, random_himask_msgs
+from IntMulFL_test import random_lohimask_msgs, random_sparse_msgs
+
+# ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+
+#-------------------------------------------------------------------------
+# Command line processing
+#-------------------------------------------------------------------------
+
+class ArgumentParserWithCustomError(argparse.ArgumentParser):
+  def error( self, msg = "" ):
+    if ( msg ): print("\n ERROR: %s" % msg)
+    print("")
+    file = open( sys.argv[0] )
+    for ( lineno, line ) in enumerate( file ):
+      if ( line[0] != '#' ): sys.exit(msg != "")
+      if ( (lineno == 2) or (lineno >= 4) ): print( line[1:].rstrip("\n") )
+
+def parse_cmdline():
+  p = ArgumentParserWithCustomError( add_help=False )
+
+  # Standard command line arguments
+
+  p.add_argument( "-h", "--help",    action="store_true" )
+
+  # Additional commane line arguments for the simulator
+
+  p.add_argument( "--impl", default="base", choices=["base","alt"] )
+
+  # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  # Add more choices below for the --input command line option. There
+  # should be one choice for each input dataset that you defined above.
+  # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
+  #:
+  #: p.add_argument( "--input", default="small",
+  #:   choices=["small"] )
+  #:
+
+  p.add_argument( "--input", default="small",
+    choices=["small","large","lomask","himask","lohimask","sparse"] )
+
+  # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+
+  p.add_argument( "--trace",     action="store_true" )
+  p.add_argument( "--stats",     action="store_true" )
+  p.add_argument( "--translate", action="store_true" )
+  p.add_argument( "--dump-vcd",  action="store_true" )
+
+  opts = p.parse_args()
+  if opts.help: p.error()
+  return opts
+
+#-------------------------------------------------------------------------
+# Main
+#-------------------------------------------------------------------------
+
+def main():
+  opts = parse_cmdline()
+
+  # Create the input pattern
+
+  inputs  = None
+
+  # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  # Use additional if statements to set the inputs appropriately based on
+  # the --input command line option.
+  # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
+  #:
+  #: if opts.input == "small":
+  #:   inputs = random_small_msgs
+  #:
+
+  if   opts.input == "small":    inputs = random_small_msgs
+  elif opts.input == "large":    inputs = random_large_msgs
+  elif opts.input == "lomask":   inputs = random_lomask_msgs
+  elif opts.input == "himask":   inputs = random_himask_msgs
+  elif opts.input == "lohimask": inputs = random_lohimask_msgs
+  elif opts.input == "sparse":   inputs = random_sparse_msgs
+
+  # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+
+  ninputs = len(inputs[::2])
+
+  # Determine which model to use in the simulator
+
+  model_impl_dict = {
+    "base": IntMulBaseRTL,
+    "alt" : IntMulAltRTL,
+  }
+
+  # Create VCD filename
+
+  dump_vcd = ""
+  if opts.dump_vcd:
+    dump_vcd = "imul-{}-{}.vcd".format( opts.impl, opts.input )
+
+  # Create test harness (we can reuse the harness from unit testing)
+
+  th = TestHarness( model_impl_dict[ opts.impl ](),
+                    inputs[::2], inputs[1::2], 0, 0,
+                    dump_vcd, opts.translate )
+
+  # Setup the test harness
+
+  th.vcd_file = dump_vcd
+  th.elaborate()
+
+  # Create a simulator
+
+  sim = SimulationTool( th )
+
+  # Reset test harness
+
+  sim.reset()
+
+  # Run simulation
+
+  while not th.done() and sim.ncycles < 5000:
+
+    if opts.trace:
+      sim.print_line_trace()
+
+    sim.cycle()
+
+  # Extra ticks to make VCD easier to read
+
+  sim.cycle()
+  sim.cycle()
+  sim.cycle()
+
+  # Display statistics
+
+  if opts.stats:
+    print( "num_cycles         = {}".format( sim.ncycles ) )
+    print( "num_cycles_per_mul = {:1.2f}".format( sim.ncycles/(1.0*ninputs) ) )
+
+main()
+
