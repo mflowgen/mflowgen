@@ -1,0 +1,39 @@
+#=========================================================================
+# Git Ignore Files
+#=========================================================================
+# We explicitly ignore a default build directory, the autoconf generated
+# autom4te.cache directory, and automatically generated python files.
+# This makes it easy to do a clean build under the source directory and
+# still have it appear clean to git.
+
+build*/
+autom4te.cache/
+__pycache__/
+*.py[cod]
+.DS_Store
+.cache/
+.nfs*
+
+# arm-mc build script
+
+asic/arm-mc/log/
+asic/arm-mc/output/
+
+# asic build directory
+
+current-drc
+current-lvs
+current-dc
+current-icc
+current-iccdp
+
+# vcs
+
+asic/vcs-*/*.v
+asic/vcs-*/*.daidir
+asic/vcs-*/csrc
+asic/vcs-*/*.dump
+asic/vcs-*/simv_*
+asic/vcs-*/sdfAnnotateInfo
+asic/vcs-*/*.key
+asic/vcs-*/*.vcd
