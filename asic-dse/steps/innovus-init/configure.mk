@@ -30,6 +30,19 @@ abbr.innovus-init = init
 init: innovus-init
 
 #-------------------------------------------------------------------------
+# Handoffs
+#-------------------------------------------------------------------------
+# Inputs are checked for existence, and outputs are copied in and also checked for existence
+
+handoffs.innovus-init.inputs = \
+  foobar
+
+handoffs.innovus-init.outputs = \
+  foobar
+
+handoffs.innovus-init.mode = transparent
+
+#-------------------------------------------------------------------------
 # Variables shared across all Innovus steps
 #-------------------------------------------------------------------------
 # The Innovus execute commands should be set up during Innovus flow setup
@@ -52,6 +65,8 @@ init: innovus-init
 
 define commands.innovus-init
 	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_init.tcl -log $(innovus_logs_dir)/init.log
+# Clean up
+	rm -rf power.rpt # Not sure why this empty file is generated
 endef
 
 #-------------------------------------------------------------------------

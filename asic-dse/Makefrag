@@ -36,12 +36,21 @@
 
 #adk        = saed-90nm
 #adk        = ibm-130nm-bicmos8hp
-#adk        = tsmc-180nm
-export adk        = tsmc-28nm-cln28hpc
 
-export process    = 28nm
+#-------------------------------------------------------------------------
 
+export adk        = tsmc-180nm
+export process    = 180nm
 export view       = stdview
+
+#-------------------------------------------------------------------------
+
+#export adk        = tsmc-28nm-cln28hpc
+#export process    = 28nm
+#export view       = stdview
+
+#-------------------------------------------------------------------------
+
 export adk_dir    = /work/global/brg/install/adk-pkgs/$(adk)/$(view)
 
 #-------------------------------------------------------------------------
@@ -107,9 +116,10 @@ export adk_dir    = /work/global/brg/install/adk-pkgs/$(adk)/$(view)
 
 #design = pymtl-asic-top
 #design = verilog-spcore-slice
-design = pymtl-gcd
+#design = pymtl-gcd
 #design = pymtl-gcdchip
 #design = verilog-synthesizable-pll
+design = verilog-correlator-top
 
 #-------------------------------------------------------------------------
 # Proc only
@@ -177,13 +187,29 @@ endif
 
 ifeq ($(design),pymtl-gcd)
   flow          = pymtl
-  clock_period  = 10.0
-  src_dir       = asic-dse/rtl-handoff
-  sim_build_dir = asic-dse/rtl-handoff
+  clock_period  = 2.0
+#  src_dir       = asic-dse/rtl-handoff
+#  sim_build_dir = asic-dse/rtl-handoff
   vsrc          = GcdUnit.v
   vmname        = GcdUnit
   viname        = TOP/v
   vgen_cfg      = gcd-vgen.cfg
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# ivan
+#-------------------------------------------------------------------------
+
+ifeq ($(design),verilog-correlator-top)
+  flow          = verilog
+  clock_period  = 50.0
+#  src_dir       = asic-dse/rtl-handoff
+#  sim_build_dir = asic-dse/rtl-handoff
+  vsrc          = top.v
+  vmname        = correlator_top
+  viname        = TOP/v
+  vgen_cfg      = 
   vcd           = 
 endif
 

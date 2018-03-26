@@ -1,0 +1,36 @@
+#=========================================================================
+# qrc-layermap.map
+#=========================================================================
+# This mapping is between qrcTechFile layer names and LEF layer names.
+# Open the .ict file that comes with the qrcTechFile and open the routing
+# technology kit tech LEF. If the names do not match (e.g., "METAL1" vs
+# "METAL_1"), then we need this map.
+#
+# Innovus tries to generate a mapping automatically when QRC extraction is
+# run and dumps this file with the best mapping it can make inside of the
+# extLogDir generated directory. This file was created by using that
+# template and then comparing the .ict and .lef to map the layer names
+# together. This is also how Cadence support advises doing the mapping.
+#
+# Date   : March 20, 2018
+# Author : Christopher Torng
+#
+
+# Mapping of layers are from <lefLayer> to <techLayer>
+
+extraction_setup \
+	-technology_layer_map \
+		POLY2        polycide \
+		CONT         odcont \
+		METAL1       METAL_1 \
+		METAL2       METAL_2 \
+		METAL3       METAL_3 \
+		METAL4       METAL_4 \
+		METAL5       METAL_5 \
+		METAL6       METAL_6 \
+		VIA12        VIA_1 \
+		VIA23        VIA_2 \
+		VIA34        VIA_3 \
+		VIA45        VIA_4 \
+		VIA56        VIA_5 \
+

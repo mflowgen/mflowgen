@@ -39,6 +39,20 @@ export innovus_results_dir  = $(results_dir)/innovus
 export innovus_handoffs_dir = $(handoffs_dir)/innovus
 
 #-------------------------------------------------------------------------
+# Innovus foundation flow setup
+#-------------------------------------------------------------------------
+
+# FIXME: For now, have the plugins setup tcl override the global one, but
+# we should later make plugin version just be sourced at the end of the
+# global one.
+
+ifneq ("$(wildcard $(innovus_plugins_dir)/setup.tcl)","")
+innovus_setup_dir = $(innovus_plugins_dir)
+else
+innovus_setup_dir = $(innovus_flowsetup_steps_dir)
+endif
+
+#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
@@ -68,7 +82,7 @@ export innovus_handoffs_dir = $(handoffs_dir)/innovus
 
 define commands.innovus-flowsetup
 	mkdir -p $(innovus_flowsetup_logs_dir)
-	$(innovus_flowsetup_steps_dir)/foundation-flow/SCRIPTS/gen_flow.tcl -m flat --Verbose --dir $(innovus_flowsetup_handoffs_dir) --nomake --setup $(innovus_flowsetup_steps_dir) all | tee $(innovus_flowsetup_logs_dir)/flowsetup.log
+	$(innovus_flowsetup_steps_dir)/foundation-flow/SCRIPTS/gen_flow.tcl -m flat --Verbose --dir $(innovus_flowsetup_handoffs_dir) --nomake --setup $(innovus_setup_dir) all | tee $(innovus_flowsetup_logs_dir)/flowsetup.log
 # Remove Innovus vpath cmds from scripts, which conflicts with our flow
 	sed -i "s/.*VPATH.*touch.*/#\0/" $(innovus_flowsetup_handoffs_dir)/INNOVUS/run*.tcl
 # Make build directories

@@ -27,19 +27,6 @@
 global vars
 
 #-------------------------------------------------------------------------
-# Design-specific overrides
-#-------------------------------------------------------------------------
-# FIXME: design-specific will override!!
-
-set vars(plug_dir)            $::env(innovus_plugins_dir)
-
-if {[file exists $vars(plug_dir)/setup.tcl]} {
-  source $vars(plug_dir)/setup.tcl
-  return
-}
-
-#-------------------------------------------------------------------------
-#-------------------------------------------------------------------------
 # ADK Setup
 #-------------------------------------------------------------------------
 
@@ -65,7 +52,7 @@ set vars(netlist)             $vars(dc_handoff_dir)/$vars(design).mapped.v
 #-------------------------------------------------------------------------
 
 set vars(script_root)         $::env(innovus_flowsetup_steps_dir)/foundation-flow/SCRIPTS
-#set vars(plug_dir)            $::env(innovus_plugins_dir)
+set vars(plug_dir)            $::env(innovus_plugins_dir)
 set vars(log_dir)             $::env(innovus_logs_dir)
 set vars(rpt_dir)             $::env(innovus_reports_dir)
 set vars(results_dir)         $::env(innovus_results_dir)
@@ -77,52 +64,65 @@ set vars(dbs_dir)             $::env(innovus_handoffs_dir)
 
 # Should this be slow fast only? Or more like corners?
 
-set vars(library_sets)        libs_typical
+set vars(library_sets)        "libs_typical libs_bc libs_wc"
+
+set vars(libs_typical,timing) $adk_dir/stdcells.lib
 #set vars(libs_typical,si)     libs/stdcells.cdb
 
-set vars(libs_typical,timing) [join "$adk_dir/stdcells.lib
-                                     $adk_dir/iocells.lib"]
+set vars(libs_bc,timing)      $adk_dir/stdcells-bc.lib
+#set vars(libs_bc,si)          libs/stdcells-bc.cdb
 
-set vars(lef_files) [join "$adk_dir/rtk-tech.lef
-                           $adk_dir/iocells.lef
-                           $adk_dir/iocells-bondpads.lef
-                           $adk_dir/stdcells.lef" ]
+set vars(libs_wc,timing)      $adk_dir/stdcells-wc.lib
+#set vars(libs_wc,si)          libs/stdcells-wc.cdb
+
+set vars(lef_files)     [join "$adk_dir/rtk-tech.lef
+                               $adk_dir/iocells.lef
+                               $adk_dir/stdcells.lef" ]
 
 # Difference between library_sets, rc_corners, and delay_corners?
-#
-# - A delay_corner is made by choosing an rc_corner and a library_set
+# - Ah, a delay_corner is made by choosing an rc_corner and a library_set
 # - The rc_corner is the qrcTechFile, which is the wire RC
 # - The library_set is the standard cells
 #
 # - Then an analysis view is made of a delay corner and a constraints mode
 # - The analysis view can focus on setup or hold, depending on which
-#   corner and which constraints mode you pick
+# corner and which constraints mode you pick
 
 #-------------------------------------------------------------------------
 # RC Corners
 #-------------------------------------------------------------------------
 
-set vars(rc_corners)                        "typical"
+set vars(rc_corners)                        "typical cbest cworst"
 
-set vars(typical,cap_table)                 $adk_dir/rtk-typical.captable
-#set vars(typical,qx_tech_file)              $adk_dir/pdk-typical-qrcTechFile
-set vars(typical,T)                         25
+set vars(typical,cap_table)                  $adk_dir/rtk-typical.captable
+set vars(typical,qx_tech_file)               $adk_dir/pdk-typical-qrcTechFile
+set vars(typical,T)                          25
 
-#set vars(rcbest,qx_tech_file)               $adk_dir/pdk-rcbest-qrcTechFile
-#set vars(rcbest,T)                          0
+set vars(cbest,cap_table)                    $adk_dir/rtk-typical.captable
+set vars(cbest,qx_tech_file)                 $adk_dir/pdk-cbest-qrcTechFile
+set vars(cbest,T)                            0
 
-#set vars(rcworst,qx_tech_file)              $adk_dir/pdk-rcworst-qrcTechFile
-#set vars(rcworst,T)                         125
+set vars(cworst,cap_table)                   $adk_dir/rtk-typical.captable
+set vars(cworst,qx_tech_file)                $adk_dir/pdk-cworst-qrcTechFile
+set vars(cworst,T)                           125
+
+set vars(qrc_layer_map)                      $vars(plug_dir)/qrc-layermap.map
 
 #-------------------------------------------------------------------------
 # Delay Corners
 #-------------------------------------------------------------------------
 
-set vars(delay_corners)                     delay_typical
+set vars(delay_corners)                     "delay_typical delay_bc delay_wc"
+
 set vars(delay_typical,library_set)         libs_typical
 set vars(delay_typical,rc_corner)           typical
 
-# FIXME
+set vars(delay_bc,library_set)              libs_bc
+set vars(delay_bc,rc_corner)                cbest
+
+set vars(delay_wc,library_set)              libs_wc
+set vars(delay_wc,rc_corner)                cworst
+
 # There is some "early check" and "late check" options I'm not using...
 # also some setup derating and hold derating I'm not using
 
@@ -139,17 +139,24 @@ set vars(constraints_default,post_cts_sdc)  $vars(dc_handoff_dir)/$vars(design).
 # Analysis Views
 #-------------------------------------------------------------------------
 
-set vars(analysis_views)                    analysis_default
+set vars(analysis_views)                    "analysis_default analysis_bc analysis_wc"
+
 set vars(analysis_default,delay_corner)     delay_typical
 set vars(analysis_default,constraint_mode)  constraints_default
 
-set vars(setup_analysis_views)              analysis_default
-set vars(default_setup_view)                analysis_default
-set vars(active_setup_views)                analysis_default
+set vars(analysis_bc,delay_corner)          delay_bc
+set vars(analysis_bc,constraint_mode)       constraints_default
 
-set vars(hold_analysis_views)               analysis_default
-set vars(default_hold_view)                 analysis_default
-set vars(active_hold_views)                 analysis_default
+set vars(analysis_wc,delay_corner)          delay_wc
+set vars(analysis_wc,constraint_mode)       constraints_default
+
+set vars(setup_analysis_views)              "analysis_default analysis_wc"
+set vars(default_setup_view)                "analysis_default"
+set vars(active_setup_views)                "analysis_default analysis_wc"
+
+set vars(hold_analysis_views)               "analysis_default analysis_bc"
+set vars(default_hold_view)                 "analysis_default"
+set vars(active_hold_views)                 "analysis_default analysis_bc"
 
 set vars(power_analysis_view)               analysis_default
 
@@ -163,10 +170,11 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 # Process information
 #-------------------------------------------------------------------------
 
-# The top routing layer is 7 usually.. but it will depend on the design
-# FIXME: This clearly belongs in stdcells.tcl
+set vars(max_route_layer)                   4
 
-set vars(max_route_layer)                   7
+#-------------------------------------------------------------------------
+# Files
+#-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # User Plugins
@@ -177,25 +185,25 @@ set vars(pre_init_tcl)                $vars(plug_dir)/pre_init.tcl
 set vars(post_init_tcl)               $vars(plug_dir)/post_init.tcl
 set vars(pre_place_tcl)               $vars(plug_dir)/pre_place.tcl
 set vars(post_place_tcl)              $vars(plug_dir)/post_place.tcl
-#set vars(pre_prects_tcl)              $vars(plug_dir)/pre_prects.tcl
-#set vars(post_prects_tcl)             $vars(plug_dir)/post_prects.tcl
-#set vars(pre_cts_tcl)                 $vars(plug_dir)/pre_cts.tcl
-#set vars(post_cts_tcl)                $vars(plug_dir)/post_cts.tcl
-#set vars(pre_postcts_tcl)             $vars(plug_dir)/pre_postcts.tcl
-#set vars(post_postcts_tcl)            $vars(plug_dir)/post_postcts.tcl
-#set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postcts_hold.tcl
-#set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postcts_hold.tcl
-#set vars(pre_route_tcl)               $vars(plug_dir)/pre_route.tcl
-#set vars(post_route_tcl)              $vars(plug_dir)/post_route.tcl
-#set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
-#set vars(post_postroute_tcl)          $vars(plug_dir)/post_postroute.tcl
-#set vars(pre_postroute_hold_tcl)      $vars(plug_dir)/pre_postroute_hold.tcl
-#set vars(post_postroute_hold_tcl)     $vars(plug_dir)/post_postroute_hold.tcl
-#set vars(pre_postroute_si_hold_tcl)   $vars(plug_dir)/pre_postroute_si_hold.tcl
-#set vars(post_postroute_si_hold_tcl)  $vars(plug_dir)/post_postroute_si_hold.tcl
-#set vars(pre_postroute_si_tcl)        $vars(plug_dir)/pre_postroute_si.tcl
-#set vars(post_postroute_si_tcl)       $vars(plug_dir)/post_postroute_si.tcl
-#set vars(pre_signoff_tcl)             $vars(plug_dir)/pre_signoff.tcl
+#set vars(pre_prects_tcl)              "foo/pre_prects.tcl"
+#set vars(post_prects_tcl)             "foo/post_prects.tcl"
+#set vars(pre_cts_tcl)                 "foo/pre_cts.tcl"
+#set vars(post_cts_tcl)                "foo/post_cts.tcl"
+#set vars(pre_postcts_tcl)             "foo/pre_postcts.tcl"
+#set vars(post_postcts_tcl)            "foo/post_postcts.tcl"
+#set vars(pre_postcts_hold_tcl)        "foo/pre_postcts_hold.tcl"
+#set vars(post_postcts_hold_tcl)       "foo/post_postcts_hold.tcl"
+#set vars(pre_route_tcl)               "foo/pre_route.tcl"
+#set vars(post_route_tcl)              "foo/post_route.tcl"
+#set vars(pre_postroute_tcl)           "foo/pre_postroute.tcl"
+#set vars(post_postroute_tcl)          "foo/post_postroute.tcl"
+#set vars(pre_postroute_hold_tcl)      "foo/pre_postroute_hold.tcl"
+#set vars(post_postroute_hold_tcl)     "foo/post_postroute_hold.tcl"
+#set vars(pre_postroute_si_hold_tcl)   "foo/pre_postroute_si_hold.tcl"
+#set vars(post_postroute_si_hold_tcl)  "foo/post_postroute_si_hold.tcl"
+#set vars(pre_postroute_si_tcl)        "foo/pre_postroute_si.tcl"
+#set vars(post_postroute_si_tcl)       "foo/post_postroute_si.tcl"
+#set vars(pre_signoff_tcl)             "foo/pre_signoff.tcl"
 set vars(post_signoff_tcl)            $vars(plug_dir)/post_signoff.tcl
 
 # Special options for saving and restoring design
@@ -237,52 +245,44 @@ set vars(abort) 0
 
 # Power nets
 
-set vars(power_nets)  "VDD VNW VDDPST POC"
-set vars(ground_nets) "VSS VPW VSSPST"
+set vars(power_nets)  "VDD VDDPST POC"
+set vars(ground_nets) "VSS VSSPST"
 
 # Tie cells
 #
 # - The maximum distance allowed (in microns) can be tweaked if needed
 # - The maximum fanout can be tweaked if needed
 
-set vars(tie_cells)              "TIEHI_X1M_A9PP140TS_C35 \
-                                  TIELO_X1M_A9PP140TS_C35"
+set vars(tie_cells)              "TIEHBWP7T \
+                                  TIELBWP7T"
+                                  #GTIEHBWP7T GTIELBWP7T?
 
 set vars(tie_cells,max_distance) 20
 set vars(tie_cells,max_fanout)   8
 
 # Filler cells
 
-set STDCELLS_FILLER_CELLS \
-  "FILLSGCAP128_A9PP140TS_C35 \
-   FILLSGCAP64_A9PP140TS_C35 \
-   FILLSGCAP32_A9PP140TS_C35 \
-   FILLSGCAP16_A9PP140TS_C35 \
-   FILLSGCAP8_A9PP140TS_C35 \
-   FILLSGCAP4_A9PP140TS_C35 \
-   FILLSGCAP3_A9PP140TS_C35 \
-   FILL2_A9PP140TS_C35 \
-   FILL1_A9PP140TS_C35"
+
+set STDCELLS_FILLER_CELLS "DCAP64BWP7T DCAP32BWP7T DCAP16BWP7T DCAP8BWP7T DCAP4BWP7T DCAPBWP7T FILL2BWP7T FILL1BWP7T"
 
 set vars(filler_cells) $STDCELLS_FILLER_CELLS
 
 # Welltaps
-# FIXME: need to check the DRC requirements for well tap max spacing
 
-set vars(welltaps)               "FILLTIE6_A9PP140TS_C35"
+set vars(welltaps)               "TAPCELLBWP7T"
 set vars(welltaps,checkerboard)  true
 set vars(welltaps,verify_rule)   30
 set vars(welltaps,cell_interval) 60
-#set vars(welltaps,max_gap) 60
+set vars(welltaps,max_gap) 60
 
 # Endcaps
 
-set vars(pre_endcap)             "ENDCAPTIE4_A9PP140TS_C35"
-set vars(post_endcap)            "ENDCAPTIE4_A9PP140TS_C35"
+#set vars(pre_endcap)             "ENDCAPTIE4_A9PP140TS_C35"
+#set vars(post_endcap)            "ENDCAPTIE4_A9PP140TS_C35"
 
 # Antenna
 
-set vars(antenna_diode)          "ANTENNA3_A9PP140TS_C35"
+set vars(antenna_diode)          "ANTENNABWP7T"
 
 # List of buffers to use during useful skew
 
@@ -310,8 +310,8 @@ set vars(postroute_spread_wires)  true
 # Extraction efforts
 
 set vars(congestion_effort)            medium
-set vars(postroute_extraction_effort)  low
-set vars(signoff_extraction_effort)    low
+set vars(postroute_extraction_effort)  high
+set vars(signoff_extraction_effort)    high
 #set vars(flow_effort)                  medium
 set vars(power_effort)                 high
 
@@ -329,6 +329,8 @@ set vars(ccopt_effort)                 medium
 
 set vars(signoff,verify_metal_density,skip) true
 
+# Custom GDS stream out command
+
 #-------------------------------------------------------------------------
 # Custom tcl
 #-------------------------------------------------------------------------
@@ -337,6 +339,7 @@ set vars(signoff,verify_metal_density,skip) true
 
 set vars(gds_layer_map)                  $adk_dir/rtk-stream-out.map
 set vars(signoff,stream_out,replace_tcl) $vars(plug_dir)/stream_out.tcl
+set vars(gds_files)                      $adk_dir/stdcells.gds
 
 # Custom check design tcl
 #
@@ -351,16 +354,6 @@ set vars(init,check_design,replace_tcl)  $vars(plug_dir)/check_design.tcl
 set vars(signoff,summary_report,replace_tcl)  $vars(plug_dir)/summary_report.tcl
 
 #-------------------------------------------------------------------------
-# Design-specific overrides
-#-------------------------------------------------------------------------
-# Here we source the design-specific setup.tcl in the plugin directory,
-# which can overwrite any variable in this file.
-
-#if {[file exists $vars(plug_dir)/setup.tcl]} {
-#  source $vars(plug_dir)/setup.tcl
-#}
-
-#-------------------------------------------------------------------------
 # Unsure
 #-------------------------------------------------------------------------
 
@@ -368,10 +361,14 @@ set vars(signoff,summary_report,replace_tcl)  $vars(plug_dir)/summary_report.tcl
 ##set vars(cell_check_late)  1.0
 ##set vars(critical_range)   ??
 #
-## There is a hier_flow_type: Enables the new two-pass hierarchical flow. The
+## What is hier_flow_type? Enables the new two-pass hierarchical flow. The
 ## valid types are 1pass (default) and 2pass.
 #
 #set vars(report_power)                          true
+#
+## STOPPED at CCOpt variables
+#
+#
 #
 ## Reduced effort flow. Sacrifices timing
 ##if {[info exists vars(reduced_effort_flow)] && $vars(reduced_effort_flow)} {
@@ -398,4 +395,3 @@ set vars(signoff,summary_report,replace_tcl)  $vars(plug_dir)/summary_report.tcl
 ##  set vars(signoff,verify_geometry,skip) true
 ##  set vars(signoff,verify_process_antenna,skip) true
 ##}
-

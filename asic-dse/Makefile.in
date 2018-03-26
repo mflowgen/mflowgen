@@ -52,7 +52,8 @@ dependencies.all                 = innovus-signoff
 
 export design_name = $(vmname)
 
-export design_flow_name = default
+#export design_flow_name = default
+export design_flow_name = 180nm-correlator
 
 #-------------------------------------------------------------------------
 # Directories
