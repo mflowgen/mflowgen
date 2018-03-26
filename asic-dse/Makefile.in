@@ -53,6 +53,37 @@ dependencies.all                 = innovus-signoff
 export design_name = $(vmname)
 
 #-------------------------------------------------------------------------
+# Directories
+#-------------------------------------------------------------------------
+
+# Absolute base directory, which is marked as the base directory because
+# it has the base directory marker file in it. This small shell script
+# searches up the directory hierarchy until it finds the marker file. Then
+# it labels that directory as the absolute base directory.
+
+export base_dir_marker   := .TOP
+export absolute_base_dir := $(shell \
+  x=$${PWD};                        \
+  while [ "$$x" != "/" ]; do        \
+    x=$$(dirname "$$x");            \
+    find "$$x" -maxdepth 1 -name $(base_dir_marker) | xargs -I {} dirname {}; \
+  done;)
+
+# Master steps directory in the base directory which has all possible steps
+
+export master_steps_dir = $(relative_base_dir)/steps
+
+# Build directories
+
+export steps_dir        = steps
+export plugins_dir      = plugins
+export logs_dir         = logs
+export results_dir      = results
+export reports_dir      = reports
+export handoffs_dir     = handoffs
+export timestamps_dir   = timestamps
+
+#-------------------------------------------------------------------------
 # Step management
 #-------------------------------------------------------------------------
 # Set up VPATH
@@ -93,36 +124,33 @@ list:
 	@$(foreach step, $(steps),printf "%s %-20s : %s\n" '-'  $(step)     $(abbr.$(step));)
 	@echo
 
-#-------------------------------------------------------------------------
-# Directories
-#-------------------------------------------------------------------------
+# runtimes
+#
+# Useful target that prints the runtimes for all steps given the
+# timestamps for each step (e.g., innovus-place.start, innovus-place.end).
+#
+# Notes:
+#
+# - Using "date -f" reads and prints the date in the given file
+# - Using "date +%s" formats into seconds since 1970-01-01 00:00:00 UTC
+# - The "... 2>/dev/null || echo 0" returns "0" if the file does not exist
+# - All bash variables need to be double escaped with $$myvariable
+# - This sed command can be added to blank out zero-value printouts
+#       sed "s/0 hr/    /; s/0 min/     /"
 
-# Absolute base directory, which is marked as the base directory because
-# it has the base directory marker file in it. This small shell script
-# searches up the directory hierarchy until it finds the marker file. Then
-# it labels that directory as the absolute base directory.
-
-export base_dir_marker   := .TOP
-export absolute_base_dir := $(shell \
-  x=$${PWD};                        \
-  while [ "$$x" != "/" ]; do        \
-    x=$$(dirname "$$x");            \
-    find "$$x" -maxdepth 1 -name $(base_dir_marker) | xargs -I {} dirname {}; \
-  done;)
-
-# Master steps directory in the base directory which has all possible steps
-
-export master_steps_dir = $(relative_base_dir)/steps
-
-# Build directories
-
-export steps_dir        = steps
-export plugins_dir      = plugins
-export logs_dir         = logs
-export results_dir      = results
-export reports_dir      = reports
-export handoffs_dir     = handoffs
-export timestamps_dir   = timestamps
+runtimes:
+	@echo "--------------------------------------------------------------------------"
+	@echo "Runtimes"
+	@echo "--------------------------------------------------------------------------"
+	@$(foreach step, $(steps), \
+		end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
+		start=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+		t_secs=$$(( $$end - $$start )); \
+		h=$$(( $$t_secs / 3600      )); \
+		m=$$(( $$t_secs % 3600 / 60 )); \
+		s=$$(( $$t_secs % 60        )); \
+		printf '%-20s -- %2d hr %2d min %2d sec \n' $(step) $$h $$m $$s | \
+			sed "s/0 hr/    /; s/0 min/     /";)
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -186,12 +214,12 @@ include $$(master_steps_dir)/$1/configure.mk
 # Primary command target for $1
 
 $1: $$(dependencies.$1)
-	@touch $$(timestamps_dir)/$1.start
+	@date > $$(timestamps_dir)/$1.start
 ifdef ascii.$1
 	$$(ascii.$1)
 endif
 	$$(commands.$1)
-	@touch $$(timestamps_dir)/$1.end
+	@date > $$(timestamps_dir)/$1.end
 	@touch $(VPATH)/$1
 
 endef
