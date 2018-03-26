@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+#=========================================================================
+# configure
+#=========================================================================
+# Description
+#
+# Date   : March 25, 2018
+# Author : Christopher Torng
+#
+
+ln -sf ../Makefile.in Makefile
+

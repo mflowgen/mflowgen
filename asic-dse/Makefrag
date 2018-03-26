@@ -1,0 +1,270 @@
+#=========================================================================
+# ECE5745 ASIC FLOW
+#=========================================================================
+# We use this top-level makefile fragment to configure the ASIC flow. The
+# variables in the makefile fragment are different for each design, but
+# also are different depending on whether we are using the PyMTL or the
+# pure-Verilog flow.
+
+#-------------------------------------------------------------------------
+# Standard Cells
+#-------------------------------------------------------------------------
+
+#  - saed-90nm-synopsys-cells # open access
+#  - tsmc-16ff                # NDA I think? -ctorng
+
+#cells     = saed-90nm-synopsys-cells
+#cells_dir = $(BARE_PKGS_GLOBAL_ROOT)/noarch/$(cells)
+
+#cells     = tsmc-16ff
+#cells_dir = /research/brg/install/adk-pkgs/$(cells)
+
+#-------------------------------------------------------------------------
+# New ADK flow
+#-------------------------------------------------------------------------
+# Set the adk and view here. These are the ADKs tested so far.
+#
+# ADKs:
+#
+# - saed-90nm (Synopsys 90nm Educational Library)
+#     - stdview: standard view
+#
+# - tsmc-28nm-cln28hpc
+#     - stdview: standard view
+#
+# The "process" variable is for the Innovus Foundation Flow
+
+#adk        = saed-90nm
+#adk        = ibm-130nm-bicmos8hp
+#adk        = tsmc-180nm
+export adk        = tsmc-28nm-cln28hpc
+
+export process    = 28nm
+
+export view       = stdview
+export adk_dir    = /work/global/brg/install/adk-pkgs/$(adk)/$(view)
+
+#-------------------------------------------------------------------------
+# Make Variables
+#-------------------------------------------------------------------------
+# These are the variables that must be defined in order to push a design
+# through the flow:
+#
+#  - flow          : This is deprecated. It should always be pymtl!
+#
+#  - clock_period  : This is the target cycle time in nanoseconds. You
+#                    want to choose a target cycle time which is not so
+#                    large that you are not pushing the tools very hard,
+#                    but also not so small that the tools take forever to
+#                    run.
+#
+#  - sim_build_dir : The simulator build directory, relative to the root
+#                    of the project. For PyMTL this will usually be
+#                    pymtl/build and for Verilog it will usually be
+#                    verilog/build
+#
+#  - vsrc          : This is the filename of the Verilog source file
+#                    containing the module we want to push through the
+#                    toolflow. Note that this is _not_ supposed to be a
+#                    test harness or simulation driver. Also note that
+#                    you can only push a _single_ Verilog file through
+#                    the flow, so if you are using Verilog then you need
+#                    to use iverilog as a preprocessor to generate a
+#                    single file. Usually you can do this with the make
+#                    sproj-asic target. You should never include any kind
+#                    of path in this variable.
+#
+# vmname           : This is the _module_ name (not the _instance_ name)
+#                    that we are pushing through the flow. For PyMTL,
+#                    this is always the same as the basename of the vsrc,
+#                    but for Verilog it is usually different.
+#
+# viname           : This is the full instance name to the module in the
+#                    simulation driver. This essentially the hierarchical
+#                    name to get from the very top-level module in the
+#                    simulator driver to the module you want to push
+#                    through the ASIC flow. We use forward slashes _not_
+#                    periods to separate the path components. For PyMTL,
+#                    this is always TOP/v. For Verilog, it depends but it
+#                    is usually something like top/th/dut where "dut" is
+#                    the _instance_ name (not the _module_ name) for the
+#                    module you want to push through the flow. For the
+#                    GCD example it is top/th/gcd
+#
+# vcd              : This is the filename of the VCD file that we should
+#                    use for energy estimation. Note that you can change
+#                    this variable and just rerun pt-pwr power analysis
+#                    without having to push the entire design through
+#                    synthesis and place-and-route again.
+
+#-------------------------------------------------------------------------
+# Designs
+#-------------------------------------------------------------------------
+# To simplify pushing different designs through the flow, we use a make
+# conditional to choose the design based on a the "design" make variable.
+# This way you can just set the "design" make variable to push a specific
+# design through the flow.
+
+#design = pymtl-asic-top
+#design = verilog-spcore-slice
+design = pymtl-gcd
+#design = pymtl-gcdchip
+#design = verilog-synthesizable-pll
+
+#-------------------------------------------------------------------------
+# Proc only
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-proc)
+  flow          = pymtl
+  clock_period  = 2.0
+  sim_build_dir = sim/build
+  vsrc          = ProcMemXcel_null_rtl.v
+  vmname        = ProcMemXcel_null_rtl
+  viname        = TOP/v
+  vcd           = pmx-sim-null-rtl-ubmark-vvadd.verilator1.vcd
+  srams         =
+endif
+
+#-------------------------------------------------------------------------
+# VVADD accelerator (non-HLS) in isolation
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-vvadd)
+  flow          = pymtl
+  clock_period  = 2.0
+  sim_build_dir = sim/build
+  vsrc          = VvaddXcelRTL.v
+  vmname        = VvaddXcelRTL
+  viname        = TOP/v
+  vcd           = vvadd-xcel-rtl-multiple.verilator1.vcd
+  srams         =
+endif
+
+#-------------------------------------------------------------------------
+# VVADD accelerator (HLS) in isolation
+#-------------------------------------------------------------------------
+#
+ifeq ($(design),hls-vvadd)
+  flow          = pymtl
+  clock_period  = 2.0
+  sim_build_dir = sim/build
+  vsrc          = VvaddXcelHLS_0x4377dafdad56c082.v
+  vmname        = VvaddXcelHLS_0x4377dafdad56c082
+  viname        = TOP/v
+  vcd           = vvadd-xcel-hls-multiple.verilator1.vcd
+  srams         =
+endif
+
+#-------------------------------------------------------------------------
+# Proc + PyMTL VVADD accelerator (non-HLS)
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-proc-vvadd)
+  flow          = pymtl
+  clock_period  = 2.0
+  sim_build_dir = pymtl/build
+  vsrc          = ProcMemXcel_vvadd_rtl.v
+  vmname        = ProcMemXcel_vvadd_rtl
+  viname        = TOP/v
+  vcd           = pmx-sim-vvadd-rtl-ubmark-vvadd-xcel.verilator1.vcd
+  srams         =
+endif
+
+#-------------------------------------------------------------------------
+# PyMTL GCD
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-gcd)
+  flow          = pymtl
+  clock_period  = 10.0
+  src_dir       = asic-dse/rtl-handoff
+  sim_build_dir = asic-dse/rtl-handoff
+  vsrc          = GcdUnit.v
+  vmname        = GcdUnit
+  viname        = TOP/v
+  vgen_cfg      = gcd-vgen.cfg
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# PyMTL GCD CHIP
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-gcdchip)
+  flow          = pymtl
+  clock_period  = 2.0
+#  src_dir       = asic-dse/rtl-handoff
+#  sim_build_dir = asic-dse/rtl-handoff
+  vsrc          = GcdUnitChip.v
+  vmname        = GcdUnit
+  viname        = TOP/v
+  vgen_cfg      = 
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# PCO
+#-------------------------------------------------------------------------
+
+ifeq ($(design),verilog-pco)
+  flow          = verilog
+  clock_period  = 50.0
+  src_dir       = pymtl/pco
+  sim_build_dir = pymtl/build
+  vsrc          = pco.v
+  vmname        = pco
+  viname        = TOP/v
+  vgen_cfg      = 
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# spcore-slice
+#-------------------------------------------------------------------------
+
+ifeq ($(design),verilog-spcore-slice)
+  flow          = verilog
+  clock_period  = 50.0
+  src_dir       = pymtl/spcore_slice
+  sim_build_dir = pymtl/build
+  vsrc          = spcore_slice.v
+  vmname        = spcore_slice
+  viname        = TOP/v
+  vgen_cfg      = 
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# synthesizable-pll
+#-------------------------------------------------------------------------
+
+ifeq ($(design),verilog-synthesizable-pll)
+  flow          = verilog
+  clock_period  = 2.0
+  src_dir       = pymtl/pll/synthesizable-pll/Implementation/Verilog
+  sim_build_dir = pymtl/build
+  vsrc          = pll.v
+  vmname        = pll
+  viname        = 
+  vgen_cfg      = 
+  vcd           = 
+endif
+
+#-------------------------------------------------------------------------
+# PyMTL asic-top
+#-------------------------------------------------------------------------
+
+ifeq ($(design),pymtl-asic-top)
+  flow          = pymtl
+  clock_period  = 1.0
+  src_dir       = pymtl/top_asic
+  sim_build_dir = pymtl/build
+  vsrc          = AsicTop_blackbox.v
+  vmname        = AsicTop
+  viname        = TOP/v/
+  vcd           = AsicTop_test.test_xcel[basic_sort-test0].verilator1.vcd
+  arm_srams     = arm_sram_32x1024
+  vgen_cfg      = AsicTop-vgen.cfg
+endif
+
