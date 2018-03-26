@@ -52,6 +52,8 @@ dependencies.all                 = innovus-signoff
 
 export design_name = $(vmname)
 
+export design_flow_name = default
+
 #-------------------------------------------------------------------------
 # Directories
 #-------------------------------------------------------------------------
@@ -137,20 +139,30 @@ list:
 # - All bash variables need to be double escaped with $$myvariable
 # - This sed command can be added to blank out zero-value printouts
 #       sed "s/0 hr/    /; s/0 min/     /"
+# - The total runtime is aggregated across all steps to compute the total.
+#   This number might be different compared to subtracting the first/last
+#   timestamps because the user might have paused between steps.
 
 runtimes:
 	@echo "--------------------------------------------------------------------------"
 	@echo "Runtimes"
 	@echo "--------------------------------------------------------------------------"
-	@$(foreach step, $(steps), \
-		end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
-		start=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
-		t_secs=$$(( $$end - $$start )); \
-		h=$$(( $$t_secs / 3600      )); \
-		m=$$(( $$t_secs % 3600 / 60 )); \
-		s=$$(( $$t_secs % 60        )); \
-		printf '%-20s -- %2d hr %2d min %2d sec \n' $(step) $$h $$m $$s | \
-			sed "s/0 hr/    /; s/0 min/     /";)
+	@(tot_secs=0; \
+    $(foreach step, $(steps), \
+      end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
+      start=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      step_secs=$$(( $$end - $$start )); \
+      tot_secs=$$(($$tot_secs + $$step_secs)); \
+      h=$$(( $$step_secs / 3600      )); \
+      m=$$(( $$step_secs % 3600 / 60 )); \
+      s=$$(( $$step_secs % 60        )); \
+      printf '%-20s -- %2d hr %2d min %2d sec\n' $(step) $$h $$m $$s | \
+        sed "s/0 hr/    /; s/0 min/     /";) \
+    echo "--------------------------------------------------------------------------"; \
+    h=$$(( $$tot_secs / 3600      )); \
+    m=$$(( $$tot_secs % 3600 / 60 )); \
+    s=$$(( $$tot_secs % 60        )); \
+    printf '%-20s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -168,7 +180,7 @@ seed:
 # Seed links to the master steps inside the steps directory
 	@$(foreach x, $(steps),(cd $(steps_dir) && ln -sf ../$(relative_base_dir)/steps/$x .);)
 # Pull design-specific plugins into the plugins directory
-	@(cd $(plugins_dir) && ln -sf ../$(relative_base_dir)/designs/default/plugins/* .)
+	@(cd $(plugins_dir) && ln -sf ../$(relative_base_dir)/designs/$(design_flow_name)/plugins/* .)
 # Mark this step done
 	@touch $(VPATH)/$@
 
