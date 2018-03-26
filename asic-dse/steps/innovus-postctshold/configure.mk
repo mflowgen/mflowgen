@@ -25,6 +25,8 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
+abbr.innovus-postctshold = postctshold
+
 postctshold: innovus-postctshold
 
 #-------------------------------------------------------------------------

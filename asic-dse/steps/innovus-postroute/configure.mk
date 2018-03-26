@@ -25,6 +25,8 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
+abbr.innovus-postroute = postroute
+
 postroute: innovus-postroute
 
 #-------------------------------------------------------------------------

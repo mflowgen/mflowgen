@@ -25,6 +25,8 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
+abbr.innovus-signoff = signoff
+
 signoff: innovus-signoff
 
 #-------------------------------------------------------------------------

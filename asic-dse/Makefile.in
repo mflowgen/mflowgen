@@ -55,6 +55,19 @@ export design_name = $(vmname)
 #-------------------------------------------------------------------------
 # Step management
 #-------------------------------------------------------------------------
+# Set up VPATH
+#
+# The VPATH variable is a list of directories to be searched for missing
+# prerequisites.
+#
+# VPATH can be cleverly used to abstract the make tool's dependency
+# tracking into "steps" that are easier for the user to understand and
+# manipulate than the actual detailed Makefile dependencies. The interface
+# is a list of flow steps (i.e., PHONY target files) in $(VPATH).
+
+export VPATH = vpath
+
+junk += $(VPATH)
 
 # list
 #
@@ -79,20 +92,6 @@ list:
 	@echo
 	@$(foreach step, $(steps),printf "%s %-20s : %s\n" '-'  $(step)     $(abbr.$(step));)
 	@echo
-
-# Set up VPATH
-#
-# The VPATH variable is a list of directories to be searched for missing
-# prerequisites.
-#
-# VPATH can be cleverly used to abstract the make tool's dependency
-# tracking into "steps" that are easier for the user to understand and
-# manipulate than the actual detailed Makefile dependencies. The interface
-# is a list of flow steps (i.e., PHONY target files) in $(VPATH).
-
-export VPATH = vpath
-
-junk += $(VPATH)
 
 #-------------------------------------------------------------------------
 # Directories
