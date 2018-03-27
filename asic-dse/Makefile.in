@@ -255,6 +255,15 @@ all: $(dependencies.all)
 clean:
 	rm -rf $(junk)
 
+# Generic target to execute commands with environment variables set from
+# the Makefile.
+#
+# One particularly useful target is "make run_bash", which gives you a
+# new shell with all exported environment variables from the Makefile.
+
+run_%:
+	$*
+
 # Colors for printouts
 
 echo_green   = '\033[92m'
