@@ -11,13 +11,14 @@
 # is too large the tools will have no trouble but you will get a very
 # conservative implementation.
 
-create_clock clk -name ideal_clock1 -period ${CLOCK_PERIOD}
+create_clock clk_io -name ideal_clock1 -period ${CLOCK_PERIOD}
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is
 # driving another block of on-chip logic.
 
-set_load -pin_load 0.004 [all_outputs]
+set_load -pin_load 15.0 [all_outputs]
+#set_load -pin_load 0.004 [all_outputs]
 
 # This constraint sets the input drive strength of the input pins of
 # your design. We specifiy a specific standard cell which models what
@@ -35,4 +36,15 @@ set_input_delay -clock ideal_clock1 0 [all_inputs]
 # set_output_delay constraints for output ports
 
 set_output_delay -clock ideal_clock1 0 [all_outputs]
+
+#Make all signals limit their fanout
+
+set_max_fanout 20 ${DESIGN_NAME}
+
+# Make all signals meet good slew
+
+set_max_transition [expr 0.25*${CLOCK_PERIOD}] ${DESIGN_NAME}
+
+#set_input_transition 1 [all_inputs]
+#set_max_transition 10 [all_outputs]
 
