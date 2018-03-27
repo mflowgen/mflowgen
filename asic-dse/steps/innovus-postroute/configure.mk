@@ -52,6 +52,10 @@ postroute: innovus-postroute
 
 define commands.innovus-postroute
 	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_postroute.tcl -log $(innovus_logs_dir)/postroute.log
+# Clean up extraction reports
+	mkdir -p $(innovus_logs_dir)/extLogDir
+	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true
+	rm -rf extLogDir
 endef
 
 #-------------------------------------------------------------------------

@@ -55,6 +55,10 @@ define commands.innovus-signoff
 # Clean up
 	mv *.spef.gz $(innovus_results_dir)
 	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir)
+# Clean up extraction reports
+	mkdir -p $(innovus_logs_dir)/extLogDir
+	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true
+	rm -rf extLogDir
 endef
 
 #-------------------------------------------------------------------------
