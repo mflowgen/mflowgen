@@ -4,6 +4,13 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-flowsetup
+#-------------------------------------------------------------------------
+# This step sets up the Innovus foundation flow and also sets up shared
+# Innovus-related variables (e.g., directories, exec commands) used
+# throughout the Innovus flow.
+
+#-------------------------------------------------------------------------
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
@@ -27,8 +34,23 @@ export innovus_flowsetup_handoffs_dir = $(handoffs_dir)/innovus-flowsetup
 #-------------------------------------------------------------------------
 # Set up common variables used across all Innovus steps
 
-innovus_exec         = innovus -overwrite -64 -nowin
-innovus_exec_gui     = innovus -overwrite -64
+# Innovus gui is disabled by default if the environment variable
+# INNOVUS_GUI is not defined.
+#
+# Export INNOVUS_GUI to enable the Innovus GUI during Innovus runs:
+#
+# % export INNOVUS_GUI
+# % make init
+# % ...
+#
+
+ifndef INNOVUS_GUI
+innovus_gui_options = -nowin
+endif
+
+# Innovus execute command
+
+innovus_exec = innovus -overwrite -64 $(innovus_gui_options)
 
 # Innovus directories will be shared across all Innovus steps
 
