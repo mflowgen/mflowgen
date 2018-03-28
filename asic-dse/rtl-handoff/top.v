@@ -220,14 +220,12 @@ endmodule // module controller
 			Bottom (left-to-right):
 
 	ASIC generation
-		in rtl
-		cat *.v -> top.v
-		cd /home/ib264/work/asic-ivan/dc-syn
-		make
-		cd ../innovus/test
-		./foo.sh
-		cd results
-		cd /home/ib264/work/asic-ivan/innovus/test/plugins		
+		$ git clone git@github.com:cornell-brg/alloy-asic.git
+		$ cd alloy-asic/asic-dse
+		$ mkdir build && cd build
+		$ ../configure
+		$ make list     # <-- show everything you can do
+		$ make          # <-- runs all steps
 
 	ASIC report files
 		~/work/asic-ivan/dc-syn/current-dc/reports
@@ -295,14 +293,13 @@ endmodule // module controller
 module correlator_top #(parameter ADCbit = 10)(
 input		clk_io,
 input		greset_n_io,
-input		[ADCbit-1:0] ADC_I_io,
-input		[ADCbit-1:0] ADC_Q_io,
 input		spidin_io,
 input		spiload_io,
 input		debug_in_io,
+input		[ADCbit-1:0] ADC_I_io,
+input		[ADCbit-1:0] ADC_Q_io,
 output wire [3:0] out_mux_io );
 
-wire clk;
 wire greset_n;
 wire [ADCbit-1:0] ADC_I;
 wire [ADCbit-1:0] ADC_Q;
@@ -311,6 +308,8 @@ wire spiload;
 wire debug_in;
 wire [3:0] out_mux;
 
+// In output pads, .C() is a don't care. Set .DS(1'b1) for 4 mA drive
+// .OEN(1'b0) = Output enable; .PE(1'b0) = pull disable; .IE(1'b0) = input disable;
 `define OUTPUT_PAD(name,pad,data) \
 PDDW0204SCDG name \
 (                 \
@@ -323,48 +322,52 @@ PDDW0204SCDG name \
 	.IE  (1'b0)   \
 );
 
+// On input pads, tie .I(1'b0) for DRC. See TSMC Universal Standard I/O Library General Application Note p29
+// On input pads, .DS(1'b0) should not make a difference, so tie it to a lower current setting
+// .OEN(1'b1) = Output disable; .PE(1'b0) = pull disable; .IE(1'b1) = input enable;
 `define INPUT_PAD(name,pad,data) \
 PDDW0204SCDG name \
 (                 \
 	.PAD (pad),   \
 	.C   (data),  \
-	.I   (),      \
+	.I   (1'b0),  \
 	.DS  (1'b0),  \
 	.OEN (1'b1),  \
 	.PE  (1'b0),  \
 	.IE  (1'b1)   \
 );
+
 // defined w.r.t to correlator_top
-//                Inst Name             PAD         data
-`INPUT_PAD (        clk_pad,         clk_io,         clk )
-`INPUT_PAD (   greset_n_pad,    greset_n_io,    greset_n )
-`INPUT_PAD (     spidin_pad,      spidin_io,      spidin )
-`INPUT_PAD (    spiload_pad,     spiload_io,     spiload )
-`INPUT_PAD (   debug_in_pad,    debug_in_io,    debug_in )
-`INPUT_PAD (    ADC_I_0_pad,    ADC_I_io[0],    ADC_I[0] )
-`INPUT_PAD (    ADC_I_1_pad,    ADC_I_io[1],    ADC_I[1] )
-`INPUT_PAD (    ADC_I_2_pad,    ADC_I_io[2],    ADC_I[2] )
-`INPUT_PAD (    ADC_I_3_pad,    ADC_I_io[3],    ADC_I[3] )
-`INPUT_PAD (    ADC_I_4_pad,    ADC_I_io[4],    ADC_I[4] )
-`INPUT_PAD (    ADC_I_5_pad,    ADC_I_io[5],    ADC_I[5] )
-`INPUT_PAD (    ADC_I_6_pad,    ADC_I_io[6],    ADC_I[6] )
-`INPUT_PAD (    ADC_I_7_pad,    ADC_I_io[7],    ADC_I[7] )
-`INPUT_PAD (    ADC_I_8_pad,    ADC_I_io[8],    ADC_I[8] )
-`INPUT_PAD (    ADC_I_9_pad,    ADC_I_io[9],    ADC_I[9] )
-`INPUT_PAD (    ADC_Q_0_pad,    ADC_Q_io[0],    ADC_Q[0] )
-`INPUT_PAD (    ADC_Q_1_pad,    ADC_Q_io[1],    ADC_Q[1] )
-`INPUT_PAD (    ADC_Q_2_pad,    ADC_Q_io[2],    ADC_Q[2] )
-`INPUT_PAD (    ADC_Q_3_pad,    ADC_Q_io[3],    ADC_Q[3] )
-`INPUT_PAD (    ADC_Q_4_pad,    ADC_Q_io[4],    ADC_Q[4] )
-`INPUT_PAD (    ADC_Q_5_pad,    ADC_Q_io[5],    ADC_Q[5] )
-`INPUT_PAD (    ADC_Q_6_pad,    ADC_Q_io[6],    ADC_Q[6] )
-`INPUT_PAD (    ADC_Q_7_pad,    ADC_Q_io[7],    ADC_Q[7] )
-`INPUT_PAD (    ADC_Q_8_pad,    ADC_Q_io[8],    ADC_Q[8] )
-`INPUT_PAD (    ADC_Q_9_pad,    ADC_Q_io[9],    ADC_Q[9] )
-`OUTPUT_PAD(  out_mux_0_pad,  out_mux_io[0],  out_mux[0] )
-`OUTPUT_PAD(  out_mux_1_pad,  out_mux_io[1],  out_mux[1] )
-`OUTPUT_PAD(  out_mux_2_pad,  out_mux_io[2],  out_mux[2] )
-`OUTPUT_PAD(  out_mux_3_pad,  out_mux_io[3],  out_mux[3] )
+//               Inst Name             PAD         data
+`INPUT_PAD (    clk_io_pad,         clk_io,         clk )
+`INPUT_PAD (  greset_n_pad,    greset_n_io,    greset_n )
+`INPUT_PAD (    spidin_pad,      spidin_io,      spidin )
+`INPUT_PAD (   spiload_pad,     spiload_io,     spiload )
+`INPUT_PAD (  debug_in_pad,    debug_in_io,    debug_in )
+`INPUT_PAD (   ADC_I_0_pad,    ADC_I_io[0],    ADC_I[0] )
+`INPUT_PAD (   ADC_I_1_pad,    ADC_I_io[1],    ADC_I[1] )
+`INPUT_PAD (   ADC_I_2_pad,    ADC_I_io[2],    ADC_I[2] )
+`INPUT_PAD (   ADC_I_3_pad,    ADC_I_io[3],    ADC_I[3] )
+`INPUT_PAD (   ADC_I_4_pad,    ADC_I_io[4],    ADC_I[4] )
+`INPUT_PAD (   ADC_I_5_pad,    ADC_I_io[5],    ADC_I[5] )
+`INPUT_PAD (   ADC_I_6_pad,    ADC_I_io[6],    ADC_I[6] )
+`INPUT_PAD (   ADC_I_7_pad,    ADC_I_io[7],    ADC_I[7] )
+`INPUT_PAD (   ADC_I_8_pad,    ADC_I_io[8],    ADC_I[8] )
+`INPUT_PAD (   ADC_I_9_pad,    ADC_I_io[9],    ADC_I[9] )
+`INPUT_PAD (   ADC_Q_0_pad,    ADC_Q_io[0],    ADC_Q[0] )
+`INPUT_PAD (   ADC_Q_1_pad,    ADC_Q_io[1],    ADC_Q[1] )
+`INPUT_PAD (   ADC_Q_2_pad,    ADC_Q_io[2],    ADC_Q[2] )
+`INPUT_PAD (   ADC_Q_3_pad,    ADC_Q_io[3],    ADC_Q[3] )
+`INPUT_PAD (   ADC_Q_4_pad,    ADC_Q_io[4],    ADC_Q[4] )
+`INPUT_PAD (   ADC_Q_5_pad,    ADC_Q_io[5],    ADC_Q[5] )
+`INPUT_PAD (   ADC_Q_6_pad,    ADC_Q_io[6],    ADC_Q[6] )
+`INPUT_PAD (   ADC_Q_7_pad,    ADC_Q_io[7],    ADC_Q[7] )
+`INPUT_PAD (   ADC_Q_8_pad,    ADC_Q_io[8],    ADC_Q[8] )
+`INPUT_PAD (   ADC_Q_9_pad,    ADC_Q_io[9],    ADC_Q[9] )
+`OUTPUT_PAD( out_mux_0_pad,  out_mux_io[0],  out_mux[0] )
+`OUTPUT_PAD( out_mux_1_pad,  out_mux_io[1],  out_mux[1] )
+`OUTPUT_PAD( out_mux_2_pad,  out_mux_io[2],  out_mux[2] )
+`OUTPUT_PAD( out_mux_3_pad,  out_mux_io[3],  out_mux[3] )
 //*/
 
 /*
@@ -372,13 +375,13 @@ module correlator_top #(parameter ADCbit = 10)(
 input		clk1,
 input		clk2,
 input		clkpco,
-input		spiclk,
 input		greset_n,
-input		[ADCbit-1:0] ADC_I,
-input		[ADCbit-1:0] ADC_Q,
+input		spiclk,
 input		spidin,
 input		spiload,
 input		debug_in,
+input		[ADCbit-1:0] ADC_I,
+input		[ADCbit-1:0] ADC_Q,
 output wire [3:0] out_mux );
 */
 
@@ -1098,7 +1101,8 @@ always @(posedge clk) begin
 	if (~greset_n || (vpeak_in && VPEAK_BLOCK)) begin
 		vpeak_out <= 1'b0;
 	end else if (enable) begin
-		if ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) begin
+		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && ($signed(rn_abs) >= $signed(THRESHOLD)) ) begin
+//		if ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET)))  begin
 		//if ($signed(sum1[add_lvls][0]) >= $signed(sum2[add_lvls][0])) begin
 			vpeak_out <= 1'b1;
 		end else begin
