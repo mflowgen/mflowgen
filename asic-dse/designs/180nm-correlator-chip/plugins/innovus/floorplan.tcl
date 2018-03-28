@@ -25,37 +25,45 @@ addInst -physical -cell PCORNER -inst PCORNER_TOPRIGHT
 addInst -physical -cell PCORNER -inst PCORNER_BOTTOMLEFT
 addInst -physical -cell PCORNER -inst PCORNER_BOTTOMRIGHT
 
+# Core VDD and VSS pads
+
 addInst -physical -cell PVDD1CDG -inst vdd_core_0_pad
-addInst -physical -cell PVDD2CDG -inst vdd_io_0_pad
 addInst -physical -cell PVDD1CDG -inst vdd_core_1_pad
+addInst -physical -cell PVDD1CDG -inst vdd_core_2_pad
+addInst -physical -cell PVDD1CDG -inst vdd_core_test_0_pad
+addInst -physical -cell PVDD1CDG -inst vdd_core_test_1_pad
+
+addInst -physical -cell PVSS1CDG -inst vss_core_0_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_1_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_2_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_test_0_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_test_1_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_0_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_1_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_0_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_1_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_2_pad
+
+# IO VDD and VSS pads
+
+addInst -physical -cell PVDD2CDG -inst vdd_io_0_pad
 addInst -physical -cell PVDD2CDG -inst vdd_io_1_pad
+addInst -physical -cell PVDD2CDG -inst vdd_io_test_0_pad
+
+addInst -physical -cell PVSS2CDG -inst vss_io_0_pad
+addInst -physical -cell PVSS2CDG -inst vss_io_1_pad
+addInst -physical -cell PVSS2CDG -inst vss_io_2_pad
+addInst -physical -cell PVSS2CDG -inst vss_io_test_0_pad
+addInst -physical -cell PVSS2CDG -inst vss_io_test_1_pad
+
+# POC pads
 
 addInst -physical -cell PVDD2POC -inst vdd_poc_0_pad
+addInst -physical -cell PVDD2POC -inst vdd_poc_test_0_pad
 
-addInst -physical -cell PVSS3CDG -inst vss_core_0_pad
-addInst -physical -cell PVSS3CDG -inst vss_io_0_pad
-addInst -physical -cell PVSS3CDG -inst vss_core_1_pad
-
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_0_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_1_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_2_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_3_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_4_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_5_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_6_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_7_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_8_pad
-addInst -physical -cell PVDD1CDG -inst vdd_dummy_9_pad
-
-addInst -physical -cell PVSS1CDG -inst vss_dummy_0_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_1_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_2_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_3_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_4_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_5_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_6_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_7_pad
-addInst -physical -cell PVSS1CDG -inst vss_dummy_8_pad
+# PRCUT cells
 
 addInst -physical -cell PRCUT -inst prcut_0
 addInst -physical -cell PRCUT -inst prcut_1
@@ -67,7 +75,8 @@ addInst -physical -cell PRCUT -inst prcut_2
 
 foreach bondpad_name \
 [list                \
-vdd_poc_0_bond        \
+ADC_I_0_bond          \
+ADC_I_1_bond          \
 ADC_I_2_bond          \
 ADC_I_3_bond          \
 ADC_I_4_bond          \
@@ -75,29 +84,6 @@ ADC_I_5_bond          \
 ADC_I_6_bond          \
 ADC_I_7_bond          \
 ADC_I_8_bond          \
-vdd_io_0_bond         \
-vdd_io_1_bond         \
-clk_bond              \
-greset_n_bond         \
-spidin_bond           \
-spiload_bond          \
-debug_in_bond         \
-ADC_I_0_bond          \
-ADC_I_1_bond          \
-vdd_core_0_bond       \
-vss_io_0_bond         \
-vdd_core_1_bond       \
-vss_io_1_bond         \
-ADC_Q_6_bond          \
-ADC_Q_7_bond          \
-ADC_Q_8_bond          \
-ADC_Q_9_bond          \
-out_mux_0_bond        \
-out_mux_1_bond        \
-out_mux_2_bond        \
-out_mux_3_bond        \
-vss_core_0_bond       \
-vss_core_1_bond       \
 ADC_I_9_bond          \
 ADC_Q_0_bond          \
 ADC_Q_1_bond          \
@@ -105,25 +91,46 @@ ADC_Q_2_bond          \
 ADC_Q_3_bond          \
 ADC_Q_4_bond          \
 ADC_Q_5_bond          \
-vdd_dummy_0_bond      \
-vdd_dummy_1_bond      \
-vdd_dummy_2_bond      \
-vdd_dummy_3_bond      \
-vdd_dummy_4_bond      \
-vdd_dummy_5_bond      \
-vdd_dummy_6_bond      \
-vdd_dummy_7_bond      \
-vdd_dummy_8_bond      \
-vdd_dummy_9_bond      \
-vss_dummy_0_bond      \
-vss_dummy_1_bond      \
-vss_dummy_2_bond      \
-vss_dummy_3_bond      \
-vss_dummy_4_bond      \
-vss_dummy_5_bond      \
-vss_dummy_6_bond      \
-vss_dummy_7_bond      \
-vss_dummy_8_bond      \
+ADC_Q_6_bond          \
+ADC_Q_7_bond          \
+ADC_Q_8_bond          \
+ADC_Q_9_bond          \
+clk_bond          \
+debug_in_bond          \
+greset_n_bond          \
+out_mux_0_bond          \
+out_mux_1_bond          \
+out_mux_2_bond          \
+out_mux_3_bond          \
+spidin_bond          \
+spiload_bond          \
+vdd_core_0_bond          \
+vdd_core_1_bond          \
+vdd_core_2_bond          \
+vdd_core_test_0_bond          \
+vdd_core_test_1_bond          \
+vdd_io_0_bond          \
+vdd_io_1_bond          \
+vdd_io_test_0_bond          \
+vdd_poc_test_0_bond          \
+vdd_poc_0_bond          \
+vss_core_0_bond          \
+vss_core_1_bond          \
+vss_core_2_bond          \
+vss_core_test_0_bond          \
+vss_core_test_1_bond          \
+vss_core_dummy_0_bond          \
+vss_core_dummy_1_bond          \
+vss_core_dummy_2_bond          \
+vss_core_dummy_3_bond          \
+vss_io_0_bond          \
+vss_io_1_bond          \
+vss_io_2_bond          \
+vss_io_test_0_bond          \
+vss_io_test_1_bond          \
+vss_core_dummyclk_0_bond          \
+vss_core_dummyclk_1_bond          \
+vss_core_dummyclk_2_bond          \
 ] {
   addInst -physical -cell $bondpad_cell -inst $bondpad_name
 }
