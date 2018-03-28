@@ -4,6 +4,21 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-signoff
+#-------------------------------------------------------------------------
+# The signoff step does final timing and verification checks and outputs
+# files (e.g., netlist, gds, lef, etc.).
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,35 +45,35 @@ abbr.innovus-signoff = signoff
 signoff: innovus-signoff
 
 #-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-signoff
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_signoff.tcl -log $(innovus_logs_dir)/signoff.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-signoff)/INNOVUS/run_signoff.tcl \
+    -log $(innovus_logs_dir)/signoff.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-signoff)
+	(cd $(handoff_dir.innovus-signoff) && \
+    ln -sf ../../$(innovus_handoffs_dir)/signoff.* .)
 # Clean up
 	mv *.spef.gz $(innovus_results_dir)
 	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir)
 # Clean up extraction reports
 	mkdir -p $(innovus_logs_dir)/extLogDir
 	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true
-	rm -rf extLogDir
+	rm -rf ./extLogDir
 endef
 
 #-------------------------------------------------------------------------
@@ -67,16 +82,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-signoff:
-	export STEP=signoff && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-signoff:
 	rm -rf ./$(VPATH)/innovus-signoff
 	rm -rf ./$(innovus_logs_dir)/signoff.*
 	rm -rf ./$(innovus_reports_dir)/signoff.*
+	rm -rf ./$(innovus_results_dir)/signoff.*
 	rm -rf ./$(innovus_handoffs_dir)/signoff.*
+	rm -rf ./$(collect_dir.innovus-signoff)
+	rm -rf ./$(handoff_dir.innovus-signoff)
 
-debug-signoff: debug-innovus-signoff
 clean-signoff: clean-innovus-signoff
 
+# Debug
+
+debug-innovus-signoff:
+	export STEP=signoff && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-signoff)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-signoff: debug-innovus-signoff
 

@@ -53,19 +53,18 @@ set vars(process)             $::env(process); # E.g., "28nm"
 # Design
 #-------------------------------------------------------------------------
 
-set vars(dc_handoff_dir)      $::env(handoffs_dir)/dc-synthesis
+set vars(dc_results_dir)      $::env(innovus_ff_collect_dir)
 
 set vars(design)              $::env(design_name)
-
-set vars(design_root)         $vars(dc_handoff_dir)
-set vars(netlist)             $vars(dc_handoff_dir)/$vars(design).mapped.v
+set vars(design_root)         ./
+set vars(netlist)             $vars(dc_results_dir)/$vars(design).mapped.v
 
 #-------------------------------------------------------------------------
 # Directories
 #-------------------------------------------------------------------------
 
-set vars(script_root)         $::env(innovus_flowsetup_steps_dir)/foundation-flow/SCRIPTS
-#set vars(plug_dir)            $::env(innovus_plugins_dir)
+set vars(script_root)         $::env(innovus_ff_script_root)
+#set vars(plug_dir)            $::env(innovus_plugins_dir) # Currently set up top
 set vars(log_dir)             $::env(innovus_logs_dir)
 set vars(rpt_dir)             $::env(innovus_reports_dir)
 set vars(results_dir)         $::env(innovus_results_dir)
@@ -132,8 +131,8 @@ set vars(delay_typical,rc_corner)           typical
 
 set vars(constraint_modes)                  constraints_default
 
-set vars(constraints_default,pre_cts_sdc)   $vars(dc_handoff_dir)/$vars(design).mapped.sdc
-set vars(constraints_default,post_cts_sdc)  $vars(dc_handoff_dir)/$vars(design).mapped.sdc
+set vars(constraints_default,pre_cts_sdc)   $vars(dc_results_dir)/$vars(design).mapped.sdc
+set vars(constraints_default,post_cts_sdc)  $vars(dc_results_dir)/$vars(design).mapped.sdc
 
 #-------------------------------------------------------------------------
 # Analysis Views

@@ -4,6 +4,21 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-postroute
+#-------------------------------------------------------------------------
+# The postroute step does detailed route. By this stage there should be no
+# design rule violations left and timing should have settled.
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,32 +45,32 @@ abbr.innovus-postroute = postroute
 postroute: innovus-postroute
 
 #-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-postroute
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_postroute.tcl -log $(innovus_logs_dir)/postroute.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-postroute)/INNOVUS/run_postroute.tcl \
+    -log $(innovus_logs_dir)/postroute.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-postroute)
+	(cd $(handoff_dir.innovus-postroute) && \
+    ln -sf ../../$(innovus_handoffs_dir)/postroute.* .)
 # Clean up extraction reports
 	mkdir -p $(innovus_logs_dir)/extLogDir
 	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true
-	rm -rf extLogDir
+	rm -rf ./extLogDir
 endef
 
 #-------------------------------------------------------------------------
@@ -64,16 +79,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-postroute:
-	export STEP=postroute && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-postroute:
 	rm -rf ./$(VPATH)/innovus-postroute
 	rm -rf ./$(innovus_logs_dir)/postroute.*
 	rm -rf ./$(innovus_reports_dir)/postroute.*
+	rm -rf ./$(innovus_results_dir)/postroute.*
 	rm -rf ./$(innovus_handoffs_dir)/postroute.*
+	rm -rf ./$(collect_dir.innovus-postroute)
+	rm -rf ./$(handoff_dir.innovus-postroute)
 
-debug-postroute: debug-innovus-postroute
 clean-postroute: clean-innovus-postroute
 
+# Debug
+
+debug-innovus-postroute:
+	export STEP=postroute && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-postroute)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-postroute: debug-innovus-postroute
 

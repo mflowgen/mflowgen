@@ -4,6 +4,20 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-postctshold
+#-------------------------------------------------------------------------
+# The postctshold step does hold fixing right after cts finishes..
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,28 +44,28 @@ abbr.innovus-postctshold = postctshold
 postctshold: innovus-postctshold
 
 #-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-postctshold
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_postcts_hold.tcl -log $(innovus_logs_dir)/postctshold.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-postctshold)/INNOVUS/run_postcts_hold.tcl \
+    -log $(innovus_logs_dir)/postctshold.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-postctshold)
+	(cd $(handoff_dir.innovus-postctshold) && \
+    ln -sf ../../$(innovus_handoffs_dir)/postctshold.* .)
 endef
 
 #-------------------------------------------------------------------------
@@ -60,16 +74,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-postctshold:
-	export STEP=postcts_hold && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-postctshold:
 	rm -rf ./$(VPATH)/innovus-postctshold
 	rm -rf ./$(innovus_logs_dir)/postctshold.*
 	rm -rf ./$(innovus_reports_dir)/postctshold.*
+	rm -rf ./$(innovus_results_dir)/postctshold.*
 	rm -rf ./$(innovus_handoffs_dir)/postctshold.*
+	rm -rf ./$(collect_dir.innovus-postctshold)
+	rm -rf ./$(handoff_dir.innovus-postctshold)
 
-debug-postctshold: debug-innovus-postctshold
 clean-postctshold: clean-innovus-postctshold
 
+# Debug
+
+debug-innovus-postctshold:
+	export STEP=postctshold && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-postctshold)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-postctshold: debug-innovus-postctshold
 

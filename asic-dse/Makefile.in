@@ -42,19 +42,19 @@ steps = dc-synthesis innovus-flowsetup innovus-init innovus-place innovus-cts in
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.innovus-init        = innovus-flowsetup
-dependencies.innovus-place       = innovus-init
-dependencies.innovus-cts         = innovus-place
-dependencies.innovus-postctshold = innovus-cts
-dependencies.innovus-route       = innovus-postctshold
-dependencies.innovus-postroute   = innovus-route
-dependencies.innovus-signoff     = innovus-postroute
+dependencies.innovus-place       = innovus-flowsetup innovus-init
+dependencies.innovus-cts         = innovus-flowsetup innovus-place
+dependencies.innovus-postctshold = innovus-flowsetup innovus-cts
+dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
+dependencies.innovus-postroute   = innovus-flowsetup innovus-route
+dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
 dependencies.all                 = innovus-signoff
 
 export design_name = $(vmname)
 
-#export design_flow_name = default
+export design_flow_name = default
 #export design_flow_name = 180nm-correlator
-export design_flow_name = 180nm-correlator-chip
+#export design_flow_name = 180nm-correlator-chip
 
 #-------------------------------------------------------------------------
 # Directories
@@ -73,17 +73,23 @@ export absolute_base_dir := $(shell \
     find "$$x" -maxdepth 1 -name $(base_dir_marker) | xargs -I {} dirname {}; \
   done;)
 
-# Master steps directory in the base directory which has all possible steps
+# Master steps directory in the base directory with all possible steps
 
 export master_steps_dir = $(relative_base_dir)/steps
 
+# Master designs directory in the base directory with all designs
+
+export master_designs_dir = $(relative_base_dir)/designs
+
 # Build directories
 
-export steps_dir        = steps
+export flow_dir         = flow
 export plugins_dir      = plugins
+
 export logs_dir         = logs
-export results_dir      = results
 export reports_dir      = reports
+export results_dir      = results
+
 export handoffs_dir     = handoffs
 export timestamps_dir   = timestamps
 
@@ -176,58 +182,93 @@ runtimes:
 
 seed:
 # Generate all asic flow directories
-	@mkdir -p $(VPATH) $(steps_dir) $(plugins_dir)
-	@mkdir -p $(logs_dir) $(results_dir) $(reports_dir) $(handoffs_dir)
-	@mkdir -p $(timestamps_dir)
-# Seed links to the master steps inside the steps directory
-	@$(foreach x, $(steps),(cd $(steps_dir) && ln -sf ../$(relative_base_dir)/steps/$x .);)
+	@mkdir -p $(VPATH) $(flow_dir) $(plugins_dir)
+	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
+	@mkdir -p $(handoffs_dir) $(timestamps_dir)
+# Seed links to the master steps into the flow directory
+	@(cd $(flow_dir); \
+    $(foreach x, $(steps), \
+      ln -sf ../../steps/$x .;))
 # Pull design-specific plugins into the plugins directory
-	@(cd $(plugins_dir) && ln -sf ../$(relative_base_dir)/designs/$(design_flow_name)/plugins/* .)
+	@(cd $(plugins_dir) && \
+    ln -sf ../../designs/$(design_flow_name)/plugins/* .)
 # Mark this step done
 	@touch $(VPATH)/$@
 
-junk += $(steps_dir) $(plugins_dir)
-junk += $(logs_dir) $(results_dir) $(reports_dir) $(handoffs_dir)
-junk += $(timestamps_dir)
+junk += $(flow_dir) $(plugins_dir)
+junk += $(logs_dir) $(reports_dir) $(results_dir)
+junk += $(handoffs_dir) $(timestamps_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
 #-------------------------------------------------------------------------
-# This section defines the template used to generate the rules for each
-# asic flow step.
+# This section defines the rules template used to generate the target for
+# each asic flow step and "chain together" dependent steps.
 #
-# Each step in the steps directory should contain "configure.mk", which at
-# minimum contains the command for running that step.
+# The minimum requirement to implement an asic flow step is to create a
+# directory called (name of the step) in the master steps directory which
+# contains the file "configure.mk", and this file must specify the
+# variable "commands.(name of the step)" with the command for how to run
+# the step.
+#
+# For example, if the step name is "myflowstep", then the configure.mk can
+# specify:
 #
 #     commands.myflowstep = echo "Running myflowstep"
 #
-# Note that more commands can be specified using a define:
+# More than one command can be specified by using a define:
 #
 #     define commands.myflowstep
 #       echo "Running myflowstep"
 #       echo "Done with myflowstep"
 #     endef
 #
-# The following template includes the "configure.mk" for the step and then
-# essentially just calls the command. The prerequisite is set according to
-# the configuration generating this Makefile.
+# The build system uses the following template to include the
+# "configure.mk" for the step and then essentially just tells the step to
+# run itself by calling the specified command. The template also collects
+# handoffs from each of the dependency steps, collects timestamps for
+# pretty printing later, and handles misc support functions.
 
 # step_template
 #
-# - $1: Name of the step (e.g., dc-synthesis)
+# - $1: Name of the step (e.g., "dc-synthesis")
 #
 # Additional features
 #
-# - ascii.myflowstep: (optional) This hook can be used to print a pretty
-#                                banner for the step as text flies by
+# - ascii.myflowstep: (optional) This hook can be defined in the step
+#                                configure.mk to print a pretty
+#                                banner before executing the step,
+#                                which is visible as text flies by.
 
 define step_template
 
+# Generate variables for this step
+
+flow_dir.$1    = $(flow_dir)/$1
+plugins_dir.$1 = $(plugins_dir)/$1
+
+logs_dir.$1    = $(logs_dir)/$1
+reports_dir.$1 = $(reports_dir)/$1
+results_dir.$1 = $(results_dir)/$1
+
+collect_dir.$1 = $(handoffs_dir)/$1-collect
+handoff_dir.$1 = $(handoffs_dir)/$1-handoff
+
+# Include the step makefile fragment
+
 include $$(master_steps_dir)/$1/configure.mk
 
-# Primary command target for $1
+# Primary command target for this step
 
 $1: $$(dependencies.$1)
+# Collect handoffs from the dependencies
+	@rm -rf ./$$(collect_dir.$1)
+	@mkdir -p $$(collect_dir.$1)
+	@(cd $$(collect_dir.$1); \
+  $$(foreach dep, $$(dependencies.$1), \
+    $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
+      ln -sf ../../$$(file);)))
+# Execute the step
 	@date > $$(timestamps_dir)/$1.start
 ifdef ascii.$1
 	$$(ascii.$1)

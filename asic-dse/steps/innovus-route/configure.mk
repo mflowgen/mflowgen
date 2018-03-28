@@ -4,6 +4,20 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-route
+#-------------------------------------------------------------------------
+# The route step does global routing...
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,28 +44,28 @@ abbr.innovus-route = route
 route: innovus-route
 
 #-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-route
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_route.tcl -log $(innovus_logs_dir)/route.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-route)/INNOVUS/run_route.tcl \
+    -log $(innovus_logs_dir)/route.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-route)
+	(cd $(handoff_dir.innovus-route) && \
+    ln -sf ../../$(innovus_handoffs_dir)/route.* .)
 endef
 
 #-------------------------------------------------------------------------
@@ -60,16 +74,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-route:
-	export STEP=route && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-route:
 	rm -rf ./$(VPATH)/innovus-route
 	rm -rf ./$(innovus_logs_dir)/route.*
 	rm -rf ./$(innovus_reports_dir)/route.*
+	rm -rf ./$(innovus_results_dir)/route.*
 	rm -rf ./$(innovus_handoffs_dir)/route.*
+	rm -rf ./$(collect_dir.innovus-route)
+	rm -rf ./$(handoff_dir.innovus-route)
 
-debug-route: debug-innovus-route
 clean-route: clean-innovus-route
 
+# Debug
+
+debug-innovus-route:
+	export STEP=route && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-route)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-route: debug-innovus-route
 

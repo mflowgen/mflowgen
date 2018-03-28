@@ -4,6 +4,20 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-init
+#-------------------------------------------------------------------------
+# The init step reads the netlist from DC and does floorplanning.
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,43 +44,30 @@ abbr.innovus-init = init
 init: innovus-init
 
 #-------------------------------------------------------------------------
-# Handoffs
-#-------------------------------------------------------------------------
-# Inputs are checked for existence, and outputs are copied in and also checked for existence
-
-handoffs.innovus-init.inputs = \
-  foobar
-
-handoffs.innovus-init.outputs = \
-  foobar
-
-handoffs.innovus-init.mode = transparent
-
-#-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-init
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_init.tcl -log $(innovus_logs_dir)/init.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-init)/INNOVUS/run_init.tcl \
+    -log  $(innovus_logs_dir)/init.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-init)
+	(cd $(handoff_dir.innovus-init) && \
+    ln -sf ../../$(innovus_handoffs_dir)/init.* .)
 # Clean up
-	rm -rf power.rpt # Not sure why this empty file is generated
+	rm -rf ./power.rpt # Not sure why this empty file is generated
 endef
 
 #-------------------------------------------------------------------------
@@ -75,16 +76,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-init:
-	export STEP=init && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-init:
 	rm -rf ./$(VPATH)/innovus-init
 	rm -rf ./$(innovus_logs_dir)/init.*
 	rm -rf ./$(innovus_reports_dir)/init.*
+	rm -rf ./$(innovus_results_dir)/init.*
 	rm -rf ./$(innovus_handoffs_dir)/init.*
+	rm -rf ./$(collect_dir.innovus-init)
+	rm -rf ./$(handoff_dir.innovus-init)
 
-debug-init: debug-innovus-init
 clean-init: clean-innovus-init
 
+# Debug
+
+debug-innovus-init:
+	export STEP=init && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-init)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-init: debug-innovus-init
 

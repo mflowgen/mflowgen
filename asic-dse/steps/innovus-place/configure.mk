@@ -4,6 +4,20 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- innovus-place
+#-------------------------------------------------------------------------
+# The place step does power planning and iterates on placing stdcells.
+#
+# Required collection:
+#
+#     innovus-flowsetup
+#     -----------------
+#
+#     - Need the Innovus foundation flow scripts
+#     - Need the common Innovus variables (e.g., exec command)
+#
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,28 +44,28 @@ abbr.innovus-place = place
 place: innovus-place
 
 #-------------------------------------------------------------------------
-# Variables shared across all Innovus steps
-#-------------------------------------------------------------------------
-# The Innovus execute commands should be set up during Innovus flow setup
-#
-# - $(innovus_exec)
-# - $(innovus_exec_gui)
-#
-# The Innovus directories should also be set up during Innovus flow setup
-#
-# - $(innovus_logs_dir)
-# - $(innovus_results_dir)
-# - $(innovus_reports_dir)
-# - $(innovus_handoffs_dir)
-
-#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+# Assumed variables from Innovus flow setup
+#
+# - $(innovus_exec)
+# - $(innovus_exec_gui)
+# - $(innovus_logs_dir)
+# - $(innovus_reports_dir)
+# - $(innovus_results_dir)
+# - $(innovus_handoffs_dir)
+
 define commands.innovus-place
-	$(innovus_exec) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_place.tcl -log $(innovus_logs_dir)/place.log
+	$(innovus_exec) \
+    -init $(collect_dir.innovus-place)/INNOVUS/run_place.tcl \
+    -log $(innovus_logs_dir)/place.log
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-place)
+	(cd $(handoff_dir.innovus-place) && \
+    ln -sf ../../$(innovus_handoffs_dir)/place.* .)
 endef
 
 #-------------------------------------------------------------------------
@@ -60,16 +74,26 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-debug-innovus-place:
-	export STEP=place && $(innovus_exec_gui) -init $(innovus_flowsetup_handoffs_dir)/INNOVUS/run_debug.tcl -log $(innovus_logs_dir)/debug.log
+# Clean
 
 clean-innovus-place:
 	rm -rf ./$(VPATH)/innovus-place
 	rm -rf ./$(innovus_logs_dir)/place.*
 	rm -rf ./$(innovus_reports_dir)/place.*
+	rm -rf ./$(innovus_results_dir)/place.*
 	rm -rf ./$(innovus_handoffs_dir)/place.*
+	rm -rf ./$(collect_dir.innovus-place)
+	rm -rf ./$(handoff_dir.innovus-place)
 
-debug-place: debug-innovus-place
 clean-place: clean-innovus-place
 
+# Debug
+
+debug-innovus-place:
+	export STEP=place && \
+  $(innovus_exec_gui) \
+    -init $(collect_dir.innovus-place)/INNOVUS/run_debug.tcl \
+    -log $(innovus_logs_dir)/debug.log
+
+debug-place: debug-innovus-place
 

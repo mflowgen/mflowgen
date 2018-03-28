@@ -4,6 +4,11 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
+# Step Description -- dc-synthesis
+#-------------------------------------------------------------------------
+# This step runs synthesis using Synopsys DC
+
+#-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
@@ -30,19 +35,10 @@ abbr.dc-synthesis = synth
 synth: dc-synthesis
 
 #-------------------------------------------------------------------------
-# Directories
+# Variables
 #-------------------------------------------------------------------------
-# From the build directory, the scripts in this step are accessible from
-# $(steps_dir)/name-of-the-step
 
-dc_steps_dir     = $(steps_dir)/dc-synthesis
-
-# Directories
-
-dc_logs_dir      = $(logs_dir)/dc-synthesis
-dc_results_dir   = $(results_dir)/dc-synthesis
-dc_reports_dir   = $(reports_dir)/dc-synthesis
-dc_handoffs_dir  = $(handoffs_dir)/dc-synthesis
+# Pass
 
 #-------------------------------------------------------------------------
 # Build
@@ -84,9 +80,9 @@ endif
 
 dc_exec         = dc_shell-xg-t -64bit -topographical_mode
 
-dc_tcl          = $(dc_steps_dir)/rm_dc_scripts/dc.tcl
-dc_misc_tcl     = $(dc_steps_dir)/rm_dc_scripts/find_regs.tcl
-constraints_tcl = $(dc_steps_dir)/constraints.tcl
+dc_tcl          = $(flow_dir.dc-synthesis)/rm_dc_scripts/dc.tcl
+dc_misc_tcl     = $(flow_dir.dc-synthesis)/rm_dc_scripts/find_regs.tcl
+constraints_tcl = $(flow_dir.dc-synthesis)/constraints.tcl
 makegen_tcl     = make_generated_vars.tcl
 
 # SAIF variables
@@ -122,11 +118,11 @@ vars = \
 	set TLUPLUS_MIN_FILE            "$(adk_dir)/rtk-min.tluplus";\n \
 	set ALIB_DIR                    "$(alib_dir)";\n \
 	set RTL_SOURCE_FILES            "$(vsrcs)";\n \
-	set DCRM_CONSTRAINTS_INPUT_FILE "$(dc_steps_dir)/constraints.tcl";\n \
-	set DC_SETUP_DIR                "$(dc_steps_dir)/rm_setup";\n \
+	set DCRM_CONSTRAINTS_INPUT_FILE "$(flow_dir.dc-synthesis)/constraints.tcl";\n \
+	set DC_SETUP_DIR                "$(flow_dir.dc-synthesis)/rm_setup";\n \
 	set DC_MISC_TCL                 "$(dc_misc_tcl)";\n \
-	set REPORTS_DIR                 "$(dc_reports_dir)";\n \
-	set RESULTS_DIR                 "$(dc_results_dir)";\n \
+	set REPORTS_DIR                 "$(reports_dir.dc-synthesis)";\n \
+	set RESULTS_DIR                 "$(results_dir.dc-synthesis)";\n \
 	set CLOCK_PERIOD                "$(dc_clock_period)";\n \
 	set CELLS_TCL                   "$(adk_dir)/stdcells.tcl";\n \
 
@@ -137,29 +133,46 @@ vars = \
 # included into the build Makefile.
 
 define commands.dc-synthesis
+
 # Make build directories
-	mkdir -p $(dc_logs_dir)
-	mkdir -p $(dc_results_dir)
-	mkdir -p $(dc_reports_dir)
-	mkdir -p $(dc_handoffs_dir)
+
+	mkdir -p $(logs_dir.dc-synthesis)
+	mkdir -p $(reports_dir.dc-synthesis)
+	mkdir -p $(results_dir.dc-synthesis)
+
 # Generate tcl variables from Makefile
+
 	echo -e '$(vars)' > $(makegen_tcl)
+
 # Run the synthesis script
-	$(dc_exec) -f $(dc_tcl) -output_log_file $(dc_logs_dir)/dc.log
+
+	$(dc_exec) -f $(dc_tcl) \
+             -output_log_file $(logs_dir.dc-synthesis)/dc.log
+
 # Clean up
-	mv make_generated_vars.tcl $(dc_logs_dir)
-	mv command.log $(dc_logs_dir)
-	mv lc_shell_command.log $(dc_logs_dir)
-	mv *_LIB $(dc_logs_dir)
-	mv WORK $(dc_logs_dir)
-	mv force_regs.ucli $(dc_logs_dir)
-	mv access.tab $(dc_logs_dir)
+
+	mv make_generated_vars.tcl $(logs_dir.dc-synthesis)
+	mv command.log             $(logs_dir.dc-synthesis)
+	mv lc_shell_command.log    $(logs_dir.dc-synthesis)
+	mv *_LIB                   $(logs_dir.dc-synthesis)
+	mv WORK                    $(logs_dir.dc-synthesis)
+	mv force_regs.ucli         $(logs_dir.dc-synthesis)
+	mv access.tab              $(logs_dir.dc-synthesis)
+
 # Put handoffs in place
-	(cd $(dc_handoffs_dir) && ln -sf ../../$(dc_results_dir)/* .)
+
+	mkdir -p $(handoff_dir.dc-synthesis)
+	(cd $(handoff_dir.dc-synthesis) && \
+    ln -sf ../../$(results_dir.dc-synthesis)/* .)
+
 # Grep for errors
-	grep --color "^Error" $(dc_logs_dir)/dc.log || true
-	grep --color -B 3 "*** Presto compilation terminated" $(dc_logs_dir)/dc.log || true
-	grep --color "unresolved references." $(dc_logs_dir)/dc.log || true
+
+	grep --color "^Error" $(logs_dir.dc-synthesis)/dc.log || true
+	grep --color -B 3 "*** Presto compilation terminated" \
+    $(logs_dir.dc-synthesis)/dc.log || true
+	grep --color "unresolved references." \
+    $(logs_dir.dc-synthesis)/dc.log || true
+
 endef
 
 #-------------------------------------------------------------------------
@@ -168,16 +181,20 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-#debug-dc-synthesis:
+# Clean
 
 clean-dc-synthesis:
 	rm -rf ./$(VPATH)/dc-synthesis
-	rm -rf ./$(dc_logs_dir)
-	rm -rf ./$(dc_results_dir)
-	rm -rf ./$(dc_reports_dir)
-	rm -rf ./$(dc_handoffs_dir)
+	rm -rf ./$(logs_dir.dc-synthesis)
+	rm -rf ./$(reports_dir.dc-synthesis)
+	rm -rf ./$(results_dir.dc-synthesis)
+	rm -rf ./$(collect_dir.dc-synthesis)
+	rm -rf ./$(handoff_dir.dc-synthesis)
 
-#debug-synth: debug-dc-synthesis
 clean-synth: clean-dc-synthesis
 
+# Debug
+
+#debug-dc-synthesis:
+#debug-synth: debug-dc-synthesis
 
