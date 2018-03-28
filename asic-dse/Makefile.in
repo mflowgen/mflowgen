@@ -208,20 +208,12 @@ junk += $(handoffs_dir) $(timestamps_dir)
 # The minimum requirement to implement an asic flow step is to create a
 # directory called (name of the step) in the master steps directory which
 # contains the file "configure.mk", and this file must specify the
-# variable "commands.(name of the step)" with the command for how to run
-# the step.
+# variable "commands.(name of the step)" specifying how to run the step.
 #
 # For example, if the step name is "myflowstep", then the configure.mk can
 # specify:
 #
 #     commands.myflowstep = echo "Running myflowstep"
-#
-# More than one command can be specified by using a define:
-#
-#     define commands.myflowstep
-#       echo "Running myflowstep"
-#       echo "Done with myflowstep"
-#     endef
 #
 # The build system uses the following template to include the
 # "configure.mk" for the step and then essentially just tells the step to
@@ -276,6 +268,12 @@ endif
 	$$(commands.$1)
 	@date > $$(timestamps_dir)/$1.end
 	@touch $(VPATH)/$1
+
+# Alias short name target for this step
+
+ifdef abbr.$1
+$$(abbr.$1): $1
+endif
 
 endef
 

@@ -41,8 +41,6 @@ endef
 
 abbr.innovus-postctshold = postctshold
 
-postctshold: innovus-postctshold
-
 #-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------

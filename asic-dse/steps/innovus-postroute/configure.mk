@@ -42,8 +42,6 @@ endef
 
 abbr.innovus-postroute = postroute
 
-postroute: innovus-postroute
-
 #-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
