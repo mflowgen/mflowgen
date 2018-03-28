@@ -11,14 +11,15 @@
 # is too large the tools will have no trouble but you will get a very
 # conservative implementation.
 
-create_clock clk -name ideal_clock -period ${CLOCK_PERIOD}
+#create_clock clk -name ideal_clock -period ${CLOCK_PERIOD}
+create_clock clk_io -name ideal_clock -period ${CLOCK_PERIOD}
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is
 # driving another block of on-chip logic.
 
-#set_load -pin_load 15 [all_outputs]
-set_load -pin_load 0.004 [all_outputs]
+set_load -pin_load 15 [all_outputs]
+#set_load -pin_load 0.004 [all_outputs]
 
 # This constraint sets the input drive strength of the input pins of
 # your design. We specifiy a specific standard cell which models what

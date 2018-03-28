@@ -339,7 +339,7 @@ PDDW0204SCDG name \
 
 // defined w.r.t to correlator_top
 //               Inst Name             PAD         data
-`INPUT_PAD (    clk_io_pad,         clk_io,         clk )
+`INPUT_PAD (       clk_pad,         clk_io,         clk )
 `INPUT_PAD (  greset_n_pad,    greset_n_io,    greset_n )
 `INPUT_PAD (    spidin_pad,      spidin_io,      spidin )
 `INPUT_PAD (   spiload_pad,     spiload_io,     spiload )

@@ -39,15 +39,15 @@
 
 #-------------------------------------------------------------------------
 
-#export adk        = tsmc-180nm
-#export process    = 180nm
-#export view       = stdview
+export adk        = tsmc-180nm
+export process    = 180nm
+export view       = stdview
 
 #-------------------------------------------------------------------------
 
-export adk        = tsmc-28nm-cln28hpc
-export process    = 28nm
-export view       = stdview
+#export adk        = tsmc-28nm-cln28hpc
+#export process    = 28nm
+#export view       = stdview
 
 #-------------------------------------------------------------------------
 
@@ -116,10 +116,10 @@ export adk_dir    = /work/global/brg/install/adk-pkgs/$(adk)/$(view)
 
 #design = pymtl-asic-top
 #design = verilog-spcore-slice
-design = pymtl-gcd
+#design = pymtl-gcd
 #design = pymtl-gcdchip
 #design = verilog-synthesizable-pll
-#design = verilog-correlator-top
+design = verilog-correlator-top
 
 #-------------------------------------------------------------------------
 # Proc only
