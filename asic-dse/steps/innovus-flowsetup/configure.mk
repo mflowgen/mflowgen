@@ -51,6 +51,7 @@ endif
 # Innovus execute command
 
 innovus_exec = innovus -overwrite -64 $(innovus_gui_options)
+innovus_exec_gui = innovus -overwrite -64
 
 # Innovus directories will be shared across all Innovus steps
 
