@@ -80,8 +80,9 @@ dc_exec         = dc_shell-xg-t -64bit -topographical_mode
 
 dc_tcl          = $(flow_dir.dc-synthesis)/rm_dc_scripts/dc.tcl
 dc_misc_tcl     = $(flow_dir.dc-synthesis)/rm_dc_scripts/find_regs.tcl
-constraints_tcl = $(flow_dir.dc-synthesis)/constraints.tcl
 makegen_tcl     = make_generated_vars.tcl
+
+constraints_tcl = $(plugins_dir.dc-synthesis)/constraints.tcl
 
 # SAIF variables
 
@@ -116,7 +117,7 @@ vars = \
 	set TLUPLUS_MIN_FILE            "$(adk_dir)/rtk-min.tluplus";\n \
 	set ALIB_DIR                    "$(alib_dir)";\n \
 	set RTL_SOURCE_FILES            "$(vsrcs)";\n \
-	set DCRM_CONSTRAINTS_INPUT_FILE "$(flow_dir.dc-synthesis)/constraints.tcl";\n \
+	set DCRM_CONSTRAINTS_INPUT_FILE "$(constraints_tcl)";\n \
 	set DC_SETUP_DIR                "$(flow_dir.dc-synthesis)/rm_setup";\n \
 	set DC_MISC_TCL                 "$(dc_misc_tcl)";\n \
 	set REPORTS_DIR                 "$(reports_dir.dc-synthesis)";\n \

@@ -43,11 +43,16 @@ export adk        = tsmc-180nm
 export process    = 180nm
 export view       = stdview
 
+#export design_flow_name = 180nm-correlator
+export design_flow_name = 180nm-correlator-chip
+
 #-------------------------------------------------------------------------
 
 #export adk        = tsmc-28nm-cln28hpc
 #export process    = 28nm
 #export view       = stdview
+
+#export design_flow_name = default
 
 #-------------------------------------------------------------------------
 
