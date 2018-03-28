@@ -57,6 +57,10 @@ addInst -physical -cell PVSS1CDG -inst vss_dummy_6_pad
 addInst -physical -cell PVSS1CDG -inst vss_dummy_7_pad
 addInst -physical -cell PVSS1CDG -inst vss_dummy_8_pad
 
+addInst -physical -cell PRCUT -inst prcut_0
+addInst -physical -cell PRCUT -inst prcut_1
+addInst -physical -cell PRCUT -inst prcut_2
+
 # The "dummy" is a blank entry that makes the iteration variable "i"
 # increment just to make the inner/outer match up with the even/odd setup
 # of my loop.
