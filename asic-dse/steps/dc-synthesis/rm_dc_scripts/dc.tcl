@@ -34,7 +34,9 @@ set_svf ${RESULTS_DIR}/${DCRM_SVF_OUTPUT_FILE}
 # database for better annotation.
 ################################################################################
 
-saif_map -start
+#if { ${VINAME} != "NONE" } {
+#  saif_map -start
+#}
 
 #################################################################################
 # Read in the RTL Design
@@ -62,9 +64,9 @@ check_design
 
 # SAIF name mapping
 
-if { ${VINAME} != "NONE" } {
-  saif_map -create_map -source_instance ${VINAME} -input rtl-sim.saif
-}
+#if { ${VINAME} != "NONE" } {
+#  saif_map -create_map -source_instance ${VINAME} -input rtl-sim.saif
+#}
 # saif_map -rtl_summary -missing_rtl -report
 
 #################################################################################
@@ -396,9 +398,9 @@ if {[shell_is_in_topographical_mode]} {
 write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 
 # If SAIF is used, write out SAIF name mapping file for PrimeTime-PX
-if { ${VINAME} != "NONE" } {
-  saif_map -type ptpx -write_map ${RESULTS_DIR}/dc-syn.mapped.SAIF.namemap
-}
+#if { ${VINAME} != "NONE" } {
+#  saif_map -type ptpx -write_map ${RESULTS_DIR}/dc-syn.mapped.SAIF.namemap
+#}
 
 #################################################################################
 # Generate Final Reports

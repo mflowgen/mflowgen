@@ -11,12 +11,15 @@
 # - all     : Execute all steps
 # - clean   : Clean up junk
 # - debug_* : Bring up debug view for Innovus targets
-# - list    : List all configured steps, as well as their short names
+# - list    : List all configured steps, their short names, and other
+#             useful targets
 #
 
 #-------------------------------------------------------------------------
 # Front matter
 #-------------------------------------------------------------------------
+
+.PHONY: default
 
 default: all
 
@@ -24,37 +27,21 @@ default: all
 
 .SUFFIXES:
 
-# Base directory relative to the build directory. The base directory has
-# the top-level steps directory, etc..
-
-export relative_base_dir := ..
-
-# Include the Makefrag
-
-include $(relative_base_dir)/Makefrag
-
 #-------------------------------------------------------------------------
 # Generated variables from configuration
 #-------------------------------------------------------------------------
 
-steps = dc-synthesis innovus-flowsetup innovus-init innovus-place innovus-cts innovus-postctshold innovus-route innovus-postroute innovus-signoff
-
-dependencies.dc-synthesis        = seed
-dependencies.innovus-flowsetup   = dc-synthesis
-dependencies.innovus-init        = innovus-flowsetup
-dependencies.innovus-place       = innovus-flowsetup innovus-init
-dependencies.innovus-cts         = innovus-flowsetup innovus-place
-dependencies.innovus-postctshold = innovus-flowsetup innovus-cts
-dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
-dependencies.innovus-postroute   = innovus-flowsetup innovus-route
-dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
-dependencies.all                 = innovus-signoff
-
-export design_name = $(vmname)
+include configure.mk
+include design-flow.mk
 
 #-------------------------------------------------------------------------
 # Directories
 #-------------------------------------------------------------------------
+
+# Base directory relative to the build directory. The base directory has
+# the top-level steps directory, the design-flow directory, etc.
+
+export relative_base_dir := ..
 
 # Absolute base directory, which is marked as the base directory because
 # it has the base directory marker file in it. This small shell script
@@ -79,15 +66,15 @@ export master_designs_dir = $(relative_base_dir)/designs
 
 # Build directories
 
-export flow_dir         = flow
-export plugins_dir      = plugins
+export flow_dir       = flow
+export plugins_dir    = plugins
 
-export logs_dir         = logs
-export reports_dir      = reports
-export results_dir      = results
+export logs_dir       = logs
+export reports_dir    = reports
+export results_dir    = results
 
-export handoffs_dir     = handoffs
-export timestamps_dir   = timestamps
+export handoffs_dir   = handoffs
+export timestamps_dir = timestamps
 
 #-------------------------------------------------------------------------
 # Step management
@@ -128,6 +115,11 @@ list:
 	@printf                          "%s %-20s   %s\n" ' ' "(Long Name)" "(Short Name)"
 	@echo
 	@$(foreach step, $(steps),printf "%s %-20s : %s\n" '-'  $(step)     $(abbr.$(step));)
+	@echo
+	@echo "Other useful targets"
+	@echo
+	@echo "- seed     : Creates all build directories and seeds the flow steps"
+	@echo "- runtimes : Use timestamps to print runtimes for each executed step"
 	@echo
 
 # runtimes
@@ -219,7 +211,7 @@ junk += $(handoffs_dir) $(timestamps_dir)
 
 # step_template
 #
-# - $1: Name of the step (e.g., "dc-synthesis")
+# - $(1): Name of the step (e.g., "dc-synthesis")
 #
 # Additional features
 #
@@ -232,43 +224,43 @@ define step_template
 
 # Generate variables for this step
 
-flow_dir.$1    = $(flow_dir)/$1
-plugins_dir.$1 = $(plugins_dir)/$1
+flow_dir.$(1)    = $(flow_dir)/$(1)
+plugins_dir.$(1) = $(plugins_dir)/$(1)
 
-logs_dir.$1    = $(logs_dir)/$1
-reports_dir.$1 = $(reports_dir)/$1
-results_dir.$1 = $(results_dir)/$1
+logs_dir.$(1)    = $(logs_dir)/$(1)
+reports_dir.$(1) = $(reports_dir)/$(1)
+results_dir.$(1) = $(results_dir)/$(1)
 
-collect_dir.$1 = $(handoffs_dir)/$1-collect
-handoff_dir.$1 = $(handoffs_dir)/$1-handoff
+collect_dir.$(1) = $(handoffs_dir)/$(1)-collect
+handoff_dir.$(1) = $(handoffs_dir)/$(1)-handoff
 
 # Include the step makefile fragment
 
-include $$(master_steps_dir)/$1/configure.mk
+include $$(master_steps_dir)/$(1)/configure.mk
 
 # Primary command target for this step
 
-$1: $$(dependencies.$1)
+$(1): $$(dependencies.$(1))
 # Collect handoffs from the dependencies
-	@rm -rf ./$$(collect_dir.$1)
-	@mkdir -p $$(collect_dir.$1)
-	@(cd $$(collect_dir.$1); \
-  $$(foreach dep, $$(dependencies.$1), \
+	@rm -rf ./$$(collect_dir.$(1))
+	@mkdir -p $$(collect_dir.$(1))
+	@(cd $$(collect_dir.$(1)); \
+  $$(foreach dep, $$(dependencies.$(1)), \
     $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
       ln -sf ../../$$(file);)))
 # Execute the step
-	@date > $$(timestamps_dir)/$1.start
-ifdef ascii.$1
-	$$(ascii.$1)
+	@date > $$(timestamps_dir)/$(1).start
+ifdef ascii.$(1)
+	$$(ascii.$(1))
 endif
-	$$(commands.$1)
-	@date > $$(timestamps_dir)/$1.end
-	@touch $(VPATH)/$1
+	$$(commands.$(1))
+	@date > $$(timestamps_dir)/$(1).end
+	@touch $(VPATH)/$(1)
 
 # Alias short name target for this step
 
-ifdef abbr.$1
-$$(abbr.$1): $1
+ifdef abbr.$(1)
+$$(abbr.$(1)): $(1)
 endif
 
 endef
@@ -279,6 +271,8 @@ endef
 
 $(foreach step, $(steps), \
   $(eval $(call step_template,$(step))))
+
+.PHONY: all
 
 all: $(dependencies.all)
 
@@ -291,13 +285,25 @@ all: $(dependencies.all)
 clean:
 	rm -rf $(junk)
 
+# print-%
+#
+# This target makes it easier to debug Makefile rules by allowing you to
+# print any variable. For example, "make print-junk" prints the value of
+# the junk variable.
+
+print-% :
+	@echo $* = $($*)
+
+# run-%
+#
 # Generic target to execute commands with environment variables set from
 # the Makefile.
 #
-# One particularly useful target is "make run_bash", which gives you a
-# new shell with all exported environment variables from the Makefile.
+# Note that one particularly useful target is "make run-bash", which gives
+# you a new shell with all of the exported environment variables from the
+# Makefile available to use.
 
-run_%:
+run-%:
 	$*
 
 # Colors for printouts

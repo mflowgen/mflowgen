@@ -64,6 +64,8 @@ define commands.innovus-place
 	mkdir -p $(handoff_dir.innovus-place)
 	(cd $(handoff_dir.innovus-place) && \
     ln -sf ../../$(innovus_handoffs_dir)/place.* .)
+# Clean up
+	rm -rf ./power.rpt # Not sure why this empty file is generated
 endef
 
 #-------------------------------------------------------------------------

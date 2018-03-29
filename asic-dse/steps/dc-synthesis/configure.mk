@@ -42,13 +42,9 @@ abbr.dc-synthesis = synth
 # Build
 #-------------------------------------------------------------------------
 
-# Verilog sources (do not include test harness!)
+# Verilog source (do not include test harness!)
 
-vsrcs = $(relative_base_dir)/rtl-handoff/$(vsrc)
-
-# Specify toplevel verilog module
-
-toplevel = $(vmname)
+vsrcs = $(relative_base_dir)/$(vsrc)
 
 # The ALIB directory is where DC caches analyzed libraries (.alib files).
 # Normally, we use: $(cells_dir)/alib
@@ -86,9 +82,9 @@ constraints_tcl = $(plugins_dir.dc-synthesis)/constraints.tcl
 
 # SAIF variables
 
-ifeq ($(strip $(viname)),)
-  viname = NONE
-endif
+#ifeq ($(strip $(viname)),)
+#  viname = NONE
+#endif
 
 # Derating the clock period for DC
 #
@@ -105,9 +101,8 @@ endif
 dc_clock_period = $(clock_period)
 
 vars = \
-	set VINAME                      "$(viname)";\n \
-	set DESIGN_NAME                 "$(toplevel)";\n \
-	set STRIP_PATH                  "$(toplevel)";\n \
+	set DESIGN_NAME                 "$(design_name)";\n \
+	set STRIP_PATH                  "$(design_name)";\n \
 	set ADDITIONAL_SEARCH_PATH      "$(adk_dir)";\n \
 	set TARGET_LIBRARY_FILES        "stdcells.db iocells.db";\n \
 	set MW_REFERENCE_LIB_DIRS       "$(adk_dir)/stdcells.mwlib";\n \
@@ -125,6 +120,8 @@ vars = \
 	set CLOCK_PERIOD                "$(dc_clock_period)";\n \
 	set CELLS_TCL                   "$(adk_dir)/stdcells.tcl";\n \
 
+#  set VINAME                      "$(viname)";\n \
+
 #-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
@@ -132,6 +129,12 @@ vars = \
 # included into the build Makefile.
 
 define commands.dc-synthesis
+
+# Clear build directories
+
+	rm -rf ./$(logs_dir.dc-synthesis)
+	rm -rf ./$(reports_dir.dc-synthesis)
+	rm -rf ./$(results_dir.dc-synthesis)
 
 # Make build directories
 
@@ -158,7 +161,7 @@ define commands.dc-synthesis
 	mv force_regs.ucli         $(logs_dir.dc-synthesis)
 	mv access.tab              $(logs_dir.dc-synthesis)
 
-# Put handoffs in place
+# Prepare handoffs
 
 	mkdir -p $(handoff_dir.dc-synthesis)
 	(cd $(handoff_dir.dc-synthesis) && \
