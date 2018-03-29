@@ -32,7 +32,7 @@ default: all
 #-------------------------------------------------------------------------
 
 include configure.mk
-include design-flow.mk
+include setup-flow.mk
 
 #-------------------------------------------------------------------------
 # Directories
@@ -58,11 +58,11 @@ export absolute_base_dir := $(shell \
 
 # Master steps directory in the base directory with all possible steps
 
-export master_steps_dir = $(relative_base_dir)/steps
+export master_steps_dir = steps
 
-# Master designs directory in the base directory with all designs
+# Master directory in the base directory with all assembled flows
 
-export master_designs_dir = $(relative_base_dir)/designs
+export master_flows_dir = assembled-flows
 
 # Build directories
 
@@ -176,10 +176,10 @@ seed:
 # Seed links to the master steps into the flow directory
 	@(cd $(flow_dir); \
     $(foreach x, $(steps), \
-      ln -sf ../../steps/$x .;))
+      ln -sf ../../$(master_steps_dir)/$x .;))
 # Pull design-specific plugins into the plugins directory
 	@(cd $(plugins_dir) && \
-    ln -sf ../../designs/$(design_flow_name)/plugins/* .)
+    ln -sf ../../$(master_flows_dir)/$(design_flow_name)/plugins/* .)
 # Mark this step done
 	@touch $(VPATH)/$@
 
@@ -236,7 +236,7 @@ handoff_dir.$(1) = $(handoffs_dir)/$(1)-handoff
 
 # Include the step makefile fragment
 
-include $$(master_steps_dir)/$(1)/configure.mk
+include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 
 # Primary command target for this step
 

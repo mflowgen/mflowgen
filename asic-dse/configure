@@ -10,5 +10,5 @@
 
 ln -sf ../Makefile.in Makefile
 
-ln -sf ../designs/default/design-flow.mk
-ln -sf ../designs/default/configure.mk
+ln -sf ../assembled-flows/default/setup-flow.mk
+ln -sf ../assembled-flows/default/configure.mk
