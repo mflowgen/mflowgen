@@ -44,7 +44,7 @@ abbr.dc-synthesis = synth
 
 # Verilog source (do not include test harness!)
 
-vsrcs = $(relative_base_dir)/$(vsrc)
+vsrcs = $(relative_base_dir)/$(verilog_src)
 
 # The ALIB directory is where DC caches analyzed libraries (.alib files).
 # Normally, we use: $(cells_dir)/alib

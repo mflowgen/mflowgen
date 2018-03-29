@@ -30,10 +30,7 @@ global vars
 # ADK Setup
 #-------------------------------------------------------------------------
 
-set adk                       $::env(adk);     # E.g., "tsmc-28nm-cln28hpc"
-set view                      $::env(view);    # E.g., "stdview"
 set adk_dir                   $::env(adk_dir)
-
 set vars(process)             $::env(process); # E.g., "28nm"
 
 #-------------------------------------------------------------------------

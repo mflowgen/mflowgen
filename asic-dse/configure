@@ -2,13 +2,29 @@
 #=========================================================================
 # configure
 #=========================================================================
-# Description
-#
-# Date   : March 25, 2018
-# Author : Christopher Torng
-#
+# Configuration involves choosing an assembled flow (i.e.,
+# "setup-flow.mk") and also selecting an ASIC design kit and design
+# specification (i.e., "Makefrag").
 
 ln -sf ../Makefile.in Makefile
 
-ln -sf ../assembled-flows/default/setup-flow.mk
-ln -sf ../assembled-flows/default/configure.mk
+#-------------------------------------------------------------------------
+# Default
+#-------------------------------------------------------------------------
+
+# Use the default assembled flow if no options are passed in
+
+if [[ x$1 == x"" ]]; then
+  ln -sf ../assembled-flows/default/setup-flow.mk
+  ln -sf ../Makefrag
+fi
+
+#-------------------------------------------------------------------------
+# 180nm-correlator-chip
+#-------------------------------------------------------------------------
+
+if [[ x$1 == x--180* ]]; then
+  ln -sf ../assembled-flows/180nm-correlator-chip/setup-flow.mk
+  ln -sf ../assembled-flows/180nm-correlator-chip/Makefrag
+fi
+

@@ -10,7 +10,9 @@
 #
 # - all     : Execute all steps
 # - clean   : Clean up junk
-# - debug_* : Bring up debug view for Innovus targets
+# - debug-* : Bring up debug view for Innovus targets
+# - run-*   : Run command with Makefile variables available
+# - print-* : Print any Makefile variable
 # - list    : List all configured steps, their short names, and other
 #             useful targets
 #
@@ -31,8 +33,8 @@ default: all
 # Generated variables from configuration
 #-------------------------------------------------------------------------
 
-include configure.mk
 include setup-flow.mk
+include Makefrag
 
 #-------------------------------------------------------------------------
 # Directories
@@ -179,7 +181,7 @@ seed:
       ln -sf ../../$(master_steps_dir)/$x .;))
 # Pull design-specific plugins into the plugins directory
 	@(cd $(plugins_dir) && \
-    ln -sf ../../$(master_flows_dir)/$(design_flow_name)/plugins/* .)
+    ln -sf ../../$(master_flows_dir)/$(design_flow)/plugins/* .)
 # Mark this step done
 	@touch $(VPATH)/$@
 

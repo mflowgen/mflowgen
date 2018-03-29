@@ -1,5 +1,5 @@
 #=========================================================================
-# configure
+# setup-flow.mk
 #=========================================================================
 # This design flow has the set of default ASIC steps for any design we
 # want to do architectural design-space exploration on. This configuration
