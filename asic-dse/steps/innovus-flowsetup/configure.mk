@@ -35,7 +35,7 @@ export innovus_handoffs_dir = $(handoffs_dir)/innovus
 # INNOVUS_GUI is not defined. Export INNOVUS_GUI to enable the Innovus GUI
 # during Innovus runs.
 #
-#     % export INNOVUS_GUI
+#     % export INNOVUS_GUI=1
 #     % make init
 #     (... gui pops up ...)
 #

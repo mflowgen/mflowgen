@@ -3,7 +3,9 @@
 #=========================================================================
 # This script is called from the Innovus init flow step.
 
-floorPlan -s $core_width $core_height $core_margin_l $core_margin_b $core_margin_r $core_margin_t
+floorPlan -su $core_aspect_ratio $core_density_target \
+              $core_margin_l $core_margin_b $core_margin_r $core_margin_t
+
 setFlipping s
 
 # Take all ports and split into halves

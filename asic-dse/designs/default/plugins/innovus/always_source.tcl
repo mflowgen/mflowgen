@@ -22,8 +22,12 @@ proc snapToTrackPitch {x} {
 set t_pitch 0.10; # Pitch between m2 tracks (track pitch)
 set r_pitch 0.90; # Pitch between power rails (standard cell height)
 
-set core_width   [expr 200 * $t_pitch ]; # Core area width  20 um
-set core_height  [expr 200 * $t_pitch ]; # Core area height 20 um
+# Set the floorplan to target a reasonable placement density with a good
+# aspect ratio (height:width). An aspect ratio of 2.0 here will make a
+# rectangular chip with a height that is twice the width.
+
+set core_aspect_ratio   1.0; # Aspect ratio 1.0 for a square chip
+set core_density_target 0.7; # Placement density of 70% is reasonable
 
 # Power ring
 
