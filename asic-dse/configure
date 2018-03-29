@@ -28,3 +28,12 @@ if [[ x$1 == x--180* ]]; then
   ln -sf ../assembled-flows/180nm-correlator-chip/Makefrag
 fi
 
+#-------------------------------------------------------------------------
+# 28nm-gcd-chip
+#-------------------------------------------------------------------------
+
+if [[ x$1 == x--28* ]]; then
+  ln -sf ../assembled-flows/28nm-gcd-chip/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-gcd-chip/Makefrag
+fi
+
