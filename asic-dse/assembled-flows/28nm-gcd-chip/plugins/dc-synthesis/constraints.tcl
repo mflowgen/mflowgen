@@ -11,8 +11,9 @@
 # is too large the tools will have no trouble but you will get a very
 # conservative implementation.
 
-#create_clock clk -name ideal_clock -period ${CLOCK_PERIOD}
-create_clock clk_io -name ideal_clock -period ${CLOCK_PERIOD}
+set CLOCK_NET clk_io
+
+create_clock ${CLOCK_NET} -name ideal_clock -period ${CLOCK_PERIOD}
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is

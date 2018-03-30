@@ -338,7 +338,7 @@ if {[shell_is_in_topographical_mode]} {
 
 # mark clk as ideal
 
-set_ideal_network clk
+set_ideal_network ${CLOCK_NET}
 
 # Moyang: using -gate_clock seems to cause Xs in gate-level vcs simulation
 # it's disabled for now.

@@ -1,15 +1,9 @@
 #=========================================================================
 # Makefrag
 #=========================================================================
-# This file sets up the ASIC design kit and the design specification for
-# the default asic flow.
-#
-# The default asic flow has the set of default asic steps for any design
-# for which we want to do architectural design-space exploration. This
-# configuration should always work as long as the ASIC design kit (ADK) is
-# set up.
+# This file sets up the ASIC design kit and the design specification.
 
-design_flow = default
+design_flow = 28nm-pll
 
 #=========================================================================
 # ASIC design kit (ADK)
@@ -43,37 +37,9 @@ export process = 28nm # This can move into stdcells.tcl
 # Design
 #=========================================================================
 
-design_select = pymtl-gcd
-
-#-------------------------------------------------------------------------
-# PyMTL GCD
-#-------------------------------------------------------------------------
-
-ifeq ($(design_select),pymtl-gcd)
-  design_name  = GcdUnit
-  clock_period = 2.0
-  verilog_src  = rtl-handoff/GcdUnit.v
-endif
-
-#-------------------------------------------------------------------------
-# PyMTL GCD CHIP
-#-------------------------------------------------------------------------
-
-ifeq ($(design_select),pymtl-gcd-chip)
-  design_name  = GcdUnit
-  clock_period = 2.0
-  verilog_src  = rtl-handoff/GcdUnitChip.v
-endif
-
-#-------------------------------------------------------------------------
-# Synthesizable PLL
-#-------------------------------------------------------------------------
-
-ifeq ($(design_select),verilog-synthesizable-pll)
-  design_name  = pll
-  clock_period = 2.0
-  verilog_src  = rtl-handoff/pll.v
-endif
+design_name  = pll
+clock_period = 2.0
+verilog_src  = rtl-handoff/pll.v
 
 #-------------------------------------------------------------------------
 # Export

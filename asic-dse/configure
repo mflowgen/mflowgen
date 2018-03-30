@@ -12,11 +12,12 @@ ln -sf ../Makefile.in Makefile
 # Default
 #-------------------------------------------------------------------------
 # Use the default assembled flow if no options are passed in, and also
-# pull in the Makefrag
+# pull in the Makefrag (copy it so that many build directories can be made
+# that point to different designs)
 
 if [[ x$1 == x"" ]]; then
   ln -sf ../assembled-flows/default/setup-flow.mk
-  ln -sf ../Makefrag
+  cp -rf ../Makefrag .
 fi
 
 #-------------------------------------------------------------------------
@@ -34,8 +35,18 @@ fi
 #-------------------------------------------------------------------------
 # This flow has its own Makefrag
 
-if [[ x$1 == x--28* ]]; then
+if [[ x$1 == x--28nm-gcd* ]]; then
   ln -sf ../assembled-flows/28nm-gcd-chip/setup-flow.mk
   ln -sf ../assembled-flows/28nm-gcd-chip/Makefrag
+fi
+
+#-------------------------------------------------------------------------
+# 28nm-pll
+#-------------------------------------------------------------------------
+# This flow has its own Makefrag
+
+if [[ x$1 == x--28nm-pll* ]]; then
+  ln -sf ../assembled-flows/28nm-pll/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-pll/Makefrag
 fi
 
