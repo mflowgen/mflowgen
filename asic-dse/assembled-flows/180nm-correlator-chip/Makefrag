@@ -15,7 +15,7 @@ design_flow = 180nm-correlator-chip
 #
 # Available ADKs:
 #
-# - tsmc-180nm
+# - tsmc-180nm-cl018g
 # - tsmc-28nm-cln28hpc
 #
 # ADKs that need to be updated before they will work:
@@ -27,7 +27,7 @@ design_flow = 180nm-correlator-chip
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-180nm
+adk      = tsmc-180nm-cl018g
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)

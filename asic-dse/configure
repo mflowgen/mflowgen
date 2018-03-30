@@ -11,8 +11,8 @@ ln -sf ../Makefile.in Makefile
 #-------------------------------------------------------------------------
 # Default
 #-------------------------------------------------------------------------
-
-# Use the default assembled flow if no options are passed in
+# Use the default assembled flow if no options are passed in, and also
+# pull in the Makefrag
 
 if [[ x$1 == x"" ]]; then
   ln -sf ../assembled-flows/default/setup-flow.mk
@@ -22,6 +22,7 @@ fi
 #-------------------------------------------------------------------------
 # 180nm-correlator-chip
 #-------------------------------------------------------------------------
+# This flow has its own Makefrag
 
 if [[ x$1 == x--180* ]]; then
   ln -sf ../assembled-flows/180nm-correlator-chip/setup-flow.mk
@@ -31,6 +32,7 @@ fi
 #-------------------------------------------------------------------------
 # 28nm-gcd-chip
 #-------------------------------------------------------------------------
+# This flow has its own Makefrag
 
 if [[ x$1 == x--28* ]]; then
   ln -sf ../assembled-flows/28nm-gcd-chip/setup-flow.mk

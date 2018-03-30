@@ -21,7 +21,7 @@ design_flow = default
 #
 # Available ADKs:
 #
-# - tsmc-180nm
+# - tsmc-180nm-cl018g
 # - tsmc-28nm-cln28hpc
 #
 # ADKs that need to be updated before they will work:
