@@ -27,41 +27,41 @@ addInst -physical -cell PCORNER -inst PCORNER_BOTTOMRIGHT
 
 # Core VDD and VSS pads
 
-addInst -physical -cell PVDD1CDG -inst vdd_core_0_pad
-addInst -physical -cell PVDD1CDG -inst vdd_core_1_pad
-addInst -physical -cell PVDD1CDG -inst vdd_core_2_pad
-addInst -physical -cell PVDD1CDG -inst vdd_core_test_0_pad
-addInst -physical -cell PVDD1CDG -inst vdd_core_test_1_pad
+addInst -physical -cell PVDD1CDG -inst vdd_core_0_iocell
+addInst -physical -cell PVDD1CDG -inst vdd_core_1_iocell
+addInst -physical -cell PVDD1CDG -inst vdd_core_2_iocell
+addInst -physical -cell PVDD1CDG -inst vdd_core_test_0_iocell
+addInst -physical -cell PVDD1CDG -inst vdd_core_test_1_iocell
 
-addInst -physical -cell PVSS1CDG -inst vss_core_0_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_1_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_2_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_test_0_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_test_1_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_0_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_1_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_0_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_1_pad
-addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_2_pad
+addInst -physical -cell PVSS1CDG -inst vss_core_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_1_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_2_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_test_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_test_1_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_1_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_1_iocell
+addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_2_iocell
 
 # IO VDD and VSS pads
 
-addInst -physical -cell PVDD2CDG -inst vdd_io_0_pad
-addInst -physical -cell PVDD2CDG -inst vdd_io_1_pad
-addInst -physical -cell PVDD2CDG -inst vdd_io_test_0_pad
+addInst -physical -cell PVDD2CDG -inst vdd_io_0_iocell
+addInst -physical -cell PVDD2CDG -inst vdd_io_1_iocell
+addInst -physical -cell PVDD2CDG -inst vdd_io_test_0_iocell
 
-addInst -physical -cell PVSS2CDG -inst vss_io_0_pad
-addInst -physical -cell PVSS2CDG -inst vss_io_1_pad
-addInst -physical -cell PVSS2CDG -inst vss_io_2_pad
-addInst -physical -cell PVSS2CDG -inst vss_io_test_0_pad
-addInst -physical -cell PVSS2CDG -inst vss_io_test_1_pad
+addInst -physical -cell PVSS2CDG -inst vss_io_0_iocell
+addInst -physical -cell PVSS2CDG -inst vss_io_1_iocell
+addInst -physical -cell PVSS2CDG -inst vss_io_2_iocell
+addInst -physical -cell PVSS2CDG -inst vss_io_test_0_iocell
+addInst -physical -cell PVSS2CDG -inst vss_io_test_1_iocell
 
 # POC pads
 
-addInst -physical -cell PVDD2POC -inst vdd_poc_0_pad
-addInst -physical -cell PVDD2POC -inst vdd_poc_test_0_pad
+addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
+addInst -physical -cell PVDD2POC -inst vdd_poc_test_0_iocell
 
 # PRCUT cells
 
@@ -73,66 +73,10 @@ addInst -physical -cell PRCUT -inst prcut_2
 # increment just to make the inner/outer match up with the even/odd setup
 # of my loop.
 
-foreach bondpad_name \
-[list                \
-ADC_I_0_bond          \
-ADC_I_1_bond          \
-ADC_I_2_bond          \
-ADC_I_3_bond          \
-ADC_I_4_bond          \
-ADC_I_5_bond          \
-ADC_I_6_bond          \
-ADC_I_7_bond          \
-ADC_I_8_bond          \
-ADC_I_9_bond          \
-ADC_Q_0_bond          \
-ADC_Q_1_bond          \
-ADC_Q_2_bond          \
-ADC_Q_3_bond          \
-ADC_Q_4_bond          \
-ADC_Q_5_bond          \
-ADC_Q_6_bond          \
-ADC_Q_7_bond          \
-ADC_Q_8_bond          \
-ADC_Q_9_bond          \
-clk_bond          \
-debug_in_bond          \
-greset_n_bond          \
-out_mux_0_bond          \
-out_mux_1_bond          \
-out_mux_2_bond          \
-out_mux_3_bond          \
-spidin_bond          \
-spiload_bond          \
-vdd_core_0_bond          \
-vdd_core_1_bond          \
-vdd_core_2_bond          \
-vdd_core_test_0_bond          \
-vdd_core_test_1_bond          \
-vdd_io_0_bond          \
-vdd_io_1_bond          \
-vdd_io_test_0_bond          \
-vdd_poc_test_0_bond          \
-vdd_poc_0_bond          \
-vss_core_0_bond          \
-vss_core_1_bond          \
-vss_core_2_bond          \
-vss_core_test_0_bond          \
-vss_core_test_1_bond          \
-vss_core_dummy_0_bond          \
-vss_core_dummy_1_bond          \
-vss_core_dummy_2_bond          \
-vss_core_dummy_3_bond          \
-vss_io_0_bond          \
-vss_io_1_bond          \
-vss_io_2_bond          \
-vss_io_test_0_bond          \
-vss_io_test_1_bond          \
-vss_core_dummyclk_0_bond          \
-vss_core_dummyclk_1_bond          \
-vss_core_dummyclk_2_bond          \
-] {
-  addInst -physical -cell $bondpad_cell -inst $bondpad_name
+set num_bondpads 56
+
+for {set bond_i 0} {$bond_i < $num_bondpads} {incr bond_i} {
+  addInst -physical -cell $bondpad_cell -inst iobond_$bond_i
 }
 
 # Use the Innovus IO row flow to make the rows
@@ -207,18 +151,15 @@ foreach side [list BL BR TL TR] {
 # To get around this, we (1) first load the IO floorplan that places the
 # IO cells, (2) then add IO fillers while there are no bond pads placed
 # yet so there should be no gaps, and then (3) add the bond pads by
-# loading the IO floorplan that has both IO cells and bond pads.
-#
-# Note that the two IO floorplans are identical except that one floorplan
-# has the bond pad entries deleted.
+# loading a separate IO floorplan with the bond pads.
 
 # Make sure to add fillers in order from largest width to smallest width
 
-loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).nobondpads.save.io
+loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).save.io
 
 addIoRowFiller -cell {PFILLER20 PFILLER10 PFILLER5 PFILLER1 PFILLER05 PFILLER0005}
 
-loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).save.io
+loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).bond.save.io
 
 #-------------------------------------------------------------------------
 
