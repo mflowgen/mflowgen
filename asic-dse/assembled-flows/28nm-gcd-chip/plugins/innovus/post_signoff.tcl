@@ -8,7 +8,15 @@
 write_sdf $vars(results_dir)/$vars(design).sdf
 
 # Write netlist for LVS
-# Exclude physical cells that have no devices in them
+#
+# Exclude physical cells that have no devices in them (or else LVS will
+# have issues). Specifically for filler cells, the extracted layout will
+# not have any trace of the fillers because there are no devices in them.
+# Meanwhile, the schematic generated from the netlist will show filler
+# cells instances with VDD/VSS ports, and this will cause LVS to flag a
+# "mismatch" with the layout.
+
+# FIXME: This list should be refactored into stdcells.tcl
 
 set lvs_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL1*] \
                       [dbGet -u -e top.physInsts.cell.name FILL2*] \
@@ -19,6 +27,22 @@ set lvs_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL1*] \
                       [dbGet -u -e top.physInsts.cell.name PFILLERE*]"
 
 saveNetlist -excludeLeafCell -phys -excludeCellInst $lvs_exclude_list $vars(results_dir)/$vars(design).lvs.v
+
+# Write netlist for Virtuoso simulation
+#
+# This is the same as the lvs netlist but does not have decaps to speed up
+# simulation.
+
+set virtuoso_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL1*] \
+                           [dbGet -u -e top.physInsts.cell.name FILL2*] \
+                           [dbGet -u -e top.physInsts.cell.name FILLSGCAP*] \
+                           [dbGet -u -e top.physInsts.cell.name FILLTIE*] \
+                           [dbGet -u -e top.physInsts.cell.name ENDCAPTIE*] \
+                           [dbGet -u -e top.physInsts.cell.name PAD*] \
+                           [dbGet -u -e top.physInsts.cell.name PCORNERE*] \
+                           [dbGet -u -e top.physInsts.cell.name PFILLERE*]"
+
+saveNetlist -excludeLeafCell -phys -excludeCellInst $virtuoso_exclude_list $vars(results_dir)/$vars(design).virtuoso.v
 
 # Write netlist for GL simulation
 

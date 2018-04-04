@@ -28,6 +28,22 @@ set lvs_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL1*] \
 
 saveNetlist -excludeLeafCell -phys -excludeCellInst $lvs_exclude_list $vars(results_dir)/$vars(design).lvs.v
 
+# Write netlist for Virtuoso simulation
+#
+# This is the same as the lvs netlist but does not have decaps to speed up
+# simulation.
+
+set virtuoso_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL1*] \
+                           [dbGet -u -e top.physInsts.cell.name FILL2*] \
+                           [dbGet -u -e top.physInsts.cell.name FILLSGCAP*] \
+                           [dbGet -u -e top.physInsts.cell.name FILLTIE*] \
+                           [dbGet -u -e top.physInsts.cell.name ENDCAPTIE*] \
+                           [dbGet -u -e top.physInsts.cell.name PAD*] \
+                           [dbGet -u -e top.physInsts.cell.name PCORNERE*] \
+                           [dbGet -u -e top.physInsts.cell.name PFILLERE*]"
+
+saveNetlist -excludeLeafCell -phys -excludeCellInst $virtuoso_exclude_list $vars(results_dir)/$vars(design).virtuoso.v
+
 # Write netlist for GL simulation
 
 saveNetlist -excludeLeafCell $vars(results_dir)/$vars(design).vcs.v

@@ -18,9 +18,29 @@ write_sdf $vars(results_dir)/$vars(design).sdf
 
 # FIXME: This list should be refactored into stdcells.tcl
 
-set lvs_exclude_list {FILL2BWP7T FILL1BWP7T TAPCELLBWP7T}
+set lvs_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL*] \
+                      [dbGet -u -e top.physInsts.cell.name TAPCELL*] \
+                      [dbGet -u -e top.physInsts.cell.name PAD80LU_OBV] \
+                      [dbGet -u -e top.physInsts.cell.name PCORNER] \
+                      [dbGet -u -e top.physInsts.cell.name PFILLER*] \
+                      [dbGet -u -e top.physInsts.cell.name PRCUT]"
 
 saveNetlist -excludeLeafCell -phys -excludeCellInst $lvs_exclude_list $vars(results_dir)/$vars(design).lvs.v
+
+# Write netlist for Virtuoso simulation
+#
+# This is the same as the lvs netlist but does not have decaps to speed up
+# simulation.
+
+set virtuoso_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL*] \
+                           [dbGet -u -e top.physInsts.cell.name TAPCELL*] \
+                           [dbGet -u -e top.physInsts.cell.name PAD80LU_OBV] \
+                           [dbGet -u -e top.physInsts.cell.name PCORNER] \
+                           [dbGet -u -e top.physInsts.cell.name PFILLER*] \
+                           [dbGet -u -e top.physInsts.cell.name PRCUT] \
+                           [dbGet -u -e top.physInsts.cell.name DCAP*]"
+
+saveNetlist -excludeLeafCell -phys -excludeCellInst $virtuoso_exclude_list $vars(results_dir)/$vars(design).virtuoso.v
 
 # Write netlist for GL simulation
 
