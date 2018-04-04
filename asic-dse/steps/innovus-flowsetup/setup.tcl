@@ -71,6 +71,10 @@ set vars(dbs_dir)             $::env(innovus_handoffs_dir)
 # Libraries
 #-------------------------------------------------------------------------
 
+# Source the setup file for the stdcells
+
+source $adk_dir/stdcells.tcl
+
 # Should this be slow fast only? Or more like corners?
 
 set vars(library_sets)        libs_typical
@@ -241,31 +245,19 @@ set vars(ground_nets) "VSS VPW VSSPST"
 # - The maximum distance allowed (in microns) can be tweaked if needed
 # - The maximum fanout can be tweaked if needed
 
-set vars(tie_cells)              "TIEHI_X1M_A9PP140TS_C35 \
-                                  TIELO_X1M_A9PP140TS_C35"
+set vars(tie_cells) $STDCELLS_TIE_CELLS
 
 set vars(tie_cells,max_distance) 20
 set vars(tie_cells,max_fanout)   8
 
 # Filler cells
 
-set STDCELLS_FILLER_CELLS \
-  "FILLSGCAP128_A9PP140TS_C35 \
-   FILLSGCAP64_A9PP140TS_C35 \
-   FILLSGCAP32_A9PP140TS_C35 \
-   FILLSGCAP16_A9PP140TS_C35 \
-   FILLSGCAP8_A9PP140TS_C35 \
-   FILLSGCAP4_A9PP140TS_C35 \
-   FILLSGCAP3_A9PP140TS_C35 \
-   FILL2_A9PP140TS_C35 \
-   FILL1_A9PP140TS_C35"
-
 set vars(filler_cells) $STDCELLS_FILLER_CELLS
 
 # Welltaps
 # FIXME: need to check the DRC requirements for well tap max spacing
 
-set vars(welltaps)               "FILLTIE6_A9PP140TS_C35"
+set vars(welltaps)               $STDCELLS_WELL_TAP_CELL
 set vars(welltaps,checkerboard)  true
 set vars(welltaps,verify_rule)   30
 set vars(welltaps,cell_interval) 60
@@ -273,12 +265,12 @@ set vars(welltaps,cell_interval) 60
 
 # Endcaps
 
-set vars(pre_endcap)             "ENDCAPTIE4_A9PP140TS_C35"
-set vars(post_endcap)            "ENDCAPTIE4_A9PP140TS_C35"
+set vars(pre_endcap)             $STDCELLS_END_CAP_CELL
+set vars(post_endcap)            $STDCELLS_END_CAP_CELL
 
 # Antenna
 
-set vars(antenna_diode)          "ANTENNA3_A9PP140TS_C35"
+set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
 
 # List of buffers to use during useful skew
 
