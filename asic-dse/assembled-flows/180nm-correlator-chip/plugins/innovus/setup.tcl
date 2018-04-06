@@ -337,7 +337,6 @@ set vars(signoff,verify_metal_density,skip) true
 
 set vars(gds_layer_map)                  $adk_dir/rtk-stream-out.map
 set vars(signoff,stream_out,replace_tcl) $vars(plug_dir)/stream_out.tcl
-set vars(gds_files)                      $adk_dir/stdcells.gds
 
 # Custom check design tcl
 #
