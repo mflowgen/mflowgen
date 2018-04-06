@@ -29,12 +29,13 @@
     )
     (row
 	(locals row_name="iorow_W")
-	(inst  name="clk_iocell"                  offset=   0.0000)
+	(inst  name="clk1_iocell"                 offset=   0.0000)
 	(inst  name="out_mux_0_iocell"            offset= 100.0000)
 	(inst  name="out_mux_1_iocell"            offset= 200.0000)
 	(inst  name="out_mux_2_iocell"            offset= 300.0000)
 	(inst  name="out_mux_3_iocell"            offset= 400.0000)
-	(inst  name="vss_core_dummyclk_0_iocell"  offset= 500.0000)
+#  (inst  name="vss_core_dummyclk_0_iocell"  offset= 500.0000)
+	(inst  name="clk2_iocell"                 offset= 500.0000)
 	(inst  name="prcut_0"                     offset= 560.0000) # test structure
 	(inst  name="vdd_core_test_0_iocell"      offset= 600.0000) # test structure
 	(inst  name="vss_core_test_0_iocell"      offset= 700.0000) # test structure
@@ -47,10 +48,12 @@
 	(inst  name="vdd_io_test_0_iocell"        offset=1300.0000) # test structure
 	(inst  name="prcut_2"                     offset=1360.0000) # test structure
 	(inst  name="debug_in_iocell"             offset=1400.0000)
-	(inst  name="vss_core_dummyclk_1_iocell"  offset=1500.0000)
+#  (inst  name="vss_core_dummyclk_1_iocell"  offset=1500.0000)
+	(inst  name="clkpco_iocell"               offset=1500.0000)
 	(inst  name="spidin_iocell"               offset=1600.0000)
 	(inst  name="spiload_iocell"              offset=1700.0000)
-	(inst  name="vss_core_dummyclk_2_iocell"  offset=1800.0000)
+#  (inst  name="vss_core_dummyclk_2_iocell"  offset=1800.0000)
+	(inst  name="spiclk_iocell"               offset=1800.0000)
     )
     (row
 	(locals row_name="iorow_N")

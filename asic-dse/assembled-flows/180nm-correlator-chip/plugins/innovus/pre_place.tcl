@@ -10,7 +10,7 @@
 #            - Power Shut-off cell power hookup
 #-------------------------------------------------------------------------
 
-specifyCellPad DFF* 2
+specifyCellPad DFQ* 2
 reportCellPad -file $vars(rpt_dir)/place.cellpad.rpt
 
 #-------------------------------------------------------------------------

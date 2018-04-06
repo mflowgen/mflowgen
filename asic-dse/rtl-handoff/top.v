@@ -202,7 +202,7 @@ endmodule // module controller
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 3/26/2018
+	Last modified on 4/3/2018
 	Correlator tapeout top-level module
 
 	ASIC recipe
@@ -291,8 +291,11 @@ endmodule // module controller
 
 ///*
 module correlator_top #(parameter ADCbit = 10)(
-input		clk_io,
+input		clk1_io,
+input		clk2_io,
+input		clkpco_io,
 input		greset_n_io,
+input		spiclk_io,
 input		spidin_io,
 input		spiload_io,
 input		debug_in_io,
@@ -300,6 +303,10 @@ input		[ADCbit-1:0] ADC_I_io,
 input		[ADCbit-1:0] ADC_Q_io,
 output wire [3:0] out_mux_io );
 
+wire clk1;
+wire clk2;
+wire clkpco;
+wire spiclk;
 wire greset_n;
 wire [ADCbit-1:0] ADC_I;
 wire [ADCbit-1:0] ADC_Q;
@@ -338,9 +345,12 @@ PDDW0204SCDG name \
 );
 
 // defined w.r.t to correlator_top
-//                  Inst Name             PAD         data
-`INPUT_PAD (       clk_iocell,         clk_io,         clk )
+//               Inst Name             PAD         data
+`INPUT_PAD (      clk1_iocell,        clk1_io,        clk1 )
+`INPUT_PAD (      clk2_iocell,        clk2_io,        clk2 )
+`INPUT_PAD (    clkpco_iocell,      clkpco_io,      clkpco )
 `INPUT_PAD (  greset_n_iocell,    greset_n_io,    greset_n )
+`INPUT_PAD (    spiclk_iocell,      spiclk_io,      spiclk )
 `INPUT_PAD (    spidin_iocell,      spidin_io,      spidin )
 `INPUT_PAD (   spiload_iocell,     spiload_io,     spiload )
 `INPUT_PAD (  debug_in_iocell,    debug_in_io,    debug_in )
@@ -397,6 +407,7 @@ wire [ADCbit-1:0] THRESHOLD;
 wire [ADCbit-1:0] OFFSET;
 wire [0:SEQbit] ENCODED;
 wire [0:SEQbit-1] DECODED;
+wire [$clog2(SEQbit)-1:0] SLICESEL;
 wire [CNTRbit-1:0] NDELAY;
 wire [CNTRbit-1:0] NBLACKOUT;
 wire [CNTRbit-1:0] NCSTR;
@@ -480,7 +491,7 @@ assign vpeak_block2 = CONFIG[22];
 
 
 spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore1 (
-.clk(clk),
+.clk(clk1),
 .greset_n(greset_n),
 .enable(spcore1_en),
 .ADC_I(ADC_I),
@@ -489,13 +500,14 @@ spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore1 (
 .OFFSET(OFFSET),
 .SCALE(SCALE),
 .DECODED(DECODED),
+.SLICESEL(SLICESEL),
 .VPEAK_BLOCK(vpeak_block1),
 .vpeak_in(vpeak2),
 .vpeak_out(vpeak1) );
 
 
 spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore2 (
-.clk(clk),
+.clk(clk2),
 .greset_n(greset_n),
 .enable(spcore2_en),
 .ADC_I(ADC_I),
@@ -504,13 +516,14 @@ spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore2 (
 .OFFSET(OFFSET),
 .SCALE(SCALE),
 .DECODED(DECODED),
+.SLICESEL(SLICESEL),
 .VPEAK_BLOCK(vpeak_block2),
 .vpeak_in(vpeak1),
 .vpeak_out(vpeak2) );
 
 
 pco #(.CNTRbit(CNTRbit)) pco1 (
-.clk(clk),
+.clk(clkpco),
 .greset_n(greset_n),
 .enable(pco_en),
 .peak_in(peak_in_pco),
@@ -526,7 +539,7 @@ pco #(.CNTRbit(CNTRbit)) pco1 (
 
 
 pulsegen #(.SEQbit(SEQbit)) pulsegen1 (
-.clk(clk),
+.clk(clkpco),
 .greset_n(greset_n),
 .enable(pulsegen_en),
 .trigger(pco_pulse_out),
@@ -535,7 +548,7 @@ pulsegen #(.SEQbit(SEQbit)) pulsegen1 (
 
 
 controller #(.CNTRbit(CNTRbit)) controller1 (
-.clk(clk),
+.clk(clkpco),
 .greset_n(greset_n),
 .enable(controller_en),
 .pco_pulse_out(pco_pulse_out),
@@ -551,7 +564,7 @@ controller #(.CNTRbit(CNTRbit)) controller1 (
 
 
 spi #(.CONFIGbit(CONFIGbit), .SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit), .CNTRbit(CNTRbit)) spi1 (
-.clk(clk),
+.clk(spiclk),
 //.greset_n(greset_n),
 .din(spidin),
 .load(spiload),
@@ -562,6 +575,7 @@ spi #(.CONFIGbit(CONFIGbit), .SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)
 .OFFSET(OFFSET),
 .ENCODED(ENCODED),
 .DECODED(DECODED),
+.SLICESEL(SLICESEL),
 .NDELAY(NDELAY),
 .NBLACKOUT(NBLACKOUT),
 .NCSTR(NCSTR),
@@ -883,7 +897,7 @@ endmodule // module pulsegen
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 3/25/2018
+	Last modified on 4/3/2018
 	Implements a slice of a signal processing core
 	sample_in/sample_in_mag/sample_del/slice_out format: (ADCbit+1)-bit two's complement
 		width is incremented by 1 in the differential detector
@@ -938,7 +952,7 @@ assign slice_out = ({select, sign, seq_bit} == 3'b100) ? sample_in_2scomp
 always @(posedge clk) begin
 	if (~greset_n) begin
 		sample_del <= zeros;
-	end else if (enable) begin
+	end else if (enable && select) begin
 		sample_del <= sample_in;
 	end
 end
@@ -949,7 +963,7 @@ endmodule // module spcore_slice
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 3/26/2018
+	Last modified on 4/3/2018
 	Implements a signal processing core of the ASP (see 2018 RFIC paper equations 3 - 6)
 	enable is used for clock-gating the signal processing core
 	rn is a vector of decoded and stored inputs
@@ -971,6 +985,7 @@ input		[ADCbit-1:0] THRESHOLD,
 input		[ADCbit-1:0] OFFSET,
 input		[ADCbit-2:0] SCALE,
 input		[0:SEQbit-1] DECODED,
+input		[$clog2(SEQbit)-1:0] SLICESEL,
 input		VPEAK_BLOCK,
 input		vpeak_in,
 output reg	vpeak_out );
@@ -978,7 +993,6 @@ output reg	vpeak_out );
 
 localparam add_lvls = $clog2(SEQbit);
 localparam sum_zeros = {(add_lvls+ADCbit+1){1'b0}};
-localparam [$clog2(SEQbit)-1:0] SLICESEL = 6'b111111;
 
 
 reg [ADCbit-1:0] inputI;
@@ -1101,7 +1115,7 @@ always @(posedge clk) begin
 	if (~greset_n || (vpeak_in && VPEAK_BLOCK)) begin
 		vpeak_out <= 1'b0;
 	end else if (enable) begin
-		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && ($signed(rn_abs) >= $signed(THRESHOLD)) ) begin
+		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && (rn_abs >= THRESHOLD) ) begin
 //		if ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET)))  begin
 		//if ($signed(sum1[add_lvls][0]) >= $signed(sum2[add_lvls][0])) begin
 			vpeak_out <= 1'b1;
@@ -1117,13 +1131,14 @@ endmodule // module spcore
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 3/26/2018
+	Last modified on 4/4/2018
 	SPI module that provides all parameters to the correlator modules
 	SPI holds the following values
 		(CNTRbit*4) for the PCO's counters/comparators
 		(CNTRbit*4) for the controller's counters/comparators
 		(SEQbit) for correlator depth (DECODED)
 		(SEQbit+1) for pulsegen (ENCODED)
+		($clog2(SEQbit)) for correlator size select (SLICESEL)
 		(ADCbit*2) for correlator's THRESHOLD and OFFSET
 		(ADCbit-1) for pseudo-multiplier (SCALE)
 		(CONFIGbit) for all other configurations, enables, muxes, bypasses, etc.
@@ -1154,6 +1169,7 @@ output wire [ADCbit-1:0] THRESHOLD,
 output wire [ADCbit-1:0] OFFSET,
 output wire [0:SEQbit] ENCODED,
 output wire [0:SEQbit-1] DECODED,
+output wire [$clog2(SEQbit)-1:0] SLICESEL,
 output wire [CNTRbit-1:0] NDELAY,
 output wire [CNTRbit-1:0] NBLACKOUT,
 output wire [CNTRbit-1:0] NCSTR,
@@ -1165,6 +1181,34 @@ output wire [CNTRbit-1:0] NDUTY );
 
 
 localparam SPIwidth = (CONFIGbit) + (3*ADCbit-1) + (2*SEQbit+1) + (CNTRbit*8);
+localparam NDUTY_start     = 0;
+localparam NDUTY_end       = NDUTY_start     + CNTRbit-1;
+localparam NPULSE_start    = NDUTY_end       + 1;
+localparam NPULSE_end      = NPULSE_start    + CNTRbit-1;
+localparam NDUTYL_start    = NPULSE_end      + 1;
+localparam NDUTYL_end      = NDUTYL_start    + CNTRbit-1;
+localparam NDUTYH_start    = NDUTYL_end      + 1;
+localparam NDUTYH_end      = NDUTYH_start    + CNTRbit-1;
+localparam NPCO_start      = NDUTYH_end      + 1;
+localparam NPCO_end        = NPCO_start      + CNTRbit-1;
+localparam NCSTR_start     = NPCO_end        + 1;
+localparam NCSTR_end       = NCSTR_start     + CNTRbit-1;
+localparam NBLACKOUT_start = NCSTR_end       + 1;
+localparam NBLACKOUT_end   = NBLACKOUT_start + CNTRbit-1;
+localparam NDELAY_start    = NBLACKOUT_end   + 1;
+localparam NDELAY_end      = NDELAY_start    + CNTRbit-1;
+localparam DECODED_start   = NDELAY_end      + 1;
+localparam DECODED_end     = DECODED_start   + SEQbit-1;
+localparam ENCODED_start   = DECODED_end     + 1;
+localparam ENCODED_end     = ENCODED_start   + SEQbit;
+localparam OFFSET_start    = ENCODED_end     + 1;
+localparam OFFSET_end      = OFFSET_start    + ADCbit-1;
+localparam THRESHOLD_start = OFFSET_end      + 1;
+localparam THRESHOLD_end   = THRESHOLD_start + ADCbit-1;
+localparam SCALE_start     = THRESHOLD_end   + 1;
+localparam SCALE_end       = SCALE_start     + ADCbit-2;
+localparam CONFIG_start    = SCALE_end       + 1;
+localparam CONFIG_end      = SPIwidth        - 1; // should be equivalent to "CONFIG_start + CONFIGbit-1"
 
 
 reg [SPIwidth-1:0] shadow_reg;
@@ -1187,20 +1231,21 @@ always @(posedge load) begin // no reset
 	end
 end
 
-assign CONFIG = active_reg[SPIwidth-1:CNTRbit*8+2*SEQbit+1+3*ADCbit-1]; // width = CONFIGbit
-assign SCALE = active_reg[CNTRbit*8+2*SEQbit+1+3*ADCbit-2:CNTRbit*8+2*SEQbit+1+2*ADCbit]; // width = ADCbit-1
-assign THRESHOLD = active_reg[CNTRbit*8+2*SEQbit+1+2*ADCbit-1:CNTRbit*8+2*SEQbit+1+ADCbit]; // width = ADCbit
-assign OFFSET = active_reg[CNTRbit*8+2*SEQbit+1+ADCbit-1:CNTRbit*8+2*SEQbit+1]; // width = ADCbit
-assign ENCODED = active_reg[CNTRbit*8+2*SEQbit:CNTRbit*8+SEQbit]; // width = SEQbit+1
-assign DECODED = active_reg[CNTRbit*8+SEQbit-1:CNTRbit*8]; // width = SEQbit
-assign NDELAY = active_reg[CNTRbit*8-1:CNTRbit*7]; // width = CNTRbit
-assign NBLACKOUT = active_reg[CNTRbit*7-1:CNTRbit*6]; // width = CNTRbit
-assign NCSTR = active_reg[CNTRbit*6-1:CNTRbit*5]; // width = CNTRbit
-assign NPCO = active_reg[CNTRbit*5-1:CNTRbit*4]; // width = CNTRbit
-assign NDUTYH = active_reg[CNTRbit*4-1:CNTRbit*3]; // width = CNTRbit
-assign NDUTYL = active_reg[CNTRbit*3-1:CNTRbit*2]; // width = CNTRbit
-assign NPULSE = active_reg[CNTRbit*2-1:CNTRbit]; // width = CNTRbit
-assign NDUTY = active_reg[CNTRbit-1:0]; // width = CNTRbit
+assign CONFIG    = active_reg[CONFIG_end:CONFIG_start];       // width = CONFIGbit
+assign SCALE     = active_reg[SCALE_end:SCALE_start];         // width = ADCbit-1
+assign THRESHOLD = active_reg[THRESHOLD_end:THRESHOLD_start]; // width = ADCbit
+assign OFFSET    = active_reg[OFFSET_end:OFFSET_start];       // width = ADCbit
+assign ENCODED   = active_reg[ENCODED_end:ENCODED_start];     // width = SEQbit+1
+assign DECODED   = active_reg[DECODED_end:DECODED_start];     // width = SEQbit
+//assign SLICESEL  = active_reg[SLICESEL_end:SLICESEL_start];   // width = $clog2(SEQbit)
+assign NDELAY    = active_reg[NDELAY_end:NDELAY_start];       // width = CNTRbit
+assign NBLACKOUT = active_reg[NBLACKOUT_end:NBLACKOUT_start]; // width = CNTRbit
+assign NCSTR     = active_reg[NCSTR_end:NCSTR_start];         // width = CNTRbit
+assign NPCO      = active_reg[NPCO_end:NPCO_start];           // width = CNTRbit
+assign NDUTYH    = active_reg[NDUTYH_end:NDUTYH_start];       // width = CNTRbit
+assign NDUTYL    = active_reg[NDUTYL_end:NDUTYL_start];       // width = CNTRbit
+assign NPULSE    = active_reg[NPULSE_end:NPULSE_start];       // width = CNTRbit
+assign NDUTY     = active_reg[NDUTY_end:NDUTY_start];         // width = CNTRbit
 
 //assign CONFIG = {2'b00, 1'b0, 1'b0, 3'b111, 4'b0101, 3'b101, 3'b000, 3'b000, 3'b000};
 //assign SCALE = 9'b100001101; // alpha = 0.69: 9'b100001101; alpha_p for alpha = 0.69: 9'b011110100
@@ -1208,6 +1253,7 @@ assign NDUTY = active_reg[CNTRbit-1:0]; // width = CNTRbit
 //assign OFFSET = 10'd0;
 //assign ENCODED = 64'hB667432208B96DA2;
 //assign DECODED = 63'h12AB1D4CF31A248C;
+assign SLICESEL = 6'b111111;
 //assign NDELAY = 13'd660;
 //assign NBLACKOUT = 13'd198;
 //assign NCSTR = 13'd300;
