@@ -54,11 +54,17 @@ set DCRM_SDC_INPUT_FILE					${DESIGN_NAME}.sdc
 
 set DCRM_CONSISTENCY_CHECK_ENV_FILE			${DESIGN_NAME}.compile_ultra.env
 
+set DCRM_CONSTRAINTS_REPORT		${DESIGN_NAME}.constraints.rpt
+set DCRM_CONSTRAINTS_VIOLATORS_REPORT ${DESIGN_NAME}.constraints.violators.rpt
+set DCRM_CHECK_DESIGN_REPORT ${DESIGN_NAME}.checkdesign.rpt
+
 set DCRM_FINAL_QOR_REPORT				${DESIGN_NAME}.mapped.qor.rpt
 set DCRM_FINAL_TIMING_REPORT				${DESIGN_NAME}.mapped.timing.rpt
 set DCRM_FINAL_AREA_REPORT				${DESIGN_NAME}.mapped.area.rpt
 set DCRM_FINAL_POWER_REPORT				${DESIGN_NAME}.mapped.power.rpt
 set DCRM_FINAL_CLOCK_GATING_REPORT			${DESIGN_NAME}.mapped.clock_gating.rpt
+
+set DCRM_FINAL_NAME_CHANGE_REPORT ${DESIGN_NAME}.names.rpt
 
 ################
 # Output Files #
@@ -68,8 +74,9 @@ set DCRM_ELABORATED_DESIGN_DDC_OUTPUT_FILE 		${DESIGN_NAME}.elab.ddc
 set DCRM_COMPILE_ULTRA_DDC_OUTPUT_FILE			${DESIGN_NAME}.compile_ultra.ddc
 set DCRM_FINAL_DDC_OUTPUT_FILE				${DESIGN_NAME}.mapped.ddc
 set DCRM_FINAL_VERILOG_OUTPUT_FILE			${DESIGN_NAME}.mapped.v
+set DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE             ${DESIGN_NAME}.svwrapper.v
+set DCRM_FINAL_SVERILOG_SIM_OUTPUT_FILE                 ${DESIGN_NAME}.svsim.v
 set DCRM_FINAL_SDC_OUTPUT_FILE				${DESIGN_NAME}.mapped.sdc
-
 
 #################################################################################
 # DCT Flow Files

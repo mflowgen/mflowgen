@@ -85,6 +85,14 @@ source -echo -verbose ${DCRM_CONSTRAINTS_INPUT_FILE}
 #
 # set_app_var timing_enable_multiple_clocks_per_reg true
 
+# The check_timing command checks for constraint problems such as undefined
+# clocking, undefined input arrival times, and undefined output constraints.
+# These constraint problems could cause you to overlook timing violations. For
+# this reason, the check_timing command is recommended whenever you apply new
+# constraints such as clock definitions, I/O delays, or timing exceptions.
+
+redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.check_timing.rpt {check_timing}
+
 #################################################################################
 # Apply The Operating Conditions
 #################################################################################
@@ -163,7 +171,7 @@ if {[shell_is_in_topographical_mode]} {
   # This is highly recommended for irregular floorplans.
   #
   # Floorplan constraints can be provided from one of the following sources:
-  # 	* extract_physical_constraints with a DEF file
+  #	* extract_physical_constraints with a DEF file
   #	* read_floorplan with a floorplan file (written by write_floorplan)
   #	* User generated Tcl physical constraints
   #
@@ -249,8 +257,64 @@ if {[shell_is_in_topographical_mode]} {
 # Apply Additional Optimization Constraints
 #################################################################################
 
+#RGD:  Make sure that logic to perform reset remains with the gate to prevent X-propagation
+#problems.
+set compile_seqmap_honor_sync_set_reset true
+
+# Replace special characters with non-special ones before writing out the synthesized netlist.
+# For example \bus[5] -> bus_5_
+set_app_var verilogout_no_tri true
+
 # Prevent assignment statements in the Verilog netlist.
 set_fix_multiple_port_nets -all -buffer_constants
+
+# Design Compiler Flattening Options
+if {[info exists DC_FLATTEN_EFFORT]} {
+  set dc_flatten_effort $DC_FLATTEN_EFFORT
+  if {"$dc_flatten_effort" == ""} {
+    set dc_flatten_effort 0
+  }
+} else {
+  set dc_flatten_effort 0
+}
+
+# Setup Design Compiler flattening effort
+puts "Info: Design Compiler flattening effort (DC_FLATTEN_EFFORT) = $dc_flatten_effort"
+
+set compile_ultra_options ""
+if {$dc_flatten_effort == 0} {
+  puts "Info: All design hierarchies are preserved unless otherwise specified."
+  set_app_var compile_ultra_ungroup_dw false
+  puts "Info: Design Compiler compile_ultra boundary optimization is disabled."
+  append compile_ultra_options " -no_autoungroup -no_boundary_optimization"
+
+} elseif {$dc_flatten_effort == 1} {
+  puts "Info: Unconditionally ungroup the DesignWare cells."
+  set_app_var compile_ultra_ungroup_dw true
+  puts "Info: Design Compiler compile_ultra automatic ungrouping is disabled."
+  puts "Info: Design Compiler compile_ultra boundary optimization is disabled."
+  append compile_ultra_options " -no_autoungroup -no_boundary_optimization"
+
+} elseif {$dc_flatten_effort == 2} {
+  puts "Info: Unconditionally ungroup the DesignWare cells."
+  set_app_var compile_ultra_ungroup_dw true
+  puts "Info: Design Compiler compile_ultra automatic ungrouping is enabled."
+  puts "Info: Design Compiler compile_ultra boundary optimization is enabled."
+  append compile_ultra_options ""
+
+} elseif {$dc_flatten_effort == 3} {
+  set ungroup_start_level 2
+  ungroup -start_level $ungroup_start_level -all -flatten
+  puts "Info: All hierarchical cells starting from level $ungroup_start_level are flattened."
+  puts "Info: Unconditionally ungroup the DesignWare cells."
+  puts "Info: Design Compiler compile_ultra automatic ungrouping is enabled."
+  puts "Info: Design Compiler compile_ultra boundary optimization is enabled."
+  set_app_var compile_ultra_ungroup_dw true
+  append compile_ultra_options ""
+
+} else {
+  error "Unrecognizable DC_FLATTEN_EFFORT value: $dc_flatten_effort"
+}
 
 #################################################################################
 # Save the compile environment snapshot for the Consistency Checker utility.
@@ -270,6 +334,14 @@ set_fix_multiple_port_nets -all -buffer_constants
 # Uncomment the following line to snapshot the environment for the Consistency Checker
 
 # write_environment -consistency -output ${REPORTS_DIR}/${DCRM_CONSISTENCY_CHECK_ENV_FILE}
+
+#################################################################################
+# Check for Design Problems
+#################################################################################
+
+# Check the current design for consistency
+check_design -summary
+check_design > ${REPORTS_DIR}/${DCRM_CHECK_DESIGN_REPORT}
 
 #################################################################################
 # Compile the Design
@@ -336,18 +408,22 @@ if {[shell_is_in_topographical_mode]} {
 #  ungroup -all -flatten
 #  compile_ultra -gate_clock
 
-# mark clk as ideal
-
-set_ideal_network ${CLOCK_NET}
-
-# Moyang: using -gate_clock seems to cause Xs in gate-level vcs simulation
-# it's disabled for now.
-
-compile_ultra -gate_clock -no_autoungroup
-# compile_ultra -no_autoungroup
+eval "compile_ultra -gate_clock $compile_ultra_options"
 
 check_design
 
+#################################################################################
+# High-effort area optimization
+#
+# optimize_netlist -area command, was introduced in I-2013.12 release to improve
+# area of gate-level netlists. The command performs monotonic gate-to-gate
+# optimization on mapped designs, thus improving area without degrading timing or
+# leakage.
+#################################################################################
+
+if {!([info exists DC_SKIP_OPTIMIZE_NETLIST] && $DC_SKIP_OPTIMIZE_NETLIST)} {
+  optimize_netlist -area
+}
 
 #################################################################################
 # Write Out Final Design and Reports
@@ -361,8 +437,11 @@ check_design
 #
 #################################################################################
 
-change_names -rules verilog -hierarchy
+# Use naming rules to preserve structs
 
+define_name_rules verilog -preserve_struct_ports
+report_names -rules verilog > ${REPORTS_DIR}/${DCRM_FINAL_NAME_CHANGE_REPORT}
+change_names -rules verilog -hierarchy
 
 #################################################################################
 # Write out Design
@@ -371,9 +450,21 @@ change_names -rules verilog -hierarchy
 # Write and close SVF file and make it available for immediate use
 set_svf -off
 
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_DDC_OUTPUT_FILE}
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_VERILOG_OUTPUT_FILE}
+write -format ddc     -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_DDC_OUTPUT_FILE}
+write -format verilog -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_VERILOG_OUTPUT_FILE}
+write -format svsim              -output ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE}
 
+# ctorng: Dump the mapped.v and svwrapper.v into one svsim.v file to make
+# it easier to include a single file for gate-level simulation. The
+# svwrapper matches the interface RTL expects (array of arrays,
+# parameters, etc.).
+
+sh cat ${RESULTS_DIR}/${DCRM_FINAL_VERILOG_OUTPUT_FILE} \
+       ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE} \
+       > ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_SIM_OUTPUT_FILE}
+
+# Write and close SVF file and make it available for immediate use
+set_svf -off
 
 #################################################################################
 # Write out Design Data
@@ -406,10 +497,26 @@ write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 # Generate Final Reports
 #################################################################################
 
-#YUNSUP: elaborate
+# Report units
+
+redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.units.rpt {report_units}
+
+# Report QOR
 
 report_qor > ${REPORTS_DIR}/${DCRM_FINAL_QOR_REPORT}
+
+# Report timing
+
 report_timing -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 10 -max_paths 500 > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.timing.rpt
+
+report_timing -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 10 -max_paths 500 -delay_type min > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.timing.hold.rpt
+
+# Report constraints
+
+report_constraint -nosplit -verbose > ${REPORTS_DIR}/${DCRM_CONSTRAINTS_REPORT}
+report_constraint -nosplit -verbose -all_violators > ${REPORTS_DIR}/${DCRM_CONSTRAINTS_VIOLATORS_REPORT}
+
+# Report area
 
 if {[shell_is_in_topographical_mode]} {
   report_area -hierarchy -physical -nosplit > ${REPORTS_DIR}/${DCRM_FINAL_AREA_REPORT}
@@ -465,7 +572,6 @@ if {[shell_is_in_topographical_mode]} {
 report_power -nosplit -hier > ${REPORTS_DIR}/${DCRM_FINAL_POWER_REPORT}
 report_clock_gating -nosplit > ${REPORTS_DIR}/${DCRM_FINAL_CLOCK_GATING_REPORT}
 
-#YUNSUP: elaborate
 report_reference -nosplit -hierarchy > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.reference.rpt
 report_resources -nosplit -hierarchy > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.resources.rpt
 
@@ -478,9 +584,11 @@ find_regs ${STRIP_PATH}
 # This should be the last step in the script
 #################################################################################
 
-if {[shell_is_in_topographical_mode]} {
+# ctorng: We are not using ICC, so we do not need to write out the mwlib
+
+#if {[shell_is_in_topographical_mode]} {
   # write_milkyway uses: mw_logic1_net, mw_logic0_net and mw_design_library variables from dc_setup.tcl
-  write_milkyway -overwrite -output ${DCRM_FINAL_MW_CEL_NAME}
-}
+#  write_milkyway -overwrite -output ${DCRM_FINAL_MW_CEL_NAME}
+#}
 
 exit
