@@ -31,7 +31,6 @@ adk      = tsmc-180nm-cl018g
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
-export process = 180nm # This can move into stdcells.tcl
 
 #=========================================================================
 # Design

@@ -44,7 +44,6 @@ if {[file exists $vars(plug_dir)/setup.tcl]} {
 #-------------------------------------------------------------------------
 
 set adk_dir                   $::env(adk_dir)
-set vars(process)             $::env(process); # E.g., "28nm"
 
 #-------------------------------------------------------------------------
 # Design
@@ -166,6 +165,7 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 # The top routing layer is 7 usually.. but it will depend on the design
 # FIXME: This clearly belongs in stdcells.tcl
 
+set vars(process)                           $STDCELLS_PROCESS
 set vars(max_route_layer)                   7
 
 #-------------------------------------------------------------------------

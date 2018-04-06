@@ -31,7 +31,6 @@ adk      = tsmc-28nm-cln28hpc
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
-export process = 28nm # This can move into stdcells.tcl
 
 #=========================================================================
 # Design

@@ -31,7 +31,6 @@ global vars
 #-------------------------------------------------------------------------
 
 set adk_dir                   $::env(adk_dir)
-set vars(process)             $::env(process); # E.g., "28nm"
 
 #-------------------------------------------------------------------------
 # Design
@@ -173,6 +172,7 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 # Process information
 #-------------------------------------------------------------------------
 
+set vars(process)                           $STDCELLS_PROCESS
 set vars(max_route_layer)                   4
 
 #-------------------------------------------------------------------------
