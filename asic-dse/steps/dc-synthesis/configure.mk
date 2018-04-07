@@ -196,7 +196,23 @@ clean-dc-synthesis:
 clean-synth: clean-dc-synthesis
 
 # Debug
+# FIXME: design_name is pulled from Makefrag... it would be nice not to be
+# pulling variables from everywhere. Maybe have a single array of vars so
+# we know what is going to be used everywhere...
 
-#debug-dc-synthesis:
-#debug-synth: debug-dc-synthesis
+debug-dc-synthesis:
+	design_vision-xg -x "source -echo -verbose $(logs_dir.dc-synthesis)/make_generated_vars.tcl; \
+                       source -echo -verbose $(flow_dir.dc-synthesis)/rm_setup/dc_setup.tcl; \
+                       read_ddc $(results_dir.dc-synthesis)/$(design_name).mapped.ddc"
+
+
+debug-synth: debug-dc-synthesis
+
+debug-dc-synthesis-elaborated:
+	design_vision-xg -x "source -echo -verbose $(logs_dir.dc-synthesis)/make_generated_vars.tcl; \
+                       source -echo -verbose $(flow_dir.dc-synthesis)/rm_setup/dc_setup.tcl; \
+                       read_ddc $(results_dir.dc-synthesis)/$(design_name).elab.ddc"
+
+debug-synth-elaborated: debug-dc-synthesis-elaborated
+
 
