@@ -13,4 +13,5 @@
 #              - PSO planning
 #-------------------------------------------------------------------------
 
+report_ports > $vars(rpt_dir)/$vars(step).ports.rpt
 

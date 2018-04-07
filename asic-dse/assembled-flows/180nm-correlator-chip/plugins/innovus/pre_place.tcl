@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------
 
 specifyCellPad DFQ* 2
-reportCellPad -file $vars(rpt_dir)/place.cellpad.rpt
+reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 
 #-------------------------------------------------------------------------
 # Global net connections for PG pins
