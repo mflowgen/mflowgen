@@ -98,8 +98,8 @@ set ADC_input_ports \
 
 set ADC_input_delay [expr $core1_clk_period/8]
 
-set_input_delay -clock $core1_clk_name $ADC_input_delay $ADC_input_ports
-set_input_delay -clock $core2_clk_name $ADC_input_delay $ADC_input_ports
+set_input_delay -clock $core1_clk_name            $ADC_input_delay $ADC_input_ports
+set_input_delay -clock $core2_clk_name -add_delay $ADC_input_delay $ADC_input_ports
 
 # SPI Din / debug input constraints
 
@@ -123,7 +123,9 @@ set_max_transition 6 [all_outputs]
 
 set outmux_output_delay [expr $core1_clk_period/8]
 
-set_output_delay -clock $core1_clk_name $outmux_output_delay [all_outputs]
+set_output_delay -clock $core1_clk_name            $outmux_output_delay [all_outputs]
+set_output_delay -clock $core2_clk_name -add_delay $outmux_output_delay [all_outputs]
+set_output_delay -clock $pco_clk_name   -add_delay $outmux_output_delay [all_outputs]
 
 # Reset
 #
@@ -135,7 +137,9 @@ set reset_port greset_n_io
 set reset_percent 50
 set reset_input_delay [expr ((100-$reset_percent) * $pco_clk_period) / 100.0]
 
-set_input_delay -clock $pco_clk_name $reset_input_delay $reset_port
+set_input_delay -clock $core1_clk_name            $reset_input_delay $reset_port
+set_input_delay -clock $core2_clk_name -add_delay $reset_input_delay $reset_port
+set_input_delay -clock $pco_clk_name   -add_delay $reset_input_delay $reset_port
 
 # Special constraints
 #
