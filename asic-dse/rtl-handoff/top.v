@@ -202,90 +202,49 @@ endmodule // module controller
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/3/2018
-	Correlator tapeout top-level module
-
-	ASIC recipe
-		1) Dimensions: 1 mm x 1 mm without pads and power ring
-		2) command line
-			cat correlator_top.v spcore.v diffdet.v spcore_slice.v pco.v controller.v pulsegen.v spi.v > ivan_top.v
-		3) TAPCELLBWP7T cell placement
-			even rows : 0 ------  x ----- 2x ----- 3x ----- ...
-			odd rows  : 0 -- x/2 --- 3x/2 --- 5x/2 --- ...
-			x = 59 um seems to work
-		4) Layout priority: Obey TAPCELLBWP7T rule -> insert logic -> insert DCAPx -> insert FILLx
-		5) Pin placement
-			Top (left-to-right)   :
-			Right (top-to-bottom) :
-			Bottom (left-to-right):
-
-	ASIC generation
-		$ git clone git@github.com:cornell-brg/alloy-asic.git
-		$ cd alloy-asic/asic-dse
-		$ mkdir build && cd build
-		$ ../configure
-		$ make list     # <-- show everything you can do
-		$ make          # <-- runs all steps
-
-	ASIC report files
-		~/work/asic-ivan/dc-syn/current-dc/reports
-			correlator_top.mapped.qor.rpt
-			correlator_top.mapped.area.rpt
-			../log/dc.log
-
-	Global signal description
-		1) clk1: First main clock. Target frequency is 10 MHz @ 0 phase
-		2) clk2: Second main clock. Target frequency is 10 MHz @ 90 phase
-		3) clkpco: PCO main clock. Target frequency is 20 MHz @ any phase
-		4) spiclk: SPI programming clock. No special target, could be arbitrarily slow
-		5) spiload: Technically a clock, Loads active registers in module spi. No special target, could be arbitrarily slow
-		6) greset_n: Global active-low reset. Always synchronous to a module clock
-			This signal could be de-asserted at any time and does not have any special timing requirements
-			Note: adding "or negedge greset_n" to flops to reduces logic size by a significant amount (at least in fpga)
-
-	Dedicated Inputs (32 pins)
-		VDD (2 pins)
-		VSS (2 pins)
-		clk1
-		clk2
-		clkpco
-		spiclk
-		greset_n
-		spidin
-		spiload
-		debug_in
-		ADC_I/ADC_Q (20 pins)
-	Multiplexed Outputs (4 pins, 20 signals)
-		pulsegen_out
-		spidout
-		vpeak
-		vpeak1
-		vpeak2
-		pco_pulse_out
-		pco_pulse_type
-		duty_out
-		state_ctrl[2:0];
-		debug_pco[3:0];
-		debug_ctrl[3:0];
+	Last modified on 4/7/2018
+	Implements digital correlator top-level module
 
 	Parameter description
-		1) ADCbit: Specifies ADC's resolution and consequently, correlator width
-		2) SEQbit: Specifies maximum length the correlator
+		1) ADCbit: Specifies ADC's maximum supported resolution and consequently, correlator width
+		2) SEQbit: Specifies maximum supported sequence length of the correlator
 		3) PRCNbit: Described in detail in 'spcore_slice' module
-		4) CNTRbit: Specifies width of pco-related counters
+		4) CNTRbit: Specifies width of pco/controller counters
 		5) CONFIGbit: Number of configuration bits used for testing
 
-	ADC_I/ADC_Q format: (ADCbit)-bit two's complement
-	Typical 10-bit ADC output formats
-		|Input Voltage   | Offset bin   | 2's comp     |
-		|----------------|--------------|--------------|
-		| 511/512 x VREF | 11 1111 1111 | 01 1111 1111 |
-		|   1/512 x VREF | 10 0000 0001 | 00 0000 0001 |
-		|   0/512 x VREF | 10 0000 0000 | 00 0000 0000 |
-		|  -1/512 x VREF | 01 1111 1111 | 11 1111 1111 |
-		|-511/512 x VREF | 00 0000 0001 | 10 0000 0001 |
-		|-512/512 x VREF | 00 0000 0000 | 10 0000 0000 |
-		|----------------|--------------|--------------|
+	TSMC 180 nm ASIC generation
+		$ git clone git@github.com:cornell-brg/alloy-asic.git
+		$ cd alloy-asic/asic-dse
+		$ mkdir build
+		$ cd build
+		$ ../configure --180nm-correlator-chip # <-- select appropriated assembled flow
+		$ make list                            # <-- show everything you can do
+		$ make                                 # <-- runs all steps
+
+	ASIC design files
+		Design specific plugins including constraints, floorplan, etc are located in:
+			'alloy-asic/asic-dse/assembled-flows/180nm-correlator-chip/plugins/'
+		Area, pad locations, density, floorplan, etc are defined there.
+		TAPCELLBWP7T cell placement (x = 59 um)
+			even rows : 0 ------  x ----- 2x ----- 3x ----- ...
+			odd rows  : 0 -- x/2 --- 3x/2 --- 5x/2 --- ...
+		After build, results (lvs.v, gds) are found in 'build/results'
+		After build, reports (.mapped.qor.rpt, mapped.area.rpt, etc) are found in 'build/reports'
+
+	Signal timing constraints/description, main goal is low power
+		1) clk1: First main clock. Max frequency is 10 MHz (T)
+		2) clk2: Second main clock. Max frequency is 10 MHz (T) @ 90 phase w.r.t clk1
+		3) clkpco: PCO main clock. Max frequency is 20 MHz (Tp) @ any phase w.r.t clk1/2. Tp <= 2 * T
+		4a) vpeak1/vpeak2/vpeak to pco propagation delay less than 1/4 T for performance
+		4b) pco sampling of vpeak - ignore timing check, correct by design. pco is guaranteed to sample vpeak twice since Tp <= 2 * T
+		5a) ADC_I/Q[n]: ADC data inputs. Propagate from pad to target within Y relative time (1/8 T) and within X absolute time (1/4 T)
+		5b) Max frequency is 20 MHz, asynchronous to other clocks.
+		6) greset_n: Global active-low reset for ALL clocks. Always synchronous to a module's local clock. Limit slew to under 1/8 T
+		7a) spiclk: SPI programming clock. No special target, could be arbitrarily. Limit slew to under Z (1/4 T)
+		7b) spiload: Technically a clock, but has no special timing constraints. Limit slew to under Z (1/4 T)
+		7c) ignore other spi constraints
+		8) debug_in/spidin: Propagate from pad (core side) to target within 1/4 T.
+		9) out_mux[n]: Propagate from origin to pad within 1/8 T.
 
 *******************************************************************************/
 
@@ -345,7 +304,7 @@ PDDW0204SCDG name \
 );
 
 // defined w.r.t to correlator_top
-//               Inst Name             PAD         data
+//                  Inst Name             PAD         data
 `INPUT_PAD (      clk1_iocell,        clk1_io,        clk1 )
 `INPUT_PAD (      clk2_iocell,        clk2_io,        clk2 )
 `INPUT_PAD (    clkpco_iocell,      clkpco_io,      clkpco )
@@ -398,16 +357,16 @@ output wire [3:0] out_mux );
 localparam SEQbit = 63;
 localparam PRCNbit = 0;
 localparam CNTRbit = 13;
-localparam CONFIGbit = 23;
+localparam CONFIGbit = 31;
 
 // SPI wires
 wire [CONFIGbit-1:0] CONFIG;
 wire [ADCbit-2:0] SCALE;
 wire [ADCbit-1:0] THRESHOLD;
 wire [ADCbit-1:0] OFFSET;
-wire [0:SEQbit] ENCODED;
-wire [0:SEQbit-1] DECODED;
 wire [$clog2(SEQbit)-1:0] SLICESEL;
+wire [0:SEQbit-1] DECODED;
+wire [0:SEQbit] ENCODED;
 wire [CNTRbit-1:0] NDELAY;
 wire [CNTRbit-1:0] NBLACKOUT;
 wire [CNTRbit-1:0] NCSTR;
@@ -417,12 +376,13 @@ wire [CNTRbit-1:0] NDUTYL;
 wire [CNTRbit-1:0] NPULSE;
 wire [CNTRbit-1:0] NDUTY;
 // Configuration wires
-wire [2:0] out_mux_sel0 = CONFIG[2:0];
-wire [2:0] out_mux_sel1 = CONFIG[5:3];
-wire [2:0] out_mux_sel2 = CONFIG[8:6];
-wire [2:0] out_mux_sel3 = CONFIG[11:9];
+wire [4:0] out_mux_sel0 = CONFIG[4:0];
+wire [4:0] out_mux_sel1 = CONFIG[9:5];
+wire [4:0] out_mux_sel2 = CONFIG[14:10];
+wire [4:0] out_mux_sel3 = CONFIG[19:15];
 wire spcore1_en;
 wire spcore2_en;
+wire [0:SEQbit-1] spcore_slice_select;
 wire pco_en;
 wire pulsegen_en;
 wire controller_en;
@@ -445,62 +405,123 @@ wire [3:0] debug_pco; // trig_clk, cpulse, cntr_del[0], cntr_trig[0]
 wire [3:0] debug_ctrl; // cntr2_rst, cntr1_rst, sync_slave, sync_lead
 
 
-assign out_mux[0] =   ( out_mux_sel0 == 3'b000 ) ? vpeak
-					: ( out_mux_sel0 == 3'b001 ) ? pco_pulse_out
-					: ( out_mux_sel0 == 3'b010 ) ? debug_pco[0]
-					: ( out_mux_sel0 == 3'b011 ) ? debug_ctrl[0]
-					: ( out_mux_sel0 == 3'b100 ) ? state_ctrl[0]
-					: ( out_mux_sel0 == 3'b101 ) ? duty_out // redundant
-					: ( out_mux_sel0 == 3'b110 ) ? 1'b0
-					:                              1'b1;
-assign out_mux[1] =   ( out_mux_sel1 == 3'b000 ) ? vpeak1
-					: ( out_mux_sel1 == 3'b001 ) ? pco_pulse_type
-					: ( out_mux_sel1 == 3'b010 ) ? debug_pco[1]
-					: ( out_mux_sel1 == 3'b011 ) ? debug_ctrl[1]
-					: ( out_mux_sel1 == 3'b100 ) ? state_ctrl[1]
-					: ( out_mux_sel1 == 3'b101 ) ? pulsegen_out // redundant
-					: ( out_mux_sel1 == 3'b110 ) ? 1'b0
-					:                              1'b1;
-assign out_mux[2] =   ( out_mux_sel2 == 3'b000 ) ? vpeak2
-					: ( out_mux_sel2 == 3'b001 ) ? duty_out
-					: ( out_mux_sel2 == 3'b010 ) ? debug_pco[2]
-					: ( out_mux_sel2 == 3'b011 ) ? debug_ctrl[2]
-					: ( out_mux_sel2 == 3'b100 ) ? cntr_pco[0]
-					: ( out_mux_sel2 == 3'b101 ) ? vpeak // redundant
-					: ( out_mux_sel2 == 3'b110 ) ? 1'b0
-					:                              1'b1;
-assign out_mux[3] =   ( out_mux_sel3 == 3'b000 ) ? pulsegen_out
-					: ( out_mux_sel3 == 3'b001 ) ? spidout
-					: ( out_mux_sel3 == 3'b010 ) ? debug_pco[3]
-					: ( out_mux_sel3 == 3'b011 ) ? debug_ctrl[3]
-					: ( out_mux_sel3 == 3'b100 ) ? state_ctrl[2]
-					: ( out_mux_sel3 == 3'b101 ) ? pco_pulse_out // redundant
-					: ( out_mux_sel3 == 3'b110 ) ? 1'b0
-					:                              1'b1;
+assign out_mux[0] = ( out_mux_sel0 == 5'd00 ) ? vpeak
+                  : ( out_mux_sel0 == 5'd01 ) ? vpeak1
+                  : ( out_mux_sel0 == 5'd02 ) ? vpeak2
+                  : ( out_mux_sel0 == 5'd03 ) ? pco_pulse_out
+                  : ( out_mux_sel0 == 5'd04 ) ? pco_pulse_type
+                  : ( out_mux_sel0 == 5'd05 ) ? pulsegen_out
+                  : ( out_mux_sel0 == 5'd06 ) ? duty_out
+                  : ( out_mux_sel0 == 5'd07 ) ? cntr_pco[0]
+                  : ( out_mux_sel0 == 5'd08 ) ? debug_pco[0]
+                  : ( out_mux_sel0 == 5'd09 ) ? debug_pco[1]
+                  : ( out_mux_sel0 == 5'd10 ) ? debug_pco[2]
+                  : ( out_mux_sel0 == 5'd11 ) ? debug_pco[3]
+                  : ( out_mux_sel0 == 5'd12 ) ? debug_ctrl[0]
+                  : ( out_mux_sel0 == 5'd13 ) ? debug_ctrl[1]
+                  : ( out_mux_sel0 == 5'd14 ) ? debug_ctrl[2]
+                  : ( out_mux_sel0 == 5'd15 ) ? debug_ctrl[3]
+                  : ( out_mux_sel0 == 5'd16 ) ? state_ctrl[0]
+                  : ( out_mux_sel0 == 5'd17 ) ? state_ctrl[1]
+                  : ( out_mux_sel0 == 5'd18 ) ? state_ctrl[2]
+                  : ( out_mux_sel0 == 5'd19 ) ? spidout
+                  : ( out_mux_sel0 == 5'd20 ) ? 1'b1
+                  :                             1'b0;
+assign out_mux[1] = ( out_mux_sel1 == 5'd00 ) ? vpeak
+                  : ( out_mux_sel1 == 5'd01 ) ? vpeak1
+                  : ( out_mux_sel1 == 5'd02 ) ? vpeak2
+                  : ( out_mux_sel1 == 5'd03 ) ? pco_pulse_out
+                  : ( out_mux_sel1 == 5'd04 ) ? pco_pulse_type
+                  : ( out_mux_sel1 == 5'd05 ) ? pulsegen_out
+                  : ( out_mux_sel1 == 5'd06 ) ? duty_out
+                  : ( out_mux_sel1 == 5'd07 ) ? cntr_pco[0]
+                  : ( out_mux_sel1 == 5'd08 ) ? debug_pco[0]
+                  : ( out_mux_sel1 == 5'd09 ) ? debug_pco[1]
+                  : ( out_mux_sel1 == 5'd10 ) ? debug_pco[2]
+                  : ( out_mux_sel1 == 5'd11 ) ? debug_pco[3]
+                  : ( out_mux_sel1 == 5'd12 ) ? debug_ctrl[0]
+                  : ( out_mux_sel1 == 5'd13 ) ? debug_ctrl[1]
+                  : ( out_mux_sel1 == 5'd14 ) ? debug_ctrl[2]
+                  : ( out_mux_sel1 == 5'd15 ) ? debug_ctrl[3]
+                  : ( out_mux_sel1 == 5'd16 ) ? state_ctrl[0]
+                  : ( out_mux_sel1 == 5'd17 ) ? state_ctrl[1]
+                  : ( out_mux_sel1 == 5'd18 ) ? state_ctrl[2]
+                  : ( out_mux_sel1 == 5'd19 ) ? spidout
+                  : ( out_mux_sel1 == 5'd20 ) ? 1'b1
+                  :                             1'b0;
+assign out_mux[2] = ( out_mux_sel2 == 5'd00 ) ? vpeak
+                  : ( out_mux_sel2 == 5'd01 ) ? vpeak1
+                  : ( out_mux_sel2 == 5'd02 ) ? vpeak2
+                  : ( out_mux_sel2 == 5'd03 ) ? pco_pulse_out
+                  : ( out_mux_sel2 == 5'd04 ) ? pco_pulse_type
+                  : ( out_mux_sel2 == 5'd05 ) ? pulsegen_out
+                  : ( out_mux_sel2 == 5'd06 ) ? duty_out
+                  : ( out_mux_sel2 == 5'd07 ) ? cntr_pco[0]
+                  : ( out_mux_sel2 == 5'd08 ) ? debug_pco[0]
+                  : ( out_mux_sel2 == 5'd09 ) ? debug_pco[1]
+                  : ( out_mux_sel2 == 5'd10 ) ? debug_pco[2]
+                  : ( out_mux_sel2 == 5'd11 ) ? debug_pco[3]
+                  : ( out_mux_sel2 == 5'd12 ) ? debug_ctrl[0]
+                  : ( out_mux_sel2 == 5'd13 ) ? debug_ctrl[1]
+                  : ( out_mux_sel2 == 5'd14 ) ? debug_ctrl[2]
+                  : ( out_mux_sel2 == 5'd15 ) ? debug_ctrl[3]
+                  : ( out_mux_sel2 == 5'd16 ) ? state_ctrl[0]
+                  : ( out_mux_sel2 == 5'd17 ) ? state_ctrl[1]
+                  : ( out_mux_sel2 == 5'd18 ) ? state_ctrl[2]
+                  : ( out_mux_sel2 == 5'd19 ) ? spidout
+                  : ( out_mux_sel2 == 5'd20 ) ? 1'b1
+                  :                             1'b0;
+assign out_mux[3] = ( out_mux_sel3 == 5'd00 ) ? vpeak
+                  : ( out_mux_sel3 == 5'd01 ) ? vpeak1
+                  : ( out_mux_sel3 == 5'd02 ) ? vpeak2
+                  : ( out_mux_sel3 == 5'd03 ) ? pco_pulse_out
+                  : ( out_mux_sel3 == 5'd04 ) ? pco_pulse_type
+                  : ( out_mux_sel3 == 5'd05 ) ? pulsegen_out
+                  : ( out_mux_sel3 == 5'd06 ) ? duty_out
+                  : ( out_mux_sel3 == 5'd07 ) ? cntr_pco[0]
+                  : ( out_mux_sel3 == 5'd08 ) ? debug_pco[0]
+                  : ( out_mux_sel3 == 5'd09 ) ? debug_pco[1]
+                  : ( out_mux_sel3 == 5'd10 ) ? debug_pco[2]
+                  : ( out_mux_sel3 == 5'd11 ) ? debug_pco[3]
+                  : ( out_mux_sel3 == 5'd12 ) ? debug_ctrl[0]
+                  : ( out_mux_sel3 == 5'd13 ) ? debug_ctrl[1]
+                  : ( out_mux_sel3 == 5'd14 ) ? debug_ctrl[2]
+                  : ( out_mux_sel3 == 5'd15 ) ? debug_ctrl[3]
+                  : ( out_mux_sel3 == 5'd16 ) ? state_ctrl[0]
+                  : ( out_mux_sel3 == 5'd17 ) ? state_ctrl[1]
+                  : ( out_mux_sel3 == 5'd18 ) ? state_ctrl[2]
+                  : ( out_mux_sel3 == 5'd19 ) ? spidout
+                  : ( out_mux_sel3 == 5'd20 ) ? 1'b1
+                  :                             1'b0;
 
-assign vpeak = vpeak1 | vpeak2;
-assign spcore1_en = CONFIG[13] ? ~duty_out : CONFIG[12];
-assign spcore2_en = CONFIG[15] ? ~duty_out : CONFIG[14];
-assign pco_en = CONFIG[16];
-assign pulsegen_en = CONFIG[17];
-assign controller_en = CONFIG[18];
-assign pco_design_sel = CONFIG[19];
-assign peak_in_pco = CONFIG[20] ? debug_in : vpeak;
-assign vpeak_block1 = CONFIG[21];
-assign vpeak_block2 = CONFIG[22];
+assign vpeak = vpeak1 || vpeak2;
+assign spcore1_en = CONFIG[21] ? ~duty_out : CONFIG[20];
+assign spcore2_en = CONFIG[23] ? ~duty_out : CONFIG[22];
+assign pco_en = CONFIG[24];
+assign pulsegen_en = CONFIG[25];
+assign controller_en = CONFIG[26];
+assign pco_design_sel = CONFIG[27];
+assign peak_in_pco = CONFIG[28] ? debug_in : vpeak;
+assign vpeak_block1 = CONFIG[29];
+assign vpeak_block2 = CONFIG[30];
 
+
+spcore_decoder #(.SEQbit(SEQbit)) spcore_slice_decoder (
+	.SLICESEL(SLICESEL),
+	.spslicesel(spcore_slice_select)
+);
 
 spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore1 (
 .clk(clk1),
 .greset_n(greset_n),
 .enable(spcore1_en),
+.spcore_slice_select(spcore_slice_select),
 .ADC_I(ADC_I),
 .ADC_Q(ADC_Q),
 .THRESHOLD(THRESHOLD),
 .OFFSET(OFFSET),
 .SCALE(SCALE),
 .DECODED(DECODED),
-.SLICESEL(SLICESEL),
 .VPEAK_BLOCK(vpeak_block1),
 .vpeak_in(vpeak2),
 .vpeak_out(vpeak1) );
@@ -510,13 +531,13 @@ spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore2 (
 .clk(clk2),
 .greset_n(greset_n),
 .enable(spcore2_en),
+.spcore_slice_select(spcore_slice_select),
 .ADC_I(ADC_I),
 .ADC_Q(ADC_Q),
 .THRESHOLD(THRESHOLD),
 .OFFSET(OFFSET),
 .SCALE(SCALE),
 .DECODED(DECODED),
-.SLICESEL(SLICESEL),
 .VPEAK_BLOCK(vpeak_block2),
 .vpeak_in(vpeak1),
 .vpeak_out(vpeak2) );
@@ -573,9 +594,9 @@ spi #(.CONFIGbit(CONFIGbit), .SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)
 .SCALE(SCALE),
 .THRESHOLD(THRESHOLD),
 .OFFSET(OFFSET),
-.ENCODED(ENCODED),
-.DECODED(DECODED),
 .SLICESEL(SLICESEL),
+.DECODED(DECODED),
+.ENCODED(ENCODED),
 .NDELAY(NDELAY),
 .NBLACKOUT(NBLACKOUT),
 .NCSTR(NCSTR),
@@ -897,13 +918,48 @@ endmodule // module pulsegen
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/3/2018
+	Last modified on 4/7/2018
+	Implements a decoder that selects effective size of the correlator
+
+	Example correlator size chart for SEQbit = 4:
+	| SLICESEL |  slice[0] | slice[1]  |  slice[2] | slice[3]  |
+	|----------|-----------|-----------|-----------|-----------|
+	|    00    |  enabled  | disabled  | disabled  | disabled  |
+	|    01    |  enabled  |  enabled  | disabled  | disabled  |
+	|    10    |  enabled  |  enabled  |  enabled  | disabled  |
+	|    11    |  enabled  |  enabled  |  enabled  |  enabled  |
+	|----------|-----------|-----------|-----------|-----------|
+
+*******************************************************************************/
+
+module spcore_decoder #(parameter SEQbit = 63)(
+input		[$clog2(SEQbit)-1:0] SLICESEL,
+output wire	[0:SEQbit-1] spslicesel );
+
+
+genvar kk;
+
+assign spslicesel[0] = 1'b1; // 0th is always enabled
+generate
+	for (kk = 1; kk < SEQbit; kk = kk + 1) begin : generate_decoder
+		assign spslicesel[kk] = (SLICESEL >= kk) ? 1'b1 : 1'b0; // thermometer decoder
+	end
+endgenerate
+
+
+endmodule // module spcore_decoder
+
+/*******************************************************************************
+
+	Written by Ivan Bukreyev
+	Last modified on 4/7/2018
 	Implements a slice of a signal processing core
 	sample_in/sample_in_mag/sample_del/slice_out format: (ADCbit+1)-bit two's complement
 		width is incremented by 1 in the differential detector
 	sample_in_mag is the magnitude of the sample_in
 	sample_del is delayed version of sample_in for the next slice
 	slice_out is the output of the slice for correlation
+	select controls whether this slice contributes to the size of the correlator
 	
 	slice_out logic:
 	|  select  |  sign(r[n])  | seq_bit[n]  | slice_out   |
@@ -963,7 +1019,7 @@ endmodule // module spcore_slice
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/3/2018
+	Last modified on 4/7/2018
 	Implements a signal processing core of the ASP (see 2018 RFIC paper equations 3 - 6)
 	enable is used for clock-gating the signal processing core
 	rn is a vector of decoded and stored inputs
@@ -973,19 +1029,31 @@ endmodule // module spcore_slice
 	vpeak_in (or vpeak_out from the other core) blocks this core's output so that combined vpeak_out's width is constant
 	VPEAK_BLOCK controls whether this core's output is blocked by the other core
 
+	ADC_I/ADC_Q format: (ADCbit)-bit two's complement
+	Typical 10-bit ADC output formats
+		|Input Voltage   | Offset bin   | 2's comp     |
+		|----------------|--------------|--------------|
+		| 511/512 x VREF | 11 1111 1111 | 01 1111 1111 |
+		|   1/512 x VREF | 10 0000 0001 | 00 0000 0001 |
+		|   0/512 x VREF | 10 0000 0000 | 00 0000 0000 |
+		|  -1/512 x VREF | 01 1111 1111 | 11 1111 1111 |
+		|-511/512 x VREF | 00 0000 0001 | 10 0000 0001 |
+		|-512/512 x VREF | 00 0000 0000 | 10 0000 0000 |
+		|----------------|--------------|--------------|
+
 *******************************************************************************/
 
 module spcore #(parameter SEQbit = 63, parameter ADCbit = 10, parameter PRCNbit = 0)(
 input		clk,
 input		greset_n,
 input		enable,
+input		[0:SEQbit-1] spcore_slice_select,
 input		[ADCbit-1:0] ADC_I,
 input		[ADCbit-1:0] ADC_Q,
 input		[ADCbit-1:0] THRESHOLD,
 input		[ADCbit-1:0] OFFSET,
 input		[ADCbit-2:0] SCALE,
 input		[0:SEQbit-1] DECODED,
-input		[$clog2(SEQbit)-1:0] SLICESEL,
 input		VPEAK_BLOCK,
 input		vpeak_in,
 output reg	vpeak_out );
@@ -997,7 +1065,6 @@ localparam sum_zeros = {(add_lvls+ADCbit+1){1'b0}};
 
 reg [ADCbit-1:0] inputI;
 reg [ADCbit-1:0] inputQ;
-wire [0:SEQbit-1] slice_select;
 wire [ADCbit:0] rn [0:SEQbit-1];
 wire [ADCbit:0] rn_mag [0:SEQbit-1];
 wire [ADCbit:0] vcorrn [0:SEQbit-1];
@@ -1043,13 +1110,12 @@ diffdet #(.ADCbit(ADCbit)) differential_detector (
 // instantiate and connect all slices
 generate
 	for (kk = 0; kk < SEQbit; kk = kk + 1) begin : generate_spcore_slices
-		assign slice_select[kk] = (SLICESEL >= kk) ? 1'b1 : 1'b0; // thermometer decoder, 0th is always enabled
 		if (kk == (SEQbit - 1)) begin // do not need last sample_del
 			spcore_slice #(.ADCbit(ADCbit)) array_of_spcore_slice (
 			.clk(clk),
 			.greset_n(greset_n),
 			.enable(enable),
-			.select(slice_select[kk]),
+			.select(spcore_slice_select[kk]),
 			.seq_bit(DECODED[kk]),
 			.sample_in(rn[kk]),
 			.sample_in_mag(rn_mag[kk]),
@@ -1059,7 +1125,7 @@ generate
 			.clk(clk),
 			.greset_n(greset_n),
 			.enable(enable),
-			.select(slice_select[kk]),
+			.select(spcore_slice_select[kk]),
 			.seq_bit(DECODED[kk]),
 			.sample_in(rn[kk]),
 			.sample_in_mag(rn_mag[kk]),
@@ -1131,7 +1197,7 @@ endmodule // module spcore
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/4/2018
+	Last modified on 4/7/2018
 	SPI module that provides all parameters to the correlator modules
 	SPI holds the following values
 		(CNTRbit*4) for the PCO's counters/comparators
@@ -1167,9 +1233,9 @@ output wire [CONFIGbit-1:0] CONFIG,
 output wire [ADCbit-2:0] SCALE,
 output wire [ADCbit-1:0] THRESHOLD,
 output wire [ADCbit-1:0] OFFSET,
-output wire [0:SEQbit] ENCODED,
-output wire [0:SEQbit-1] DECODED,
 output wire [$clog2(SEQbit)-1:0] SLICESEL,
+output wire [0:SEQbit-1] DECODED,
+output wire [0:SEQbit] ENCODED,
 output wire [CNTRbit-1:0] NDELAY,
 output wire [CNTRbit-1:0] NBLACKOUT,
 output wire [CNTRbit-1:0] NCSTR,
@@ -1180,7 +1246,7 @@ output wire [CNTRbit-1:0] NPULSE,
 output wire [CNTRbit-1:0] NDUTY );
 
 
-localparam SPIwidth = (CONFIGbit) + (3*ADCbit-1) + (2*SEQbit+1) + (CNTRbit*8);
+localparam SPIwidth = (CONFIGbit) + (3*ADCbit-1) + (2*SEQbit+1) + ($clog2(SEQbit)) + (CNTRbit*8);
 localparam NDUTY_start     = 0;
 localparam NDUTY_end       = NDUTY_start     + CNTRbit-1;
 localparam NPULSE_start    = NDUTY_end       + 1;
@@ -1197,11 +1263,13 @@ localparam NBLACKOUT_start = NCSTR_end       + 1;
 localparam NBLACKOUT_end   = NBLACKOUT_start + CNTRbit-1;
 localparam NDELAY_start    = NBLACKOUT_end   + 1;
 localparam NDELAY_end      = NDELAY_start    + CNTRbit-1;
-localparam DECODED_start   = NDELAY_end      + 1;
-localparam DECODED_end     = DECODED_start   + SEQbit-1;
-localparam ENCODED_start   = DECODED_end     + 1;
+localparam ENCODED_start   = NDELAY_end      + 1;
 localparam ENCODED_end     = ENCODED_start   + SEQbit;
-localparam OFFSET_start    = ENCODED_end     + 1;
+localparam DECODED_start   = ENCODED_end     + 1;
+localparam DECODED_end     = DECODED_start   + SEQbit-1;
+localparam SLICESEL_start  = DECODED_end     + 1;
+localparam SLICESEL_end    = SLICESEL_start  + $clog2(SEQbit)-1;
+localparam OFFSET_start    = SLICESEL_end    + 1;
 localparam OFFSET_end      = OFFSET_start    + ADCbit-1;
 localparam THRESHOLD_start = OFFSET_end      + 1;
 localparam THRESHOLD_end   = THRESHOLD_start + ADCbit-1;
@@ -1235,9 +1303,9 @@ assign CONFIG    = active_reg[CONFIG_end:CONFIG_start];       // width = CONFIGb
 assign SCALE     = active_reg[SCALE_end:SCALE_start];         // width = ADCbit-1
 assign THRESHOLD = active_reg[THRESHOLD_end:THRESHOLD_start]; // width = ADCbit
 assign OFFSET    = active_reg[OFFSET_end:OFFSET_start];       // width = ADCbit
-assign ENCODED   = active_reg[ENCODED_end:ENCODED_start];     // width = SEQbit+1
+assign SLICESEL  = active_reg[SLICESEL_end:SLICESEL_start];   // width = $clog2(SEQbit)
 assign DECODED   = active_reg[DECODED_end:DECODED_start];     // width = SEQbit
-//assign SLICESEL  = active_reg[SLICESEL_end:SLICESEL_start];   // width = $clog2(SEQbit)
+assign ENCODED   = active_reg[ENCODED_end:ENCODED_start];     // width = SEQbit+1
 assign NDELAY    = active_reg[NDELAY_end:NDELAY_start];       // width = CNTRbit
 assign NBLACKOUT = active_reg[NBLACKOUT_end:NBLACKOUT_start]; // width = CNTRbit
 assign NCSTR     = active_reg[NCSTR_end:NCSTR_start];         // width = CNTRbit
@@ -1253,7 +1321,7 @@ assign NDUTY     = active_reg[NDUTY_end:NDUTY_start];         // width = CNTRbit
 //assign OFFSET = 10'd0;
 //assign ENCODED = 64'hB667432208B96DA2;
 //assign DECODED = 63'h12AB1D4CF31A248C;
-assign SLICESEL = 6'b111111;
+//assign SLICESEL = 6'b111111;
 //assign NDELAY = 13'd660;
 //assign NBLACKOUT = 13'd198;
 //assign NCSTR = 13'd300;
