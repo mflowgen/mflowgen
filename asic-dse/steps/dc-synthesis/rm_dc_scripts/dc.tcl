@@ -1,11 +1,23 @@
-source -echo -verbose make_generated_vars.tcl
-source -echo -verbose ${DC_SETUP_DIR}/dc_setup.tcl
+source -echo -verbose $::env(dc_flow_dir)/rm_setup/dc_setup.tcl
+
+#################################################################################
+# Source the user plugin for pre-synthesis
+#################################################################################
+# ctorng: Adding this step to match the rest of the build system
+
+if {[file exists [which ${pre_synthesis_plugin}]]} {
+  puts "Info: Reading in the pre-synthesis plugin [which ${pre_synthesis_plugin}]\n"
+  source -echo -verbose ${pre_synthesis_plugin}
+}
 
 #################################################################################
 # Design Compiler Reference Methodology Script for Top-Down Flow
 # Script: dc.tcl
 # Version: D-2010.03-SP1 (May 24, 2010)
 # Copyright (C) 2007-2010 Synopsys, Inc. All rights reserved.
+#################################################################################
+# ctorng: Updated the reference methodology to this version
+# Version: L-2016.03-SP2 (July 25, 2016)
 #################################################################################
 
 #################################################################################
@@ -23,7 +35,7 @@ source -echo -verbose ${DC_SETUP_DIR}/dc_setup.tcl
 # for advanced optimizations.
 #################################################################################
 
-set_svf ${RESULTS_DIR}/${DCRM_SVF_OUTPUT_FILE}
+set_svf ${RESULTS}/${DCRM_SVF_OUTPUT_FILE}
 
 #################################################################################
 # Setup SAIF Name Mapping Database
@@ -45,10 +57,21 @@ set_svf ${RESULTS_DIR}/${DCRM_SVF_OUTPUT_FILE}
 # Use the -format option to specify: verilog, sverilog, or vhdl as needed.
 #################################################################################
 
-define_design_lib WORK -path ./WORK
+# The first "WORK" is a reserved word for Design Compiler. The value for
+# the -path option is customizable.
 
-analyze -format sverilog ${RTL_SOURCE_FILES}
+define_design_lib WORK -path ${RESULTS}/WORK
+
+# Analyze the RTL source files
+
+if { ![analyze -format sverilog ${RTL_SOURCE_FILES}] } {
+  exit 1
+}
+
 elaborate ${DESIGN_NAME}
+current_design ${DESIGN_NAME}
+link
+
 # OR
 
 # You can read an elaborated design from the same release.
@@ -56,11 +79,13 @@ elaborate ${DESIGN_NAME}
 
 # read_ddc ${DCRM_ELABORATED_DESIGN_DDC_OUTPUT_FILE}
 
-write -hierarchy -format ddc -output ${RESULTS_DIR}/${DCRM_ELABORATED_DESIGN_DDC_OUTPUT_FILE}
+# Write out the elaborated design
+#
+# - The ddc can be used as a checkpoint to load up to the current state
+# - The v is useful to double-check the netlist that dc will be mapping
 
-# YUNSUP
-link
-check_design
+write -hierarchy -format ddc     -output ${RESULTS}/${DCRM_ELABORATED_DDC_OUTPUT_FILE}
+write -hierarchy -format verilog -output ${RESULTS}/${DCRM_ELABORATED_V_OUTPUT_FILE}
 
 # SAIF name mapping
 
@@ -72,6 +97,9 @@ check_design
 #################################################################################
 # Apply Logical Design Constraints
 #################################################################################
+
+puts "Info: Sourcing constraints file plugin"
+puts "Info: - ${DCRM_CONSTRAINTS_INPUT_FILE}"
 
 source -echo -verbose ${DCRM_CONSTRAINTS_INPUT_FILE}
 
@@ -91,7 +119,7 @@ source -echo -verbose ${DCRM_CONSTRAINTS_INPUT_FILE}
 # this reason, the check_timing command is recommended whenever you apply new
 # constraints such as clock definitions, I/O delays, or timing exceptions.
 
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.check_timing.rpt {check_timing}
+redirect -tee ${REPORTS}/${DCRM_CHECK_TIMING_REPORT} {check_timing}
 
 #################################################################################
 # Apply The Operating Conditions
@@ -149,12 +177,14 @@ group_path -name FEEDTHROUGH -from [remove_from_collection [all_inputs] $ports_c
 
     # read_saif -auto_map_names -input ${DESIGN_NAME}.saif -instance < DESIGN_INSTANCE > -verbose
 
-    # Enable both of the following settings for total power optimization.
-    # Note: set_max_total_power should no longer be used.
+    if {[shell_is_in_topographical_mode]} {
+      # For multi-Vth design, replace the following to set the threshold voltage groups in the libraries.
 
-    # Use set_max_leakage_power only if you have multiple-Vt libraries.
-    set_max_leakage_power 0
-    # set_max_dynamic_power 0
+      # set_attribute <my_hvt_lib> default_threshold_voltage_group HVT -type string
+      # set_attribute <my_lvt_lib> default_threshold_voltage_group LVT -type string
+    }
+
+    # Starting in J-2014.09, leakage optimization is the default flow and is always enabled.
 
     if {[shell_is_in_topographical_mode]} {
       # Use the following command to enable power prediction using clock tree estimation.
@@ -212,6 +242,18 @@ if {[shell_is_in_topographical_mode]} {
   #                      -vias -region_groups -verbose -output ${DCRM_DCT_DEF_INPUT_FILE}
 
   if {[file exists [which ${DCRM_DCT_DEF_INPUT_FILE}]]} {
+    # If you have physical only cells as a part of your floorplan DEF file, you can use
+    # the -allow_physical_cells option with extract_physical_constraints to include
+    # the physical only cells as a part of the floorplan in Design Compiler to improve correlation.
+    #
+    # Note: With -allow_physical_cells, new logical cells in the DEF file
+    #       that have a fixed location will also be added to the design in memory.
+    #       See the extract_physical_constraints manpage for more information about
+    #       identifying the cells added to the design when using -allow_physical_cells.
+
+    # extract_physical_constraints -allow_physical_cells ${DCRM_DCT_DEF_INPUT_FILE}
+
+    puts "RM-Info: Reading in DEF file [which ${DCRM_DCT_DEF_INPUT_FILE}]\n"
     extract_physical_constraints ${DCRM_DCT_DEF_INPUT_FILE}
   }
 
@@ -219,13 +261,23 @@ if {[shell_is_in_topographical_mode]} {
 
   ## For floorplan file input
 
-  # The floorplan file for DCT can be written from ICC using the following recommended options
-  # Note: ICC requires the use of -placement {terminal} with -create_terminal beginning in the
+  # The floorplan file for Design Compiler Topographical can be written from IC Compiler using the following
+  # recommended options:
+  # Note: IC Compiler requires the use of -placement {terminal} with -create_terminal beginning in the
   #       D-2010.03-SP1 release.
-  # icc_shell> write_floorplan -placement {io hard_macro soft_macro terminal} -create_terminal \
-  #                            -row -create_bound -preroute ${DCRM_DCT_FLOORPLAN_INPUT_FILE}
+  # icc_shell> write_floorplan -placement {io terminal hard_macro soft_macro} -create_terminal \
+  #                            -row -create_bound -preroute -track ${DCRM_DCT_FLOORPLAN_INPUT_FILE}
+
+  # Read in the secondary floorplan file, previously written by write_floorplan in Design Compiler,
+  # to restore physical-only objects back to the design, before reading the main floorplan file.
+
+  if {[file exists [which ${DCRM_DCT_FLOORPLAN_INPUT_FILE}.objects]]} {
+    puts "RM-Info: Reading in secondary floorplan file [which ${DCRM_DCT_FLOORPLAN_INPUT_FILE}.objects]\n"
+    read_floorplan ${DCRM_DCT_FLOORPLAN_INPUT_FILE}.objects
+  }
 
   if {[file exists [which ${DCRM_DCT_FLOORPLAN_INPUT_FILE}]]} {
+    puts "RM-Info: Reading in floorplan file [which ${DCRM_DCT_FLOORPLAN_INPUT_FILE}]\n"
     read_floorplan ${DCRM_DCT_FLOORPLAN_INPUT_FILE}
   }
 
@@ -234,41 +286,50 @@ if {[shell_is_in_topographical_mode]} {
   ## For Tcl file input
 
   # For Tcl constraints, the name matching feature must be explicitly enabled
-  # and will also use the set_fuzzy_query_options setttings.  This should
-  # be turned off after the constraint read in order to minimize runtime.
+  # and will also use the set_query_rules setttings. This should be turned off
+  # after the constraint read in order to minimize runtime.
 
   if {[file exists [which ${DCRM_DCT_PHYSICAL_CONSTRAINTS_INPUT_FILE}]]} {
-    set_app_var fuzzy_matching_enabled true
+    set_app_var enable_rule_based_query true
+    puts "RM-Info: Sourcing script file [which ${DCRM_DCT_PHYSICAL_CONSTRAINTS_INPUT_FILE}]\n"
     source -echo -verbose ${DCRM_DCT_PHYSICAL_CONSTRAINTS_INPUT_FILE}
-    set_app_var fuzzy_matching_enabled false
+    set_app_var enable_rule_based_query false
   }
 
 
   # Use write_floorplan to save the applied floorplan.
-  # Note: write_physical_constraints should no longer be used.
-  write_floorplan -all ${RESULTS_DIR}/${DCRM_DCT_FLOORPLAN_OUTPUT_FILE}
+
+  # Note: A secondary floorplan file ${DCRM_DCT_FLOORPLAN_OUTPUT_FILE}.objects
+  #       might also be written to capture physical-only objects in the design.
+  #       This file should be read in before reading the main floorplan file.
+
+  write_floorplan -all ${RESULTS}/${DCRM_DCT_FLOORPLAN_OUTPUT_FILE}
 
   # Verify that all the desired physical constraints have been applied
   # Add the -pre_route option to include pre-routes in the report
-  report_physical_constraints > ${REPORTS_DIR}/${DCRM_DCT_PHYSICAL_CONSTRAINTS_REPORT}
+  report_physical_constraints > ${REPORTS}/${DCRM_DCT_PHYSICAL_CONSTRAINTS_REPORT}
 }
 
 #################################################################################
 # Apply Additional Optimization Constraints
 #################################################################################
 
-#RGD:  Make sure that logic to perform reset remains with the gate to prevent X-propagation
-#problems.
+# Make sure that logic to perform reset remains with the gate to prevent
+# X-propagation problems
+
 set compile_seqmap_honor_sync_set_reset true
 
 # Replace special characters with non-special ones before writing out the synthesized netlist.
-# For example \bus[5] -> bus_5_
+# E.g., "\bus[5]" -> "bus_5_"
+
 set_app_var verilogout_no_tri true
 
 # Prevent assignment statements in the Verilog netlist.
+
 set_fix_multiple_port_nets -all -buffer_constants
 
 # Design Compiler Flattening Options
+
 if {[info exists DC_FLATTEN_EFFORT]} {
   set dc_flatten_effort $DC_FLATTEN_EFFORT
   if {"$dc_flatten_effort" == ""} {
@@ -279,6 +340,7 @@ if {[info exists DC_FLATTEN_EFFORT]} {
 }
 
 # Setup Design Compiler flattening effort
+
 puts "Info: Design Compiler flattening effort (DC_FLATTEN_EFFORT) = $dc_flatten_effort"
 
 set compile_ultra_options ""
@@ -333,15 +395,16 @@ if {$dc_flatten_effort == 0} {
 
 # Uncomment the following line to snapshot the environment for the Consistency Checker
 
-# write_environment -consistency -output ${REPORTS_DIR}/${DCRM_CONSISTENCY_CHECK_ENV_FILE}
+# write_environment -consistency -output ${REPORTS}/${DCRM_CONSISTENCY_CHECK_ENV_FILE}
 
 #################################################################################
 # Check for Design Problems
 #################################################################################
 
 # Check the current design for consistency
+
 check_design -summary
-check_design > ${REPORTS_DIR}/${DCRM_CHECK_DESIGN_REPORT}
+check_design > ${REPORTS}/${DCRM_CHECK_DESIGN_REPORT}
 
 #################################################################################
 # Compile the Design
@@ -349,10 +412,8 @@ check_design > ${REPORTS_DIR}/${DCRM_CHECK_DESIGN_REPORT}
 # Recommended Options:
 #
 #     -scan
-#     -gate_clock
+#     -gate_clock (-self_gating)
 #     -retime
-#     -timing_high_effort_script
-#     -congestion
 #     -spg
 #
 # Use compile_ultra as your starting point. For test-ready compile, include
@@ -361,56 +422,54 @@ check_design > ${REPORTS_DIR}/${DCRM_CHECK_DESIGN_REPORT}
 # Use -gate_clock to insert clock-gating logic during optimization.  This
 # is now the recommended methodology for clock gating.
 #
-# Use -retime to enable adaptive retiming optimization for further timing
-# benefit without any runtime or memory overhead.
+# Use -self_gating option in addition to -gate_clock for potentially saving
+# additional dynamic power, in topographical mode only. Registers that are
+# not clock gated will be considered for XOR self gating.
+# XOR self gating should be performed along with clock gating, using -gate_clock
+# and -self_gating options. XOR self gates will be inserted only if there is
+# potential power saving without degrading the timing.
+# An accurate switching activity annotation either by reading in a saif
+# file or through set_switching_activity command is recommended.
+# You can use "set_self_gating_options" command to specify self-gating
+# options.
 #
-# The -timing_high_effort_script option can be used to try and improve the
-# optimization results at the tradeoff of some additional runtime.
+# Use -retime to enable adaptive retiming optimization for further timing benefit.
 #
-# Note: The -area_high_effort_script option is not needed as it is aliased to
-#       the default compile_ultra optimization.  The default compile_ultra
-#       optimization is tuned to provide good area optimization.
-#
-# The -congestion option (topographical mode only) enables specialized optimizations that
-# reduce routing related congestion during synthesis and scan compression insertion
-# with DFT Compiler.  Only enable congestion optimization if required.
-# This option requires a license for Design Compiler Graphical.
-#
-# Use the -spg option to enable Design Compiler Graphical to save physical
-# guidance information and pass this information to IC Compiler.
-# Physical guidance can improve area and timing correlation with IC Compiler.
+# Use the -spg option to enable Design Compiler Graphical physical guidance flow.
+# The physical guidance flow improves QoR, area and timing correlation, and congestion.
 # It also improves place_opt runtime in IC Compiler.
-# The -spg option is not yet supported with the UPF or hierarchical flows.
+#
+# Note: In addition to -spg option you can enable the support of via resistance for
+#       RC estimation to improve the timing correlation with IC Compiler by using the
+#       following setting:
+#
+#       set_app_var spg_enable_via_resistance_support true
+#
+# You can selectively enable or disable the congestion optimization on parts of
+# the design by using the set_congestion_optimization command.
 # This option requires a license for Design Compiler Graphical.
 #
-# Note: The -num_cpus option is obsolete and should no longer be
-#       used to enable multicore optimization.  It has been replaced by the
-#       set_host_options command which can be found in the dc_setup.tcl script.
+# The constant propagation is enabled when boundary optimization is disabled. In
+# order to stop constant propagation you can do the following
+#
+# set_compile_directives -constant_propagation false <object_list>
+#
+# Note: Layer optimization is on by default in Design Compiler Graphical, to
+#       improve the the accuracy of certain net delay during optimization.
+#       To disable the the automatic layer optimization you can use the
+#       -no_auto_layer_optimization option.
 #
 #################################################################################
 
-
 if {[shell_is_in_topographical_mode]} {
-# Use the "-check_only" option of "compile_ultra" to verify that your
-# libraries and design are complete and that optimization will not fail
-# in topographical mode.  Use the same options as will be used in compile_ultra.
+  # Use the "-check_only" option of "compile_ultra" to verify that your
+  # libraries and design are complete and that optimization will not fail
+  # in topographical mode.  Use the same options as will be used in compile_ultra.
 
-# compile_ultra -gate_clock -check_only
+  # compile_ultra -gate_clock -check_only
 }
 
-# To flatten the entire design, replace this line:
-#
-#  compile_ultra -gate_clock -no_autoungroup
-#
-# With this:
-#
-#  uniquify
-#  ungroup -all -flatten
-#  compile_ultra -gate_clock
-
 eval "compile_ultra -gate_clock $compile_ultra_options"
-
-check_design
 
 #################################################################################
 # High-effort area optimization
@@ -425,6 +484,11 @@ if {!([info exists DC_SKIP_OPTIMIZE_NETLIST] && $DC_SKIP_OPTIMIZE_NETLIST)} {
   optimize_netlist -area
 }
 
+# Final check design
+
+check_design -summary
+check_design > ${REPORTS}/${DCRM_FINAL_CHECK_DESIGN_REPORT}
+
 #################################################################################
 # Write Out Final Design and Reports
 #
@@ -437,33 +501,41 @@ if {!([info exists DC_SKIP_OPTIMIZE_NETLIST] && $DC_SKIP_OPTIMIZE_NETLIST)} {
 #
 #################################################################################
 
-# Use naming rules to preserve structs
-
-define_name_rules verilog -preserve_struct_ports
-report_names -rules verilog > ${REPORTS_DIR}/${DCRM_FINAL_NAME_CHANGE_REPORT}
-change_names -rules verilog -hierarchy
-
 #################################################################################
 # Write out Design
 #################################################################################
 
 # Write and close SVF file and make it available for immediate use
+
 set_svf -off
 
-write -format ddc     -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_DDC_OUTPUT_FILE}
-write -format verilog -hierarchy -output ${RESULTS_DIR}/${DCRM_FINAL_VERILOG_OUTPUT_FILE}
-write -format svsim              -output ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE}
+# Use naming rules to preserve structs
+
+define_name_rules verilog -preserve_struct_ports
+report_names -rules verilog > ${REPORTS}/${DCRM_FINAL_NAME_CHANGE_REPORT}
+change_names -rules verilog -hierarchy
+
+# Write out files
+
+write -format ddc     -hierarchy -output ${RESULTS}/${DCRM_FINAL_DDC_OUTPUT_FILE}
+write -format verilog -hierarchy -output ${RESULTS}/${DCRM_FINAL_VERILOG_OUTPUT_FILE}
+write -format svsim              -output ${RESULTS}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE}
 
 # ctorng: Dump the mapped.v and svwrapper.v into one svsim.v file to make
 # it easier to include a single file for gate-level simulation. The
 # svwrapper matches the interface RTL expects (array of arrays,
 # parameters, etc.).
 
-sh cat ${RESULTS_DIR}/${DCRM_FINAL_VERILOG_OUTPUT_FILE} \
-       ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE} \
-       > ${RESULTS_DIR}/${DCRM_FINAL_SVERILOG_SIM_OUTPUT_FILE}
+sh cat ${RESULTS}/${DCRM_FINAL_VERILOG_OUTPUT_FILE} \
+       ${RESULTS}/${DCRM_FINAL_SVERILOG_WRAPPER_OUTPUT_FILE} \
+       > ${RESULTS}/${DCRM_FINAL_SVERILOG_SIM_OUTPUT_FILE}
+
+# Write top-level verilog view needed for block instantiation
+
+write -format verilog -output ${RESULTS}/${DCRM_FINAL_VERILOG_TOP_OUTPUT_FILE}
 
 # Write and close SVF file and make it available for immediate use
+
 set_svf -off
 
 #################################################################################
@@ -472,25 +544,30 @@ set_svf -off
 
 if {[shell_is_in_topographical_mode]} {
 
-  # Note: write_physical_constraints should no longer be used.
-  write_floorplan -all ${RESULTS_DIR}/${DCRM_DCT_FINAL_FLOORPLAN_OUTPUT_FILE}
+  # Note: A secondary floorplan file ${DCRM_DCT_FINAL_FLOORPLAN_OUTPUT_FILE}.objects
+  #       might also be written to capture physical-only objects in the design.
+  #       This file should be read in before reading the main floorplan file.
 
-  # Write parasitics data from DCT placement for static timing analysis
-  write_parasitics -output ${RESULTS_DIR}/${DCRM_DCT_FINAL_SPEF_OUTPUT_FILE}
+  write_floorplan -all ${RESULTS}/${DCRM_DCT_FINAL_FLOORPLAN_OUTPUT_FILE}
 
-  # Write SDF backannotation data from DCT placement for static timing analysis
-  write_sdf ${RESULTS_DIR}/${DCRM_DCT_FINAL_SDF_OUTPUT_FILE}
+  # Write parasitics data from Design Compiler Topographical placement for static timing analysis
+  write_parasitics -output ${RESULTS}/${DCRM_DCT_FINAL_SPEF_OUTPUT_FILE}
+
+  # Write SDF backannotation data from Design Compiler Topographical placement for static timing analysis
+  write_sdf ${RESULTS}/${DCRM_DCT_FINAL_SDF_OUTPUT_FILE}
 
   # Do not write out net RC info into SDC
   set_app_var write_sdc_output_lumped_net_capacitance false
   set_app_var write_sdc_output_net_resistance false
 }
 
-write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
+# Write out SDC constraints file
+
+write_sdc -nosplit ${RESULTS}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 
 # If SAIF is used, write out SAIF name mapping file for PrimeTime-PX
 #if { ${VINAME} != "NONE" } {
-#  saif_map -type ptpx -write_map ${RESULTS_DIR}/dc-syn.mapped.SAIF.namemap
+#  saif_map -type ptpx -write_map ${RESULTS}/dc-syn.mapped.SAIF.namemap
 #}
 
 #################################################################################
@@ -499,29 +576,48 @@ write_sdc -nosplit ${RESULTS_DIR}/${DCRM_FINAL_SDC_OUTPUT_FILE}
 
 # Report units
 
-redirect -tee ${REPORTS_DIR}/${DESIGN_NAME}.units.rpt {report_units}
+redirect -tee ${REPORTS}/${DCRM_FINAL_UNITS_REPORT} {report_units}
 
 # Report QOR
 
-report_qor > ${REPORTS_DIR}/${DCRM_FINAL_QOR_REPORT}
+report_qor > ${REPORTS}/${DCRM_FINAL_QOR_REPORT}
 
 # Report timing
 
-report_timing -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 10 -max_paths 500 > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.timing.rpt
+report_clock_timing \
+  -type summary > ${REPORTS}/${DCRM_FINAL_CLOCK_TIMING_REPORT}
 
-report_timing -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 10 -max_paths 500 -delay_type min > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.timing.hold.rpt
+report_timing -input_pins -capacitance -transition_time \
+  -nets -significant_digits 4 -nosplit \
+  -path_type full_clock -attributes \
+  -nworst 10 -max_paths 30 \
+  -delay_type max \
+  > ${REPORTS}/${DCRM_FINAL_TIMING_SETUP_REPORT}
+
+report_timing -input_pins -capacitance -transition_time \
+  -nets -significant_digits 4 -nosplit \
+  -path_type full_clock -attributes \
+  -nworst 10 -max_paths 30 \
+  -delay_type min \
+  > ${REPORTS}/${DCRM_FINAL_TIMING_HOLD_REPORT}
 
 # Report constraints
 
-report_constraint -nosplit -verbose > ${REPORTS_DIR}/${DCRM_CONSTRAINTS_REPORT}
-report_constraint -nosplit -verbose -all_violators > ${REPORTS_DIR}/${DCRM_CONSTRAINTS_VIOLATORS_REPORT}
+report_constraint \
+  -nosplit        \
+  -verbose > ${REPORTS}/${DCRM_FINAL_CONSTRAINTS_REPORT}
+
+report_constraint \
+  -nosplit        \
+  -verbose        \
+  -all_violators > ${REPORTS}/${DCRM_FINAL_CONSTRAINTS_VIOL_REPORT}
 
 # Report area
 
 if {[shell_is_in_topographical_mode]} {
-  report_area -hierarchy -physical -nosplit > ${REPORTS_DIR}/${DCRM_FINAL_AREA_REPORT}
+  report_area -hierarchy -physical -nosplit > ${REPORTS}/${DCRM_FINAL_AREA_REPORT}
 } else {
-  report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DCRM_FINAL_AREA_REPORT}
+  report_area -hierarchy -nosplit > ${REPORTS}/${DCRM_FINAL_AREA_REPORT}
 }
 
 if {[shell_is_in_topographical_mode]} {
@@ -529,54 +625,60 @@ if {[shell_is_in_topographical_mode]} {
   # after topographical mode synthesis.
   # This command requires a license for Design Compiler Graphical.
 
-  report_congestion -nosplit > ${REPORTS_DIR}/${DCRM_DCT_FINAL_CONGESTION_REPORT}
+  report_congestion -nosplit > ${REPORTS}/${DCRM_DCT_FINAL_CONGESTION_REPORT}
 
   # Use the following to generate and write out a congestion map from batch mode
   # This requires a GUI session to be temporarily opened and closed so a valid DISPLAY
   # must be set in your UNIX environment.
 
-  # YUNSUP: turn off congestion map
-  #if {[info exists env(DISPLAY)]} {
-  #  gui_start
+  # ctorng: Turn off congestion map that pulls up the GUI
 
-  #  # Create a layout window
-  #  set MyLayout [gui_create_window -type LayoutWindow]
-
-  #  # Build congestion map in case report_congestion was not previously run
-  #  report_congestion -build_map
-
-  #  # Display congestion map in layout window
-  #  gui_show_map -map "Global Route Congestion" -show true
-
-  #  # Zoom full to display complete floorplan
-  #  gui_zoom -window [gui_get_current_window -view] -full
-
-  #  # Write the congestion map out to an image file
-  #  # You can specify the output image type with -format png | xpm | jpg | bmp
-
-  #  # The following saves only the congestion map without the legends
-  #  gui_write_window_image -format png -file ${REPORTS_DIR}/${DCRM_DCT_FINAL_CONGESTION_MAP_OUTPUT_FILE}
-
-  #  # The following saves the entire congestion map layout window with the legends
-  #  gui_write_window_image -window ${MyLayout} -format png -file ${REPORTS_DIR}/${DCRM_DCT_FINAL_CONGESTION_MAP_WINDOW_OUTPUT_FILE}
-
-  #  gui_stop
-  #} else {
-  #  puts "Information: The DISPLAY environment variable is not set. Congestion map generation has been skipped."
-  #}
+#  if {[info exists env(DISPLAY)]} {
+#    gui_start
+#
+#    # Create a layout window
+#    set MyLayout [gui_create_window -type LayoutWindow]
+#
+#    # Build congestion map in case report_congestion was not previously run
+#    report_congestion -build_map
+#
+#    # Display congestion map in layout window
+#    gui_show_map -map "Global Route Congestion" -show true
+#
+#    # Zoom full to display complete floorplan
+#    gui_zoom -window [gui_get_current_window -view] -full
+#
+#    # Write the congestion map out to an image file
+#    # You can specify the output image type with -format png | xpm | jpg | bmp
+#
+#    # The following saves only the congestion map without the legends
+#    gui_write_window_image -format png -file ${REPORTS}/${DCRM_DCT_FINAL_CONGESTION_MAP_OUTPUT_FILE}
+#
+#    # The following saves the entire congestion map layout window with the legends
+#    gui_write_window_image -window ${MyLayout} -format png -file ${REPORTS}/${DCRM_DCT_FINAL_CONGESTION_MAP_WINDOW_OUTPUT_FILE}
+#
+#    gui_stop
+#  } else {
+#    puts "Information: The DISPLAY environment variable is not set. Congestion map generation has been skipped."
+#  }
 }
 
 # Use SAIF file for power analysis
 # read_saif -auto_map_names -input ${DESIGN_NAME}.saif -instance < DESIGN_INSTANCE > -verbose
 
-report_power -nosplit -hier > ${REPORTS_DIR}/${DCRM_FINAL_POWER_REPORT}
-report_clock_gating -nosplit > ${REPORTS_DIR}/${DCRM_FINAL_CLOCK_GATING_REPORT}
+report_power -nosplit -hier > ${REPORTS}/${DCRM_FINAL_POWER_REPORT}
+report_clock_gating -nosplit > ${REPORTS}/${DCRM_FINAL_CLOCK_GATING_REPORT}
 
-report_reference -nosplit -hierarchy > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.reference.rpt
-report_resources -nosplit -hierarchy > ${REPORTS_DIR}/${DESIGN_NAME}.mapped.resources.rpt
+report_reference -nosplit -hierarchy > ${REPORTS}/${DCRM_FINAL_REFERENCE_REPORT}
+report_resources -nosplit -hierarchy > ${REPORTS}/${DCRM_FINAL_RESOURCES_REPORT}
 
-source ${DC_MISC_TCL}
-find_regs ${STRIP_PATH}
+# Uncomment the next line if you include the -self_gating to the compile_ultra command
+# to report the XOR Self Gating information.
+# report_self_gating  -nosplit > ${REPORTS}/${DCRM_FINAL_SELF_GATING_REPORT}
+
+# Uncomment the next line to reports the number, area, and  percentage  of cells
+# for each threshold voltage group in the design.
+# report_threshold_voltage_group -nosplit > ${REPORTS}/${DCRM_THRESHOLD_VOLTAGE_GROUP_REPORT}
 
 #################################################################################
 # Write out Milkyway Design for Top-Down Flow
@@ -591,4 +693,15 @@ find_regs ${STRIP_PATH}
 #  write_milkyway -overwrite -output ${DCRM_FINAL_MW_CEL_NAME}
 #}
 
+#################################################################################
+# Source the user plugin for post-synthesis
+#################################################################################
+# ctorng: Adding this step to match the rest of the build system
+
+if {[file exists [which ${post_synthesis_plugin}]]} {
+  puts "Info: Reading in the post-synthesis plugin [which ${post_synthesis_plugin}]\n"
+  source -echo -verbose ${post_synthesis_plugin}
+}
+
 exit
+

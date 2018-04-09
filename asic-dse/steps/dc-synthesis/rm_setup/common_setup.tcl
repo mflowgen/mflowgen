@@ -4,87 +4,113 @@
 # Version: D-2010.03-SP1 (May 24, 2010)
 # Copyright (C) 2007-2010 Synopsys, Inc. All rights reserved.
 ##########################################################################################
+# ctorng: Updated the reference methodology to this version
+# Version: L-2016.03-SP2 (July 25, 2016)
+##########################################################################################
 
-#YUNSUP: this is set by make_generated_vars.tcl
+# ctorng: Pulled out into designer interface
 #set DESIGN_NAME                   ""  ;#  The name of the top-level design
 
-set DESIGN_REF_DATA_PATH          ""  ;#  Absolute path prefix variable for library/design data.
-                                       #  Use this variable to prefix the common absolute path to
-                                       #  the common variables defined below.
-                                       #  Absolute paths are mandatory for hierarchical RM flow.
+#  Absolute path prefix variable for library/design data. Use this variable to
+#  prefix the common absolute path to the common variables defined below.
+#  Absolute paths are mandatory for hierarchical reference methodology flow.
+set DESIGN_REF_DATA_PATH          ""
 
 ##########################################################################################
 # Hierarchical Flow Design Variables
 ##########################################################################################
 
-set HIERARCHICAL_DESIGNS           "" ;# List of hierarchical block design names "DesignA DesignB" ...
-set HIERARCHICAL_CELLS             "" ;# List of hierarchical block cell instance names "u_DesignA u_DesignB" ...
+# List of hierarchical block design names "DesignA DesignB" ...
+set HIERARCHICAL_DESIGNS           ""
+# List of hierarchical block cell instance names "u_DesignA u_DesignB" ...
+set HIERARCHICAL_CELLS             ""
 
 ##########################################################################################
 # Library Setup Variables
 ##########################################################################################
 
-# For the following variables, use a blank space to separate multiple entries
+# For the following variables, use a blank space to separate multiple entries.
 # Example: set TARGET_LIBRARY_FILES "lib1.db lib2.db lib3.db"
 
-#YUNSUP: this is set by make_generated_vars.tcl
-#set ADDITIONAL_SEARCH_PATH        ""  ;#  Additional search path to be added to the default search path
+# Additional search path to be added to the default search path
+# This should also contain the directories where all the TARGET_LIBRARY_FILES
+# (*.db) files are located.
 
-#YUNSUP: this is set by make_generated_vars.tcl
+# ctorng: Pulled out into designer interface
+#set ADDITIONAL_SEARCH_PATH        ""  ;
+
+# ctorng: Pulled out into designer interface
 #set TARGET_LIBRARY_FILES          ""  ;#  Target technology logical libraries
-set ADDITIONAL_LINK_LIB_FILES     ""  ;#  Extra link logical libraries not included in TARGET_LIBRARY_FILES
 
-set MIN_LIBRARY_FILES             ""  ;#  List of max min library pairs "max1 min1 max2 min2 max3 min3"...
+#  Extra link logical libraries not included in TARGET_LIBRARY_FILES
+set ADDITIONAL_LINK_LIB_FILES     ""  ;
 
-#YUNSUP: this is set by make_generated_vars.tcl
-#set MW_REFERENCE_LIB_DIRS         ""  ;#  Milkyway reference libraries (include IC Compiler ILMs here)
+#  List of max min library pairs "max1 min1 max2 min2 max3 min3"...
+set MIN_LIBRARY_FILES             ""  ;
 
-set MW_REFERENCE_CONTROL_FILE     ""  ;#  Reference Control file to define the MW ref libs
+#  Milkyway reference libraries (include IC Compiler ILMs here)
 
-#YUNSUP: this is set by make_generated_vars.tcl
+# ctorng: Pulled out into designer interface
+#set MW_REFERENCE_LIB_DIRS         ""  ;
+
+#  Reference Control file to define the Milkyway reference libs
+set MW_REFERENCE_CONTROL_FILE     ""  ;
+
+# ctorng: Pulled out into designer interface
 #set TECH_FILE                     ""  ;#  Milkyway technology file
 #set MAP_FILE                      ""  ;#  Mapping file for TLUplus
 #set TLUPLUS_MAX_FILE              ""  ;#  Max TLUplus file
 #set TLUPLUS_MIN_FILE              ""  ;#  Min TLUplus file
-
 
 set MW_POWER_NET                "VDD" ;#
 set MW_POWER_PORT               "VDD" ;#
 set MW_GROUND_NET               "VSS" ;#
 set MW_GROUND_PORT              "VSS" ;#
 
-set MIN_ROUTING_LAYER            ""   ;# Min routing layer
-set MAX_ROUTING_LAYER            ""   ;# Max routing layer
+# ctorng: Set from the ASIC design kit stdcells.tcl
+# Min routing layer
+set MIN_ROUTING_LAYER            $STDCELLS_MIN_ROUTING_LAYER_DC
+# Max routing layer
+set MAX_ROUTING_LAYER            $STDCELLS_MAX_ROUTING_LAYER_DC
 
-set LIBRARY_DONT_USE_FILE        ""   ;# Tcl file with library modifications for dont_use
+# Tcl file with library modifications for dont_use
+set LIBRARY_DONT_USE_FILE        ""   ;
 
 ##########################################################################################
-# Multi-Voltage Common Variables
+# Multivoltage Common Variables
 #
-# Define the following MV common variables for the RM scripts for multi-voltage flows.
+# Define the following multivoltage common variables for the reference methodology scripts
+# for multivoltage flows.
 # Use as few or as many of the following definitions as needed by your design.
 ##########################################################################################
 
-set PD1                          ""           ;# Name of power domain/voltage area  1
-set PD1_CELLS                    ""           ;# Instances to include in power domain/voltage area 1
-set VA1_COORDINATES              {}           ;# Coordinates for voltage area 1
-set MW_POWER_NET1                "VDD1"       ;# Power net for voltage area 1
-set MW_POWER_PORT1               "VDD"        ;# Power port for voltage area 1
+# Name of power domain/voltage area  1
+set PD1                          ""
+# Coordinates for voltage area 1
+set VA1_COORDINATES              {};
+# Power net for voltage area 1
+set MW_POWER_NET1                "VDD1"
 
-set PD2                          ""           ;# Name of power domain/voltage area  2
-set PD2_CELLS                    ""           ;# Instances to include in power domain/voltage area 2
-set VA2_COORDINATES              {}           ;# Coordinates for voltage area 2
-set MW_POWER_NET2                "VDD2"       ;# Power net for voltage area 2
-set MW_POWER_PORT2               "VDD"        ;# Power port for voltage area 2
+# Name of power domain/voltage area  2
+set PD2                          ""
+# Coordinates for voltage area 2
+set VA2_COORDINATES              {};
+# Power net for voltage area 2
+set MW_POWER_NET2                "VDD2"
 
-set PD3                          ""           ;# Name of power domain/voltage area  3
-set PD3_CELLS                    ""           ;# Instances to include in power domain/voltage area 3
-set VA3_COORDINATES              {}           ;# Coordinates for voltage area 3
-set MW_POWER_NET3                "VDD3"       ;# Power net for voltage area 3
-set MW_POWER_PORT3               "VDD"        ;# Power port for voltage area 3
+# Name of power domain/voltage area  3
+set PD3                          ""
+# Coordinates for voltage area 3
+set VA3_COORDINATES              {};
+# Power net for voltage area 3
+set MW_POWER_NET3                "VDD3"
 
-set PD4                          ""           ;# Name of power domain/voltage area  4
-set PD4_CELLS                    ""           ;# Instances to include in power domain/voltage area 4
-set VA4_COORDINATES              {}           ;# Coordinates for voltage area 4
-set MW_POWER_NET4                "VDD4"       ;# Power net for voltage area 4
-set MW_POWER_PORT4               "VDD"        ;# Power port for voltage area 4
+# Name of power domain/voltage area  4
+set PD4                          ""
+# Coordinates for voltage area 4
+set VA4_COORDINATES              {};
+# Power net for voltage area 4
+set MW_POWER_NET4                "VDD4"
+
+puts "RM-Info: Completed script [info script]\n"
+

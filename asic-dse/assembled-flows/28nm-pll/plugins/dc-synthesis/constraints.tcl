@@ -13,13 +13,14 @@
 
 set CLOCK_NET in_clk_ref
 
-create_clock ${CLOCK_NET} -name ideal_clock -period ${CLOCK_PERIOD}
+create_clock ${CLOCK_NET} -name ideal_clock -period ${dc_clock_period}
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is
 # driving another block of on-chip logic.
 
-#set_load -pin_load 15 [all_outputs]
+# FIXME: make this general across technologies
+
 set_load -pin_load 0.004 [all_outputs]
 
 # This constraint sets the input drive strength of the input pins of
@@ -45,7 +46,7 @@ set_max_fanout 20 ${DESIGN_NAME}
 
 # Make all signals meet good slew
 
-set_max_transition [expr 0.25*${CLOCK_PERIOD}] ${DESIGN_NAME}
+set_max_transition [expr 0.25*${dc_clock_period}] ${DESIGN_NAME}
 
 #set_input_transition 1 [all_inputs]
 #set_max_transition 10 [all_outputs]

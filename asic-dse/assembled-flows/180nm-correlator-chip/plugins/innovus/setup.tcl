@@ -173,7 +173,7 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 #-------------------------------------------------------------------------
 
 set vars(process)                           $STDCELLS_PROCESS
-set vars(max_route_layer)                   4
+set vars(max_route_layer)              $STDCELLS_MAX_ROUTING_LAYER_INNOVUS
 
 #-------------------------------------------------------------------------
 # Files

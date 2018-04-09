@@ -166,7 +166,7 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 # FIXME: This clearly belongs in stdcells.tcl
 
 set vars(process)                           $STDCELLS_PROCESS
-set vars(max_route_layer)                   7
+set vars(max_route_layer)              $STDCELLS_MAX_ROUTING_LAYER_INNOVUS
 
 #-------------------------------------------------------------------------
 # User Plugins
