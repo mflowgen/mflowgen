@@ -322,12 +322,12 @@ set vars(dynamic_power_effort)         none
 
 set vars(ccopt_effort)                 medium
 
-# Metal fill is performed using the Calibre fill utility
-# Disabling metal density check at signoff
+# Metal fill
 
-set vars(signoff,verify_metal_density,skip) true
+#set vars(signoff,verify_metal_density,skip) true
 
-# Custom GDS stream out command
+set vars(metalfill)     pre_postroute
+set vars(metalfill_tcl) $vars(plug_dir)/metal_fill.tcl
 
 #-------------------------------------------------------------------------
 # Custom tcl
