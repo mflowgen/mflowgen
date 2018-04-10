@@ -14,6 +14,24 @@ setFlipping s
 
 set bondpad_cell PAD80LU_OBV
 
+# Test structures and stuff removed
+#
+#     vdd_core_2_iocell
+#     vdd_core_test_0_iocell
+#     vdd_core_test_1_iocell
+#     vdd_io_1_iocell
+#     vdd_io_test_0_iocell
+#     vdd_poc_test_0_iocell
+#     vss_core_2_iocell
+#     vss_core_dummy_0_iocell
+#     vss_core_dummy_1_iocell
+#     vss_core_dummy_2_iocell
+#     vss_core_dummy_3_iocell
+#     vss_core_test_0_iocell
+#     vss_core_test_1_iocell
+#     vss_io_test_0_iocell
+#     vss_io_test_1_iocell
+
 # Add physical IO cells
 #
 # - Corner cells
@@ -29,39 +47,52 @@ addInst -physical -cell PCORNER -inst PCORNER_BOTTOMRIGHT
 
 addInst -physical -cell PVDD1CDG -inst vdd_core_0_iocell
 addInst -physical -cell PVDD1CDG -inst vdd_core_1_iocell
-addInst -physical -cell PVDD1CDG -inst vdd_core_2_iocell
-addInst -physical -cell PVDD1CDG -inst vdd_core_test_0_iocell
-addInst -physical -cell PVDD1CDG -inst vdd_core_test_1_iocell
+#addInst -physical -cell PVDD1CDG -inst vdd_core_2_iocell
+#addInst -physical -cell PVDD1CDG -inst vdd_core_test_0_iocell
+#addInst -physical -cell PVDD1CDG -inst vdd_core_test_1_iocell
 
 addInst -physical -cell PVSS1CDG -inst vss_core_0_iocell
 addInst -physical -cell PVSS1CDG -inst vss_core_1_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_2_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_test_0_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_test_1_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_0_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_1_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_0_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_1_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_core_dummyclk_2_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_2_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_test_0_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_test_1_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_dummy_0_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_dummy_1_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_iocell
+#addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_iocell
+
+addInst -physical -cell PVSS1CDG -inst vss_dummy_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_1_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_2_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_3_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_4_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_5_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_6_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_7_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_8_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_9_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_10_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_11_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_12_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_13_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_14_iocell
 
 # IO VDD and VSS pads
 
 addInst -physical -cell PVDD2CDG -inst vdd_io_0_iocell
-addInst -physical -cell PVDD2CDG -inst vdd_io_1_iocell
-addInst -physical -cell PVDD2CDG -inst vdd_io_test_0_iocell
+#addInst -physical -cell PVDD2CDG -inst vdd_io_1_iocell
+#addInst -physical -cell PVDD2CDG -inst vdd_io_test_0_iocell
 
 addInst -physical -cell PVSS2CDG -inst vss_io_0_iocell
 addInst -physical -cell PVSS2CDG -inst vss_io_1_iocell
 addInst -physical -cell PVSS2CDG -inst vss_io_2_iocell
-addInst -physical -cell PVSS2CDG -inst vss_io_test_0_iocell
-addInst -physical -cell PVSS2CDG -inst vss_io_test_1_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_io_test_0_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_io_test_1_iocell
 
 # POC pads
 
 addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
-addInst -physical -cell PVDD2POC -inst vdd_poc_test_0_iocell
+#addInst -physical -cell PVDD2POC -inst vdd_poc_test_0_iocell
 
 # PRCUT cells
 
@@ -164,5 +195,4 @@ loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).bond.save.io
 #-------------------------------------------------------------------------
 
 setIoFlowFlag 0
-
 
