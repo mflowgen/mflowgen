@@ -263,13 +263,13 @@ set_input_delay -clock $pco_clk_name $debug_input_delay debug_in_io
 #
 # - Drive 12 pF
 # - Must meet 6ns slew (slow due to pads)
-# - Have 1/8 core clk period to propagate to output ports
+# - Have 1/4 pco clk period to propagate to output ports
 
 set_load -pin_load 12 [all_outputs]
 
 set_max_transition 6 [all_outputs]
 
-set outmux_output_delay [expr $core1_clk_period/8]
+set outmux_output_delay [expr 3*$pco_clk_period/4]
 
 set_output_delay -clock $core1_clk_name            $outmux_output_delay [all_outputs]
 set_output_delay -clock $core2_clk_name -add_delay $outmux_output_delay [all_outputs]
