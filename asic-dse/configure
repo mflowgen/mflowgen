@@ -21,13 +21,13 @@ if [[ x$1 == x"" ]]; then
 fi
 
 #-------------------------------------------------------------------------
-# 180nm-correlator-chip
+# 180nm-pcosync-chip
 #-------------------------------------------------------------------------
 # This flow has its own Makefrag
 
 if [[ x$1 == x--180* ]]; then
-  ln -sf ../assembled-flows/180nm-correlator-chip/setup-flow.mk
-  ln -sf ../assembled-flows/180nm-correlator-chip/Makefrag
+  ln -sf ../assembled-flows/180nm-pcosync-chip/setup-flow.mk
+  ln -sf ../assembled-flows/180nm-pcosync-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
