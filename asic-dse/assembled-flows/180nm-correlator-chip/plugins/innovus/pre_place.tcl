@@ -23,6 +23,14 @@ globalNetConnect VDDPST -type pgpin -pin VDDPST -inst * -verbose
 globalNetConnect VSSPST -type pgpin -pin VSSPST -inst * -verbose
 globalNetConnect POC    -type pgpin -pin POC    -inst * -verbose
 
+# Create PG pins (temporary hardcoded) so that GDS export creates text for LVS in Calibre.
+
+add_gui_text -label VDDPST -pt { 160   30} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label VDD    -pt {1090 1970} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label VSS    -pt { 950 2090} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label VSSPST -pt { 260   30} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label POC    -pt {1018 1300} -layer CUSTOM_BRG_LVS_M3 -height 5
+
 #-------------------------------------------------------------------------
 # Misc
 #-------------------------------------------------------------------------
