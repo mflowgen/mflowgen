@@ -202,7 +202,7 @@ endmodule // module controller
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/7/2018
+	Last modified on 4/10/2018
 	Implements digital correlator top-level module
 
 	Parameter description
@@ -217,9 +217,9 @@ endmodule // module controller
 		$ cd alloy-asic/asic-dse
 		$ mkdir build
 		$ cd build
-		$ ../configure --180nm-correlator-chip # <-- select appropriated assembled flow
-		$ make list                            # <-- show everything you can do
-		$ make                                 # <-- runs all steps
+		$ ../configure --180nm  # <-- select appropriated assembled flow
+		$ make list             # <-- show everything you can do
+		$ make                  # <-- runs all steps
 
 	ASIC design files
 		Design specific plugins including constraints, floorplan, etc are located in:
@@ -356,7 +356,7 @@ output wire [3:0] out_mux );
 
 localparam SEQbit = 63;
 localparam PRCNbit = 0;
-localparam CNTRbit = 13;
+localparam CNTRbit = 14;
 localparam CONFIGbit = 31;
 
 // SPI wires
@@ -1019,7 +1019,7 @@ endmodule // module spcore_slice
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/7/2018
+	Last modified on 4/10/2018
 	Implements a signal processing core of the ASP (see 2018 RFIC paper equations 3 - 6)
 	enable is used for clock-gating the signal processing core
 	rn is a vector of decoded and stored inputs
@@ -1073,16 +1073,10 @@ reg signed [add_lvls+ADCbit:0] sum2 [0:add_lvls][0:(2**add_lvls)-1];
 wire [add_lvls+ADCbit:0] vcorrn_ave;
 wire [add_lvls+ADCbit:0] rn_abs;
 wire [add_lvls+ADCbit+PRCNbit:0] rn_abs_scaled;
-//wire [ADCbit:0] vcorrn_ave;
-//wire [ADCbit:0] rn_abs;
-//wire [ADCbit+PRCNbit:0] rn_abs_scaled;
 genvar kk;
 integer ii;
 integer jj;
 
-// resize final sums to smaller size while keeping msb (ex: 6 bit 1_11_001 to 4 bit 1__001)
-//assign vcorrn_ave = {sum1[add_lvls][0][add_lvls+ADCbit], sum1[add_lvls][0][ADCbit-1:0]};
-//assign rn_abs = {sum2[add_lvls][0][add_lvls+ADCbit], sum2[add_lvls][0][ADCbit-1:0]};
 assign vcorrn_ave = $unsigned(sum1[add_lvls][0]);
 assign rn_abs = $unsigned(sum2[add_lvls][0]);
 
@@ -1181,9 +1175,8 @@ always @(posedge clk) begin
 	if (~greset_n || (vpeak_in && VPEAK_BLOCK)) begin
 		vpeak_out <= 1'b0;
 	end else if (enable) begin
-		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && (rn_abs >= THRESHOLD) ) begin
-//		if ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET)))  begin
-		//if ($signed(sum1[add_lvls][0]) >= $signed(sum2[add_lvls][0])) begin
+		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + ($signed(OFFSET) <<< add_lvls))) && (rn_abs >= (THRESHOLD << add_lvls)) ) begin
+//		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && (rn_abs >= THRESHOLD) ) begin
 			vpeak_out <= 1'b1;
 		end else begin
 			vpeak_out <= 1'b0;
