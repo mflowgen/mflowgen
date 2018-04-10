@@ -62,6 +62,154 @@ set_clock_uncertainty 0.5 [get_clocks $pco_clk_name]
 set_clock_uncertainty 1   [get_clocks $spi_clk_name]
 set_clock_uncertainty 1   [get_clocks $spi_load_name]
 
+#-------------------------------------------------------------------------
+# Clock domain crossings
+#-------------------------------------------------------------------------
+# Check clock domain crossings using Paul Zimmer's "No Man's Land:
+# Constraining async clock domain crossings" article from 2013 on handling
+# them.
+
+# Create shadow clocks for cdc checking
+
+create_clock -add -name ${core1_clk_name}_cdc -period $core1_clk_period [get_ports clk1_io]
+create_clock -add -name ${core2_clk_name}_cdc -period $core2_clk_period [get_ports clk2_io]
+create_clock -add -name ${pco_clk_name}_cdc   -period $pco_clk_period   [get_ports clkpco_io]
+create_clock -add -name ${spi_clk_name}_cdc   -period $spi_clk_period   [get_ports spiclk_io]
+create_clock -add -name ${spi_load_name}_cdc  -period $spi_load_period  [get_ports spiload_io]
+
+# Clean up and remove the auto-generated path groups for each of these
+
+remove_path_group ${core1_clk_name}_cdc
+remove_path_group ${core2_clk_name}_cdc
+remove_path_group ${pco_clk_name}_cdc
+remove_path_group ${spi_clk_name}_cdc
+remove_path_group ${spi_load_name}_cdc
+
+# Create new path groups for the CDCs we care about
+#
+# For some reason the commands don't work with variables... so we have to
+# hardcode the clock names
+
+group_path -name cores_to_pco -from {core1_clk_cdc core2_clk_cdc} -to ${pco_clk_name}_cdc
+group_path -name pco_to_cores -from ${pco_clk_name}_cdc -to {core1_clk_cdc core2_clk_cdc}
+
+group_path -name core1_to_core2 -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc
+group_path -name core2_to_core1 -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc
+
+group_path -name spi_to_spiload -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc
+group_path -name spiload_to_chip -from ${spi_load_name}_cdc -to {core1_clk_cdc core2_clk_cdc pco_clk_cdc}
+
+# Make sure cdc clocks aren't propagated
+
+remove_propagated_clock [get_clocks *_cdc]
+
+# No internal paths on cdc clocks
+
+foreach_in_collection cdcclk [get_clocks *_cdc] {
+  set_false_path -from [get_clock $cdcclk] -to [get_clock $cdcclk]
+}
+
+# Make cdc clocks physically exclusive from all other clocks
+
+set_clock_groups -physically_exclusive \
+  -group [remove_from_collection [get_clocks *] [get_clocks *_cdc]] \
+  -group [get_clocks *_cdc]
+
+# Constraints
+#
+#
+#                     Constraint (ns)
+# From      To        Hold      Setup
+# ----------------------------------------------------
+# core1     core2     0.0       10.0
+# core1     pco       0.0       10.0
+# core1     spi       -- false path --
+# core1     spiload   -- false path --
+#
+# core2     core1     0.0       10.0
+# core2     pco       0.0       10.0
+# core2     spi       -- false path --
+# core2     spiload   -- false path --
+#
+# pco       core1     0.0       10.0
+# pco       core2     0.0       10.0
+# pco       spi       -- false path --
+# pco       spiload   -- false path --
+#
+# spi       core1     -- false path --
+# spi       core2     -- false path --
+# spi       pco       -- false path --
+# spi       spiload   0.0       25.0    <-- don't care
+#
+# spiload   core1     0.0       25.0    <-- don't care
+# spiload   core2     0.0       25.0    <-- don't care
+# spiload   pco       0.0       25.0    <-- don't care
+# spiload   spi       -- false path --
+
+# Constrain paths from core 1
+
+set_min_delay -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc 0.0
+set_max_delay -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc 10.0
+
+set_min_delay -from ${core1_clk_name}_cdc -to ${pco_clk_name}_cdc 0.0
+set_max_delay -from ${core1_clk_name}_cdc -to ${pco_clk_name}_cdc 10.0
+
+set_false_path -from ${core1_clk_name}_cdc -to ${spi_clk_name}_cdc
+set_false_path -from ${core1_clk_name}_cdc -to ${spi_load_name}_cdc
+
+# Constrain paths from core 2
+
+set_min_delay -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc 0.0
+set_max_delay -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc 10.0
+
+set_min_delay -from ${core2_clk_name}_cdc -to ${pco_clk_name}_cdc 0.0
+set_max_delay -from ${core2_clk_name}_cdc -to ${pco_clk_name}_cdc 10.0
+
+set_false_path -from ${core2_clk_name}_cdc -to ${spi_clk_name}_cdc
+set_false_path -from ${core2_clk_name}_cdc -to ${spi_load_name}_cdc
+
+# Constrain paths from pco
+
+set_min_delay -from ${pco_clk_name}_cdc -to ${core1_clk_name}_cdc 0.0
+set_max_delay -from ${pco_clk_name}_cdc -to ${core1_clk_name}_cdc 10.0
+
+set_min_delay -from ${pco_clk_name}_cdc -to ${core2_clk_name}_cdc 0.0
+set_max_delay -from ${pco_clk_name}_cdc -to ${core2_clk_name}_cdc 10.0
+
+set_false_path -from ${pco_clk_name}_cdc -to ${spi_clk_name}_cdc
+set_false_path -from ${pco_clk_name}_cdc -to ${spi_load_name}_cdc
+
+# Constrain paths from spiclk
+
+set_false_path -from ${spi_clk_name}_cdc -to ${core1_clk_name}_cdc
+set_false_path -from ${spi_clk_name}_cdc -to ${core2_clk_name}_cdc
+set_false_path -from ${spi_clk_name}_cdc -to ${pco_clk_name}_cdc
+
+set_min_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 0.0
+set_max_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 25.0
+
+# Constrain paths from spiload
+
+set_min_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 25.0
+
+set_min_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 25.0
+
+set_min_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 25.0
+
+set_false_path -from ${spi_load_name}_cdc -to ${spi_clk_name}_cdc
+
+# Make sure these delay constraints have priority. The chip will not work if
+# these are not honored.
+
+set_cost_priority {min_delay max_delay}
+
+#-------------------------------------------------------------------------
+# Misc
+#-------------------------------------------------------------------------
+
 # Things to check
 #
 # 1. CDC paths between clocks (i.e., "get_timing -from clk1 ... -to clk2 ...")
