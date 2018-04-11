@@ -76,10 +76,12 @@ set vars(libs_bc,timing)      [join "$adk_dir/stdcells-bc.lib
 set vars(libs_wc,timing)      [join "$adk_dir/stdcells-wc.lib
                                      $adk_dir/iocells-wc.lib"]
 
-set vars(lef_files)     [join "$adk_dir/rtk-tech.lef
+# For some reason, the TSMC 180nm stdcell lef has the rtk-tech.lef info
+# already and there is no actual rtk tech lef
+
+set vars(lef_files)     [join "$adk_dir/stdcells.lef
                                $adk_dir/iocells.lef
-                               $adk_dir/iocells-bondpads.lef
-                               $adk_dir/stdcells.lef" ]
+                               $adk_dir/iocells-bondpads.lef"]
 
 # Difference between library_sets, rc_corners, and delay_corners?
 # - Ah, a delay_corner is made by choosing an rc_corner and a library_set

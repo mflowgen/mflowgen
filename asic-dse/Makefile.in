@@ -136,7 +136,7 @@ list:
 # - The "... 2>/dev/null || echo 0" returns "0" if the file does not exist
 # - All bash variables need to be double escaped with $$myvariable
 # - This sed command can be added to blank out zero-value printouts
-#       sed "s/0 hr/    /; s/0 min/     /"
+#       sed "s/ 0 hr/     /; s/ 0 min/      /"
 # - The total runtime is aggregated across all steps to compute the total.
 #   This number might be different compared to subtracting the first/last
 #   timestamps because the user might have paused between steps.
@@ -155,7 +155,7 @@ runtimes:
       m=$$(( $$step_secs % 3600 / 60 )); \
       s=$$(( $$step_secs % 60        )); \
       printf '%-20s -- %2d hr %2d min %2d sec\n' $(step) $$h $$m $$s | \
-        sed "s/0 hr/    /; s/0 min/     /";) \
+        sed "s/ 0 hr/     /; s/ 0 min/      /";) \
     echo "--------------------------------------------------------------------------"; \
     h=$$(( $$tot_secs / 3600      )); \
     m=$$(( $$tot_secs % 3600 / 60 )); \
