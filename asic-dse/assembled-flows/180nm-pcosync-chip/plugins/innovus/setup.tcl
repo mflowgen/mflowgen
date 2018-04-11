@@ -196,11 +196,11 @@ set vars(post_place_tcl)              $vars(plug_dir)/post_place.tcl
 #set vars(post_cts_tcl)                "foo/post_cts.tcl"
 #set vars(pre_postcts_tcl)             "foo/pre_postcts.tcl"
 #set vars(post_postcts_tcl)            "foo/post_postcts.tcl"
-#set vars(pre_postcts_hold_tcl)        "foo/pre_postcts_hold.tcl"
+set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postctshold.tcl
 #set vars(post_postcts_hold_tcl)       "foo/post_postcts_hold.tcl"
 #set vars(pre_route_tcl)               "foo/pre_route.tcl"
 #set vars(post_route_tcl)              "foo/post_route.tcl"
-#set vars(pre_postroute_tcl)           "foo/pre_postroute.tcl"
+set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
 #set vars(post_postroute_tcl)          "foo/post_postroute.tcl"
 #set vars(pre_postroute_hold_tcl)      "foo/pre_postroute_hold.tcl"
 #set vars(post_postroute_hold_tcl)     "foo/post_postroute_hold.tcl"
