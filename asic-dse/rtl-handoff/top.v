@@ -292,7 +292,7 @@ PDDW0408SCDG name \
 // On input pads, .DS(1'b0) should not make a difference, so tie it to a lower current setting
 // .OEN(1'b1) = Output disable; .PE(1'b0) = pull disable; .IE(1'b1) = input enable;
 `define INPUT_PAD(name,pad,data) \
-PDDW0408SCDG name \
+PDDW0204SCDG name \
 (                 \
 	.PAD (pad),   \
 	.C   (data),  \
