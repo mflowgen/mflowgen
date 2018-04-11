@@ -202,7 +202,7 @@ endmodule // module controller
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/10/2018
+	Last modified on 4/11/2018
 	Implements digital correlator top-level module
 
 	Parameter description
@@ -344,7 +344,7 @@ PDDW0204SCDG name \
 //*/
 
 /*
-module correlator_top #(parameter ADCbit = 12)(
+module correlator_top #(parameter ADCbit = 10)(
 input		clk1,
 input		clk2,
 input		clkpco,
@@ -361,7 +361,7 @@ output wire [3:0] out_mux );
 localparam SEQbit = 127;
 localparam PRCNbit = 0;
 localparam CNTRbit = 14;
-localparam CONFIGbit = 31;
+localparam CONFIGbit = 33;
 
 // SPI wires
 wire [CONFIGbit-1:0] CONFIG;
@@ -386,6 +386,8 @@ wire [4:0] out_mux_sel2 = CONFIG[14:10];
 wire [4:0] out_mux_sel3 = CONFIG[19:15];
 wire spcore1_en;
 wire spcore2_en;
+wire adc_block1;
+wire adc_block2;
 wire [0:SEQbit-1] spcore_slice_select;
 wire pco_en;
 wire pulsegen_en;
@@ -429,7 +431,8 @@ assign out_mux[0] = ( out_mux_sel0 == 5'd00 ) ? vpeak
                   : ( out_mux_sel0 == 5'd17 ) ? state_ctrl[1]
                   : ( out_mux_sel0 == 5'd18 ) ? state_ctrl[2]
                   : ( out_mux_sel0 == 5'd19 ) ? spidout
-                  : ( out_mux_sel0 == 5'd20 ) ? 1'b1
+                  : ( out_mux_sel0 == 5'd20 ) ? debug_in
+                  : ( out_mux_sel0 == 5'd21 ) ? 1'b1
                   :                             1'b0;
 assign out_mux[1] = ( out_mux_sel1 == 5'd00 ) ? vpeak
                   : ( out_mux_sel1 == 5'd01 ) ? vpeak1
@@ -451,7 +454,8 @@ assign out_mux[1] = ( out_mux_sel1 == 5'd00 ) ? vpeak
                   : ( out_mux_sel1 == 5'd17 ) ? state_ctrl[1]
                   : ( out_mux_sel1 == 5'd18 ) ? state_ctrl[2]
                   : ( out_mux_sel1 == 5'd19 ) ? spidout
-                  : ( out_mux_sel1 == 5'd20 ) ? 1'b1
+                  : ( out_mux_sel1 == 5'd20 ) ? debug_in
+                  : ( out_mux_sel1 == 5'd21 ) ? 1'b1
                   :                             1'b0;
 assign out_mux[2] = ( out_mux_sel2 == 5'd00 ) ? vpeak
                   : ( out_mux_sel2 == 5'd01 ) ? vpeak1
@@ -473,7 +477,8 @@ assign out_mux[2] = ( out_mux_sel2 == 5'd00 ) ? vpeak
                   : ( out_mux_sel2 == 5'd17 ) ? state_ctrl[1]
                   : ( out_mux_sel2 == 5'd18 ) ? state_ctrl[2]
                   : ( out_mux_sel2 == 5'd19 ) ? spidout
-                  : ( out_mux_sel2 == 5'd20 ) ? 1'b1
+                  : ( out_mux_sel2 == 5'd20 ) ? debug_in
+                  : ( out_mux_sel2 == 5'd21 ) ? 1'b1
                   :                             1'b0;
 assign out_mux[3] = ( out_mux_sel3 == 5'd00 ) ? vpeak
                   : ( out_mux_sel3 == 5'd01 ) ? vpeak1
@@ -495,7 +500,8 @@ assign out_mux[3] = ( out_mux_sel3 == 5'd00 ) ? vpeak
                   : ( out_mux_sel3 == 5'd17 ) ? state_ctrl[1]
                   : ( out_mux_sel3 == 5'd18 ) ? state_ctrl[2]
                   : ( out_mux_sel3 == 5'd19 ) ? spidout
-                  : ( out_mux_sel3 == 5'd20 ) ? 1'b1
+                  : ( out_mux_sel3 == 5'd20 ) ? debug_in
+                  : ( out_mux_sel3 == 5'd21 ) ? 1'b1
                   :                             1'b0;
 
 assign vpeak = vpeak1 || vpeak2;
@@ -508,6 +514,8 @@ assign pco_design_sel = CONFIG[27];
 assign peak_in_pco = CONFIG[28] ? debug_in : vpeak;
 assign vpeak_block1 = CONFIG[29];
 assign vpeak_block2 = CONFIG[30];
+assign adc_block1 = CONFIG[31];
+assign adc_block2 = CONFIG[32];
 
 
 spcore_decoder #(.SEQbit(SEQbit)) spcore_slice_decoder (
@@ -522,6 +530,7 @@ spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore1 (
 .spcore_slice_select(spcore_slice_select),
 .ADC_I(ADC_I),
 .ADC_Q(ADC_Q),
+.ADC_BLOCK(adc_block1),
 .THRESHOLD(THRESHOLD),
 .OFFSET(OFFSET),
 .SCALE(SCALE),
@@ -538,6 +547,7 @@ spcore #(.SEQbit(SEQbit), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) spcore2 (
 .spcore_slice_select(spcore_slice_select),
 .ADC_I(ADC_I),
 .ADC_Q(ADC_Q),
+.ADC_BLOCK(adc_block2),
 .THRESHOLD(THRESHOLD),
 .OFFSET(OFFSET),
 .SCALE(SCALE),
@@ -1054,6 +1064,7 @@ input		enable,
 input		[0:SEQbit-1] spcore_slice_select,
 input		[ADCbit-1:0] ADC_I,
 input		[ADCbit-1:0] ADC_Q,
+input		ADC_BLOCK,
 input		[ADCbit-1:0] THRESHOLD,
 input		[ADCbit-1:0] OFFSET,
 input		[ADCbit-2:0] SCALE,
@@ -1100,7 +1111,7 @@ always @(posedge clk) begin
 	if (~greset_n) begin
 		inputI <= {ADCbit{1'b0}};
 		inputQ <= {ADCbit{1'b0}};
-	end else if (enable) begin
+	end else if (enable && ~ADC_BLOCK) begin
 		inputI <= ADC_I;
 		inputQ <= ADC_Q;
 	end
