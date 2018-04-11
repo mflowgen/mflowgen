@@ -296,6 +296,11 @@ set_input_delay -clock $pco_clk_name   -add_delay $reset_input_delay $reset_port
 set_min_delay -from [get_ports ADC*] 11.5; # Restrict arrival between
 set_max_delay -from [get_ports ADC*] 15.0; # 11.5 ns to 15.0 ns
 
+# The debug_in has a feedthrough path that goes straight out to an output
+# pad. Mark it as a false path.
+
+set_false_path -from debug_in_io -to [all_outputs]
+
 # Report constraints on the ports
 
 report_port -verbose -nosplit > reports/dc-synthesis/ports.constraints.rpt
