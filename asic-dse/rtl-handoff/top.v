@@ -354,7 +354,7 @@ input		[ADCbit-1:0] ADC_Q,
 output wire [3:0] out_mux );
 */
 
-localparam SEQbit = 63;
+localparam SEQbit = 127;
 localparam PRCNbit = 0;
 localparam CNTRbit = 14;
 localparam CONFIGbit = 31;
@@ -1019,7 +1019,7 @@ endmodule // module spcore_slice
 /*******************************************************************************
 
 	Written by Ivan Bukreyev
-	Last modified on 4/10/2018
+	Last modified on 4/11/2018
 	Implements a signal processing core of the ASP (see 2018 RFIC paper equations 3 - 6)
 	enable is used for clock-gating the signal processing core
 	rn is a vector of decoded and stored inputs
@@ -1070,15 +1070,26 @@ wire [ADCbit:0] rn_mag [0:SEQbit-1];
 wire [ADCbit:0] vcorrn [0:SEQbit-1];
 reg signed [add_lvls+ADCbit:0] sum1 [0:add_lvls][0:(2**add_lvls)-1];
 reg signed [add_lvls+ADCbit:0] sum2 [0:add_lvls][0:(2**add_lvls)-1];
-wire [add_lvls+ADCbit:0] vcorrn_ave;
-wire [add_lvls+ADCbit:0] rn_abs;
+wire signed [add_lvls+ADCbit:0] vcorrn_ave;
 wire [add_lvls+ADCbit+PRCNbit:0] rn_abs_scaled;
+wire signed [add_lvls+ADCbit+PRCNbit:0] rn_abs_scaled_offset;
+wire signed [add_lvls+ADCbit+PRCNbit:0] OFFSET_ext;
+wire vcorrn_ave_geq_rn_abs_scaled_offset;
+wire [add_lvls+ADCbit:0] rn_abs;
+wire [add_lvls+ADCbit:0] THRESHOLD_ext;
+wire rn_abs_geq_treshold;
 genvar kk;
 integer ii;
 integer jj;
 
-assign vcorrn_ave = $unsigned(sum1[add_lvls][0]);
+
+assign OFFSET_ext = $signed(OFFSET) <<< add_lvls;
+assign THRESHOLD_ext = $unsigned(THRESHOLD) << add_lvls;
+assign vcorrn_ave = sum1[add_lvls][0];
+assign rn_abs_scaled_offset = $signed(rn_abs_scaled) + OFFSET_ext;
+assign vcorrn_ave_geq_rn_abs_scaled_offset = (vcorrn_ave >=  rn_abs_scaled_offset) ? 1'b1 : 1'b0;
 assign rn_abs = $unsigned(sum2[add_lvls][0]);
+assign rn_abs_geq_treshold = (rn_abs >= THRESHOLD_ext) ? 1'b1 : 1'b0;
 
 
 always @(posedge clk) begin
@@ -1170,13 +1181,11 @@ pseudomult #(.WIDTH(add_lvls+ADCbit+1), .ADCbit(ADCbit), .PRCNbit(PRCNbit)) pseu
 	.scaled_out(rn_abs_scaled)
 );
 
-
 always @(posedge clk) begin
 	if (~greset_n || (vpeak_in && VPEAK_BLOCK)) begin
 		vpeak_out <= 1'b0;
 	end else if (enable) begin
-		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + ($signed(OFFSET) <<< add_lvls))) && (rn_abs >= (THRESHOLD << add_lvls)) ) begin
-//		if ( ($signed(vcorrn_ave) >= ($signed(rn_abs_scaled) + $signed(OFFSET))) && (rn_abs >= THRESHOLD) ) begin
+		if ( vcorrn_ave_geq_rn_abs_scaled_offset && rn_abs_geq_treshold ) begin
 			vpeak_out <= 1'b1;
 		end else begin
 			vpeak_out <= 1'b0;
