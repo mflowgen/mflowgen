@@ -72,10 +72,10 @@ addInst -physical -cell PVSS1CDG -inst vss_dummy_7_iocell
 addInst -physical -cell PVSS1CDG -inst vss_dummy_8_iocell
 addInst -physical -cell PVSS1CDG -inst vss_dummy_9_iocell
 addInst -physical -cell PVSS1CDG -inst vss_dummy_10_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_11_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_12_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_13_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_14_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_11_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_12_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_13_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_14_iocell
 
 # IO VDD and VSS pads
 

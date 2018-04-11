@@ -54,8 +54,8 @@
     )
     (row
 	(locals row_name="iorow_N")
-	(inst  name="ADC_I_11_iocell"         offset= 20.0000)
-	(inst  name="ADC_I_10_iocell"         offset=120.0000)
+	(inst  name="vss_dummy_11_iocell"         offset= 20.0000)
+	(inst  name="vss_dummy_12_iocell"         offset=120.0000)
 	(inst  name="ADC_I_9_iocell" offset=220.0000) # placeholder
 	(inst  name="ADC_I_8_iocell" offset=320.0000) # placeholder
 	(inst  name="ADC_I_7_iocell"          offset=420.0000)
@@ -88,8 +88,8 @@
     )
     (row
 	(locals row_name="iorow_S")
-	(inst  name="ADC_Q_11_iocell"         offset= 20.0000)
-	(inst  name="ADC_Q_10_iocell"         offset=120.0000)
+	(inst  name="vss_dummy_14_iocell"         offset= 20.0000)
+	(inst  name="vss_dummy_13_iocell"         offset=120.0000)
 	(inst  name="ADC_Q_9_iocell" offset=220.0000)
 	(inst  name="ADC_Q_8_iocell" offset=320.0000)
 	(inst  name="ADC_Q_7_iocell"          offset=420.0000)

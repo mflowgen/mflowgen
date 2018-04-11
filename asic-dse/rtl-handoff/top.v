@@ -249,7 +249,7 @@ endmodule // module controller
 *******************************************************************************/
 
 ///*
-module correlator_top #(parameter ADCbit = 12)(
+module correlator_top #(parameter ADCbit = 10)(
 input		clk1_io,
 input		clk2_io,
 input		clkpco_io,
@@ -323,8 +323,6 @@ PDDW0204SCDG name \
 `INPUT_PAD (    ADC_I_7_iocell,     ADC_I_io[7],     ADC_I[7] )
 `INPUT_PAD (    ADC_I_8_iocell,     ADC_I_io[8],     ADC_I[8] )
 `INPUT_PAD (    ADC_I_9_iocell,     ADC_I_io[9],     ADC_I[9] )
-`INPUT_PAD (   ADC_I_10_iocell,    ADC_I_io[10],    ADC_I[10] )
-`INPUT_PAD (   ADC_I_11_iocell,    ADC_I_io[11],    ADC_I[11] )
 `INPUT_PAD (    ADC_Q_0_iocell,     ADC_Q_io[0],     ADC_Q[0] )
 `INPUT_PAD (    ADC_Q_1_iocell,     ADC_Q_io[1],     ADC_Q[1] )
 `INPUT_PAD (    ADC_Q_2_iocell,     ADC_Q_io[2],     ADC_Q[2] )
@@ -335,8 +333,6 @@ PDDW0204SCDG name \
 `INPUT_PAD (    ADC_Q_7_iocell,     ADC_Q_io[7],     ADC_Q[7] )
 `INPUT_PAD (    ADC_Q_8_iocell,     ADC_Q_io[8],     ADC_Q[8] )
 `INPUT_PAD (    ADC_Q_9_iocell,     ADC_Q_io[9],     ADC_Q[9] )
-`INPUT_PAD (   ADC_Q_10_iocell,    ADC_Q_io[10],    ADC_Q[10] )
-`INPUT_PAD (   ADC_Q_11_iocell,    ADC_Q_io[11],    ADC_Q[11] )
 `OUTPUT_PAD(  out_mux_0_iocell,   out_mux_io[0],   out_mux[0] )
 `OUTPUT_PAD(  out_mux_1_iocell,   out_mux_io[1],   out_mux[1] )
 `OUTPUT_PAD(  out_mux_2_iocell,   out_mux_io[2],   out_mux[2] )
@@ -344,7 +340,7 @@ PDDW0204SCDG name \
 //*/
 
 /*
-module correlator_top #(parameter ADCbit = 12)(
+module correlator_top #(parameter ADCbit = 10)(
 input		clk1,
 input		clk2,
 input		clkpco,
