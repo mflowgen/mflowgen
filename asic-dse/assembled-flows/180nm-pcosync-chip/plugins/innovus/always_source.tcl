@@ -88,4 +88,11 @@ set core_lly [expr               $io_cell_len + $core_margin_len]
 set core_urx [expr $die_width  - $io_cell_len - $core_margin_len]
 set core_ury [expr $die_height - $io_cell_len - $core_margin_len]
 
+# Core-side boundary of the IO cells, used for routing blockages around
+# the IO rows
+
+set io_inner_llx                     $io_cell_len
+set io_inner_lly                     $io_cell_len
+set io_inner_urx [expr $die_width  - $io_cell_len]
+set io_inner_ury [expr $die_height - $io_cell_len]
 
