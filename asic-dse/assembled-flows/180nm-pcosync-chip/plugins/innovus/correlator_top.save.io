@@ -35,17 +35,17 @@
 	(inst  name="vss_dummy_0_iocell"            offset= 300.0000)
 	(inst  name="vss_dummy_1_iocell"            offset= 400.0000)
 	(inst  name="vss_dummy_2_iocell"                 offset= 500.0000)
-#  (inst  name="prcut_0"                     offset= 560.0000) # test structure
+	(inst  name="prcut_0"                     offset= 560.0000) # test structure
 	(inst  name="vss_dummy_3_iocell"      offset= 600.0000) # test structure
 	(inst  name="vss_dummy_4_iocell"      offset= 700.0000) # test structure
 	(inst  name="vss_dummy_5_iocell"        offset= 800.0000) # test structure
 	(inst  name="vss_dummy_6_iocell"       offset= 900.0000) # test structure
-#  (inst  name="prcut_1"                     offset= 960.0000) # test structure
+	(inst  name="prcut_1"                     offset= 960.0000) # test structure
 	(inst  name="vss_dummy_7_iocell"      offset=1000.0000) # test structure
 	(inst  name="vss_dummy_8_iocell"      offset=1100.0000) # test structure
 	(inst  name="vss_dummy_9_iocell"        offset=1200.0000) # test structure
 	(inst  name="vss_dummy_10_iocell"        offset=1300.0000) # test structure
-#  (inst  name="prcut_2"                     offset=1360.0000) # test structure
+	(inst  name="prcut_2"                     offset=1360.0000) # test structure
 	(inst  name="spiclk_iocell"             offset=1400.0000)
 	(inst  name="spidin_iocell"               offset=1500.0000)
 	(inst  name="clkpco_iocell"               offset=1600.0000)

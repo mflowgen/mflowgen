@@ -80,9 +80,9 @@ addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
 
 # PRCUT cells
 
-#addInst -physical -cell PRCUT -inst prcut_0
-#addInst -physical -cell PRCUT -inst prcut_1
-#addInst -physical -cell PRCUT -inst prcut_2
+addInst -physical -cell PRCUT -inst prcut_0
+addInst -physical -cell PRCUT -inst prcut_1
+addInst -physical -cell PRCUT -inst prcut_2
 
 # Dummy cells
 
@@ -197,4 +197,62 @@ loadIoFile -noAdjustDieSize $vars(plug_dir)/$vars(design).bond.save.io
 #-------------------------------------------------------------------------
 
 setIoFlowFlag 0
+
+#-------------------------------------------------------------------------
+# Routing blockages around IO rows
+#-------------------------------------------------------------------------
+# The tool sometimes tries to use the free tracks right next to the IO
+# rows for routing, and this causes DRC spacing violations to the wide
+# metals in the IO pads. Wider metals need more than default spacing for
+# DRC. Innovus cannot see these metals are wide since they are not defined
+# in the IO cell lef, so we place a small routing "halo" from the IO rows
+# extending toward the core area...
+
+set io_routeblk_width 5
+
+set io_routeblk_spacing 2; # Just 2um spacing is enough to avoid DRC
+
+set io_routeblk_west_llx [expr $io_inner_llx - $io_routeblk_width]
+set io_routeblk_west_lly $io_inner_lly
+set io_routeblk_west_urx $io_inner_llx
+set io_routeblk_west_ury $io_inner_ury
+
+set io_routeblk_east_llx $io_inner_urx
+set io_routeblk_east_lly $io_inner_lly
+set io_routeblk_east_urx [expr $io_inner_urx + $io_routeblk_width]
+set io_routeblk_east_ury $io_inner_ury
+
+set io_routeblk_north_llx $io_inner_llx
+set io_routeblk_north_lly $io_inner_ury
+set io_routeblk_north_urx $io_inner_urx
+set io_routeblk_north_ury [expr $io_inner_ury + $io_routeblk_width]
+
+set io_routeblk_south_llx $io_inner_llx
+set io_routeblk_south_lly [expr $io_inner_lly - $io_routeblk_width]
+set io_routeblk_south_urx $io_inner_urx
+set io_routeblk_south_ury $io_inner_lly
+
+createRouteBlk -name io_routeblk_west \
+               -box $io_routeblk_west_llx $io_routeblk_west_lly \
+                    $io_routeblk_west_urx $io_routeblk_west_ury \
+               -exceptpgnet -layer all \
+               -spacing $io_routeblk_spacing
+
+createRouteBlk -name io_routeblk_east \
+               -box $io_routeblk_east_llx $io_routeblk_east_lly \
+                    $io_routeblk_east_urx $io_routeblk_east_ury \
+               -exceptpgnet -layer all \
+               -spacing $io_routeblk_spacing
+
+createRouteBlk -name io_routeblk_north \
+               -box $io_routeblk_north_llx $io_routeblk_north_lly \
+                    $io_routeblk_north_urx $io_routeblk_north_ury \
+               -exceptpgnet -layer all \
+               -spacing $io_routeblk_spacing
+
+createRouteBlk -name io_routeblk_south \
+               -box $io_routeblk_south_llx $io_routeblk_south_lly \
+                    $io_routeblk_south_urx $io_routeblk_south_ury \
+               -exceptpgnet -layer all \
+               -spacing $io_routeblk_spacing
 
