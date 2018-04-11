@@ -249,7 +249,7 @@ endmodule // module controller
 *******************************************************************************/
 
 ///*
-module correlator_top #(parameter ADCbit = 10)(
+module correlator_top #(parameter ADCbit = 12)(
 input		clk1_io,
 input		clk2_io,
 input		clkpco_io,
