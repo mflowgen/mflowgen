@@ -61,22 +61,6 @@ addInst -physical -cell PVSS1CDG -inst vss_core_1_iocell
 #addInst -physical -cell PVSS1CDG -inst vss_core_dummy_2_iocell
 #addInst -physical -cell PVSS1CDG -inst vss_core_dummy_3_iocell
 
-addInst -physical -cell PVSS1CDG -inst vss_dummy_0_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_1_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_2_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_3_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_4_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_5_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_6_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_7_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_8_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_9_iocell
-addInst -physical -cell PVSS1CDG -inst vss_dummy_10_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_11_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_12_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_13_iocell
-#addInst -physical -cell PVSS1CDG -inst vss_dummy_14_iocell
-
 # IO VDD and VSS pads
 
 addInst -physical -cell PVDD2CDG -inst vdd_io_0_iocell
@@ -99,6 +83,24 @@ addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
 #addInst -physical -cell PRCUT -inst prcut_0
 #addInst -physical -cell PRCUT -inst prcut_1
 #addInst -physical -cell PRCUT -inst prcut_2
+
+# Dummy cells
+
+addInst -physical -cell PVSS2CDG -inst vss_dummy_0_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_1_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_2_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_3_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_4_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_5_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_6_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_7_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_8_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_9_iocell
+addInst -physical -cell PVSS2CDG -inst vss_dummy_10_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_dummy_11_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_dummy_12_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_dummy_13_iocell
+#addInst -physical -cell PVSS2CDG -inst vss_dummy_14_iocell
 
 # The "dummy" is a blank entry that makes the iteration variable "i"
 # increment just to make the inner/outer match up with the even/odd setup
