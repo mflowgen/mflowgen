@@ -277,7 +277,7 @@ wire [3:0] out_mux;
 // In output pads, .C() is a don't care. Set .DS(1'b1) for 4 mA drive
 // .OEN(1'b0) = Output enable; .PE(1'b0) = pull disable; .IE(1'b0) = input disable;
 `define OUTPUT_PAD(name,pad,data) \
-PDDW0204SCDG name \
+PDDW0408SCDG name \
 (                 \
 	.PAD (pad),   \
 	.C   (),      \
@@ -292,7 +292,7 @@ PDDW0204SCDG name \
 // On input pads, .DS(1'b0) should not make a difference, so tie it to a lower current setting
 // .OEN(1'b1) = Output disable; .PE(1'b0) = pull disable; .IE(1'b1) = input enable;
 `define INPUT_PAD(name,pad,data) \
-PDDW0204SCDG name \
+PDDW0408SCDG name \
 (                 \
 	.PAD (pad),   \
 	.C   (data),  \
