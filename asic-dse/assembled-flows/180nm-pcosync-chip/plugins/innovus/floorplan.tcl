@@ -86,7 +86,8 @@ addInst -physical -cell PRCUT -inst prcut_2
 
 # Dummy cells
 
-addInst -physical -cell PVSS2CDG -inst vss_dummy_0_iocell
+addInst -physical -cell PVSS1CDG -inst vss_dummy_0_iocell
+
 addInst -physical -cell PVSS2CDG -inst vss_dummy_1_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_2_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_3_iocell
@@ -96,7 +97,9 @@ addInst -physical -cell PVSS2CDG -inst vss_dummy_6_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_7_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_8_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_9_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_10_iocell
+
+addInst -physical -cell PVSS1CDG -inst vss_dummy_10_iocell
+
 #addInst -physical -cell PVSS2CDG -inst vss_dummy_11_iocell
 #addInst -physical -cell PVSS2CDG -inst vss_dummy_12_iocell
 #addInst -physical -cell PVSS2CDG -inst vss_dummy_13_iocell
