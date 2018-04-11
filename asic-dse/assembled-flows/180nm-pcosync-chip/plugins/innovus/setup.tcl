@@ -328,7 +328,7 @@ set vars(ccopt_effort)                 medium
 
 #set vars(signoff,verify_metal_density,skip) true
 
-set vars(metalfill)     pre_postroute
+set vars(metalfill)     pre_signoff
 set vars(metalfill_tcl) $vars(plug_dir)/metal_fill.tcl
 
 #-------------------------------------------------------------------------
