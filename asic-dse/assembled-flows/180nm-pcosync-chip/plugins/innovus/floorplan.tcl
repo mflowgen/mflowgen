@@ -80,9 +80,9 @@ addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
 
 # PRCUT cells
 
-#addInst -physical -cell PRCUT -inst prcut_0
-#addInst -physical -cell PRCUT -inst prcut_1
-#addInst -physical -cell PRCUT -inst prcut_2
+addInst -physical -cell PRCUT -inst prcut_0
+addInst -physical -cell PRCUT -inst prcut_1
+addInst -physical -cell PRCUT -inst prcut_2
 
 # Dummy cells
 
