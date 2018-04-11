@@ -139,11 +139,11 @@ set_clock_groups -physically_exclusive \
 # spi       core1     -- false path --
 # spi       core2     -- false path --
 # spi       pco       -- false path --
-# spi       spiload   0.0       25.0    <-- don't care
+# spi       spiload   0.0       40.0    <-- don't care
 #
-# spiload   core1     0.0       25.0    <-- don't care
-# spiload   core2     0.0       25.0    <-- don't care
-# spiload   pco       0.0       25.0    <-- don't care
+# spiload   core1     0.0       40.0    <-- don't care
+# spiload   core2     0.0       40.0    <-- don't care
+# spiload   pco       0.0       40.0    <-- don't care
 # spiload   spi       -- false path --
 
 # Constrain paths from core 1
@@ -186,18 +186,18 @@ set_false_path -from ${spi_clk_name}_cdc -to ${core2_clk_name}_cdc
 set_false_path -from ${spi_clk_name}_cdc -to ${pco_clk_name}_cdc
 
 set_min_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 0.0
-set_max_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 25.0
+set_max_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 40.0
 
 # Constrain paths from spiload
 
 set_min_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 25.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 40.0
 
 set_min_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 25.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 40.0
 
 set_min_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 25.0
+set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 40.0
 
 set_false_path -from ${spi_load_name}_cdc -to ${spi_clk_name}_cdc
 

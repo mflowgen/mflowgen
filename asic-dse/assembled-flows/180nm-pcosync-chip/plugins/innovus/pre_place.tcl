@@ -35,9 +35,9 @@ add_gui_text -label "POC:"    -pt {1018 1300} -layer CUSTOM_BRG_LVS_M3 -height 5
 # Misc
 #-------------------------------------------------------------------------
 
-set density_limit 35
+#set density_limit 35
 
-createDensityArea $core_llx $core_lly $core_urx $core_ury \
+#createDensityArea $core_llx $core_lly $core_urx $core_ury \
                   $density_limit -name core_density_area
 
 #-------------------------------------------------------------------------
