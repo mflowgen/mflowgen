@@ -612,6 +612,8 @@ report_constraint \
   -verbose        \
   -all_violators > ${REPORTS}/${DCRM_FINAL_CONSTRAINTS_VIOL_REPORT}
 
+report_timing_requirements > ${REPORTS}/${DCRM_FINAL_TIMING_REQS_REPORT}
+
 # Report area
 
 if {[shell_is_in_topographical_mode]} {

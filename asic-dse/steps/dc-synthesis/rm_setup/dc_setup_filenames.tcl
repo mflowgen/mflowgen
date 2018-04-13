@@ -81,6 +81,7 @@ set DCRM_FINAL_RESOURCES_REPORT         ${DESIGN_NAME}.mapped.resources.rpt
 
 set DCRM_FINAL_CONSTRAINTS_REPORT       ${DESIGN_NAME}.mapped.constraints.rpt
 set DCRM_FINAL_CONSTRAINTS_VIOL_REPORT  ${DESIGN_NAME}.mapped.constraints.violators.rpt
+set DCRM_FINAL_TIMING_REQS_REPORT       ${DESIGN_NAME}.mapped.timing.requirements.rpt
 
 ################
 # Output Files #
