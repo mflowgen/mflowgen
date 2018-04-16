@@ -1,0 +1,297 @@
+#!/usr/bin/env python
+#=========================================================================
+# mem-sim [options]
+#=========================================================================
+#
+#  -h --help           Display this message
+#  -v --verbose        Verbose mode
+#
+#  --impl <impl>       Choose model implementation
+#                       alt  : set associative write back cache model
+#
+#  --pattern <pattern> Choose a cache access pattern
+#                       loop-1d            : for ( i = 0; i < 100; i++ )
+#                                              result += a[i];
+#                       loop-2d            : accesses for b[] in
+#                                            for ( i = 0; i < 5; i ++ )
+#                                              for ( j = 0; j < 100; j ++ )
+#                                                result += a[i]*b[j]
+#                       loop-3d            : accesses for b[] in
+#                                            for ( i = 0; i < 5; i ++ )
+#                                              for ( j = 0; j < 2; j ++ )
+#                                                for ( k = 0; k < 4; k ++ )
+#                                                  result += a[i]*b[j*64 + k*4]
+#
+#  --dump-vcd          Dump vcd
+#  --stats             Print stats
+#  --trace             Display line-trace
+#  --mem-lat           Set memory latency (in cycles), default=20
+#
+# The cache memory multiplier simulator. Choose an implementation and an
+# access pattern to execute. Use --stats to display statistics about the
+# simulation.
+#
+# Author : Shreesha Srinath, Moyang Wang
+# Date   : October 8, 2015
+
+from __future__ import print_function
+
+# Hack to add project root to python path
+
+import os
+import sys
+
+sim_dir = os.path.dirname( os.path.abspath( __file__ ) )
+while sim_dir:
+  if os.path.exists( sim_dir + os.path.sep + ".pymtl-python-path" ):
+    sys.path.insert(0,sim_dir)
+    break
+  sim_dir = os.path.dirname(sim_dir)
+
+import argparse
+import re
+import random
+
+random.seed(0xdeadbeef)
+
+from pymtl                     import *
+from BlockingCacheRTL          import BlockingCacheRTL
+from test.BlockingCacheFL_test import TestHarness, req, resp
+
+#-------------------------------------------------------------------------
+# Command line processing
+#-------------------------------------------------------------------------
+
+class ArgumentParserWithCustomError(argparse.ArgumentParser):
+  def error( s, msg = "" ):
+    if ( msg ): print("\n ERROR: %s" % msg)
+    print("")
+    file = open( sys.argv[0] )
+    for ( lineno, line ) in enumerate( file ):
+      if ( line[0] != '#' ): sys.exit(msg != "")
+      if ( (lineno == 2) or (lineno >= 4) ): print( line[1:].rstrip("\n") )
+
+def parse_cmdline():
+  p = ArgumentParserWithCustomError( add_help=False )
+
+  # Standard command line arguments
+
+  p.add_argument( "-v", "--verbose",  action="store_true"                                          )
+  p.add_argument( "-h", "--help",     action="store_true"                                          )
+  p.add_argument(       "--impl",     choices=["alt"],                   default="alt"    )
+
+  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  # LAB TASK: Add choices to --pattern option to use your new patterns
+  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+  p.add_argument(       "--pattern",  choices=["loop-1d", "loop-2d", "loop-3d"], default="loop-1d" )
+  p.add_argument(       "--dump-vcd", action="store_true"                                          )
+  p.add_argument(       "--stats",    action="store_true"                                          )
+  p.add_argument(       "--trace",    action="store_true"                                          )
+  p.add_argument(       "--mem-lat",  type=int,                                  default=20        )
+
+  opts = p.parse_args()
+  if opts.help: p.error()
+  return opts
+
+#-------------------------------------------------------------------------
+# Helper functions
+#-------------------------------------------------------------------------
+
+def mk_req( type_, addr, len_, data ):
+  return req( type_, 0, addr, len_, data )
+
+def mk_resp( type_, len_, data ):
+  return resp( type_, 0, 0, len_, data )
+
+#-------------------------------------------------------------------------
+# Pattern: loop-1d
+#-------------------------------------------------------------------------
+
+# loop-1d accesses
+
+def ustride( size ):
+
+  src_msgs  = []
+  sink_msgs = []
+
+  mem_data  = []
+  mem_word  = Bits( 32 )
+
+  addr = 0
+
+  # return memory message
+  for i in xrange( size ):
+    mem_word.value = i
+    mem_data.append( addr )
+    mem_data.append( mem_word.uint() )
+    addr += 4
+
+  # return src/sink message
+  for i in xrange( size ):
+    addr = i*4
+    data = i
+    src_msgs.append ( mk_req ( 0, addr, 0, 0 ) )
+    sink_msgs.append( mk_resp( 0, 0, data    ) )
+
+  return [ src_msgs, sink_msgs, mem_data ]
+
+def loop_1d( size = 100 ):
+  return ustride( size )
+
+#-------------------------------------------------------------------------
+# Pattern: loop-2d
+#-------------------------------------------------------------------------
+
+def loop_2d( size = 100 ):
+
+  src_msgs  = []
+  sink_msgs = []
+
+  mem_data  = []
+  mem_word  = Bits( 32 )
+
+  # Initialize memory
+  addr = 0
+  for i in xrange( size ):
+    mem_word.value = i
+    mem_data.append( addr )
+    mem_data.append( mem_word.uint() )
+    addr += 4
+
+  # Read from memory
+  for i in xrange( 5 ):
+    for j in xrange( size ):
+      addr = j*4
+      data = j
+      src_msgs.append ( mk_req ( 0, addr, 0, 0 ) )
+      sink_msgs.append( mk_resp( 0, 0, data    ) )
+
+  return [ src_msgs, sink_msgs, mem_data ]
+
+#-------------------------------------------------------------------------
+# Pattern: loop-3d
+#-------------------------------------------------------------------------
+
+def loop_3d():
+
+  src_msgs  = []
+  sink_msgs = []
+
+  mem_data  = []
+  mem_word  = Bits( 32 )
+
+  # Initialize memory
+  addr = 0
+  for i in xrange( 2 ):
+    for j in xrange( 8 ):
+      addr           = i*256 + j*16
+      mem_word.value = i*64  + j*4
+      mem_data.append( addr )
+      mem_data.append( mem_word.uint() )
+      addr += 4
+
+  # Read from memory
+  for i in xrange( 5 ):
+    for j in xrange( 2 ):
+      for k in xrange( 8 ):
+        addr = j*256 + k*16
+        data = j*64  + k*4
+        src_msgs.append ( mk_req ( 0, addr, 0, 0 ) )
+        sink_msgs.append( mk_resp( 0, 0, data    ) )
+
+  return [ src_msgs, sink_msgs, mem_data ]
+
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+# LAB TASK: Add more memory access patterns to evaluate your cache
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+#-------------------------------------------------------------------------
+# Main
+#-------------------------------------------------------------------------
+
+def main():
+  opts = parse_cmdline()
+
+  # Determine which model to use in the simulator
+
+  impl_dict = {
+    'alt'  : BlockingCacheRTL,
+  }
+
+  # Determine which pattern to use and create the pattern
+
+  pattern_dict = {
+    'loop-1d' : loop_1d,
+    'loop-2d' : loop_2d,
+    'loop-3d' : loop_3d,
+
+    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    # LAB TASK: Add your new patterns to this Python dict
+    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+  }
+
+  [ src_msgs, sink_msgs, mem_data ] = pattern_dict[ opts.pattern ]()
+
+  # Create VCD filename
+
+  dump_vcd = ""
+  if opts.dump_vcd:
+    dump_vcd = "mem-{}-{}.vcd".format( opts.impl, opts.pattern )
+
+  # Instantiate and elaborate the model
+
+  model = TestHarness( src_msgs, sink_msgs, 0.0, opts.mem_lat, 0, 0, impl_dict[ opts.impl ], False, False )
+  model.load( mem_data[::2], mem_data[1::2] )
+  model.elaborate()
+  model.vcd_file = dump_vcd
+
+  # Create a simulator using the simulation tool
+
+  sim = SimulationTool( model )
+
+  # Reset the simulator
+
+  sim.reset()
+
+  # reset stats
+
+  num_cycles   = 0
+  num_misses   = 0
+  num_requests = 0
+
+  # Run the simulation
+
+  sim.reset()
+  while not model.done():
+    if opts.trace:
+      sim.print_line_trace()
+    sim.cycle()
+
+    # stats
+    num_cycles += 1
+    if sim.model.src.out.val and sim.model.src.out.rdy:
+      num_requests += 1
+    if sim.model.cache.memreq.val and sim.model.cache.memreq.rdy and ( sim.model.cache.memreq.msg.type_ == 0 ):
+      num_misses   += 1
+
+  if opts.trace:
+    sim.print_line_trace()
+
+  # Handle stats, redirect output to standard out or a file
+
+  if opts.stats:
+    print( "num_cycles   =", num_cycles                         )
+    print( "num_requests =", num_requests                       )
+    print( "num_misses   =", num_misses                         )
+    print( "miss_rate    =", num_misses / float( num_requests ) )
+    print( "amal         =", num_cycles / float( num_requests ) )
+
+  # Add a couple extra ticks so that the VCD dump is nicer
+
+  sim.cycle()
+  sim.cycle()
+  sim.cycle()
+
+main()
