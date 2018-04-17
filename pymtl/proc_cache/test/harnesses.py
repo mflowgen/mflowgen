@@ -19,7 +19,7 @@ from proc.tinyrv2_encoding        import assemble
 
 class SimHarness( Model ):
 
-  def __init__( s, model, dump_vcd, test_verilog=False,
+  def __init__( s, model, dump_vcd, test_verilog,
                 num_cores=1, mem_stall=False ):
 
     num_memports = 2   # 1 dmem, 1 imem
@@ -119,7 +119,7 @@ class TestHarness( Model ):
   # constructor
   #-----------------------------------------------------------------------
 
-  def __init__( s, model, dump_vcd, num_cores,
+  def __init__( s, model, dump_vcd, test_verilog, num_cores,
                 src_delay, sink_delay, mem_stall_prob, mem_latency ):
 
     num_memports = 2   # 1 dmem, 1 imem
@@ -130,6 +130,10 @@ class TestHarness( Model ):
     s.src    = TestSource[num_cores]( 32, [], src_delay  )
     s.sink   = TestSink  [num_cores]( 32, [], sink_delay )
     s.model  = model
+
+    if test_verilog:
+      s.model = TranslationTool( s.model )
+
     s.mem    = TestMemory( MemMsg(8,32,data_nbits), num_memports,
                            mem_stall_prob, mem_latency )
 
@@ -244,7 +248,7 @@ def run_test( model, gen_test, num_cores,
 
   # Instantiate and elaborate the model
 
-  model = TestHarness( model, dump_vcd, num_cores,
+  model = TestHarness( model, dump_vcd, test_verilog, num_cores,
                        src_delay, sink_delay, mem_stall_prob, mem_latency )
 
   model.vcd_file = dump_vcd

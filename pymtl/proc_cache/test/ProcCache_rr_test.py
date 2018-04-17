@@ -10,7 +10,7 @@ from harnesses import asm_test
 
 from proc_cache.ProcCache import ProcCache
 
-def run_test( test, dump_vcd,
+def run_test( test, dump_vcd, test_verilog,
               src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
 
   num_cores = 1
@@ -18,7 +18,7 @@ def run_test( test, dump_vcd,
   from harnesses import run_test as run
 
   run( ProcCache(), test, num_cores,
-       dump_vcd, src_delay, sink_delay, mem_stall_prob, mem_latency )
+       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob, mem_latency )
 
 from proc.test import inst_add
 
@@ -32,11 +32,11 @@ from proc.test import inst_add
   asm_test( inst_add.gen_value_test     ) ,
   asm_test( inst_add.gen_random_test    ) ,
 ])
-def test_add( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_add( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_add_rand_delays( dump_vcd ):
-  run_test( inst_add.gen_random_test, dump_vcd,
+def test_add_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_add.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #-------------------------------------------------------------------------
@@ -62,15 +62,15 @@ from proc.test import inst_sub
   asm_test( inst_sub.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_sub( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_sub( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_sub_rand_delays( dump_vcd ):
-  run_test( inst_sub.gen_random_test, dump_vcd,
+def test_sub_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_sub.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -97,15 +97,15 @@ from proc.test import inst_mul
   asm_test( inst_mul.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_mul( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_mul( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_mul_rand_delays( dump_vcd ):
-  run_test( inst_mul.gen_random_test, dump_vcd,
+def test_mul_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_mul.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -125,11 +125,11 @@ from proc.test import inst_and
   asm_test( inst_and.gen_value_test     ) ,
   asm_test( inst_and.gen_random_test    ) ,
 ])
-def test_and( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_and( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_and_rand_delays( dump_vcd ):
-  run_test( inst_and.gen_random_test, dump_vcd,
+def test_and_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_and.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #-------------------------------------------------------------------------
@@ -148,11 +148,11 @@ from proc.test import inst_or
   asm_test( inst_or.gen_value_test     ) ,
   asm_test( inst_or.gen_random_test    ) ,
 ])
-def test_or( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_or( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_or_rand_delays( dump_vcd ):
-  run_test( inst_or.gen_random_test, dump_vcd,
+def test_or_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_or.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #-------------------------------------------------------------------------
@@ -171,11 +171,11 @@ from proc.test import inst_xor
   asm_test( inst_xor.gen_value_test     ) ,
   asm_test( inst_xor.gen_random_test    ) ,
 ])
-def test_xor( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_xor( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_xor_rand_delays( dump_vcd ):
-  run_test( inst_xor.gen_random_test, dump_vcd,
+def test_xor_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_xor.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #-------------------------------------------------------------------------
@@ -201,15 +201,15 @@ from proc.test import inst_slt
   asm_test( inst_slt.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_slt( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_slt( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_slt_rand_delays( dump_vcd ):
-  run_test( inst_slt.gen_random_test, dump_vcd,
+def test_slt_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_slt.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -236,15 +236,15 @@ from proc.test import inst_sltu
   asm_test( inst_sltu.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_sltu( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_sltu( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_sltu_rand_delays( dump_vcd ):
-  run_test( inst_sltu.gen_random_test, dump_vcd,
+def test_sltu_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_sltu.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -271,15 +271,15 @@ from proc.test import inst_sra
   asm_test( inst_sra.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_sra( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_sra( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_sra_rand_delays( dump_vcd ):
-  run_test( inst_sra.gen_random_test, dump_vcd,
+def test_sra_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_sra.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -306,15 +306,15 @@ from proc.test import inst_srl
   asm_test( inst_srl.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_srl( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_srl( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_srl_rand_delays( dump_vcd ):
-  run_test( inst_srl.gen_random_test, dump_vcd,
+def test_srl_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_srl.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
@@ -341,15 +341,15 @@ from proc.test import inst_sll
   asm_test( inst_sll.gen_random_test    ) ,
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 ])
-def test_sll( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_sll( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-def test_sll_rand_delays( dump_vcd ):
-  run_test( inst_sll.gen_random_test, dump_vcd,
+def test_sll_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_sll.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\

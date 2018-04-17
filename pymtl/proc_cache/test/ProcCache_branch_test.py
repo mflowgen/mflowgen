@@ -77,8 +77,8 @@ from proc.test import inst_bne
   asm_test( inst_bne.gen_value_test             ),
   asm_test( inst_bne.gen_random_test            ),
 ])
-def test_bne( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_bne( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
 # ''' LAB TASK '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # random stall and delay
