@@ -162,9 +162,6 @@ set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
 # Process information
 #-------------------------------------------------------------------------
 
-# The top routing layer is 7 usually.. but it will depend on the design
-# FIXME: This clearly belongs in stdcells.tcl
-
 set vars(process)                           $STDCELLS_PROCESS
 set vars(max_route_layer)              $STDCELLS_MAX_ROUTING_LAYER_INNOVUS
 
@@ -183,11 +180,11 @@ set vars(post_place_tcl)              $vars(plug_dir)/post_place.tcl
 #set vars(post_cts_tcl)                $vars(plug_dir)/post_cts.tcl
 #set vars(pre_postcts_tcl)             $vars(plug_dir)/pre_postcts.tcl
 #set vars(post_postcts_tcl)            $vars(plug_dir)/post_postcts.tcl
-#set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postcts_hold.tcl
+set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postcts_hold.tcl
 #set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postcts_hold.tcl
 #set vars(pre_route_tcl)               $vars(plug_dir)/pre_route.tcl
 #set vars(post_route_tcl)              $vars(plug_dir)/post_route.tcl
-#set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
+set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
 #set vars(post_postroute_tcl)          $vars(plug_dir)/post_postroute.tcl
 #set vars(pre_postroute_hold_tcl)      $vars(plug_dir)/pre_postroute_hold.tcl
 #set vars(post_postroute_hold_tcl)     $vars(plug_dir)/post_postroute_hold.tcl

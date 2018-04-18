@@ -5,7 +5,7 @@
 
 # Density map
 
-reportDensityMap > $vars(rpt_dir)/place.density.rpt
+reportDensityMap > $vars(rpt_dir)/$vars(step).density.rpt
 
 # Delete all cell padding for CTS and hold fixing
 
