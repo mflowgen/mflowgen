@@ -9,7 +9,7 @@ from pclib.test              import run_sim
 from fpga                    import SwShim
 
 from examples.gcd.GcdUnitRTL import GcdUnitRTL
-from GcdUnitHost             import GcdUnitHost
+from HostGcdUnit             import HostGcdUnit
 
 # Reuse tests from FL model
 
@@ -26,7 +26,7 @@ def test( test_params, dump_vcd, test_verilog ):
   asynch_bitwidth = 8
 
   dut             = GcdUnitRTL()
-  hwshim_and_dut  = GcdUnitHost( asynch_bitwidth )
+  hwshim_and_dut  = HostGcdUnit( asynch_bitwidth )
   swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth )
 
   run_sim( TestHarness( swshim,

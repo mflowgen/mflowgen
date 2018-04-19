@@ -2,7 +2,7 @@
 // SwShim_0x32a7578b0a6f3a5a
 //-----------------------------------------------------------------------------
 // dut: <examples.gcd.GcdUnitRTL.GcdUnitRTL object at 0x7f5cc9ac3c10>
-// dut_asynch: <GcdUnitHost.GcdUnitHost object at 0x7f5cc9ac36d0>
+// dut_asynch: <HostGcdUnit.HostGcdUnit object at 0x7f5cc9ac36d0>
 // asynch_bitwidth: 8
 // dump-vcd: False
 // verilator-xinit: zeros
@@ -104,7 +104,7 @@ module SwShim_0x32a7578b0a6f3a5a
   wire   [   0:0] dut$out_req;
   wire   [   0:0] dut$in__ack;
 
-  GcdUnitHost dut
+  HostGcdUnit dut
   (
     .out_ack ( dut$out_ack ),
     .in__msg ( dut$in__msg ),
@@ -803,13 +803,13 @@ endmodule // RegEn_0x3297a3f612d222c3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// GcdUnitHost
+// HostGcdUnit
 //-----------------------------------------------------------------------------
 // asynch_bitwidth: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module GcdUnitHost
+module HostGcdUnit
 (
   input  wire [   0:0] clk_io,
   output wire [   0:0] in__ack_io,
@@ -866,7 +866,7 @@ module GcdUnitHost
   (                       \
     .PAD (pad),           \
     .C   (data),          \
-    .I   (),              \
+    .I   (1'b0),          \
     .OEN (1'b1),          \
     .IE  (1'b1),          \
     .SL  (1'b0),          \
@@ -884,7 +884,7 @@ module GcdUnitHost
   (                       \
     .PAD (pad),           \
     .C   (data),          \
-    .I   (),              \
+    .I   (1'b0),          \
     .OEN (1'b1),          \
     .IE  (1'b1),          \
     .SL  (1'b0),          \
@@ -908,65 +908,31 @@ module GcdUnitHost
 
   //                 Inst Name            PAD         data
 
-   `INPUT_PAD_H(        clk_pad,      clk_io[0],      clk[0] )
-   `INPUT_PAD_H(      reset_pad,    reset_io[0],    reset[0] )
+   `INPUT_PAD_V(        clk_iocell,      clk_io[0],      clk[0] )
 
-   `INPUT_PAD_H(  in__msg_0_pad,  in__msg_io[0],  in__msg[0] )
-   `INPUT_PAD_H(  in__msg_1_pad,  in__msg_io[1],  in__msg[1] )
-   `INPUT_PAD_H(  in__msg_2_pad,  in__msg_io[2],  in__msg[2] )
-   `INPUT_PAD_H(  in__msg_3_pad,  in__msg_io[3],  in__msg[3] )
-   `INPUT_PAD_H(  in__msg_4_pad,  in__msg_io[4],  in__msg[4] )
-   `INPUT_PAD_H(  in__msg_5_pad,  in__msg_io[5],  in__msg[5] )
+   `INPUT_PAD_H(      reset_iocell,    reset_io[0],    reset[0] )
 
-   `INPUT_PAD_V(  in__msg_6_pad,  in__msg_io[6],  in__msg[6] )
-   `INPUT_PAD_V(  in__msg_7_pad,  in__msg_io[7],  in__msg[7] )
+   `INPUT_PAD_V(  in__msg_0_iocell,  in__msg_io[0],  in__msg[0] )
+   `INPUT_PAD_V(  in__msg_1_iocell,  in__msg_io[1],  in__msg[1] )
+   `INPUT_PAD_V(  in__msg_2_iocell,  in__msg_io[2],  in__msg[2] )
+   `INPUT_PAD_V(  in__msg_3_iocell,  in__msg_io[3],  in__msg[3] )
+   `INPUT_PAD_V(  in__msg_4_iocell,  in__msg_io[4],  in__msg[4] )
+   `INPUT_PAD_V(  in__msg_5_iocell,  in__msg_io[5],  in__msg[5] )
+   `INPUT_PAD_V(  in__msg_6_iocell,  in__msg_io[6],  in__msg[6] )
+   `INPUT_PAD_V(  in__msg_7_iocell,  in__msg_io[7],  in__msg[7] )
+   `INPUT_PAD_V(    in__req_iocell,  in__req_io[0],  in__req[0] )
+   `INPUT_PAD_V(    out_ack_iocell,  out_ack_io[0],  out_ack[0] )
 
-//   `INPUT_PAD_V(  req_msg_8_pad,  req_msg_io[8],  req_msg[8] )
-//   `INPUT_PAD_V(  req_msg_9_pad,  req_msg_io[9],  req_msg[9] )
-//   `INPUT_PAD_V( req_msg_10_pad, req_msg_io[10], req_msg[10] )
-//   `INPUT_PAD_V( req_msg_11_pad, req_msg_io[11], req_msg[11] )
-//   `INPUT_PAD_V( req_msg_12_pad, req_msg_io[12], req_msg[12] )
-//   `INPUT_PAD_V( req_msg_13_pad, req_msg_io[13], req_msg[13] )
-//   `INPUT_PAD_V( req_msg_14_pad, req_msg_io[14], req_msg[14] )
-//   `INPUT_PAD_V( req_msg_15_pad, req_msg_io[15], req_msg[15] )
-//   `INPUT_PAD_V( req_msg_16_pad, req_msg_io[16], req_msg[16] )
-//   `INPUT_PAD_V( req_msg_17_pad, req_msg_io[17], req_msg[17] )
-//   `INPUT_PAD_V( req_msg_18_pad, req_msg_io[18], req_msg[18] )
-//   `INPUT_PAD_V( req_msg_19_pad, req_msg_io[19], req_msg[19] )
-//   `INPUT_PAD_V( req_msg_20_pad, req_msg_io[20], req_msg[20] )
-//   `INPUT_PAD_V( req_msg_21_pad, req_msg_io[21], req_msg[21] )
-//   `INPUT_PAD_V( req_msg_22_pad, req_msg_io[22], req_msg[22] )
-//   `INPUT_PAD_V( req_msg_23_pad, req_msg_io[23], req_msg[23] )
-//   `INPUT_PAD_V( req_msg_24_pad, req_msg_io[24], req_msg[24] )
-
-//   `INPUT_PAD_H( req_msg_25_pad, req_msg_io[25], req_msg[25] )
-//   `INPUT_PAD_H( req_msg_26_pad, req_msg_io[26], req_msg[26] )
-//   `INPUT_PAD_H( req_msg_27_pad, req_msg_io[27], req_msg[27] )
-//   `INPUT_PAD_H( req_msg_28_pad, req_msg_io[28], req_msg[28] )
-//   `INPUT_PAD_H( req_msg_29_pad, req_msg_io[29], req_msg[29] )
-//   `INPUT_PAD_H( req_msg_30_pad, req_msg_io[30], req_msg[30] )
-//   `INPUT_PAD_H( req_msg_31_pad, req_msg_io[31], req_msg[31] )
-   `INPUT_PAD_H(    in__req_pad,  in__req_io[0],  in__req[0] )
-
-  `OUTPUT_PAD_V(     in__ack_pad,   in__ack_io[0],   in__ack[0] )
-  `OUTPUT_PAD_V(   out_msg_0_pad,   out_msg_io[0],   out_msg[0] )
-  `OUTPUT_PAD_V(   out_msg_1_pad,   out_msg_io[1],   out_msg[1] )
-  `OUTPUT_PAD_V(   out_msg_2_pad,   out_msg_io[2],   out_msg[2] )
-  `OUTPUT_PAD_V(   out_msg_3_pad,   out_msg_io[3],   out_msg[3] )
-  `OUTPUT_PAD_V(   out_msg_4_pad,   out_msg_io[4],   out_msg[4] )
-  `OUTPUT_PAD_V(   out_msg_5_pad,   out_msg_io[5],   out_msg[5] )
-  `OUTPUT_PAD_V(   out_msg_6_pad,   out_msg_io[6],   out_msg[6] )
-  `OUTPUT_PAD_V(   out_msg_7_pad,   out_msg_io[7],   out_msg[7] )
-//  `OUTPUT_PAD_V(   out_msg_8_pad,   out_msg_io[8],   out_msg[8] )
-//  `OUTPUT_PAD_V(   out_msg_9_pad,   out_msg_io[9],   out_msg[9] )
-//  `OUTPUT_PAD_V( resp_msg_10_pad, resp_msg_io[10], resp_msg[10] )
-//  `OUTPUT_PAD_V( resp_msg_11_pad, resp_msg_io[11], resp_msg[11] )
-//  `OUTPUT_PAD_V( resp_msg_12_pad, resp_msg_io[12], resp_msg[12] )
-//  `OUTPUT_PAD_V( resp_msg_13_pad, resp_msg_io[13], resp_msg[13] )
-//  `OUTPUT_PAD_V( resp_msg_14_pad, resp_msg_io[14], resp_msg[14] )
-//  `OUTPUT_PAD_V( resp_msg_15_pad, resp_msg_io[15], resp_msg[15] )
-  `OUTPUT_PAD_V(     out_req_pad,   out_req_io[0],   out_req[0] )
-   `INPUT_PAD_V(     out_ack_pad,   out_ack_io[0],   out_ack[0] )
+  `OUTPUT_PAD_V(    in__ack_iocell,  in__ack_io[0],  in__ack[0] )
+  `OUTPUT_PAD_V(  out_msg_0_iocell,  out_msg_io[0],  out_msg[0] )
+  `OUTPUT_PAD_V(  out_msg_1_iocell,  out_msg_io[1],  out_msg[1] )
+  `OUTPUT_PAD_V(  out_msg_2_iocell,  out_msg_io[2],  out_msg[2] )
+  `OUTPUT_PAD_V(  out_msg_3_iocell,  out_msg_io[3],  out_msg[3] )
+  `OUTPUT_PAD_V(  out_msg_4_iocell,  out_msg_io[4],  out_msg[4] )
+  `OUTPUT_PAD_V(  out_msg_5_iocell,  out_msg_io[5],  out_msg[5] )
+  `OUTPUT_PAD_V(  out_msg_6_iocell,  out_msg_io[6],  out_msg[6] )
+  `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] )
+  `OUTPUT_PAD_V(    out_req_iocell,  out_req_io[0],  out_req[0] )
 
   //----------------------------------------------------------------------
   // Regular stuff
@@ -1212,7 +1178,7 @@ module GcdUnitHost
 
 
 
-endmodule // GcdUnitHost
+endmodule // HostGcdUnit
 `default_nettype wire
 
 //-----------------------------------------------------------------------------

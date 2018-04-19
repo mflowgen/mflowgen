@@ -1,15 +1,9 @@
 #=========================================================================
 # Makefrag
 #=========================================================================
-# This file sets up the ASIC design kit and the design specification for
-# the default asic flow.
-#
-# The default asic flow has the set of default asic steps for any design
-# for which we want to do architectural design-space exploration. This
-# configuration should always work as long as the ASIC design kit (ADK) is
-# set up.
+# This file sets up the ASIC design kit and the design specification.
 
-design_flow = default
+design_flow = 28nm-HostGcdUnit-chip
 
 #=========================================================================
 # ASIC design kit (ADK)
@@ -42,27 +36,9 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-gcd
-
-#-------------------------------------------------------------------------
-# PyMTL GcdUnit
-#-------------------------------------------------------------------------
-
-ifeq ($(design_select),pymtl-gcd)
-  design_name  = GcdUnit
-  clock_period = 2.0
-  verilog_src  = rtl-handoff/GcdUnit.v
-endif
-
-#-------------------------------------------------------------------------
-# Synthesizable PLL
-#-------------------------------------------------------------------------
-
-ifeq ($(design_select),verilog-synthesizable-pll)
-  design_name  = pll
-  clock_period = 2.0
-  verilog_src  = rtl-handoff/pll.v
-endif
+design_name  = HostGcdUnit
+clock_period = 1.0
+verilog_src  = rtl-handoff/HostGcdUnit.v
 
 #-------------------------------------------------------------------------
 # Export

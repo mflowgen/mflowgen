@@ -1,5 +1,5 @@
 #===============================================================================
-# GcdUnitHost.py
+# HostGcdUnit.py
 #===============================================================================
 
 from pymtl      import *
@@ -12,13 +12,13 @@ from adapters   import *
 
 from examples.gcd.GcdUnitRTL import GcdUnitRTL
 
-class GcdUnitHost( Model ):
+class HostGcdUnit( Model ):
 
-  vbb_modulename = 'GcdUnitHost' # statically assign Verilog module name
+  vbb_modulename = 'HostGcdUnit' # statically assign Verilog module name
 
   def __init__( s, asynch_bitwidth = 8 ):
 
-    s.explicit_modulename = 'GcdUnitHost'
+    s.explicit_modulename = 'HostGcdUnit'
 
     #-Interface----------------------------------------------------------
 

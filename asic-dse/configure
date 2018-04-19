@@ -35,9 +35,19 @@ fi
 #-------------------------------------------------------------------------
 # This flow has its own Makefrag
 
-if [[ x$1 == x--28nm-gcd* ]]; then
+if [[ x$1 == x--28nm-gcd-chip ]]; then
   ln -sf ../assembled-flows/28nm-gcd-chip/setup-flow.mk
   ln -sf ../assembled-flows/28nm-gcd-chip/Makefrag
+fi
+
+#-------------------------------------------------------------------------
+# 28nm-HostGcdUnit-chip
+#-------------------------------------------------------------------------
+# This flow has its own Makefrag
+
+if [[ x$1 == x--28nm-HostGcdUnit-chip ]]; then
+  ln -sf ../assembled-flows/28nm-HostGcdUnit-chip/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-HostGcdUnit-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
