@@ -16,6 +16,7 @@ class CompMcoreArbiterCache( Model ):
 
   def __init__( s, num_cores=4, mopaque_nbits=8, addr_nbits=32,
                    word_nbits=32, cacheline_nbits=128 ):
+    s.explicit_modulename = "CompMcoreArbiterCache"
 
     #---------------------------------------------------------------------
     # Interface
