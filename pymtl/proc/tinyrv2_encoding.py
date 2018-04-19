@@ -669,6 +669,44 @@ def assemble( asm_code ):
   mngr2proc_bytes = bytearray()
   proc2mngr_bytes = bytearray()
 
+  # Shunning: the way I handle multiple manager is as follows.
+  #
+  # At the beginning the single_core sign is true and all "> 1" "< 2"
+  # values are dumped into the above mngr2proc_bytes and mngr2proc_bytes.
+  # So, for single core testing the assembler works as usual.
+  #
+  # For multicore testing, I assume that all lists wrapped by curly braces
+  # have the same width, and I will use the first ever length as the number
+  # of cores. For example, when I see "> {1,2,3,4}", it means there are 4
+  # cores. It will then set single_core=False and num_cores=4.
+  # Later if I see "> {1,2,3}" I will throw out assertion error.
+  #
+  # Also, Upon the first occurence of the mentioned curly braces, I will
+  # just duplicate mngr2proc_bytes for #core times, and put the duplicates
+  # into mngrs2procs.  Later, when I see a "> 1", I will check the
+  # single_core flag. If it's False, it will dump the check message into
+  # all the duplicated bytearrays.
+  #
+  # The problem of co-existence if we keep mngr2proc and mngrs2procs, is
+  # that unless we record the exact order we receive the csr instructions,
+  # we cannot arbitrarily interleave the values in mngr2proc and mngrs2procs.
+
+  mngrs2procs_bytes = []
+  procs2mngrs_bytes = []
+  single_core       = True
+  num_cores         = 1
+
+  def duplicate():
+
+    # duplicate the bytes and no more mngr2proc/proc2mngr
+
+    for i in xrange( num_cores ):
+      mngrs2procs_bytes.append( bytearray() )
+      mngrs2procs_bytes[i][:] = mngr2proc_bytes
+
+      procs2mngrs_bytes.append( bytearray() )
+      procs2mngrs_bytes[i][:] = proc2mngr_bytes
+
   for line in asm_list:
     asm_list_idx += 1
     line = line.partition('#')[0]
@@ -692,14 +730,62 @@ def assemble( asm_code ):
 
         if '<' in line:
           (temp,sep,value) = line.partition('<')
-          bits = Bits( 32, int(value,0) )
-          mngr2proc_bytes.extend(struct.pack("<I",bits))
+
+          value = value.lstrip(' ')
+          if value.startswith('{'):
+            values = map( lambda x:int(x, 0), value[1:-1].split(',') )
+
+            if not single_core and len(values)!=num_cores:
+              raise Exception( "Previous curly brace pair has {} elements in between, but this one \"{}\" has {}."
+                               .format(num_cores, line, len(values)) )
+
+            if single_core:
+              single_core = False
+              num_cores   = len(values)
+              duplicate()
+
+            for i in xrange( num_cores ):
+              mngrs2procs_bytes[i].extend(struct.pack("<I", Bits(32, values[i]) ))
+
+          else:
+            bits = Bits( 32, int(value,0) )
+
+            if single_core:
+              mngr2proc_bytes.extend(struct.pack("<I",bits))
+            else:
+              for x in mngrs2procs_bytes:
+                x.extend(struct.pack("<I",bits))
+
           inst_str = temp
 
         elif '>' in line:
           (temp,sep,value) = line.partition('>')
-          bits = Bits( 32, int(value,0) )
-          proc2mngr_bytes.extend(struct.pack("<I",bits))
+
+          value = value.lstrip(' ')
+          if value.startswith('{'):
+            values = map( lambda x:int(x, 0), value[1:-1].split(',') )
+
+            if not single_core and len(values)!=num_cores:
+              raise Exception( "Previous curly brace pair has {} elements in between, but this one \"{}\" has {}."
+                               .format(num_cores, line, len(values)) )
+
+            if single_core:
+              single_core = False
+              num_cores   = len(values)
+              duplicate()
+
+            for i in xrange( num_cores ):
+              procs2mngrs_bytes[i].extend(struct.pack("<I", Bits(32, values[i]) ))
+
+          else:
+            bits = Bits( 32, int(value,0) )
+
+            if single_core:
+              proc2mngr_bytes.extend(struct.pack("<I",bits))
+            else:
+              for x in procs2mngrs_bytes:
+                x.extend(struct.pack("<I",bits))
+
           inst_str = temp
 
         bits = assemble_inst( sym, addr, inst_str )
@@ -742,12 +828,6 @@ def assemble( asm_code ):
 
   data_section = SparseMemoryImage.Section( ".data", 0x2000, data_bytes )
 
-  mngr2proc_section = \
-    SparseMemoryImage.Section( ".mngr2proc", 0x13000, mngr2proc_bytes )
-
-  proc2mngr_section = \
-    SparseMemoryImage.Section( ".proc2mngr", 0x14000, proc2mngr_bytes )
-
   # Build a sparse memory image
 
   mem_image = SparseMemoryImage()
@@ -756,11 +836,34 @@ def assemble( asm_code ):
   if len(data_section.data) > 0:
     mem_image.add_section( data_section )
 
-  if len(mngr2proc_section.data) > 0:
-    mem_image.add_section( mngr2proc_section )
+  if single_core:
 
-  if len(proc2mngr_section.data) > 0:
-    mem_image.add_section( proc2mngr_section )
+    mngr2proc_section = \
+      SparseMemoryImage.Section( ".mngr2proc", 0x13000, mngr2proc_bytes )
+
+    if len(mngr2proc_section.data) > 0:
+      mem_image.add_section( mngr2proc_section )
+
+    proc2mngr_section = \
+      SparseMemoryImage.Section( ".proc2mngr", 0x14000, proc2mngr_bytes )
+
+    if len(proc2mngr_section.data) > 0:
+      mem_image.add_section( proc2mngr_section )
+
+  else:
+
+    for i in xrange( len(mngrs2procs_bytes) ):
+      img = SparseMemoryImage.Section( ".mngr{}_2proc".format(i),
+                                       0x15000+0x1000*i, mngrs2procs_bytes[i] )
+
+      if len( img.data ) > 0:
+        mem_image.add_section( img )
+
+    for i in xrange( len(procs2mngrs_bytes) ):
+      img = SparseMemoryImage.Section( ".proc{}_2mngr".format(i),
+                                       0x16000+0x2000*i, procs2mngrs_bytes[i] )
+      if len( img.data ) > 0:
+        mem_image.add_section( img )
 
   return mem_image
 
@@ -970,3 +1073,4 @@ class TinyRV2Inst (object):
 
   def __str__( self ):
     return disassemble_inst( self.bits )
+

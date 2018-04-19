@@ -21,7 +21,7 @@ from proc_cache.CompMcoreArbiterCache import CompMcoreArbiterCache
 
 # 4 core, with 2 memory ports, each with 16B data bitwidth
 
-def run_test( test, dump_vcd,
+def run_test( test, dump_vcd, test_verilog,
               src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
 
   num_cores = 4
@@ -29,7 +29,7 @@ def run_test( test, dump_vcd,
   from harnesses import run_test as run
 
   run( CompMcoreArbiterCache( num_cores ), test, num_cores,
-       dump_vcd, src_delay, sink_delay, mem_stall_prob, mem_latency )
+       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob, mem_latency )
 
 #-------------------------------------------------------------------------
 # add
@@ -47,11 +47,11 @@ from proc.test import inst_add
   asm_test( inst_add.gen_value_test     ) ,
   asm_test( inst_add.gen_random_test    ) ,
 ])
-def test_add( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_add( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_add_rand_delays( dump_vcd ):
-  run_test( inst_add.gen_random_test, dump_vcd,
+def test_add_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_add.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3 )
 
@@ -71,11 +71,11 @@ import inst_mul
   asm_test( inst_mul.gen_value_test     ) ,
   asm_test( inst_mul.gen_random_test    ) ,
 ])
-def test_mul( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_mul( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_mul_rand_delays( dump_vcd ):
-  run_test( inst_mul.gen_random_test, dump_vcd,
+def test_mul_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_mul.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #-------------------------------------------------------------------------
@@ -92,11 +92,11 @@ from proc.test import inst_andi
   asm_test( inst_andi.gen_value_test     ) ,
   asm_test( inst_andi.gen_random_test    ) ,
 ])
-def test_andi( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_andi( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_andi_rand_delays( dump_vcd ):
-  run_test( inst_andi.gen_random_test, dump_vcd,
+def test_andi_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_andi.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3 )
 
@@ -118,11 +118,11 @@ from proc.test import inst_bne
   asm_test( inst_bne.gen_value_test             ),
   asm_test( inst_bne.gen_random_test            ),
 ])
-def test_bne( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_bne( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_bne_rand_delays( dump_vcd ):
-  run_test( inst_bne.gen_random_test, dump_vcd,
+def test_bne_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_bne.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3)
 
@@ -139,11 +139,11 @@ import inst_csr
   asm_test( inst_csr.gen_random_test    ),
   asm_test( inst_csr.gen_multicore_test )
 ])
-def test_csr( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_csr( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_csr_rand_delays( dump_vcd ):
-  run_test( inst_csr.gen_random_test, dump_vcd,
+def test_csr_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_csr.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=10,
             mem_stall_prob=0.5, mem_latency=3)
 
@@ -165,11 +165,11 @@ import inst_jal
   asm_test( inst_jal.gen_jal_stall_test    ) ,
 ])
 
-def test_jal( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_jal( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_jal_rand_delays(dump_vcd):
-  run_test( inst_jal.gen_jump_test, dump_vcd,
+def test_jal_rand_delays(dump_vcd, test_verilog):
+  run_test( inst_jal.gen_jump_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=.5, mem_latency=3 )
 
@@ -187,11 +187,11 @@ from proc.test import inst_lw
   asm_test( inst_lw.gen_value_test     ) ,
   asm_test( inst_lw.gen_random_test    ) ,
 ])
-def test_lw( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_lw( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_lw_rand_delays( dump_vcd ):
-  run_test( inst_lw.gen_random_test, dump_vcd,
+def test_lw_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_lw.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3 )
 
@@ -206,11 +206,11 @@ import inst_sw
   asm_test( inst_sw.gen_twoline_deps_test  ),
   asm_test( inst_sw.gen_diffline_deps_test ),
 ])
-def test_sw( name, test, dump_vcd ):
-  run_test( test, dump_vcd )
+def test_sw( name, test, dump_vcd, test_verilog ):
+  run_test( test, dump_vcd, test_verilog )
 
-def test_sw_rand_delays( dump_vcd ):
-  run_test( inst_sw.gen_diffline_deps_test, dump_vcd,
+def test_sw_rand_delays( dump_vcd, test_verilog ):
+  run_test( inst_sw.gen_diffline_deps_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3 )
 
