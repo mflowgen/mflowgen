@@ -3,9 +3,12 @@
 #=========================================================================
 
 from pymtl      import *
-from pclib.ifcs import MemReqMsg
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
-from pclib.ifcs import MemReqMsg16B, MemRespMsg16B
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg
+from ifcs import MemReqMsg4B, MemRespMsg4B
+from ifcs import MemReqMsg16B, MemRespMsg16B
 
 from pclib.rtl     import RegisterFile, RegEnRst
 from DecodeWbenRTL import DecodeWbenRTL
@@ -52,7 +55,11 @@ class BlockingCacheCtrlPRTL( Model ):
 
     # control signals (ctrl->dpath)
 
-    s.amo_sel            = OutPort( 3 )
+    s.amo_min_sel        = OutPort( 1 )
+    s.amo_minu_sel       = OutPort( 1 )
+    s.amo_max_sel        = OutPort( 1 )
+    s.amo_maxu_sel       = OutPort( 1 )
+    s.amo_sel            = OutPort( 4 )
     s.cachereq_en        = OutPort( 1 )
     s.memresp_en         = OutPort( 1 )
     s.is_refill          = OutPort( 1 )
@@ -72,16 +79,18 @@ class BlockingCacheCtrlPRTL( Model ):
     s.read_data_reg_en   = OutPort( 1 )
     s.read_tag_reg_en    = OutPort( 1 )
     s.read_byte_sel      = OutPort( clog2(clw/dbw) )
-    s.memreq_type        = OutPort( 3 )
-    s.cacheresp_type     = OutPort( 3 )
+    s.memreq_type        = OutPort( 4 )
+    s.cacheresp_type     = OutPort( 4 )
     s.cacheresp_hit      = OutPort( 1 )
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_type      = InPort ( 3 )
-    s.cachereq_addr      = InPort ( abw )
-    s.tag_match_0        = InPort ( 1 )
-    s.tag_match_1        = InPort ( 1 )
+    s.cachereq_data_reg_out = InPort ( dbw )
+    s.read_byte_sel_mux_out = InPort ( dbw )
+    s.cachereq_type         = InPort ( 4 )
+    s.cachereq_addr         = InPort ( abw )
+    s.tag_match_0           = InPort ( 1 )
+    s.tag_match_1           = InPort ( 1 )
 
     #----------------------------------------------------------------------
     # State Definitions
@@ -149,7 +158,7 @@ class BlockingCacheCtrlPRTL( Model ):
       s.is_read.value   = s.cachereq_type == MemReqMsg.TYPE_READ
       s.is_write.value  = s.cachereq_type == MemReqMsg.TYPE_WRITE
       s.is_init.value   = s.cachereq_type == MemReqMsg.TYPE_WRITE_INIT
-      s.is_amo.value    = s.amo_sel != Bits( 3, 0 )
+      s.is_amo.value    = s.amo_sel != Bits( 4, 0 )
       s.read_hit.value  = s.is_read & s.hit
       s.write_hit.value = s.is_write & s.hit
       s.amo_hit.value   = s.is_amo & s.hit
@@ -160,17 +169,40 @@ class BlockingCacheCtrlPRTL( Model ):
       s.evict.value     = (s.miss_0 &  s.is_dirty_0 & ~s.lru_way) | \
                           (s.miss_1 &  s.is_dirty_1 &  s.lru_way)
 
-    # determine amo type
+    # Choose amo min
+
+    s.tmp_min = Wire ( dbw+1 )
+
+    @s.combinational
+    def comb_amo_min():
+      s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out ) \
+                         - concat( s.read_byte_sel_mux_out[dbw-1], s.read_byte_sel_mux_out )
+
+      s.amo_min_sel.value  = s.tmp_min[dbw]
+      s.amo_minu_sel.value = s.cachereq_data_reg_out < s.read_byte_sel_mux_out
+
+    # Choose amo max
+
+    @s.combinational
+    def comb_amo_max():
+      s.amo_max_sel.value  = ~s.amo_min_sel
+      s.amo_maxu_sel.value = ~s.amo_minu_sel
+
+    # Determine amo type
 
     @s.combinational
     def comb_amo_type():
       cachereq_type = s.cachereq_type
-      if   cachereq_type == MemReqMsg.TYPE_AMO_ADD  : s.amo_sel.value = Bits( 3, 1 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_AND  : s.amo_sel.value = Bits( 3, 2 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_OR   : s.amo_sel.value = Bits( 3, 3 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_XCHG : s.amo_sel.value = Bits( 3, 4 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MIN  : s.amo_sel.value = Bits( 3, 5 )
-      else                                          : s.amo_sel.value = Bits( 3, 0 )
+      if   cachereq_type == MemReqMsg.TYPE_AMO_ADD  : s.amo_sel.value = Bits( 4, 1 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_AND  : s.amo_sel.value = Bits( 4, 2 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_OR   : s.amo_sel.value = Bits( 4, 3 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_SWAP : s.amo_sel.value = Bits( 4, 4 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MIN  : s.amo_sel.value = Bits( 4, 5 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MINU : s.amo_sel.value = Bits( 4, 6 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MAX  : s.amo_sel.value = Bits( 4, 7 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MAXU : s.amo_sel.value = Bits( 4, 8 )
+      elif cachereq_type == MemReqMsg.TYPE_AMO_XOR  : s.amo_sel.value = Bits( 4, 9 )
+      else                                          : s.amo_sel.value = Bits( 4, 0 )
 
     s.state_reg  = Wire( 5 )
     s.state_next = Wire( 5 )
@@ -386,25 +418,25 @@ class BlockingCacheCtrlPRTL( Model ):
     r_m     = Bits( 1, 1 ) # fill data array from _m_em
 
     # Parameters for memreq_type_mux
-    m_x     = Bits( 3, 0 )
-    m_e     = Bits( 3, 1 )
-    m_r     = Bits( 3, 0 )
+    m_x     = Bits( 4, 0 )
+    m_e     = Bits( 4, 1 )
+    m_r     = Bits( 4, 0 )
 
     s.tag_array_wen = Wire( 1 )
     s.tag_array_ren = Wire( 1 )
 
     # Control signal bit slices
 
-    CS_cachereq_rdy        = slice( 19, 20 )
-    CS_cacheresp_val       = slice( 18, 19 )
-    CS_memreq_val          = slice( 17, 18 )
-    CS_memresp_rdy         = slice( 16, 17 )
-    CS_cachereq_en         = slice( 15, 16 )
-    CS_memresp_en          = slice( 14, 15 )
-    CS_is_refill           = slice( 13, 14 )
-    CS_read_data_reg_en    = slice( 12, 13 )
-    CS_read_tag_reg_en     = slice( 11, 12 )
-    CS_memreq_type         = slice( 8,  11 ) # 3 bits
+    CS_cachereq_rdy        = slice( 20, 21 )
+    CS_cacheresp_val       = slice( 19, 20 )
+    CS_memreq_val          = slice( 18, 19 )
+    CS_memresp_rdy         = slice( 17, 18 )
+    CS_cachereq_en         = slice( 16, 17 )
+    CS_memresp_en          = slice( 15, 16 )
+    CS_is_refill           = slice( 14, 15 )
+    CS_read_data_reg_en    = slice( 13, 14 )
+    CS_read_tag_reg_en     = slice( 12, 13 )
+    CS_memreq_type         = slice( 8,  12 ) # 4 bits
     CS_valid_bit_in        = slice( 7,  8  )
     CS_valid_bits_write_en = slice( 6,  7  )
     CS_dirty_bit_in        = slice( 5,  6  )
@@ -414,7 +446,7 @@ class BlockingCacheCtrlPRTL( Model ):
     CS_cacheresp_hit       = slice( 1,  2  )
     CS_skip_read_data_reg  = slice( 0,  1  )
 
-    s.cs = Wire( 20 )
+    s.cs = Wire( 21 )
 
     @s.combinational
     def comb_control_table():

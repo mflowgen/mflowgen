@@ -6,7 +6,9 @@ from pymtl      import *
 from pclib.test import TestRandomDelay
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 
-from pclib.ifcs import MemRespMsg
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemRespMsg
 
 #-----------------------------------------------------------------------
 # TestSimpleCacheSink

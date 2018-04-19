@@ -4,8 +4,11 @@
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
-from pclib.ifcs import MemReqMsg16B, MemRespMsg16B
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg4B, MemRespMsg4B
+from ifcs import MemReqMsg16B, MemRespMsg16B
 
 from pclib.rtl.queues import SingleElementBypassQueue
 

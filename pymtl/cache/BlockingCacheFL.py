@@ -6,9 +6,12 @@
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
-from pclib.ifcs import MemReqMsg16B, MemRespMsg16B
-from pclib.ifcs import MemReqMsg, MemRespMsg
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg4B, MemRespMsg4B
+from ifcs import MemReqMsg16B, MemRespMsg16B
+from ifcs import MemReqMsg, MemRespMsg
 
 class BlockingCacheFL( Model ):
 
@@ -48,7 +51,8 @@ class BlockingCacheFL( Model ):
     def logic():
 
       # Pass through requests: just copy all of the fields over, except
-      # we zero extend the data field.
+      # we zero-extend the data field (or sign-extend if it is a signed
+      # AMO operation).
 
       if s.cachereq.msg.len == 0:
         len_ = 4
@@ -63,7 +67,12 @@ class BlockingCacheFL( Model ):
       s.memreq.msg.opaque  = s.cachereq.msg.opaque
       s.memreq.msg.addr    = s.cachereq.msg.addr
       s.memreq.msg.len     = len_
-      s.memreq.msg.data    = zext( s.cachereq.msg.data, 128 )
+
+      if ( s.cachereq.msg.type_ == MemReqMsg.TYPE_AMO_MIN or
+           s.cachereq.msg.type_ == MemReqMsg.TYPE_AMO_MAX ):
+        s.memreq.msg.data    = sext( s.cachereq.msg.data, 128 )
+      else:
+        s.memreq.msg.data    = zext( s.cachereq.msg.data, 128 )
 
       # Pass through responses: just copy all of the fields over, except
       # we truncate the data field.

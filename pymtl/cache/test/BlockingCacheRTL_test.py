@@ -13,9 +13,11 @@ from pclib.test import mk_test_case_table, run_sim
 from pclib.test import TestSource
 from pclib.test import TestMemory
 
-from pclib.ifcs import MemMsg,    MemReqMsg,    MemRespMsg
-from pclib.ifcs import MemMsg4B,  MemReqMsg4B,  MemRespMsg4B
-from pclib.ifcs import MemMsg16B, MemReqMsg16B, MemRespMsg16B
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemMsg,    MemReqMsg,    MemRespMsg
+from ifcs import MemMsg4B,  MemReqMsg4B,  MemRespMsg4B
+from ifcs import MemMsg16B, MemReqMsg16B, MemRespMsg16B
 
 from TestCacheSink        import TestCacheSink
 from BlockingCacheFL_test import *

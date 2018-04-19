@@ -3,9 +3,12 @@
 #=========================================================================
 
 from pymtl      import *
-from pclib.ifcs import MemReqMsg
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
-from pclib.ifcs import MemReqMsg16B, MemRespMsg16B
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg
+from ifcs import MemReqMsg4B, MemRespMsg4B
+from ifcs import MemReqMsg16B, MemRespMsg16B
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # LAB TASK: Include necessary files
@@ -56,7 +59,11 @@ class BlockingCacheDpathPRTL( Model ):
 
     # control signals (ctrl->dpath)
 
-    s.amo_sel            = InPort( 3 )
+    s.amo_min_sel        = InPort( 1 )
+    s.amo_minu_sel       = InPort( 1 )
+    s.amo_max_sel        = InPort( 1 )
+    s.amo_maxu_sel       = InPort( 1 )
+    s.amo_sel            = InPort( 4 )
     s.cachereq_en        = InPort( 1 )
     s.memresp_en         = InPort( 1 )
     s.is_refill          = InPort( 1 )
@@ -77,20 +84,22 @@ class BlockingCacheDpathPRTL( Model ):
     s.read_data_reg_en   = InPort( 1 )
     s.read_tag_reg_en    = InPort( 1 )
     s.read_byte_sel      = InPort( clog2(clw/dbw) )
-    s.memreq_type        = InPort( 3 )
-    s.cacheresp_type     = InPort( 3 )
+    s.memreq_type        = InPort( 4 )
+    s.cacheresp_type     = InPort( 4 )
     s.cacheresp_hit      = InPort( 1 )
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_type      = OutPort ( 3 )
-    s.cachereq_addr      = OutPort ( abw )
-    s.tag_match_0        = OutPort ( 1 )
-    s.tag_match_1        = OutPort ( 1 )
+    s.cachereq_data_reg_out = OutPort ( dbw )
+    s.read_byte_sel_mux_out = OutPort ( dbw )
+    s.cachereq_type         = OutPort ( 4 )
+    s.cachereq_addr         = OutPort ( abw )
+    s.tag_match_0           = OutPort ( 1 )
+    s.tag_match_1           = OutPort ( 1 )
 
     # Register the unpacked cachereq_msg
 
-    s.cachereq_type_reg = m = RegEnRst( dtype = 3, reset_value = 0 )
+    s.cachereq_type_reg = m = RegEnRst( dtype = 4, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -119,6 +128,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.connect_pairs(
       m.en,  s.cachereq_en,
       m.in_, s.cachereq_msg.data,
+      m.out, s.cachereq_data_reg_out,
     )
 
     # Register the unpacked data from memresp_msg
@@ -130,32 +140,84 @@ class BlockingCacheDpathPRTL( Model ):
       m.in_, s.memresp_msg.data,
     )
 
+    # Calculate AMO minimum
+
+    s.amo_min_mux = m = Mux( dtype = dbw, nports = 2 )
+
+    s.connect_pairs(
+      m.in_[0],  s.read_byte_sel_mux_out,
+      m.in_[1],  s.cachereq_data_reg_out,
+      m.sel,     s.amo_min_sel,
+    )
+
+    # Calculate AMO minimum unsigned
+
+    s.amo_minu_mux = m = Mux( dtype = dbw, nports = 2 )
+
+    s.connect_pairs(
+      m.in_[0],  s.read_byte_sel_mux_out,
+      m.in_[1],  s.cachereq_data_reg_out,
+      m.sel,     s.amo_minu_sel,
+    )
+
+    # Calculate AMO maximum
+
+    s.amo_max_mux = m = Mux( dtype = dbw, nports = 2 )
+
+    s.connect_pairs(
+      m.in_[0],  s.read_byte_sel_mux_out,
+      m.in_[1],  s.cachereq_data_reg_out,
+      m.sel,     s.amo_max_sel,
+    )
+
+    # Calculate AMO maximum unsigned
+
+    s.amo_maxu_mux = m = Mux( dtype = dbw, nports = 2 )
+
+    s.connect_pairs(
+      m.in_[0],  s.read_byte_sel_mux_out,
+      m.in_[1],  s.cachereq_data_reg_out,
+      m.sel,     s.amo_maxu_sel,
+    )
+
     # Generate cachereq write data which will be the data field or some
     # calculation with the read data for amos
 
     s.cachereq_data_reg_out_add   = Wire( dbw )
     s.cachereq_data_reg_out_and   = Wire( dbw )
     s.cachereq_data_reg_out_or    = Wire( dbw )
-    s.cachereq_data_reg_out_xchg  = Wire( dbw )
+    s.cachereq_data_reg_out_swap  = Wire( dbw )
     s.cachereq_data_reg_out_min   = Wire( dbw )
+    s.cachereq_data_reg_out_minu  = Wire( dbw )
+    s.cachereq_data_reg_out_max   = Wire( dbw )
+    s.cachereq_data_reg_out_maxu  = Wire( dbw )
+    s.cachereq_data_reg_out_xor   = Wire( dbw )
 
-    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 6 )
+    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 10 )
 
     @s.combinational
     def comb_connect_wires():
-      s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg.out + s.read_byte_sel_mux.out
-      s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg.out & s.read_byte_sel_mux.out
-      s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg.out | s.read_byte_sel_mux.out
-      s.cachereq_data_reg_out_xchg.value  = s.cachereq_data_reg.out
-      s.cachereq_data_reg_out_min.value   = min( s.cachereq_data_reg.out, s.read_byte_sel_mux.out )
+      s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg_out + s.read_byte_sel_mux_out
+      s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg_out & s.read_byte_sel_mux_out
+      s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg_out | s.read_byte_sel_mux_out
+      s.cachereq_data_reg_out_swap.value  = s.cachereq_data_reg_out
+      s.cachereq_data_reg_out_min.value   = s.amo_min_mux.out
+      s.cachereq_data_reg_out_minu.value  = s.amo_minu_mux.out
+      s.cachereq_data_reg_out_max.value   = s.amo_max_mux.out
+      s.cachereq_data_reg_out_maxu.value  = s.amo_maxu_mux.out
+      s.cachereq_data_reg_out_xor.value   = s.cachereq_data_reg_out ^ s.read_byte_sel_mux_out
 
     s.connect_pairs(
-      m.in_[0],  s.cachereq_data_reg.out,
+      m.in_[0],  s.cachereq_data_reg_out,
       m.in_[1],  s.cachereq_data_reg_out_add,
       m.in_[2],  s.cachereq_data_reg_out_and,
       m.in_[3],  s.cachereq_data_reg_out_or,
-      m.in_[4],  s.cachereq_data_reg_out_xchg,
+      m.in_[4],  s.cachereq_data_reg_out_swap,
       m.in_[5],  s.cachereq_data_reg_out_min,
+      m.in_[6],  s.cachereq_data_reg_out_minu,
+      m.in_[7],  s.cachereq_data_reg_out_max,
+      m.in_[8],  s.cachereq_data_reg_out_maxu,
+      m.in_[9],  s.cachereq_data_reg_out_xor,
       m.sel,     s.amo_sel,
     )
 
@@ -397,16 +459,21 @@ class BlockingCacheDpathPRTL( Model ):
       m.in_[2],  s.read_data[2*dbw: 3*dbw],
       m.in_[3],  s.read_data[3*dbw: 4*dbw],
       m.sel,     s.read_byte_sel,
+      m.out,     s.read_byte_sel_mux_out,
     )
 
     @s.combinational
     def comb_addr_refill():
-      if   s.cacheresp_type == MemReqMsg.TYPE_READ      : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_ADD   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_AND   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_OR    : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_XCHG  : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MIN   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      if   s.cacheresp_type == MemReqMsg.TYPE_READ      : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_ADD   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_AND   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_OR    : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_SWAP  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MIN   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MINU  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAX   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAXU  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_XOR   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
       else                                              : s.cacheresp_msg.data.value = Bits(32, 0)
 
     @s.combinational
