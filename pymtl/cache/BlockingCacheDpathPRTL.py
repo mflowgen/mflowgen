@@ -3,6 +3,7 @@
 #=========================================================================
 
 from pymtl      import *
+from pclib.ifcs import MemReqMsg
 from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
 from pclib.ifcs import MemReqMsg16B, MemRespMsg16B
 
@@ -55,7 +56,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     # control signals (ctrl->dpath)
 
-    s.amo_sel            = InPort( 2 )
+    s.amo_sel            = InPort( 3 )
     s.cachereq_en        = InPort( 1 )
     s.memresp_en         = InPort( 1 )
     s.is_refill          = InPort( 1 )
@@ -135,20 +136,26 @@ class BlockingCacheDpathPRTL( Model ):
     s.cachereq_data_reg_out_add   = Wire( dbw )
     s.cachereq_data_reg_out_and   = Wire( dbw )
     s.cachereq_data_reg_out_or    = Wire( dbw )
+    s.cachereq_data_reg_out_xchg  = Wire( dbw )
+    s.cachereq_data_reg_out_min   = Wire( dbw )
 
-    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 4 )
+    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 6 )
 
     @s.combinational
     def comb_connect_wires():
       s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg.out + s.read_byte_sel_mux.out
       s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg.out & s.read_byte_sel_mux.out
       s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg.out | s.read_byte_sel_mux.out
+      s.cachereq_data_reg_out_xchg.value  = s.cachereq_data_reg.out
+      s.cachereq_data_reg_out_min.value   = min( s.cachereq_data_reg.out, s.read_byte_sel_mux.out )
 
     s.connect_pairs(
       m.in_[0],  s.cachereq_data_reg.out,
       m.in_[1],  s.cachereq_data_reg_out_add,
       m.in_[2],  s.cachereq_data_reg_out_and,
       m.in_[3],  s.cachereq_data_reg_out_or,
+      m.in_[4],  s.cachereq_data_reg_out_xchg,
+      m.in_[5],  s.cachereq_data_reg_out_min,
       m.sel,     s.amo_sel,
     )
 
@@ -394,10 +401,13 @@ class BlockingCacheDpathPRTL( Model ):
 
     @s.combinational
     def comb_addr_refill():
-      if( s.cacheresp_type == Bits(3, 0) ) :
-        s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
-      else :
-        s.cacheresp_msg.data.value = Bits(32, 0)
+      if   s.cacheresp_type == MemReqMsg.TYPE_READ      : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_ADD   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_AND   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_OR    : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_XCHG  : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MIN   : s.cacheresp_msg.data.value = s.read_byte_sel_mux.out
+      else                                              : s.cacheresp_msg.data.value = Bits(32, 0)
 
     @s.combinational
     def comb_cacherespmsgpack():
