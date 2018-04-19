@@ -11,7 +11,10 @@ import struct
 from pymtl      import *
 from pclib.test import mk_test_case_table, run_sim
 from pclib.test import TestSource
-from pclib.test import TestMemory
+
+# BRGTC2 custom TestMemory modified for RISC-V 32
+
+from test import TestMemory
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 

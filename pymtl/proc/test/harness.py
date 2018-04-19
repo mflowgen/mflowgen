@@ -8,12 +8,18 @@ import struct
 
 from pymtl import *
 
-from pclib.ifcs import MemMsg4B
 from pclib.test import TestSource, TestSink
-from pclib.test import TestMemory
 
 from proc.NullXcelRTL      import NullXcelRTL
 from proc.tinyrv2_encoding import assemble
+
+# BRGTC2 custom TestMemory modified for RISC-V 32
+
+from test import TestMemory
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemMsg4B
 
 #=========================================================================
 # TestHarness

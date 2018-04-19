@@ -41,9 +41,12 @@
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemMsg4B
 from pclib.rtl  import NormalQueue, RegEn
 from XcelMsg    import XcelReqMsg, XcelRespMsg
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemMsg4B
 
 class NullXcelRTL( Model ):
 

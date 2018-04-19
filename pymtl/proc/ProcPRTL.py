@@ -5,7 +5,6 @@
 
 from pymtl             import *
 from pclib.ifcs        import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs        import MemReqMsg4B, MemRespMsg4B
 from pclib.rtl         import SingleElementBypassQueue, TwoElementBypassQueue
 from tinyrv2_encoding  import disassemble_inst
 from TinyRV2InstPRTL   import inst_dict
@@ -15,6 +14,10 @@ from ProcCtrlPRTL     import ProcCtrlPRTL
 from DropUnitPRTL      import DropUnitPRTL
 
 from XcelMsg import XcelReqMsg, XcelRespMsg
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg4B, MemRespMsg4B
 
 class ProcPRTL( Model ):
 

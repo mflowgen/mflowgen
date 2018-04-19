@@ -10,10 +10,14 @@ random.seed(0xdeadbeef)
 
 from pymtl            import *
 from pclib.test       import mk_test_case_table, run_sim
-from pclib.test       import TestSource, TestSink, TestMemory
+from pclib.test       import TestSource, TestSink
 
 from proc.XcelMsg     import XcelReqMsg, XcelRespMsg
 from proc.NullXcelRTL import NullXcelRTL
+
+# BRGTC2 custom TestMemory modified for RISC-V 32
+
+from test import TestMemory
 
 #-------------------------------------------------------------------------
 # TestHarness

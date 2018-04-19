@@ -29,7 +29,7 @@ class ProcCtrlPRTL( Model ):
 
     s.dmemreq_val      = OutPort( 1 )
     s.dmemreq_rdy      = InPort ( 1 )
-    s.dmemreq_msg_type = OutPort( 3 )
+    s.dmemreq_msg_type = OutPort( 4 )
 
     s.dmemresp_val     = InPort ( 1 )
     s.dmemresp_rdy     = OutPort( 1 )

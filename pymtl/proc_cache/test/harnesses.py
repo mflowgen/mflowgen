@@ -6,8 +6,15 @@ import struct
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemMsg
-from pclib.test import TestMemory, TestSource, TestSink
+from pclib.test import TestSource, TestSink
+
+# BRGTC2 custom TestMemory modified for RISC-V 32
+
+from test import TestMemory
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemMsg
 
 from proc.SparseMemoryImage       import SparseMemoryImage
 from proc.tinyrv2_encoding        import assemble

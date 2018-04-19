@@ -14,12 +14,15 @@ rtl_language = 'pymtl'
 
 # This is the PyMTL wrapper for the corresponding Verilog RTL model.
 
-from pymtl      import *    
+from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
 
 from proc.XcelMsg import XcelReqMsg
 from proc.XcelMsg import XcelRespMsg
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg4B, MemRespMsg4B
 
 class ProcVRTL( VerilogModel ):
 

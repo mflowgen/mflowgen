@@ -4,7 +4,10 @@
 
 from pymtl      import *
 from Router     import Router
-from pclib.ifcs import MemMsg
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs       import MemMsg
 
 #------------------------------------------------------------------------------
 # test_basic_1x2

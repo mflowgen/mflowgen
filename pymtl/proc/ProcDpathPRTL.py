@@ -6,12 +6,15 @@ from pymtl      import *
 from pclib.rtl  import RegisterFile, Mux, RegEnRst, RegEn
 from pclib.rtl  import Adder, Incrementer
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs import MemReqMsg4B, MemRespMsg4B
 
 from ProcDpathComponentsPRTL import AluPRTL, ImmGenPRTL
 from TinyRV2InstPRTL         import OPCODE, RS1, RS2, XS1, XS2, RD, SHAMT
 
 from lab1_imul  import IntMulScycleRTL
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs import MemReqMsg4B, MemRespMsg4B
 
 #-------------------------------------------------------------------------
 # Constants
