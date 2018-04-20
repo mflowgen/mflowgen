@@ -706,15 +706,15 @@ class ProcCtrlPRTL( Model ):
 
       s.dmemreq_val.value = s.val_X & ~s.stall_X & ( s.dmemreq_type_X != nr )
 
-      # send xcelreq if not stalling
-
-      s.xcelreq_val.value = s.val_X & ~s.stall_X & s.xcelreq_X
-      s.xcelreq_msg_type.value  = s.xcelreq_type_X
-
       if s.dmemreq_type_X == st:
         s.dmemreq_msg_type.value = 1  # store
       else:
         s.dmemreq_msg_type.value = 0  # don't care / load
+
+      # send xcelreq if not stalling
+
+      s.xcelreq_val.value = s.val_X & ~s.stall_X & s.xcelreq_X
+      s.xcelreq_msg_type.value  = s.xcelreq_type_X
 
       # imul resp ready signal
 

@@ -31,7 +31,7 @@ class ProcPRTL( Model ):
     # enable module reusability. In the past it was passed as arguments.
 
     s.core_id   = InPort( 32 )
-    
+
     # Proc/Mngr Interface
 
     s.mngr2proc = InValRdyBundle ( 32 )

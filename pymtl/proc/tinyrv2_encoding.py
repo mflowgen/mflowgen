@@ -35,11 +35,11 @@ from SparseMemoryImage import SparseMemoryImage
 tinyrv2_encoding_table = \
 [
 
-  # inst                       opcode mask                         opcode
+  # inst                        opcode mask                         opcode
 
   # nop
 
-  [ "nop",                     0b11111111111111111111111111111111, 0b00000000000000000000000000010011 ],
+  [ "nop",                      0b11111111111111111111111111111111, 0b00000000000000000000000000010011 ],
 
   # Currently these instructions are listed in the same order as
   # the risc-v reference card
@@ -52,74 +52,89 @@ tinyrv2_encoding_table = \
   #----------------------------------------------------------------------
 
   # Loads
-  [ "lw     rd, i_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000010000000000011 ], # I-type, tinyrv{1,2}
+  [ "lw      rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000010000000000011 ], # I-type, tinyrv{1,2}
 
   # Stores
-  [ "sw     rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000010000000100011 ], # S-type, tinyrv{1,2}
+  [ "sw      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000010000000100011 ], # S-type, tinyrv{1,2}
 
   # Shifts
-  [ "sll    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000001000000110011 ], # R-type, tinyrv{2}
-  [ "slli   rd, rs1, shamt",   0b11111110000000000111000001111111, 0b00000000000000000001000000010011 ], # R-type, tinyrv{2}
-  [ "srl    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000101000000110011 ], # R-type, tinyrv{2}
-  [ "srli   rd, rs1, shamt",   0b11111110000000000111000001111111, 0b00000000000000000101000000010011 ], # R-type, tinyrv{2}
-  [ "sra    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b01000000000000000101000000110011 ], # R-type, tinyrv{2}
-  [ "srai   rd, rs1, shamt",   0b11111110000000000111000001111111, 0b01000000000000000101000000010011 ], # R-type, tinyrv{2}
+  [ "sll     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000001000000110011 ], # R-type, tinyrv{2}
+  [ "slli    rd, rs1, shamt",   0b11111110000000000111000001111111, 0b00000000000000000001000000010011 ], # R-type, tinyrv{2}
+  [ "srl     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000101000000110011 ], # R-type, tinyrv{2}
+  [ "srli    rd, rs1, shamt",   0b11111110000000000111000001111111, 0b00000000000000000101000000010011 ], # R-type, tinyrv{2}
+  [ "sra     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b01000000000000000101000000110011 ], # R-type, tinyrv{2}
+  [ "srai    rd, rs1, shamt",   0b11111110000000000111000001111111, 0b01000000000000000101000000010011 ], # R-type, tinyrv{2}
 
   # Arithmetic
-  [ "add    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000000000000110011 ], # R-type, tinyrv{1,2}
-  [ "addi   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000000000000010011 ], # I-type, tinyrv{2}
-  [ "sub    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b01000000000000000000000000110011 ], # R-type, tinyrv{2}
-  [ "lui    rd, u_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000000110111 ], # U-type, tinyrv{2}
-  [ "auipc  rd, u_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000000010111 ], # U-type, tinyrv{2}
+  [ "add     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000000000000110011 ], # R-type, tinyrv{1,2}
+  [ "addi    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000000000000010011 ], # I-type, tinyrv{2}
+  [ "sub     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b01000000000000000000000000110011 ], # R-type, tinyrv{2}
+  [ "lui     rd, u_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000000110111 ], # U-type, tinyrv{2}
+  [ "auipc   rd, u_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000000010111 ], # U-type, tinyrv{2}
 
   # Logical
-  [ "xor    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000100000000110011 ], # R-type, tinyrv{2}
-  [ "xori   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000100000000010011 ], # I-type, tinyrv{2}
-  [ "or     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000110000000110011 ], # R-type, tinyrv{2}
-  [ "ori    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000110000000010011 ], # I-type, tinyrv{2}
-  [ "and    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000111000000110011 ], # R-type, tinyrv{2}
-  [ "andi   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000111000000010011 ], # I-type, tinyrv{2}
+  [ "xor     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000100000000110011 ], # R-type, tinyrv{2}
+  [ "xori    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000100000000010011 ], # I-type, tinyrv{2}
+  [ "or      rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000110000000110011 ], # R-type, tinyrv{2}
+  [ "ori     rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000110000000010011 ], # I-type, tinyrv{2}
+  [ "and     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000111000000110011 ], # R-type, tinyrv{2}
+  [ "andi    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000111000000010011 ], # I-type, tinyrv{2}
 
   # Compare
-  [ "slt    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000010000000110011 ], # R-type, tinyrv{2}
-  [ "slti   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000010000000010011 ], # I-type, tinyrv{2}
-  [ "sltu   rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000011000000110011 ], # R-type, tinyrv{2}
-  [ "sltiu  rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000011000000010011 ], # I-type, tinyrv{2}
+  [ "slt     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000010000000110011 ], # R-type, tinyrv{2}
+  [ "slti    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000010000000010011 ], # I-type, tinyrv{2}
+  [ "sltu    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000000000000000011000000110011 ], # R-type, tinyrv{2}
+  [ "sltiu   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000011000000010011 ], # I-type, tinyrv{2}
 
   # Branches
-  [ "beq    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000000000001100011 ], # SB-type, tinyrv{2}
-  [ "bne    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000001000001100011 ], # SB-type, tinyrv{1,2}
-  [ "blt    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000100000001100011 ], # SB-type, tinyrv{2}
-  [ "bge    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000101000001100011 ], # SB-type, tinyrv{2}
-  [ "bltu   rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000110000001100011 ], # SB-type, tinyrv{2}
-  [ "bgeu   rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000111000001100011 ], # SB-type, tinyrv{2}
+  [ "beq     rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000000000001100011 ], # SB-type, tinyrv{2}
+  [ "bne     rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000001000001100011 ], # SB-type, tinyrv{1,2}
+  [ "blt     rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000100000001100011 ], # SB-type, tinyrv{2}
+  [ "bge     rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000101000001100011 ], # SB-type, tinyrv{2}
+  [ "bltu    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000110000001100011 ], # SB-type, tinyrv{2}
+  [ "bgeu    rs1, rs2, b_imm",  0b00000000000000000111000001111111, 0b00000000000000000111000001100011 ], # SB-type, tinyrv{2}
 
   # Jump & Link
-  [ "jal    rd, j_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000001101111 ], # UJ-type, tinyrv{1,2}
-  [ "jalr   rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000000000001100111 ], # I-type, tinyrv{1,2}
+  [ "jal     rd, j_imm",        0b00000000000000000000000001111111, 0b00000000000000000000000001101111 ], # UJ-type, tinyrv{1,2}
+  [ "jalr    rd, rs1, i_imm",   0b00000000000000000111000001111111, 0b00000000000000000000000001100111 ], # I-type, tinyrv{1,2}
 
   #-----------------------------------------------------------------------
   # RV32M
   #-----------------------------------------------------------------------
 
   # Multiply
-  [ "mul    rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000010000000000000000000110011 ], # R-type, tinyrv{1,2}
+  [ "mul     rd, rs1, rs2",     0b11111110000000000111000001111111, 0b00000010000000000000000000110011 ], # R-type, tinyrv{1,2}
+
+  #-----------------------------------------------------------------------
+  # RV32A
+  #-----------------------------------------------------------------------
+
+  # AMOs
+  [ "amoswap rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00001000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amoadd  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00000000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amoxor  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00100000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amoand  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b01100000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amoor   rd, rs1, rs2",     0b11111000000000000111000001111111, 0b01000000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amomin  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b10000000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amomax  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b10100000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amominu rd, rs1, rs2",     0b11111000000000000111000001111111, 0b11000000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amomaxu rd, rs1, rs2",     0b11111000000000000111000001111111, 0b11100000000000000010000000101111 ], # R-type, tinyrv{?}
 
   #-----------------------------------------------------------------------
   # RV Privileged
   #-----------------------------------------------------------------------
   # See "The RISC-V Instruction Set Manual Volume II Privileged Architecture.pdf" pp.13-21
-  [ "csrr   rd, csrnum",       0b00000000000011111111000001111111, 0b00000000000000000010000001110011 ], # I-type, csrrs
-  [ "csrw   csrnum, rs1",      0b00000000000000000111111111111111, 0b00000000000000000001000001110011 ], # I-type, csrrw
+  [ "csrr    rd, csrnum",       0b00000000000011111111000001111111, 0b00000000000000000010000001110011 ], # I-type, csrrs
+  [ "csrw    csrnum, rs1",      0b00000000000000000111111111111111, 0b00000000000000000001000001110011 ], # I-type, csrrw
 
 
   # These two are for elf execution.
 
-  [ "lb     rd,  i_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000000011 ], # I-type
-  [ "sb     rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000100011 ], # S-type
+  [ "lb      rd,  i_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000000011 ], # I-type
+  [ "sb      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000100011 ], # S-type
 
   # Accelerator
-  ['custom0 rd, rs1, rs2, funct7', 0b00000000000000000000000001111111, 0b00000000000000000000000000001011 ], # ...
+  ['custom0  rd, rs1, rs2, funct7', 0b00000000000000000000000001111111, 0b00000000000000000000000000001011 ], # ...
 ]
 
 #=========================================================================
@@ -390,7 +405,7 @@ def disassemble_field_u_imm( bits ):
 def assemble_field_j_imm( bits, sym, pc, field_str ):
 
   if sym.has_key( field_str ):
-    # notice that we encode the branch target address (a lable) relative
+    # notice that we encode the branch target address (a label) relative
     # to current PC
     jtarg_byte_addr = sym[field_str] - pc
   else:
@@ -898,59 +913,71 @@ def decode_inst_name( inst ):
 
   elif inst[opcode] == 0b0110011:
     if   inst[funct7] == 0b0000000:
-      if   inst[funct3] == 0b000:     inst_name = "add"
-      elif inst[funct3] == 0b001:     inst_name = "sll"
-      elif inst[funct3] == 0b010:     inst_name = "slt"
-      elif inst[funct3] == 0b011:     inst_name = "sltu"
-      elif inst[funct3] == 0b100:     inst_name = "xor"
-      elif inst[funct3] == 0b101:     inst_name = "srl"
-      elif inst[funct3] == 0b110:     inst_name = "or"
-      elif inst[funct3] == 0b111:     inst_name = "and"
+      if   inst[funct3] == 0b000:       inst_name = "add"
+      elif inst[funct3] == 0b001:       inst_name = "sll"
+      elif inst[funct3] == 0b010:       inst_name = "slt"
+      elif inst[funct3] == 0b011:       inst_name = "sltu"
+      elif inst[funct3] == 0b100:       inst_name = "xor"
+      elif inst[funct3] == 0b101:       inst_name = "srl"
+      elif inst[funct3] == 0b110:       inst_name = "or"
+      elif inst[funct3] == 0b111:       inst_name = "and"
     elif inst[funct7] == 0b0100000:
-      if   inst[funct3] == 0b000:     inst_name = "sub"
-      elif inst[funct3] == 0b101:     inst_name = "sra"
+      if   inst[funct3] == 0b000:       inst_name = "sub"
+      elif inst[funct3] == 0b101:       inst_name = "sra"
     elif inst[funct7] == 0b0000001:
-      if   inst[funct3] == 0b000:     inst_name = "mul"
+      if   inst[funct3] == 0b000:       inst_name = "mul"
 
   elif inst[opcode] == 0b0010011:
-    if   inst[funct3] == 0b000:       inst_name = "addi"
-    elif inst[funct3] == 0b010:       inst_name = "slti"
-    elif inst[funct3] == 0b011:       inst_name = "sltiu"
-    elif inst[funct3] == 0b100:       inst_name = "xori"
-    elif inst[funct3] == 0b110:       inst_name = "ori"
-    elif inst[funct3] == 0b111:       inst_name = "andi"
-    elif inst[funct3] == 0b001:       inst_name = "slli"
+    if   inst[funct3] == 0b000:         inst_name = "addi"
+    elif inst[funct3] == 0b010:         inst_name = "slti"
+    elif inst[funct3] == 0b011:         inst_name = "sltiu"
+    elif inst[funct3] == 0b100:         inst_name = "xori"
+    elif inst[funct3] == 0b110:         inst_name = "ori"
+    elif inst[funct3] == 0b111:         inst_name = "andi"
+    elif inst[funct3] == 0b001:         inst_name = "slli"
     elif inst[funct3] == 0b101:
-      if   inst[funct7] == 0b0000000: inst_name = "srli"
-      elif inst[funct7] == 0b0100000: inst_name = "srai"
+      if   inst[funct7] == 0b0000000:   inst_name = "srli"
+      elif inst[funct7] == 0b0100000:   inst_name = "srai"
 
   elif inst[opcode] == 0b0100011:
-    if   inst[funct3] == 0b010:       inst_name = "sw"
-    elif inst[funct3] == 0b000:       inst_name = "sb"
+    if   inst[funct3] == 0b010:         inst_name = "sw"
+    elif inst[funct3] == 0b000:         inst_name = "sb"
 
   elif inst[opcode] == 0b0000011:
-    if   inst[funct3] == 0b010:       inst_name = "lw"
-    elif inst[funct3] == 0b000:       inst_name = "lb"
+    if   inst[funct3] == 0b010:         inst_name = "lw"
+    elif inst[funct3] == 0b000:         inst_name = "lb"
 
   elif inst[opcode] == 0b1100011:
-    if   inst[funct3] == 0b000:       inst_name = "beq"
-    elif inst[funct3] == 0b001:       inst_name = "bne"
-    elif inst[funct3] == 0b100:       inst_name = "blt"
-    elif inst[funct3] == 0b101:       inst_name = "bge"
-    elif inst[funct3] == 0b110:       inst_name = "bltu"
-    elif inst[funct3] == 0b111:       inst_name = "bgeu"
+    if   inst[funct3] == 0b000:         inst_name = "beq"
+    elif inst[funct3] == 0b001:         inst_name = "bne"
+    elif inst[funct3] == 0b100:         inst_name = "blt"
+    elif inst[funct3] == 0b101:         inst_name = "bge"
+    elif inst[funct3] == 0b110:         inst_name = "bltu"
+    elif inst[funct3] == 0b111:         inst_name = "bgeu"
 
-  elif inst[opcode] == 0b0110111:     inst_name = "lui"
+  elif inst[opcode] == 0b0110111:       inst_name = "lui"
 
-  elif inst[opcode] == 0b0010111:     inst_name = "auipc"
+  elif inst[opcode] == 0b0010111:       inst_name = "auipc"
 
-  elif inst[opcode] == 0b1101111:     inst_name = "jal"
+  elif inst[opcode] == 0b1101111:       inst_name = "jal"
 
-  elif inst[opcode] == 0b1100111:     inst_name = "jalr"
+  elif inst[opcode] == 0b1100111:       inst_name = "jalr"
 
   elif inst[opcode] == 0b1110011:
-    if   inst[funct3] == 0b001:       inst_name = "csrw"
-    elif inst[funct3] == 0b010:       inst_name = "csrr"
+    if   inst[funct3] == 0b001:         inst_name = "csrw"
+    elif inst[funct3] == 0b010:         inst_name = "csrr"
+
+  elif inst[opcode] == 0b0101111:
+    if   inst[funct3] == 0b010:
+      if   inst[funct7][2:] == 0b00001: inst_name = "amoswap"
+      elif inst[funct7][2:] == 0b00000: inst_name = "amoadd"
+      elif inst[funct7][2:] == 0b00100: inst_name = "amoxor"
+      elif inst[funct7][2:] == 0b01100: inst_name = "amoand"
+      elif inst[funct7][2:] == 0b01000: inst_name = "amoor"
+      elif inst[funct7][2:] == 0b10000: inst_name = "amomin"
+      elif inst[funct7][2:] == 0b10100: inst_name = "amomax"
+      elif inst[funct7][2:] == 0b11000: inst_name = "amominu"
+      elif inst[funct7][2:] == 0b11100: inst_name = "amomaxu"
 
   # custom
   elif inst[opcode]   == 0b0001011:     inst_name = "custom0"
