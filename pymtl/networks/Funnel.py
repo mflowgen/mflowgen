@@ -18,6 +18,11 @@ from pclib.rtl  import RoundRobinArbiterEn
 class Funnel( Model ):
 
   def __init__( s, nports, MsgType ):
+    # To later route the response back to appropriate port, the funnel would
+    # require the MsgType to contain some field to store the port id.
+    # In BRG we always use opaque field
+
+    assert hasattr( MsgType, "opaque" ), "This Funnel requires \"opaque\" field in MsgType"
 
     #---------------------------------------------------------------------
     # Interface

@@ -16,6 +16,7 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 class Router( Model ):
 
   def __init__( s, nports, MsgType ):
+    assert hasattr( MsgType, "opaque" ), "This Router requires \"opaque\" field in MsgType"
 
     #---------------------------------------------------------------------
     # Interface

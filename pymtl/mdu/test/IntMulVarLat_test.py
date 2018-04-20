@@ -12,7 +12,7 @@ from pclib.test          import mk_test_case_table, run_sim
 from pclib.test          import TestSource, TestSink
 from mdu.IntMulVarLat  import IntMulVarLat
 
-from ifcs import MduReqMsg
+from ifcs import MduReqMsg, MduRespMsg
 #-------------------------------------------------------------------------
 # TestHarness
 #-------------------------------------------------------------------------
@@ -26,9 +26,9 @@ class TestHarness (Model):
     # Instantiate models
     
 
-    s.src  = TestSource ( MduReqMsg(32, 8), src_msgs,  src_delay  )
+    s.src  = TestSource ( MduReqMsg(nbits, 8), src_msgs,  src_delay  )
     s.imul = IntMulVarLat( nbits, 8 )
-    s.sink = TestSink   ( Bits(nbits), sink_msgs, sink_delay )
+    s.sink = TestSink   ( MduRespMsg(nbits), sink_msgs, sink_delay )
 
     # Dump VCD
 
@@ -63,13 +63,14 @@ class TestHarness (Model):
 # 2 - mulhsu
 # 3 - mulhu
 
-msg_type = MduReqMsg( 32, 8 )
+req_type  = MduReqMsg( 32, 8 )
+resp_type = MduRespMsg( 32 )
 
 def req( typ, a, b, nbits=32 ):
-  return msg_type.mk_msg( typ, Bits( nbits, a, trunc=True ), Bits( nbits, b, trunc=True ) )
+  return req_type.mk_msg( typ, 2, Bits( nbits, a, trunc=True ), Bits( nbits, b, trunc=True ) )
 
 def resp( a, nbits=32 ):
-  return Bits( nbits, a, trunc=True )
+  return resp_type.mk_msg( 2, Bits( nbits, a, trunc=True ) )
 
 # direct test cases
 # https://github.com/riscv/riscv-tests/blob/master/isa/rv32um/mul*.S
@@ -99,27 +100,27 @@ direct_imul_cases = [
 
 # mul
 for a, b, res, _, _, _ in direct_imul_cases:
-  direct_mul_msgs.extend( [ req( msg_type.TYPE_MUL, a, b ), resp( res ) ] )
+  direct_mul_msgs.extend( [ req( req_type.TYPE_MUL, a, b ), resp( res ) ] )
 
 # mulh
 for a, b, _, res, _, _ in direct_imul_cases:
-  direct_mulh_msgs.extend( [ req( msg_type.TYPE_MULH, a, b ), resp( res ) ] )
+  direct_mulh_msgs.extend( [ req( req_type.TYPE_MULH, a, b ), resp( res ) ] )
 
 # mulhsu
 for a, b, _, _, res, _ in direct_imul_cases:
-  direct_mulhsu_msgs.extend( [ req( msg_type.TYPE_MULHSU, a, b ), resp( res ) ] )
+  direct_mulhsu_msgs.extend( [ req( req_type.TYPE_MULHSU, a, b ), resp( res ) ] )
 
 # mulhu
 for a, b, _, _, _, res in direct_imul_cases:
-  direct_mulhu_msgs.extend( [ req( msg_type.TYPE_MULHU, a, b ), resp( res ) ] )
+  direct_mulhu_msgs.extend( [ req( req_type.TYPE_MULHU, a, b ), resp( res ) ] )
 
 # mix
 mix_lists = []
 for a, b, w, x, y, z in direct_imul_cases:
-  mix_lists.append( [ req( msg_type.TYPE_MUL,    a, b ), resp( w ) ] )
-  mix_lists.append( [ req( msg_type.TYPE_MULH,   a, b ), resp( x ) ] )
-  mix_lists.append( [ req( msg_type.TYPE_MULHSU, a, b ), resp( y ) ] )
-  mix_lists.append( [ req( msg_type.TYPE_MULHU,  a, b ), resp( z ) ] )
+  mix_lists.append( [ req( req_type.TYPE_MUL,    a, b ), resp( w ) ] )
+  mix_lists.append( [ req( req_type.TYPE_MULH,   a, b ), resp( x ) ] )
+  mix_lists.append( [ req( req_type.TYPE_MULHSU, a, b ), resp( y ) ] )
+  mix_lists.append( [ req( req_type.TYPE_MULHU,  a, b ), resp( z ) ] )
 random.shuffle( mix_lists )
 
 direct_mix_msgs = reduce( lambda x,y:x+y, mix_lists )

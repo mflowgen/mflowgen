@@ -11,17 +11,45 @@ class MduReqMsg( BitStructDefinition ):
   TYPE_REM    = 6
   TYPE_REMU   = 7
 
-  def __init__( s, nbits, ntypes ):
-    s.typ = BitField( clog2(ntypes) )
-    s.opa = BitField( nbits )
-    s.opb = BitField( nbits )
+  type_str = {
+    TYPE_MUL   : "mul ",
+    TYPE_MULH  : "mulh",
+    TYPE_MULHSU: "mhsu",
+    TYPE_MULHU : "mhu ",
+    TYPE_DIV   : "div ",
+    TYPE_DIVU  : "divu",
+    TYPE_REM   : "rem ",
+    TYPE_REMU  : "remu",
+  }
 
-  def mk_msg( s, typ, a, b ):
-    msg     = s()
-    msg.typ = typ
-    msg.opa = a
-    msg.opb = b
+  def __init__( s, nbits, ntypes ):
+    s.typ    = BitField( clog2(ntypes) )
+    s.opaque = BitField( 3 ) # Hard-code at most 8 requesters
+    s.op_a   = BitField( nbits )
+    s.op_b   = BitField( nbits )
+
+  def mk_msg( s, typ, opq, a, b ):
+    msg        = s()
+    msg.typ    = typ
+    msg.opaque = opq
+    msg.op_a    = a
+    msg.op_b    = b
     return msg
 
   def __str__( s ):
-    return "[{}]{}:{}".format( s.typ, s.opa, s.opb )
+    return "{}:{}:{}:{}".format( MduReqMsg.type_str[int(s.typ)], s.opaque, s.op_a, s.op_b )
+
+class MduRespMsg( BitStructDefinition ):
+
+  def __init__( s, nbits ):
+    s.opaque = BitField( 3 ) # Hard-code at most 8 requesters
+    s.result = BitField( nbits )
+
+  def mk_msg( s, opq, res ):
+    msg        = s()
+    msg.opaque = opq
+    msg.result = res
+    return msg
+
+  def __str__( s ):
+    return "{}:{}".format( s.opaque, s.result )

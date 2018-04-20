@@ -9,7 +9,7 @@ from pclib.rtl  import Mux, Reg, RegEn, RegRst
 from pclib.rtl  import RightLogicalShifter, LeftLogicalShifter, Adder
 from pclib.rtl  import ZeroComparator
 
-from ifcs import MduReqMsg
+from ifcs import MduReqMsg, MduRespMsg
 
 #=========================================================================
 # Constants
@@ -78,7 +78,9 @@ class IntMulVarLatDpath( Model ):
 
     s.req_msg_a      = InPort  (nbits)
     s.req_msg_b      = InPort  (nbits)
-    s.resp_msg       = OutPort (nbits)
+    s.req_msg_opaque = InPort  (3)
+    s.resp_result    = OutPort (nbits)
+    s.resp_opaque    = OutPort (3)
 
     # Control signals (ctrl -> dpath)
 
@@ -89,7 +91,7 @@ class IntMulVarLatDpath( Model ):
     s.add_mux_sel    = InPort  (ADD_MUX_SEL_NBITS)
 
     s.is_hi          = InPort  (1)
-    s.is_hi_reg_en   = InPort  (1)
+    s.buffers_en     = InPort  (1)
 
     # Status signals (dpath -> ctrl)
 
@@ -225,11 +227,10 @@ class IntMulVarLatDpath( Model ):
       m.out                     : s.add_mux_out
     })
 
-
     # hi/lo sel reg in order to buffer it during calculation
     s.is_hi_reg = m = RegEn( 1 )
     s.connect_dict({
-      m.en  : s.is_hi_reg_en,
+      m.en  : s.buffers_en,
       m.in_ : s.is_hi,
     })
 
@@ -240,7 +241,14 @@ class IntMulVarLatDpath( Model ):
       m.sel    : s.is_hi_reg.out,
       m.in_[0] : s.result_reg.out[0:nbits],       # lo
       m.in_[1] : s.result_reg.out[nbits:nbits*2], # hi
-      m.out    : s.resp_msg, # Connect to output port
+      m.out    : s.resp_result, # Connect to output port
+    })
+
+    s.opaque_reg = m = RegEn( 3 )
+    s.connect_dict({
+      m.en  : s.buffers_en,
+      m.in_ : s.req_msg_opaque,
+      m.out : s.resp_opaque,
     })
 
     # Status signals
@@ -278,7 +286,7 @@ class IntMulVarLatCtrl( Model ):
     s.result_reg_en  = OutPort (1)
     s.add_mux_sel    = OutPort (ADD_MUX_SEL_NBITS)
     s.is_hi          = OutPort (1)
-    s.is_hi_reg_en   = OutPort (1)
+    s.buffers_en     = OutPort (1)
 
     # Status signals (dpath -> ctrl)
 
@@ -351,7 +359,7 @@ class IntMulVarLatCtrl( Model ):
       s.add_mux_sel.value    = 0
 
       s.result_mux_sel.value = 0
-      s.is_hi_reg_en.value   = 0
+      s.buffers_en.value     = 0
       s.is_hi.value          = 0
 
       # In IDLE state we simply wait for inputs to arrive and latch them
@@ -372,8 +380,9 @@ class IntMulVarLatCtrl( Model ):
           s.result_mux_sel.value = RESULT_MUX_SEL_MULH
         else:
           s.result_mux_sel.value = RESULT_MUX_SEL_0
+
         s.result_reg_en.value  = 1
-        s.is_hi_reg_en.value   = 1
+        s.buffers_en.value     = 1
         s.is_hi.value          = (s.req_typ != 0)
         s.add_mux_sel.value    = ADD_MUX_SEL_X
 
@@ -422,7 +431,7 @@ class IntMulVarLat( Model ):
     # Interface
 
     s.req   = InValRdyBundle  ( MduReqMsg(nbits, ntypes) )
-    s.resp  = OutValRdyBundle ( nbits )
+    s.resp  = OutValRdyBundle ( MduRespMsg(nbits) )
 
     # Instantiate datapath and control
 
@@ -431,17 +440,19 @@ class IntMulVarLat( Model ):
 
     # Connect input interface to dpath/ctrl
 
-    s.connect( s.req.msg.opa, s.dpath.req_msg_a  )
-    s.connect( s.req.msg.opb, s.dpath.req_msg_b  )
-    s.connect( s.req.msg.typ, s.ctrl.req_typ     )
-    s.connect( s.req.val,     s.ctrl.req_val     )
-    s.connect( s.req.rdy,     s.ctrl.req_rdy     )
+    s.connect( s.req.msg.op_a,   s.dpath.req_msg_a      )
+    s.connect( s.req.msg.op_b,   s.dpath.req_msg_b      )
+    s.connect( s.req.msg.opaque, s.dpath.req_msg_opaque )
+    s.connect( s.req.msg.typ,    s.ctrl.req_typ         )
+    s.connect( s.req.val,        s.ctrl.req_val         )
+    s.connect( s.req.rdy,        s.ctrl.req_rdy         )
 
     # Connect dpath/ctrl to output interface
 
-    s.connect( s.dpath.resp_msg,  s.resp.msg )
-    s.connect( s.ctrl.resp_val,   s.resp.val )
-    s.connect( s.ctrl.resp_rdy,   s.resp.rdy )
+    s.connect( s.dpath.resp_result, s.resp.msg.result )
+    s.connect( s.dpath.resp_opaque, s.resp.msg.opaque )
+    s.connect( s.ctrl.resp_val,     s.resp.val )
+    s.connect( s.ctrl.resp_rdy,     s.resp.rdy )
 
     # Connect status/control signals
 
