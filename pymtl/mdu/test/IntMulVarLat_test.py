@@ -1,5 +1,5 @@
 #=========================================================================
-# IntMulFL_test
+# IntMulVarLat_test
 #=========================================================================
 
 import pytest
@@ -7,12 +7,13 @@ import random
 
 random.seed(0xdeadbeef)
 
-from pymtl               import *
-from pclib.test          import mk_test_case_table, run_sim
-from pclib.test          import TestSource, TestSink
-from mdu.IntMulVarLat  import IntMulVarLat
+from pymtl            import *
+from pclib.test       import mk_test_case_table, run_sim
+from pclib.test       import TestSource, TestSink
+from mdu.IntMulVarLat import IntMulVarLat
 
 from ifcs import MduReqMsg, MduRespMsg
+
 #-------------------------------------------------------------------------
 # TestHarness
 #-------------------------------------------------------------------------
@@ -24,7 +25,6 @@ class TestHarness (Model):
                 dump_vcd=False, test_verilog=False ):
 
     # Instantiate models
-    
 
     s.src  = TestSource ( MduReqMsg(nbits, 8), src_msgs,  src_delay  )
     s.imul = IntMulVarLat( nbits, 8 )
@@ -140,7 +140,7 @@ test_case_table = mk_test_case_table([
   [ "direct_mulh_3x14",   direct_mulh_msgs,   3,        14         ],
   [ "direct_mulhsu_3x14", direct_mulhsu_msgs, 3,        14         ],
   [ "direct_mulhu_3x14",  direct_mulhu_msgs,  3,        14         ],
-  [ "direct_mix_3x14",    direct_mix_msgs,    0,        0          ],
+  [ "direct_mix_3x14",    direct_mix_msgs,    3,        14         ],
 ])
 
 #-------------------------------------------------------------------------

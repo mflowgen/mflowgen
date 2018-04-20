@@ -227,11 +227,23 @@ class IntMulVarLatDpath( Model ):
       m.out                     : s.add_mux_out
     })
 
-    # hi/lo sel reg in order to buffer it during calculation
+    # Shunning: these three components are added during BRGTC2
+
+    # hi/lo sel reg -- buffer is_hi during calculation
+
     s.is_hi_reg = m = RegEn( 1 )
     s.connect_dict({
       m.en  : s.buffers_en,
       m.in_ : s.is_hi,
+    })
+
+    # opaque reg -- buffer opaque during calculation
+
+    s.opaque_reg = m = RegEn( 3 )
+    s.connect_dict({
+      m.en  : s.buffers_en,
+      m.in_ : s.req_msg_opaque,
+      m.out : s.resp_opaque,
     })
 
     # hi/lo mux
@@ -242,13 +254,6 @@ class IntMulVarLatDpath( Model ):
       m.in_[0] : s.result_reg.out[0:nbits],       # lo
       m.in_[1] : s.result_reg.out[nbits:nbits*2], # hi
       m.out    : s.resp_result, # Connect to output port
-    })
-
-    s.opaque_reg = m = RegEn( 3 )
-    s.connect_dict({
-      m.en  : s.buffers_en,
-      m.in_ : s.req_msg_opaque,
-      m.out : s.resp_opaque,
     })
 
     # Status signals
@@ -419,7 +424,7 @@ class IntMulVarLatCtrl( Model ):
         s.add_mux_sel.value    = ADD_MUX_SEL_X
 
 #=========================================================================
-# Integer Multiplier Fixed Latency
+# Integer Multiplier Variable Latency
 #=========================================================================
 
 class IntMulVarLat( Model ):
