@@ -145,11 +145,11 @@ class TinyRV2Semantics (object):
     s.PC += 4
 
   def execute_srl( s, inst ):
-    s.R[inst.rd] = s.R[inst.rs1] >> (s.R[inst.rs2].uint() & 0x1F) 
+    s.R[inst.rd] = s.R[inst.rs1] >> (s.R[inst.rs2].uint() & 0x1F)
     s.PC += 4
 
   def execute_sra( s, inst ):
-    s.R[inst.rd] = s.R[inst.rs1].int() >> (s.R[inst.rs2].uint() & 0x1F) 
+    s.R[inst.rd] = s.R[inst.rs1].int() >> (s.R[inst.rs2].uint() & 0x1F)
     s.PC += 4
 
   def execute_or( s, inst ):
@@ -180,7 +180,7 @@ class TinyRV2Semantics (object):
     s.R[inst.rd] = s.R[inst.rs1] ^ sext(inst.i_imm)
     s.PC += 4
 
-  def execute_ori( s, inst ): 
+  def execute_ori( s, inst ):
     s.R[inst.rd] = s.R[inst.rs1] | sext(inst.i_imm)
     s.PC += 4
 
@@ -299,6 +299,75 @@ class TinyRV2Semantics (object):
     s.PC += 4
 
   #-----------------------------------------------------------------------
+  # AMO instructions
+  #-----------------------------------------------------------------------
+
+  def execute_amoswap( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amoadd( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data + s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amoxor( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data ^ s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amoand( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data & s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amoor( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data | s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amomin( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data if   read_data.int() < s.R[inst.rs2].int() \
+                                 else s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amominu( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = min( read_data, s.R[inst.rs2] )
+    s.PC += 4
+
+  def execute_amomax( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data if   read_data.int() > s.R[inst.rs2].int() \
+                                 else s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amomaxu( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = max( read_data, s.R[inst.rs2] )
+    s.PC += 4
+
+  #-----------------------------------------------------------------------
   # CSR instructions
   #-----------------------------------------------------------------------
 
@@ -344,14 +413,14 @@ class TinyRV2Semantics (object):
     # CSR: proc2mngr
     # for proc2mngr we ignore the rd and do _not_ write old value to rd.
     # this is the same as setting rd = x0.
-    
+
     if   inst.csrnum == 0x7C0:
       bits = s.R[inst.rs1]
       s.proc2mngr_str = str(bits)
       s.proc2mngr_queue.append( bits )
-    
+
     # CSR: stats_en
-    
+
     elif inst.csrnum == 0x7C1:
       s.stats_en = bool( s.R[inst.rs1] )
 
@@ -380,53 +449,63 @@ class TinyRV2Semantics (object):
   #-----------------------------------------------------------------------
 
   execute_dispatch = {
-  
+
   # Listed in the order of the lecture handout
   # 1.3 Tiny Risc-V Instruction Set Architecture
-  
-    'nop'   : execute_nop,
 
-    'add'   : execute_add,
-    'addi'  : execute_addi,
-    'sub'   : execute_sub,
-    'mul'   : execute_mul,
-    'and'   : execute_and,
-    'andi'  : execute_andi,
-    'or'    : execute_or,
-    'ori'   : execute_ori,
-    'xor'   : execute_xor,
-    'xori'  : execute_xori,
-    
-    'slt'   : execute_slt,
-    'slti'  : execute_slti,
-    'sltu'  : execute_sltu,
-    'sltiu' : execute_sltiu,
-    
-    'sra'   : execute_sra,
-    'srai'  : execute_srai,
-    'srl'   : execute_srl,
-    'srli'  : execute_srli,
-    'sll'   : execute_sll,
-    'slli'  : execute_slli,
+    'nop'     : execute_nop,
 
-    'lui'   : execute_lui,
-    'auipc' : execute_auipc,
-    'lw'    : execute_lw,
-    'sw'    : execute_sw,
+    'add'     : execute_add,
+    'addi'    : execute_addi,
+    'sub'     : execute_sub,
+    'mul'     : execute_mul,
+    'and'     : execute_and,
+    'andi'    : execute_andi,
+    'or'      : execute_or,
+    'ori'     : execute_ori,
+    'xor'     : execute_xor,
+    'xori'    : execute_xori,
 
-    'jal'   : execute_jal,
-    'jalr'  : execute_jalr,
-    'beq'   : execute_beq,
-    'bne'   : execute_bne,
-    'blt'   : execute_blt,
-    'bge'   : execute_bge,
-    'bltu'  : execute_bltu,
-    'bgeu'  : execute_bgeu,
+    'slt'     : execute_slt,
+    'slti'    : execute_slti,
+    'sltu'    : execute_sltu,
+    'sltiu'   : execute_sltiu,
 
-    'csrr' : execute_csrr,
-    'csrw' : execute_csrw,
+    'sra'     : execute_sra,
+    'srai'    : execute_srai,
+    'srl'     : execute_srl,
+    'srli'    : execute_srli,
+    'sll'     : execute_sll,
+    'slli'    : execute_slli,
 
-    ' '    : execute_dumb # this is for all-zero
+    'lui'     : execute_lui,
+    'auipc'   : execute_auipc,
+    'lw'      : execute_lw,
+    'sw'      : execute_sw,
+
+    'jal'     : execute_jal,
+    'jalr'    : execute_jalr,
+    'beq'     : execute_beq,
+    'bne'     : execute_bne,
+    'blt'     : execute_blt,
+    'bge'     : execute_bge,
+    'bltu'    : execute_bltu,
+    'bgeu'    : execute_bgeu,
+
+    'amoswap' : execute_amoswap,
+    'amoadd'  : execute_amoadd,
+    'amoxor'  : execute_amoxor,
+    'amoand'  : execute_amoand,
+    'amoor'   : execute_amoor,
+    'amomin'  : execute_amomin,
+    'amomax'  : execute_amomax,
+    'amominu' : execute_amominu,
+    'amomaxu' : execute_amomaxu,
+
+    'csrr'    : execute_csrr,
+    'csrw'    : execute_csrw,
+
+    ' '       : execute_dumb # this is for all-zero
 
   }
 
