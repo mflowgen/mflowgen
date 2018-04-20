@@ -1,6 +1,7 @@
 #=========================================================================
-# Integer Multiplier Fixed Latency RTL Model
+# Integer Multiplier Variable Latency RTL Model with High/Low selection
 #=========================================================================
+# This multiplier is designed to work with RV32M's mul/mulh/mulhsu/mulhu
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
@@ -8,13 +9,16 @@ from pclib.rtl  import Mux, Reg, RegEn, RegRst
 from pclib.rtl  import RightLogicalShifter, LeftLogicalShifter, Adder
 from pclib.rtl  import ZeroComparator
 
+from ifcs import MduReqMsg
+
 #=========================================================================
 # Constants
 #=========================================================================
 
-A_MUX_SEL_NBITS      = 1
+A_MUX_SEL_NBITS      = 2
 A_MUX_SEL_LSH        = 0
 A_MUX_SEL_LD         = 1
+A_MUX_SEL_SEXT       = 2
 A_MUX_SEL_X          = 0
 
 B_MUX_SEL_NBITS      = 1
@@ -22,9 +26,10 @@ B_MUX_SEL_RSH        = 0
 B_MUX_SEL_LD         = 1
 B_MUX_SEL_X          = 0
 
-RESULT_MUX_SEL_NBITS = 1
+RESULT_MUX_SEL_NBITS = 2
 RESULT_MUX_SEL_ADD   = 0
 RESULT_MUX_SEL_0     = 1
+RESULT_MUX_SEL_MULH  = 2
 RESULT_MUX_SEL_X     = 0
 
 ADD_MUX_SEL_NBITS    = 1
@@ -83,6 +88,9 @@ class IntMulVarLatDpath( Model ):
     s.result_reg_en  = InPort  (1)
     s.add_mux_sel    = InPort  (ADD_MUX_SEL_NBITS)
 
+    s.is_hi          = InPort  (1)
+    s.is_hi_reg_en   = InPort  (1)
+
     # Status signals (dpath -> ctrl)
 
     s.b_lsb          = OutPort (1)
@@ -136,25 +144,34 @@ class IntMulVarLatDpath( Model ):
 
     # A mux
 
-    s.lshifter_out = Wire(nbits)
+    s.lshifter_out = Wire( nbits*2 )
 
-    s.a_mux = m = Mux( nbits, 2 )
+    s.a_mux = m = Mux( nbits*2, 3 )
+
+    s.opa_sext = Wire( nbits*2 )
+
+    @s.combinational
+    def comb_opa_sext():
+      s.opa_sext.value = sext( s.req_msg_a, 64 )
+
     s.connect_dict({
-      m.sel                : s.a_mux_sel,
-      m.in_[A_MUX_SEL_LSH] : s.lshifter_out,
-      m.in_[A_MUX_SEL_LD]  : s.req_msg_a,
+      m.sel                              : s.a_mux_sel,
+      m.in_[A_MUX_SEL_LSH]               : s.lshifter_out,
+      m.in_[A_MUX_SEL_LD][0:nbits]       : s.req_msg_a,
+      m.in_[A_MUX_SEL_LD][nbits:nbits*2] : 0,
+      m.in_[A_MUX_SEL_SEXT]              : s.opa_sext,
     })
 
     # A register
 
-    s.a_reg = m = Reg( nbits )
+    s.a_reg = m = Reg( nbits*2 )
     s.connect_dict({
       m.in_ : s.a_mux.out,
     })
 
     # Left shifter
 
-    s.lshifter = m = LeftLogicalShifter(nbits,4)
+    s.lshifter = m = LeftLogicalShifter( nbits*2,4 )
     s.connect_dict({
       m.in_   : s.a_reg.out,
       m.shamt : s.calc_shamt.out,
@@ -163,18 +180,28 @@ class IntMulVarLatDpath( Model ):
 
     # Result mux
 
-    s.add_mux_out = Wire(nbits)
+    # If B is negative, I add (~a+1) to high 32 bit of
+    s.mulh_negate = Wire( nbits*2 )
+    @s.combinational
+    def comb_mulh_negate():
+      s.mulh_negate.value = 0
+      # Why can't I use nbits ???
+      if s.req_msg_b[nbits-1]:
+        s.mulh_negate[nbits:].value = ~s.req_msg_a + 1
 
-    s.result_mux = m = Mux( nbits, 2 )
+    s.add_mux_out = Wire( nbits*2 )
+
+    s.result_mux = m = Mux( nbits*2, 3 )
     s.connect_dict({
       m.sel                     : s.result_mux_sel,
       m.in_[RESULT_MUX_SEL_ADD] : s.add_mux_out,
       m.in_[RESULT_MUX_SEL_0]   : 0,
+      m.in_[RESULT_MUX_SEL_MULH]: s.mulh_negate,
     })
 
     # Result register
 
-    s.result_reg = m = RegEn(nbits)
+    s.result_reg = m = RegEn( nbits*2 )
     s.connect_dict({
       m.en  : s.result_reg_en,
       m.in_ : s.result_mux.out,
@@ -182,7 +209,7 @@ class IntMulVarLatDpath( Model ):
 
     # Adder
 
-    s.add = m = Adder(nbits)
+    s.add = m = Adder( nbits*2 )
     s.connect_dict({
       m.in0 : s.a_reg.out,
       m.in1 : s.result_reg.out,
@@ -190,7 +217,7 @@ class IntMulVarLatDpath( Model ):
 
     # Add mux
 
-    s.add_mux = m = Mux( nbits, 2 )
+    s.add_mux = m = Mux( nbits*2, 2 )
     s.connect_dict({
       m.sel                     : s.add_mux_sel,
       m.in_[ADD_MUX_SEL_ADD]    : s.add.out,
@@ -198,21 +225,39 @@ class IntMulVarLatDpath( Model ):
       m.out                     : s.add_mux_out
     })
 
+
+    # hi/lo sel reg in order to buffer it during calculation
+    s.is_hi_reg = m = RegEn( 1 )
+    s.connect_dict({
+      m.en  : s.is_hi_reg_en,
+      m.in_ : s.is_hi,
+    })
+
+    # hi/lo mux
+
+    s.res_hilo_mux = m = Mux( nbits, 2 )
+    s.connect_dict({
+      m.sel    : s.is_hi_reg.out,
+      m.in_[0] : s.result_reg.out[0:nbits],       # lo
+      m.in_[1] : s.result_reg.out[nbits:nbits*2], # hi
+      m.out    : s.resp_msg, # Connect to output port
+    })
+
     # Status signals
 
     s.connect( s.b_lsb, s.b_reg.out[0] )
 
-    # Connect to output port
-
-    s.connect( s.resp_msg, s.result_reg.out )
-
 #=========================================================================
 # Integer Multiplier Fixed Latency Control
 #=========================================================================
+# 0 - mul       hilo=0 low  32 bits of zext64(a)*b
+# 1 - mulh      hilo=1 high 32 bits of sext64(a)*sext64(b)
+# 2 - mulhsu    hilo=1 high 32 bits of sext64(a)*b
+# 3 - mulhu     hilo=1 high 32 bits of zext64(a)*b
 
 class IntMulVarLatCtrl( Model ):
 
-  def __init__( s ):
+  def __init__( s, ntypes ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -220,6 +265,7 @@ class IntMulVarLatCtrl( Model ):
 
     s.req_val        = InPort  (1)
     s.req_rdy        = OutPort (1)
+    s.req_typ        = InPort  (clog2(ntypes))
 
     s.resp_val       = OutPort (1)
     s.resp_rdy       = InPort  (1)
@@ -231,6 +277,8 @@ class IntMulVarLatCtrl( Model ):
     s.result_mux_sel = OutPort (RESULT_MUX_SEL_NBITS)
     s.result_reg_en  = OutPort (1)
     s.add_mux_sel    = OutPort (ADD_MUX_SEL_NBITS)
+    s.is_hi          = OutPort (1)
+    s.is_hi_reg_en   = OutPort (1)
 
     # Status signals (dpath -> ctrl)
 
@@ -302,6 +350,10 @@ class IntMulVarLatCtrl( Model ):
       s.result_reg_en.value  = 0
       s.add_mux_sel.value    = 0
 
+      s.result_mux_sel.value = 0
+      s.is_hi_reg_en.value   = 0
+      s.is_hi.value          = 0
+
       # In IDLE state we simply wait for inputs to arrive and latch them
 
       if current_state == s.STATE_IDLE:
@@ -309,10 +361,20 @@ class IntMulVarLatCtrl( Model ):
         s.req_rdy.value        = 1
         s.resp_val.value       = 0
 
-        s.a_mux_sel.value      = A_MUX_SEL_LD
+        if s.req_typ == MduReqMsg.TYPE_MULHSU or s.req_typ == MduReqMsg.TYPE_MULH:
+          s.a_mux_sel.value = A_MUX_SEL_SEXT
+        else:
+          s.a_mux_sel.value = A_MUX_SEL_LD
+
         s.b_mux_sel.value      = B_MUX_SEL_LD
-        s.result_mux_sel.value = RESULT_MUX_SEL_0
+
+        if s.req_typ == MduReqMsg.TYPE_MULH:
+          s.result_mux_sel.value = RESULT_MUX_SEL_MULH
+        else:
+          s.result_mux_sel.value = RESULT_MUX_SEL_0
         s.result_reg_en.value  = 1
+        s.is_hi_reg_en.value   = 1
+        s.is_hi.value          = (s.req_typ != 0)
         s.add_mux_sel.value    = ADD_MUX_SEL_X
 
       # In CALC state we iteratively add/shift to caculate mult
@@ -355,24 +417,25 @@ class IntMulVarLat( Model ):
 
   # Constructor
 
-  def __init__( s, nbits ):
+  def __init__( s, nbits, ntypes ):
 
     # Interface
 
-    s.req    = InValRdyBundle  ( nbits*2 )
-    s.resp   = OutValRdyBundle ( nbits )
+    s.req   = InValRdyBundle  ( MduReqMsg(nbits, ntypes) )
+    s.resp  = OutValRdyBundle ( nbits )
 
     # Instantiate datapath and control
 
     s.dpath = IntMulVarLatDpath( nbits )
-    s.ctrl  = IntMulVarLatCtrl()
+    s.ctrl  = IntMulVarLatCtrl( ntypes )
 
     # Connect input interface to dpath/ctrl
 
-    s.connect( s.req.msg[nbits:nbits*2], s.dpath.req_msg_a  )
-    s.connect( s.req.msg[0:nbits],  s.dpath.req_msg_b  )
-    s.connect( s.req.val,        s.ctrl.req_val     )
-    s.connect( s.req.rdy,        s.ctrl.req_rdy     )
+    s.connect( s.req.msg.opa, s.dpath.req_msg_a  )
+    s.connect( s.req.msg.opb, s.dpath.req_msg_b  )
+    s.connect( s.req.msg.typ, s.ctrl.req_typ     )
+    s.connect( s.req.val,     s.ctrl.req_val     )
+    s.connect( s.req.rdy,     s.ctrl.req_rdy     )
 
     # Connect dpath/ctrl to output interface
 

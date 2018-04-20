@@ -12,6 +12,7 @@ from pclib.test          import mk_test_case_table, run_sim
 from pclib.test          import TestSource, TestSink
 from mdu.IntMulVarLat  import IntMulVarLat
 
+from ifcs import MduReqMsg
 #-------------------------------------------------------------------------
 # TestHarness
 #-------------------------------------------------------------------------
@@ -23,9 +24,10 @@ class TestHarness (Model):
                 dump_vcd=False, test_verilog=False ):
 
     # Instantiate models
+    
 
-    s.src  = TestSource ( Bits(nbits*2), src_msgs,  src_delay  )
-    s.imul = IntMulVarLat( nbits )
+    s.src  = TestSource ( MduReqMsg(32, 8), src_msgs,  src_delay  )
+    s.imul = IntMulVarLat( nbits, 8 )
     s.sink = TestSink   ( Bits(nbits), sink_msgs, sink_delay )
 
     # Dump VCD
@@ -55,327 +57,99 @@ class TestHarness (Model):
 # mk_req_msg
 #-------------------------------------------------------------------------
 
-def req( a, b, nbits=32 ):
-  msg = Bits( nbits*2 )
-  msg[nbits:nbits*2] = Bits( nbits, a, trunc=True )
-  msg[ 0:nbits] = Bits( nbits, b, trunc=True )
-  return msg
+# req typ:
+# 0 - mul
+# 1 - mulh
+# 2 - mulhsu
+# 3 - mulhu
+
+msg_type = MduReqMsg( 32, 8 )
+
+def req( typ, a, b, nbits=32 ):
+  return msg_type.mk_msg( typ, Bits( nbits, a, trunc=True ), Bits( nbits, b, trunc=True ) )
 
 def resp( a, nbits=32 ):
   return Bits( nbits, a, trunc=True )
 
-#----------------------------------------------------------------------
-# Test Case: small positive * positive
-#----------------------------------------------------------------------
+# direct test cases
+# https://github.com/riscv/riscv-tests/blob/master/isa/rv32um/mul*.S
 
-small_pos_pos_msgs = [
-  req(  2,  3 ), resp(   6 ),
-  req(  4,  5 ), resp(  20 ),
-  req(  3,  4 ), resp(  12 ),
-  req( 10, 13 ), resp( 130 ),
-  req(  8,  7 ), resp(  56 ),
+direct_mul_msgs    = []
+direct_mulh_msgs   = []
+direct_mulhsu_msgs = []
+direct_mulhu_msgs  = []
+direct_mix_msgs    = []
+
+# generate direct messages
+direct_imul_cases = [
+#  a           b           mul         mulh        mulhsu      mulhu
+  (0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000),
+  (0x00000001, 0x00000001, 0x00000001, 0x00000000, 0x00000000, 0x00000000),
+  (0x00000003, 0x00000007, 0x00000015, 0x00000000, 0x00000000, 0x00000000),
+  (0x00000000, 0xffff8000, 0x00000000, 0x00000000, 0x00000000, 0x00000000),
+  (0x80000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000),
+  (0x80000000, 0xffff8000, 0x00000000, 0x00004000, 0x80004000, 0x7fffc000),
+  (0xaaaaaaab, 0x0002fe7d, 0x0000ff7f, 0xffff0081, 0xffff0081, 0x0001fefe),
+  (0x0002fe7d, 0xaaaaaaab, 0x0000ff7f, 0xffff0081, 0x0001fefe, 0x0001fefe),
+  (0xff000000, 0xff000000, 0x00000000, 0x00010000, 0xff010000, 0xfe010000),
+  (0xffffffff, 0xffffffff, 0x00000001, 0x00000000, 0xffffffff, 0xfffffffe),
+  (0xffffffff, 0x00000001, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000),
+  (0x00000001, 0xffffffff, 0xffffffff, 0xffffffff, 0x00000000, 0x00000000),
 ]
 
-#----------------------------------------------------------------------
-# Test Case: small negative * positive
-#----------------------------------------------------------------------
+# mul
+for a, b, res, _, _, _ in direct_imul_cases:
+  direct_mul_msgs.extend( [ req( msg_type.TYPE_MUL, a, b ), resp( res ) ] )
 
-small_neg_pos_msgs = [
-  req(  -2,  3 ), resp(   -6 ),
-  req(  -4,  5 ), resp(  -20 ),
-  req(  -3,  4 ), resp(  -12 ),
-  req( -10, 13 ), resp( -130 ),
-  req(  -8,  7 ), resp(  -56 ),
-]
+# mulh
+for a, b, _, res, _, _ in direct_imul_cases:
+  direct_mulh_msgs.extend( [ req( msg_type.TYPE_MULH, a, b ), resp( res ) ] )
 
-#----------------------------------------------------------------------
-# Test Case: small positive * negative
-#----------------------------------------------------------------------
+# mulhsu
+for a, b, _, _, res, _ in direct_imul_cases:
+  direct_mulhsu_msgs.extend( [ req( msg_type.TYPE_MULHSU, a, b ), resp( res ) ] )
 
-small_pos_neg_msgs = [
-  req(  2,  -3 ), resp(   -6 ),
-  req(  4,  -5 ), resp(  -20 ),
-  req(  3,  -4 ), resp(  -12 ),
-  req( 10, -13 ), resp( -130 ),
-  req(  8,  -7 ), resp(  -56 ),
-]
+# mulhu
+for a, b, _, _, _, res in direct_imul_cases:
+  direct_mulhu_msgs.extend( [ req( msg_type.TYPE_MULHU, a, b ), resp( res ) ] )
 
-#----------------------------------------------------------------------
-# Test Case: small negative * negative
-#----------------------------------------------------------------------
+# mix
+mix_lists = []
+for a, b, w, x, y, z in direct_imul_cases:
+  mix_lists.append( [ req( msg_type.TYPE_MUL,    a, b ), resp( w ) ] )
+  mix_lists.append( [ req( msg_type.TYPE_MULH,   a, b ), resp( x ) ] )
+  mix_lists.append( [ req( msg_type.TYPE_MULHSU, a, b ), resp( y ) ] )
+  mix_lists.append( [ req( msg_type.TYPE_MULHU,  a, b ), resp( z ) ] )
+random.shuffle( mix_lists )
 
-small_neg_neg_msgs = [
-  req(  -2,  -3 ), resp(   6 ),
-  req(  -4,  -5 ), resp(  20 ),
-  req(  -3,  -4 ), resp(  12 ),
-  req( -10, -13 ), resp( 130 ),
-  req(  -8,  -7 ), resp(  56 ),
-]
-
-#----------------------------------------------------------------------
-# Test Case: large positive * positive
-#----------------------------------------------------------------------
-
-large_pos_pos_msgs = [
-  req( 0x0bcd0000, 0x0000abcd ), resp( 0x62290000 ),
-  req( 0x0fff0000, 0x0000ffff ), resp( 0xf0010000 ),
-  req( 0x0fff0000, 0x0fff0000 ), resp( 0x00000000 ),
-  req( 0x04e5f14d, 0x7839d4fc ), resp( 0x10524bcc ),
-]
-
-#----------------------------------------------------------------------
-# Test Case: large negative * negative
-#----------------------------------------------------------------------
-
-large_neg_neg_msgs = [
-  req( 0x80000001, 0x80000001 ), resp( 0x00000001 ),
-  req( 0x8000abcd, 0x8000ef00 ), resp( 0x20646300 ),
-  req( 0x80340580, 0x8aadefc0 ), resp( 0x6fa6a000 ),
-]
-
-#----------------------------------------------------------------------
-# Test Case: zeros
-#----------------------------------------------------------------------
-
-zeros_msgs = [
-  req(  0,  0 ), resp(   0 ),
-  req(  0,  1 ), resp(   0 ),
-  req(  1,  0 ), resp(   0 ),
-  req(  0, -1 ), resp(   0 ),
-  req( -1,  0 ), resp(   0 ),
-]
-
-#----------------------------------------------------------------------
-# Test Case: random small
-#----------------------------------------------------------------------
-
-random_small_msgs = []
-for i in xrange(50):
-  a = random.randint(0,100)
-  b = random.randint(0,100)
-  random_small_msgs.extend([ req( a, b ), resp( a * b ) ])
-
-#----------------------------------------------------------------------
-# Test Case: random large
-#----------------------------------------------------------------------
-
-random_large_msgs = []
-for i in xrange(50):
-  a = random.randint(0,0xffffffff)
-  b = random.randint(0,0xffffffff)
-  random_large_msgs.extend([ req( a, b ), resp( a * b ) ])
-
-#----------------------------------------------------------------------
-# Test Case: lomask
-#----------------------------------------------------------------------
-
-random_lomask_msgs = []
-for i in xrange(50):
-
-  shift_amount = random.randint(0,16)
-  a = random.randint(0,0xffffffff) << shift_amount
-
-  shift_amount = random.randint(0,16)
-  b = random.randint(0,0xffffffff) << shift_amount
-
-  random_lomask_msgs.extend([ req( a, b ), resp( a * b ) ])
-
-#----------------------------------------------------------------------
-# Test Case: himask
-#----------------------------------------------------------------------
-
-random_himask_msgs = []
-for i in xrange(50):
-
-  shift_amount = random.randint(0,16)
-  a = random.randint(0,0xffffffff) >> shift_amount
-
-  shift_amount = random.randint(0,16)
-  b = random.randint(0,0xffffffff) >> shift_amount
-
-  random_himask_msgs.extend([ req( a, b ), resp( a * b ) ])
-
-#----------------------------------------------------------------------
-# Test Case: lohimask
-#----------------------------------------------------------------------
-
-random_lohimask_msgs = []
-for i in xrange(50):
-
-  rshift_amount = random.randint(0,12)
-  lshift_amount = random.randint(0,12)
-  a = (random.randint(0,0xffffff) >> rshift_amount) << lshift_amount
-
-  rshift_amount = random.randint(0,12)
-  lshift_amount = random.randint(0,12)
-  b = (random.randint(0,0xffffff) >> rshift_amount) << lshift_amount
-
-  random_lohimask_msgs.extend([ req( a, b ), resp( a * b ) ])
-
-#----------------------------------------------------------------------
-# Test Case: sparse
-#----------------------------------------------------------------------
-
-random_sparse_msgs = []
-for i in xrange(50):
-
-  a = random.randint(0,0xffffffff)
-
-  for i in xrange(32):
-    is_masked = random.randint(0,1)
-    if is_masked:
-      a = a & ( (~(1 << i)) & 0xffffffff )
-
-  b = random.randint(0,0xffffffff)
-
-  for i in xrange(32):
-    is_masked = random.randint(0,1)
-    if is_masked:
-      b = b & ( (~(1 << i)) & 0xffffffff )
-
-  random_sparse_msgs.extend([ req( a, b ), resp( a * b ) ])
+direct_mix_msgs = reduce( lambda x,y:x+y, mix_lists )
 
 #-------------------------------------------------------------------------
 # Test Case Table
 #-------------------------------------------------------------------------
 
-test_case_table_32 = mk_test_case_table([
-  (                      "msgs                 src_delay sink_delay"),
-  [ "small_pos_pos",     small_pos_pos_msgs,   0,        0          ],
-  [ "small_neg_pos",     small_neg_pos_msgs,   0,        0          ],
-  [ "small_pos_neg",     small_pos_neg_msgs,   0,        0          ],
-  [ "small_neg_neg",     small_neg_neg_msgs,   0,        0          ],
-  [ "large_pos_pos",     large_pos_pos_msgs,   0,        0          ],
-  [ "large_neg_neg",     large_neg_neg_msgs,   0,        0          ],
-  [ "zeros",             zeros_msgs,           0,        0          ],
-  [ "random_small",      random_small_msgs,    0,        0          ],
-  [ "random_large",      random_large_msgs,    0,        0          ],
-  [ "random_lomask",     random_lomask_msgs,   0,        0          ],
-  [ "random_himask",     random_himask_msgs,   0,        0          ],
-  [ "random_lohimask",   random_lohimask_msgs, 0,        0          ],
-  [ "random_sparse",     random_sparse_msgs,   0,        0          ],
-  [ "random_small_3x14", random_small_msgs,    3,        14         ],
-  [ "random_large_3x14", random_large_msgs,    3,        14         ],
+test_case_table = mk_test_case_table([
+  (                       "msgs               src_delay sink_delay"),
+  [ "direct_mul",         direct_mul_msgs,    0,        0          ],
+  [ "direct_mulh",        direct_mulh_msgs,   0,        0          ],
+  [ "direct_mulhsu",      direct_mulhsu_msgs, 0,        0          ],
+  [ "direct_mulhu",       direct_mulhu_msgs,  0,        0          ],
+  [ "direct_mix",         direct_mix_msgs,    0,        0          ],
+  [ "direct_mul_3x14",    direct_mul_msgs,    3,        14         ],
+  [ "direct_mulh_3x14",   direct_mulh_msgs,   3,        14         ],
+  [ "direct_mulhsu_3x14", direct_mulhsu_msgs, 3,        14         ],
+  [ "direct_mulhu_3x14",  direct_mulhu_msgs,  3,        14         ],
+  [ "direct_mix_3x14",    direct_mix_msgs,    0,        0          ],
 ])
 
 #-------------------------------------------------------------------------
 # Test cases
 #-------------------------------------------------------------------------
 
-@pytest.mark.parametrize( **test_case_table_32 )
-def test_32( test_params, dump_vcd ):
+@pytest.mark.parametrize( **test_case_table )
+def test( test_params, dump_vcd, test_verilog ):
   run_sim( TestHarness( 32,
                         test_params.msgs[::2], test_params.msgs[1::2],
-                        test_params.src_delay, test_params.sink_delay ),
-           dump_vcd )
-
-# 64-bit imul
-
-#----------------------------------------------------------------------
-# Test Case: random small
-#----------------------------------------------------------------------
-
-random_small64_msgs = []
-for i in xrange(50):
-  a = random.randint(0,100)
-  b = random.randint(0,100)
-  random_small64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-#----------------------------------------------------------------------
-# Test Case: random large
-#----------------------------------------------------------------------
-
-random_large64_msgs = []
-for i in xrange(50):
-  a = random.randint(0,0xffffffffffffffff)
-  b = random.randint(0,0xffffffffffffffff)
-  random_large64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-#----------------------------------------------------------------------
-# Test Case: lomask
-#----------------------------------------------------------------------
-
-random_lomask64_msgs = []
-for i in xrange(50):
-
-  shift_amount = random.randint(0,32)
-  a = random.randint(0,0xffffffffffffffff) << shift_amount
-
-  shift_amount = random.randint(0,32)
-  b = random.randint(0,0xffffffffffffffff) << shift_amount
-
-  random_lomask64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-#----------------------------------------------------------------------
-# Test Case: himask
-#----------------------------------------------------------------------
-
-random_himask64_msgs = []
-for i in xrange(50):
-
-  shift_amount = random.randint(0,32)
-  a = random.randint(0,0xffffffffffffffff) >> shift_amount
-
-  shift_amount = random.randint(0,32)
-  b = random.randint(0,0xffffffffffffffff) >> shift_amount
-
-  random_himask64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-#----------------------------------------------------------------------
-# Test Case: lohimask
-#----------------------------------------------------------------------
-
-random_lohimask64_msgs = []
-for i in xrange(50):
-
-  rshift_amount = random.randint(0,24)
-  lshift_amount = random.randint(0,24)
-  a = (random.randint(0,0xffffffffffff) >> rshift_amount) << lshift_amount
-
-  rshift_amount = random.randint(0,24)
-  lshift_amount = random.randint(0,24)
-  b = (random.randint(0,0xffffffffffff) >> rshift_amount) << lshift_amount
-
-  random_lohimask64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-#----------------------------------------------------------------------
-# Test Case: sparse
-#----------------------------------------------------------------------
-
-random_sparse64_msgs = []
-for i in xrange(50):
-
-  a = random.randint(0,0xffffffffffffffff)
-
-  for i in xrange(32):
-    is_masked = random.randint(0,1)
-    if is_masked:
-      a = a & ( (~(1 << i)) & 0xffffffffffffffff )
-
-  b = random.randint(0,0xffffffffffffffff)
-
-  for i in xrange(32):
-    is_masked = random.randint(0,1)
-    if is_masked:
-      b = b & ( (~(1 << i)) & 0xffffffffffffffff )
-
-  random_sparse64_msgs.extend([ req( a, b, 64 ), resp( a * b, 64 ) ])
-
-test_case_table_64 = mk_test_case_table([
-  (                      "msgs                 src_delay sink_delay"),
-  [ "random_large",      random_large64_msgs,    0,        0          ],
-  [ "random_lomask",     random_lomask64_msgs,   0,        0          ],
-  [ "random_himask",     random_himask64_msgs,   0,        0          ],
-  [ "random_lohimask",   random_lohimask64_msgs, 0,        0          ],
-  [ "random_sparse",     random_sparse64_msgs,   0,        0          ],
-  [ "random_small_3x14", random_small64_msgs,    3,        14         ],
-  [ "random_large_3x14", random_large64_msgs,    3,        14         ],
-])
-
-@pytest.mark.parametrize( **test_case_table_64 )
-def test_64( test_params, dump_vcd ):
-  run_sim( TestHarness( 64,
-                        test_params.msgs[::2], test_params.msgs[1::2],
-                        test_params.src_delay, test_params.sink_delay ),
-           dump_vcd )
-
+                        test_params.src_delay, test_params.sink_delay,
+                        dump_vcd, test_verilog )
+            )
