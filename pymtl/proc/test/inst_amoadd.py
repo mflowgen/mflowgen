@@ -54,37 +54,50 @@ def gen_basic_test():
 def gen_value_test():
   return [
 
+    # Test with adding 1 repeatedly
+
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbeef, 0xdeadbef0 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef0, 0xdeadbef1 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef1, 0xdeadbef2 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef2, 0xdeadbef3 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef3, 0xdeadbef4 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef4, 0xdeadbef5 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef5, 0xdeadbef6 ),
+    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef6, 0xdeadbef7 ),
+
     # Test misc
 
-    gen_amo_value_test( "amoadd", 0x00002000, 1, 0xdeadbeef, 0xdeadbef0 ),
-    gen_amo_value_test( "amoadd", 0x00002004, 2, 0xdeadbeef, 0xdeadbef1 ),
-    gen_amo_value_test( "amoadd", 0x00002008, 3, 0xdeadbeef, 0xdeadbef2 ),
-    gen_amo_value_test( "amoadd", 0x0000200c, 4, 0xdeadbeef, 0xdeadbef3 ),
-    gen_amo_value_test( "amoadd", 0x00002010, 5, 0xdeadbeef, 0xdeadbef4 ),
-    gen_amo_value_test( "amoadd", 0x00002014, 6, 0xdeadbeef, 0xdeadbef5 ),
+    gen_amo_value_test( "amoadd", 0x00002004, 1, 0xdeadbeef, 0xdeadbef0 ),
+    gen_amo_value_test( "amoadd", 0x00002008, 2, 0xdeadbeef, 0xdeadbef1 ),
+    gen_amo_value_test( "amoadd", 0x0000200c, 3, 0xdeadbeef, 0xdeadbef2 ),
+    gen_amo_value_test( "amoadd", 0x00002010, 4, 0xdeadbeef, 0xdeadbef3 ),
+    gen_amo_value_test( "amoadd", 0x00002014, 5, 0xdeadbeef, 0xdeadbef4 ),
+    gen_amo_value_test( "amoadd", 0x00002018, 6, 0xdeadbeef, 0xdeadbef5 ),
 
     # Tests pulled from "add"
 
-    gen_amo_value_test( "amoadd", 0x00002018, 0x00000000, 0x00000000, 0x00000000 ),
-    gen_amo_value_test( "amoadd", 0x0000201c, 0x00000001, 0x00000001, 0x00000002 ),
-    gen_amo_value_test( "amoadd", 0x00002020, 0x00000007, 0x00000003, 0x0000000a ),
+    gen_amo_value_test( "amoadd", 0x0000201c, 0x00000000, 0x00000000, 0x00000000 ),
+    gen_amo_value_test( "amoadd", 0x00002020, 0x00000001, 0x00000001, 0x00000002 ),
+    gen_amo_value_test( "amoadd", 0x00002024, 0x00000007, 0x00000003, 0x0000000a ),
 
-    gen_amo_value_test( "amoadd", 0x00002024, 0xffff8000, 0x00000000, 0xffff8000 ),
-    gen_amo_value_test( "amoadd", 0x00002028, 0x00000000, 0x80000000, 0x80000000 ),
-    gen_amo_value_test( "amoadd", 0x0000202c, 0xffff8000, 0x80000000, 0x7fff8000 ),
+    gen_amo_value_test( "amoadd", 0x00002028, 0xffff8000, 0x00000000, 0xffff8000 ),
+    gen_amo_value_test( "amoadd", 0x0000202c, 0x00000000, 0x80000000, 0x80000000 ),
+    gen_amo_value_test( "amoadd", 0x00002030, 0xffff8000, 0x80000000, 0x7fff8000 ),
 
-    gen_amo_value_test( "amoadd", 0x00002030, 0x00007fff, 0x00000000, 0x00007fff ),
-    gen_amo_value_test( "amoadd", 0x00002034, 0x00000000, 0x7fffffff, 0x7fffffff ),
-    gen_amo_value_test( "amoadd", 0x00002038, 0x00007fff, 0x7fffffff, 0x80007ffe ),
+    gen_amo_value_test( "amoadd", 0x00002034, 0x00007fff, 0x00000000, 0x00007fff ),
+    gen_amo_value_test( "amoadd", 0x00002038, 0x00000000, 0x7fffffff, 0x7fffffff ),
+    gen_amo_value_test( "amoadd", 0x0000203c, 0x00007fff, 0x7fffffff, 0x80007ffe ),
 
-    gen_amo_value_test( "amoadd", 0x0000203c, 0x00007fff, 0x80000000, 0x80007fff ),
-    gen_amo_value_test( "amoadd", 0x00002040, 0xffff8000, 0x7fffffff, 0x7fff7fff ),
+    gen_amo_value_test( "amoadd", 0x00002040, 0x00007fff, 0x80000000, 0x80007fff ),
+    gen_amo_value_test( "amoadd", 0x00002044, 0xffff8000, 0x7fffffff, 0x7fff7fff ),
 
-    gen_amo_value_test( "amoadd", 0x00002044, 0xffffffff, 0x00000000, 0xffffffff ),
-    gen_amo_value_test( "amoadd", 0x00002048, 0x00000001, 0xffffffff, 0x00000000 ),
-    gen_amo_value_test( "amoadd", 0x0000204c, 0xffffffff, 0xffffffff, 0xfffffffe ),
+    gen_amo_value_test( "amoadd", 0x00002048, 0xffffffff, 0x00000000, 0xffffffff ),
+    gen_amo_value_test( "amoadd", 0x0000204c, 0x00000001, 0xffffffff, 0x00000000 ),
+    gen_amo_value_test( "amoadd", 0x00002050, 0xffffffff, 0xffffffff, 0xfffffffe ),
 
     gen_word_data([
+      0xdeadbeef,
+
       0xdeadbeef,
       0xdeadbeef,
       0xdeadbeef,

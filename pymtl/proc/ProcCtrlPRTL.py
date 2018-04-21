@@ -353,15 +353,15 @@ class ProcCtrlPRTL( Model ):
     mem_nr  = Bits( 4,  0 )
     mem_ld  = Bits( 4,  1 )
     mem_st  = Bits( 4,  2 )
-    mem_ad  = Bits( 4,  3 )
-    mem_an  = Bits( 4,  4 )
-    mem_or  = Bits( 4,  5 )
-    mem_sp  = Bits( 4,  6 )
-    mem_mn  = Bits( 4,  7 )
-    mem_mnu = Bits( 4,  8 )
-    mem_mx  = Bits( 4,  9 )
-    mem_mxu = Bits( 4, 10 )
-    mem_xr  = Bits( 4, 11 )
+    mem_ad  = Bits( 4,  3 ) # AMO_ADD
+    mem_an  = Bits( 4,  4 ) # AMO_AND
+    mem_or  = Bits( 4,  5 ) # AMO_OR
+    mem_sp  = Bits( 4,  6 ) # AMO_SWAP
+    mem_mn  = Bits( 4,  7 ) # AMO_MIN
+    mem_mnu = Bits( 4,  8 ) # AMO_MINU
+    mem_mx  = Bits( 4,  9 ) # AMO_MAX
+    mem_mxu = Bits( 4, 10 ) # AMO_MAXU
+    mem_xr  = Bits( 4, 11 ) # AMO_XOR
 
     # X stage result mux select
 
@@ -427,6 +427,14 @@ class ProcCtrlPRTL( Model ):
       elif inst == LW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  xm_a, wm_m, y,  n,  n, n )
       elif inst == SW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  xm_a, wm_m, n,  n,  n, n )
       elif inst == AMOADD : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_ad,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOAND : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_an,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOOR  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_or,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOSWAP: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_sp,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOMIN : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mn,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOMINU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mnu, xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOMAX : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mx,  xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOMAXU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mxu, xm_a, wm_m, y,  n,  n, n )
+      elif inst == AMOXOR : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_xr,  xm_a, wm_m, y,  n,  n, n )
       # branch
       elif inst == BNE    : s.cs.value = concat( y, br_ne, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  xm_a, wm_x, n,  n,  n, n )
       elif inst == BEQ    : s.cs.value = concat( y, br_eq, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  xm_a, wm_x, n,  n,  n, n )
