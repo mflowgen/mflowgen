@@ -52,16 +52,19 @@ class IntMulDivUnit( Model ):
 
     # Set individual unit req.val signal based on msg type
 
+    s.is_div = Wire( 1 ) # 0,1,2,3 -- mul, 4,5,6,7 -- div
+    s.connect( s.is_div, s.req.msg.typ[2] )
+
     @s.combinational
     def comb_in_val():
-      s.imul.req.val.value = s.req.val & ~s.req.msg.typ[2]
-      s.idiv.req.val.value = s.req.val & s.req.msg.typ[2]
+      s.imul.req.val.value = s.req.val & ~s.is_div
+      s.idiv.req.val.value = s.req.val & s.is_div
 
     # Set mdu req.rdy based on msg type and occupancy of the corresponding unit
 
     @s.combinational
     def comb_in_rdy():
-      if ~s.req.msg.typ[2]:
+      if ~s.is_div:
         s.req.rdy.value = s.imul.req.rdy
       else:
         s.req.rdy.value = s.idiv.req.rdy
