@@ -41,6 +41,7 @@ class IntDivRem4Dpath( Model ):
 
     s.divisor_mux_sel   = InPort( 1 )
 
+    s.is_signed         = InPort( 1 )
     s.is_div            = InPort( 1 )
     s.buffers_en        = InPort( 1 )
 
@@ -48,12 +49,29 @@ class IntDivRem4Dpath( Model ):
     # Struction composition
     #---------------------------------------------------------------------
 
+    s.a_negate = Wire( nbits )
+    s.b_negate = Wire( nbits )
+
+    # If we are doing signed computation, take the two's complement for
+    # A, B individually if negative and B is not zero
+
+    @s.combinational
+    def comb_negate_if_needed():
+      s.a_negate.value = s.req_msg_a
+      s.b_negate.value = s.req_msg_b
+
+      if s.is_signed & (s.req_msg_b != 0):
+        if s.req_msg_a[nbits-1]:
+          s.a_negate.value = ~s.req_msg_a + 1
+        if s.req_msg_b[nbits-1]:
+          s.b_negate.value = ~s.req_msg_b + 1
+
     # remainder mux
 
     s.remainder_mux = m = Mux( nbitsX2, 3 )
     s.connect_pairs(
       m.sel, s.remainder_mux_sel,
-      m.in_[R_MUX_SEL_IN][0:nbits], s.req_msg_a,
+      m.in_[R_MUX_SEL_IN][0:nbits], s.a_negate,
       m.in_[R_MUX_SEL_IN][nbits:nbitsX2], 0,
     )
 
@@ -70,7 +88,7 @@ class IntDivRem4Dpath( Model ):
     s.divisor_mux = m = Mux( nbitsX2, 2 )
     s.connect_pairs(
       m.sel, s.divisor_mux_sel,
-      m.in_[D_MUX_SEL_IN][nbits-1:nbitsX2-1], s.req_msg_b,
+      m.in_[D_MUX_SEL_IN][nbits-1:nbitsX2-1], s.b_negate,
       m.in_[D_MUX_SEL_IN][0:nbits-1], 0,
       m.in_[D_MUX_SEL_IN][nbitsX2-1:nbitsX2], 0,
     )
@@ -108,7 +126,68 @@ class IntDivRem4Dpath( Model ):
       s.quotient_mux.in_[Q_MUX_SEL_LSH].value = s.quotient_lsh.out + \
         concat(~s.sub_negative1, ~s.sub_negative2)
 
-    # Shunning: these three components are added during BRGTC2
+    #---------------------------------------------------------------------
+    # Shunning: these components are added during BRGTC2
+    #---------------------------------------------------------------------
+    # All regs controlled by buffers_en signal are supposed to change
+    # value only when the unit accepts a new request
+    #
+    # Under div/rem, if A and B have different signs, we take the two's
+    # complement of quotient.
+    # Under div/rem, if A is negative, we take the two's complement of
+    # remainder
+    # Special case if B is zero
+
+    s.res_rem_negate = Wire(1)
+    s.res_quo_negate = Wire(1)
+
+    @s.combinational
+    def comb_res_negate_flags():
+      s.res_rem_negate.value = s.is_signed & (s.req_msg_b != 0) & s.req_msg_a[nbits-1]
+      s.res_quo_negate.value = s.is_signed & (s.req_msg_b != 0) & (s.req_msg_a[nbits-1] ^ s.req_msg_b[nbits-1])
+
+    # res_rem_negate flag reg
+
+    s.res_rem_negate_flag = m = RegEn( 1 )
+    s.connect_dict({
+      m.en  : s.buffers_en,
+      m.in_ : s.res_rem_negate,
+    })
+
+    # res_quo_negate flag reg
+
+    s.res_quo_negate_flag = m = RegEn( 1 )
+    s.connect_dict({
+      m.en  : s.buffers_en,
+      m.in_ : s.res_quo_negate,
+    })
+
+    # Get two's complements for remainder/quotient that feed into mux
+
+    s.rem_negate = Wire( nbits )
+    s.quo_negate = Wire( nbits )
+    @s.combinational
+    def comb_negate_rem_quo():
+      s.rem_negate.value = ~s.remainder_reg.out[0:nbits] + 1
+      s.quo_negate.value = ~s.quotient_reg.out + 1
+
+    # res_rem mux
+
+    s.res_rem_mux = m = Mux( nbits, 2 )
+    s.connect_dict({
+      m.sel    : s.res_rem_negate_flag.out,
+      m.in_[0] : s.remainder_reg.out[0:nbits],
+      m.in_[1] : s.rem_negate,
+    })
+
+    # res_quo mux
+
+    s.res_quo_mux = m = Mux( nbits, 2 )
+    s.connect_dict({
+      m.sel    : s.res_quo_negate_flag.out,
+      m.in_[0] : s.quotient_reg.out,
+      m.in_[1] : s.quo_negate,
+    })
 
     # div/rem sel reg -- buffer is_div during calculation
 
@@ -132,10 +211,12 @@ class IntDivRem4Dpath( Model ):
     s.res_divrem_mux = m = Mux( nbits, 2 )
     s.connect_dict({
       m.sel    : s.is_div_reg.out,
-      m.in_[0] : s.remainder_reg.out[0:nbits], # rem
-      m.in_[1] : s.quotient_reg.out,  # div
+      m.in_[0] : s.res_rem_mux.out, # rem
+      m.in_[1] : s.res_quo_mux.out,  # div
       m.out    : s.resp_result, # Connect to output port
     })
+
+    #---------------------------------------------------------------------
 
     # stage 1/2
 
@@ -205,6 +286,7 @@ class IntDivRem4Ctrl( Model ):
 
     s.is_div            = OutPort  (1)
     s.buffers_en        = OutPort  (1)
+    s.is_signed         = OutPort  (1)
 
     s.STATE_IDLE = 0
     s.STATE_DONE = 1
@@ -249,7 +331,8 @@ class IntDivRem4Ctrl( Model ):
         s.divisor_mux_sel.value   = D_MUX_SEL_IN
 
         s.buffers_en.value        = 1
-        s.is_div.value             = (s.req_typ[1] == 0) # div/divu = 0b100, 0b101
+        s.is_div.value            = (s.req_typ[1] == 0) # div/divu = 0b100, 0b101
+        s.is_signed.value         = (s.req_typ[0] == 0) # div/rem = 0b100, 0b110
 
       elif curr_state == s.STATE_DONE:
         s.req_rdy.value     = 0

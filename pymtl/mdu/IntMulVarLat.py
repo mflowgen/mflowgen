@@ -182,14 +182,17 @@ class IntMulVarLatDpath( Model ):
 
     # Result mux
 
-    # If B is negative, I add (~a+1) to high 32 bit of
-    s.mulh_negate = Wire( nbits*2 )
+    # If B is negative, I add (~A+1) to high 32 bit of A, just because
+    # A*sext64(B) will be A*0xffffffffB = A*(0xffffffff00000000) + A*B
+    # = ( (~A+1)<<32 ) + A*B
+
+    s.a_mulh_negate = Wire( nbits*2 )
     @s.combinational
-    def comb_mulh_negate():
-      s.mulh_negate.value = 0
+    def comb_a_mulh_negate():
+      s.a_mulh_negate.value = 0
       # Why can't I use nbits ???
       if s.req_msg_b[nbits-1]:
-        s.mulh_negate[nbits:].value = ~s.req_msg_a + 1
+        s.a_mulh_negate[nbits:].value = ~s.req_msg_a + 1
 
     s.add_mux_out = Wire( nbits*2 )
 
@@ -198,7 +201,7 @@ class IntMulVarLatDpath( Model ):
       m.sel                     : s.result_mux_sel,
       m.in_[RESULT_MUX_SEL_ADD] : s.add_mux_out,
       m.in_[RESULT_MUX_SEL_0]   : 0,
-      m.in_[RESULT_MUX_SEL_MULH]: s.mulh_negate,
+      m.in_[RESULT_MUX_SEL_MULH]: s.a_mulh_negate,
     })
 
     # Result register
@@ -227,7 +230,11 @@ class IntMulVarLatDpath( Model ):
       m.out                     : s.add_mux_out
     })
 
+    #---------------------------------------------------------------------
     # Shunning: these three components are added during BRGTC2
+    #---------------------------------------------------------------------
+    # All regs controlled by buffers_en signal are supposed to change
+    # value only when the unit accepts a new request
 
     # hi/lo sel reg -- buffer is_hi during calculation
 
@@ -255,6 +262,8 @@ class IntMulVarLatDpath( Model ):
       m.in_[1] : s.result_reg.out[nbits:nbits*2], # hi
       m.out    : s.resp_result, # Connect to output port
     })
+
+    #---------------------------------------------------------------------
 
     # Status signals
 
