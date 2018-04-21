@@ -9,7 +9,7 @@ random.seed(0xdeadbeef)
 
 from pymtl              import *
 from pclib.test         import mk_test_case_table, run_sim
-from pclib.test         import TestSource, TestSink
+from pclib.test         import TestSource, TestSink, TestNetSink
 
 from mdu.IntMulDivUnit  import IntMulDivUnit
 from ifcs import MduReqMsg, MduRespMsg
@@ -29,7 +29,7 @@ class TestHarness (Model):
 
     s.src  = TestSource   ( MduReqMsg(nbits, 8), src_msgs,  src_delay  )
     s.imul = IntMulDivUnit( nbits, 8 )
-    s.sink = TestSink     ( MduRespMsg(nbits), sink_msgs, sink_delay )
+    s.sink = TestNetSink     ( MduRespMsg(nbits), sink_msgs, sink_delay )
 
     # Dump VCD
 
@@ -106,5 +106,5 @@ def test( test_params, dump_vcd, test_verilog ):
   run_sim( TestHarness( 32,
                         test_params.msgs[::2], test_params.msgs[1::2],
                         test_params.src_delay, test_params.sink_delay,
-                        dump_vcd, test_verilog )
+                        dump_vcd, test_verilog ),
             )

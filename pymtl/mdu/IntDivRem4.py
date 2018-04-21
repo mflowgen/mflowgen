@@ -299,6 +299,8 @@ class IntDivRem4Ctrl( Model ):
 
       curr_state = s.state.out
 
+      s.state.in_.value = s.state.out
+
       if   curr_state == s.STATE_IDLE:
         if s.req_val and s.req_rdy:
           s.state.in_.value = s.STATE_CALC
