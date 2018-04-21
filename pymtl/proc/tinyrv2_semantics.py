@@ -323,18 +323,18 @@ class TinyRV2Semantics (object):
     s.M[addr:addr+4] = read_data ^ s.R[inst.rs2]
     s.PC += 4
 
-  def execute_amoand( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data & s.R[inst.rs2]
-    s.PC += 4
-
   def execute_amoor( s, inst ):
     addr = s.R[inst.rs1]
     read_data = s.M[addr:addr+4]
     s.R[inst.rd] = read_data
     s.M[addr:addr+4] = read_data | s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_amoand( s, inst ):
+    addr = s.R[inst.rs1]
+    read_data = s.M[addr:addr+4]
+    s.R[inst.rd] = read_data
+    s.M[addr:addr+4] = read_data & s.R[inst.rs2]
     s.PC += 4
 
   def execute_amomin( s, inst ):
@@ -495,8 +495,8 @@ class TinyRV2Semantics (object):
     'amoswap' : execute_amoswap,
     'amoadd'  : execute_amoadd,
     'amoxor'  : execute_amoxor,
-    'amoand'  : execute_amoand,
     'amoor'   : execute_amoor,
+    'amoand'  : execute_amoand,
     'amomin'  : execute_amomin,
     'amomax'  : execute_amomax,
     'amominu' : execute_amominu,

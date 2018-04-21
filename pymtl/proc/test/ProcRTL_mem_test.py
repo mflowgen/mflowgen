@@ -66,3 +66,22 @@ def test_sw_rand_delays( dump_vcd, test_verilog ):
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+
+#-------------------------------------------------------------------------
+# AMOs
+#-------------------------------------------------------------------------
+
+import inst_amoadd
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_amoadd.gen_basic_test     ),
+  asm_test( inst_amoadd.gen_value_test     ),
+  asm_test( inst_amoadd.gen_random_test    ),
+])
+def test_amoadd( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_amoadd_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_amoadd.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+

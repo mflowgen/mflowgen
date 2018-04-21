@@ -959,6 +959,70 @@ def gen_st_random_test( inst, ld_inst, src, offset, base ):
 
 # ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 
+#-------------------------------------------------------------------------
+# gen_amo_src01_template
+#-------------------------------------------------------------------------
+# Template for AMO instructions. Both of the source registers are written
+# first. The "src01" means that src0 is written first and then src1 is
+# written before the instruction under test. This setup makes it easier to
+# test the bypass path from src1 to the instruction under test. The
+# opposite ordering would make it easier to test the bypass path from src0
+# to the instruction under test. After the instruction under test has
+# completed, a parameterizable number of nops is executed before the csrw
+# sends the result out. This tests the bypass path from the instruction
+# under test dest to the source of another instruction (i.e., the csrw).
+# Lastly, there is a load instruction that checks the modified version of
+# the AMO operation, and a final csrw sends this result out of the proc as
+# well.
+
+def gen_amo_src01_template(
+  num_nops_src0, num_nops_src1, num_nops_dest,
+  reg_src0, reg_src1,
+  inst, src0, src1, result_pre, result_post
+):
+  return """
+    # Move src0 value into register
+    csrr {reg_src0}, mngr2proc < {src0}
+    {nops_src0}
+
+    # Move src1 value into register
+    csrr {reg_src1}, mngr2proc < {src1}
+    {nops_src1}
+
+    # Instruction under test
+    {inst} x3, {reg_src0}, {reg_src1}
+    {nops_dest}
+
+    # Check the result
+    csrw proc2mngr, x3 > {result_pre}
+    {nops_pre_lw}
+
+    # Instruction under test
+    lw x4, 0({reg_src0})
+    {nops_post_lw}
+
+    csrw proc2mngr, x4 > {result_post}
+
+  """.format(
+    nops_src0    = gen_nops(num_nops_src0),
+    nops_src1    = gen_nops(num_nops_src1),
+    nops_dest    = gen_nops(num_nops_dest),
+    nops_pre_lw  = gen_nops(8),
+    nops_post_lw = gen_nops(8),
+    **locals()
+  )
+
+#-------------------------------------------------------------------------
+# gen_amo_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of an AMO instruction under test. We assume
+# that bypassing has already been tested.
+
+def gen_amo_value_test( inst, src0, src1, result_pre, result_post ):
+  return gen_amo_src01_template( 0, 0, 0, "x1", "x2",
+                                inst, src0, src1,
+                                result_pre, result_post )
+
 #=========================================================================
 # TestHarness
 #=========================================================================

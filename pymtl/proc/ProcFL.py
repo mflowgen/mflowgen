@@ -107,7 +107,7 @@ class ProcFL( Model ):
         s.num_total_inst += 1
         s.stats_en.next = s.isa.stats_en
         s.isa.coreid = s.core_id
-        
+
         if s.isa.stats_en:
           s.num_inst += 1
         s.commit_inst.next = 0

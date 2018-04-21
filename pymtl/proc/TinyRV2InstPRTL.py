@@ -25,6 +25,7 @@ from pymtl import *
 
 OPCODE = slice(  0,  7 )
 FUNCT3 = slice( 12, 15 )
+FUNCT5 = slice( 27, 32 )
 FUNCT7 = slice( 25, 32 )
 
 RD     = slice(  7, 12 )
@@ -116,8 +117,8 @@ MUL     = 32 # 0000001??????????000?????0110011
 AMOSWAP = 33 # 00001????????????010?????0101111
 AMOADD  = 34 # 00000????????????010?????0101111
 AMOXOR  = 35 # 00100????????????010?????0101111
-AMOAND  = 36 # 01100????????????010?????0101111
-AMOOR   = 37 # 01000????????????010?????0101111
+AMOOR   = 36 # 01000????????????010?????0101111
+AMOAND  = 37 # 01100????????????010?????0101111
 AMOMIN  = 38 # 10000????????????010?????0101111
 AMOMAX  = 39 # 10100????????????010?????0101111
 AMOMINU = 40 # 11000????????????010?????0101111
@@ -174,8 +175,8 @@ inst_dict = {
   AMOSWAP : "amoswap",
   AMOADD  : "amoadd",
   AMOXOR  : "amoxor",
-  AMOAND  : "amoand",
   AMOOR   : "amoor",
+  AMOAND  : "amoand",
   AMOMIN  : "amomin",
   AMOMAX  : "amomax",
   AMOMINU : "amominu",
@@ -278,13 +279,13 @@ class DecodeInstType( Model ):
 
       elif s.in_[OPCODE] == 0b0101111:
         if   s.in_[FUNCT3] == 0b010:
-          if   s.in_[FUNCT7][2:] == 0b00001: s.out.value = AMOSWAP
-          elif s.in_[FUNCT7][2:] == 0b00000: s.out.value = AMOADD
-          elif s.in_[FUNCT7][2:] == 0b00100: s.out.value = AMOXOR
-          elif s.in_[FUNCT7][2:] == 0b01100: s.out.value = AMOAND
-          elif s.in_[FUNCT7][2:] == 0b01000: s.out.value = AMOOR
-          elif s.in_[FUNCT7][2:] == 0b10000: s.out.value = AMOMIN
-          elif s.in_[FUNCT7][2:] == 0b10100: s.out.value = AMOMAX
-          elif s.in_[FUNCT7][2:] == 0b11000: s.out.value = AMOMINU
-          elif s.in_[FUNCT7][2:] == 0b11100: s.out.value = AMOMAXU
+          if   s.in_[FUNCT5] == 0b00001:     s.out.value = AMOSWAP
+          elif s.in_[FUNCT5] == 0b00000:     s.out.value = AMOADD
+          elif s.in_[FUNCT5] == 0b00100:     s.out.value = AMOXOR
+          elif s.in_[FUNCT5] == 0b01000:     s.out.value = AMOOR
+          elif s.in_[FUNCT5] == 0b01100:     s.out.value = AMOAND
+          elif s.in_[FUNCT5] == 0b10000:     s.out.value = AMOMIN
+          elif s.in_[FUNCT5] == 0b10100:     s.out.value = AMOMAX
+          elif s.in_[FUNCT5] == 0b11000:     s.out.value = AMOMINU
+          elif s.in_[FUNCT5] == 0b11100:     s.out.value = AMOMAXU
 

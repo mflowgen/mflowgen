@@ -113,8 +113,8 @@ tinyrv2_encoding_table = \
   [ "amoswap rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00001000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amoadd  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00000000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amoxor  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b00100000000000000010000000101111 ], # R-type, tinyrv{?}
-  [ "amoand  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b01100000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amoor   rd, rs1, rs2",     0b11111000000000000111000001111111, 0b01000000000000000010000000101111 ], # R-type, tinyrv{?}
+  [ "amoand  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b01100000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amomin  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b10000000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amomax  rd, rs1, rs2",     0b11111000000000000111000001111111, 0b10100000000000000010000000101111 ], # R-type, tinyrv{?}
   [ "amominu rd, rs1, rs2",     0b11111000000000000111000001111111, 0b11000000000000000010000000101111 ], # R-type, tinyrv{?}
@@ -163,10 +163,19 @@ tinyrv2_encoding_table = \
 # | imm[31:12]                            | rd          | opcode |  U-type, U-imm
 # | imm[20|10:1|11|19:12]                 | rd          | opcode |  UJ-type,J-imm
 
+# See "Section 7.3: Atomic Memory Operations"
+#
+# AMOs are R-type but split out the bottom two bits of funct7 for acquire
+# and release
+
+#  31    27  26   25  24   20 19   15 14    12 11          7 6      0
+# | funct5 | aq | rl | rs2   | rs1   | funct3 | rd          | opcode |  R-type, AMO
+
 # Note python slice [ a, b ) == above slice [ b-1, a ]
 
 tinyrv2_field_slice_opcode = slice(  0,  7 )
 tinyrv2_field_slice_funct3 = slice( 12, 15 )
+tinyrv2_field_slice_funct5 = slice( 27 ,32 )
 tinyrv2_field_slice_funct7 = slice( 25 ,32 )
 
 tinyrv2_field_slice_rd     = slice(  7, 12 )
@@ -905,6 +914,7 @@ def decode_inst_name( inst ):
 
   opcode = tinyrv2_field_slice_opcode
   funct3 = tinyrv2_field_slice_funct3
+  funct5 = tinyrv2_field_slice_funct5
   funct7 = tinyrv2_field_slice_funct7
 
   inst_name = ""
@@ -969,15 +979,15 @@ def decode_inst_name( inst ):
 
   elif inst[opcode] == 0b0101111:
     if   inst[funct3] == 0b010:
-      if   inst[funct7][2:] == 0b00001: inst_name = "amoswap"
-      elif inst[funct7][2:] == 0b00000: inst_name = "amoadd"
-      elif inst[funct7][2:] == 0b00100: inst_name = "amoxor"
-      elif inst[funct7][2:] == 0b01100: inst_name = "amoand"
-      elif inst[funct7][2:] == 0b01000: inst_name = "amoor"
-      elif inst[funct7][2:] == 0b10000: inst_name = "amomin"
-      elif inst[funct7][2:] == 0b10100: inst_name = "amomax"
-      elif inst[funct7][2:] == 0b11000: inst_name = "amominu"
-      elif inst[funct7][2:] == 0b11100: inst_name = "amomaxu"
+      if   inst[funct5] == 0b00001:     inst_name = "amoswap"
+      elif inst[funct5] == 0b00000:     inst_name = "amoadd"
+      elif inst[funct5] == 0b00100:     inst_name = "amoxor"
+      elif inst[funct5] == 0b01000:     inst_name = "amoor"
+      elif inst[funct5] == 0b01100:     inst_name = "amoand"
+      elif inst[funct5] == 0b10000:     inst_name = "amomin"
+      elif inst[funct5] == 0b10100:     inst_name = "amomax"
+      elif inst[funct5] == 0b11000:     inst_name = "amominu"
+      elif inst[funct5] == 0b11100:     inst_name = "amomaxu"
 
   # custom
   elif inst[opcode]   == 0b0001011:     inst_name = "custom0"

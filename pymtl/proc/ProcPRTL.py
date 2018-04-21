@@ -213,29 +213,29 @@ class ProcPRTL( Model ):
     # X stage
 
     if not s.ctrl.val_X.value:
-      X_str = "{:<5s}".format( ' ' )
+      X_str = "{:<7s}".format( ' ' )
     elif s.ctrl.stall_X.value:
-      X_str = "{:<5s}".format( '#' )
+      X_str = "{:<7s}".format( '#' )
     else:
-      X_str = "{:<5s}".format( inst_dict[s.ctrl.inst_type_X.value.uint()] )
+      X_str = "{:<7s}".format( inst_dict[s.ctrl.inst_type_X.value.uint()] )
 
     # M stage
 
     if not s.ctrl.val_M.value:
-      M_str = "{:<5s}".format( ' ' )
+      M_str = "{:<7s}".format( ' ' )
     elif s.ctrl.stall_M.value:
-      M_str = "{:<5s}".format( '#' )
+      M_str = "{:<7s}".format( '#' )
     else:
-      M_str = "{:<5s}".format( inst_dict[s.ctrl.inst_type_M.value.uint()] )
+      M_str = "{:<7s}".format( inst_dict[s.ctrl.inst_type_M.value.uint()] )
 
     # W stage
 
     if not s.ctrl.val_W.value:
-      W_str = "{:<5s}".format( ' ' )
+      W_str = "{:<7s}".format( ' ' )
     elif s.ctrl.stall_W.value:
-      W_str = "{:<5s}".format( '#' )
+      W_str = "{:<7s}".format( '#' )
     else:
-      W_str = "{:<5s}".format( inst_dict[s.ctrl.inst_type_W.value.uint()] )
+      W_str = "{:<7s}".format( inst_dict[s.ctrl.inst_type_W.value.uint()] )
 
     pipeline_str = ( F_str + "|" + D_str + "|" + X_str + "|" + M_str + "|" + W_str )
 

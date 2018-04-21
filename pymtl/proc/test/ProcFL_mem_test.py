@@ -53,3 +53,17 @@ import inst_sw
 def test_sw( name, test, dump_vcd ):
   run_test( ProcFL, test, dump_vcd )
 
+#-------------------------------------------------------------------------
+# AMOs
+#-------------------------------------------------------------------------
+
+import inst_amoadd
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_amoadd.gen_basic_test     ),
+  asm_test( inst_amoadd.gen_value_test     ),
+  asm_test( inst_amoadd.gen_random_test    ),
+])
+def test_amoadd( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
