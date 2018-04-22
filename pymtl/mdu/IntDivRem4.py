@@ -103,7 +103,7 @@ class IntDivRem4Dpath( Model ):
     s.quotient_mux = m = Mux( nbits, 2 )
     s.connect_pairs(
       m.sel, s.quotient_mux_sel,
-      m.in_[Q_MUX_SEL_0], 0,
+      # inputs are connected later
     )
 
     # quotient reg
@@ -122,10 +122,10 @@ class IntDivRem4Dpath( Model ):
       m.shamt, 2,
     )
     @s.combinational
-    def comb_quotient_inc():
+    def comb_quotient_mux_in():
+      s.quotient_mux.in_[Q_MUX_SEL_0].value   = 0
       s.quotient_mux.in_[Q_MUX_SEL_LSH].value = s.quotient_lsh.out + \
         concat(~s.sub_negative1, ~s.sub_negative2)
-
     #---------------------------------------------------------------------
     # Shunning: these components are added during BRGTC2
     #---------------------------------------------------------------------

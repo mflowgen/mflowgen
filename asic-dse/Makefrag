@@ -33,7 +33,7 @@ design_flow = default
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-28nm-cln28hpc
+adk      = tsmc-28nm-cln28hpc-brg
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-gcd
+design_select = pymtl-mdu
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -52,6 +52,16 @@ ifeq ($(design_select),pymtl-gcd)
   design_name  = GcdUnit
   clock_period = 2.0
   verilog_src  = rtl-handoff/GcdUnit.v
+endif
+
+#-------------------------------------------------------------------------
+# PyMTL MulDivUnit
+#-------------------------------------------------------------------------
+
+ifeq ($(design_select),pymtl-mdu)
+  design_name  = IntMulDivUnit
+  clock_period = 1.0
+  verilog_src  = rtl-handoff/IntMulDivUnit.v
 endif
 
 #-------------------------------------------------------------------------
