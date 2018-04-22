@@ -13,6 +13,8 @@ from pclib.test import TestSource, TestSink
 from proc.NullXcelRTL      import NullXcelRTL
 from proc.tinyrv2_encoding import assemble
 
+from mdu import IntMulDivUnit
+
 # BRGTC2 custom TestMemory modified for RISC-V 32
 
 from test import TestMemory
@@ -63,6 +65,7 @@ class TestHarness (Model):
     s.src    = TestSource    ( 32, [], src_delay  )
     s.sink   = TestSink      ( 32, [], sink_delay )
     s.proc   = ProcModel     ()
+    s.mdu    = IntMulDivUnit ( 32, 8 )
     s.xcel   = NullXcelRTL   ()
     s.mem    = TestMemory    ( MemMsg4B(), 2, mem_stall_prob, mem_latency )
 
@@ -75,11 +78,21 @@ class TestHarness (Model):
 
     if test_verilog:
       s.proc = TranslationTool( s.proc )
+      s.mdu  = TranslationTool( s.mdu  )
 
     # Processor <-> Proc/Mngr
 
     s.connect( s.proc.mngr2proc, s.src.out         )
     s.connect( s.proc.proc2mngr, s.sink.in_        )
+
+    # Processor <-> Mdu
+    # This only works for RTL! Don't connect for FL
+
+    try:
+      s.connect( s.proc.mdureq,  s.mdu.req )
+      s.connect( s.proc.mduresp, s.mdu.resp )
+    except AttributeError:
+      pass
 
     # Processor <-> Xcel
 

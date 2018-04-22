@@ -287,7 +287,7 @@ class IntMulVarLatCtrl( Model ):
 
     s.req_val        = InPort  (1)
     s.req_rdy        = OutPort (1)
-    s.req_typ        = InPort  (clog2(ntypes))
+    s.req_type       = InPort  (clog2(ntypes))
 
     s.resp_val       = OutPort (1)
     s.resp_rdy       = InPort  (1)
@@ -383,21 +383,21 @@ class IntMulVarLatCtrl( Model ):
         s.req_rdy.value        = 1
         s.resp_val.value       = 0
 
-        if s.req_typ == MduReqMsg.TYPE_MULHSU or s.req_typ == MduReqMsg.TYPE_MULH:
+        if s.req_type == MduReqMsg.TYPE_MULHSU or s.req_type == MduReqMsg.TYPE_MULH:
           s.a_mux_sel.value = A_MUX_SEL_SEXT
         else:
           s.a_mux_sel.value = A_MUX_SEL_LD
 
         s.b_mux_sel.value      = B_MUX_SEL_LD
 
-        if s.req_typ == MduReqMsg.TYPE_MULH:
+        if s.req_type == MduReqMsg.TYPE_MULH:
           s.result_mux_sel.value = RESULT_MUX_SEL_MULH
         else:
           s.result_mux_sel.value = RESULT_MUX_SEL_0
 
         s.result_reg_en.value  = 1
         s.buffers_en.value     = 1
-        s.is_hi.value          = (s.req_typ != 0)
+        s.is_hi.value          = (s.req_type != 0)
         s.add_mux_sel.value    = ADD_MUX_SEL_X
 
       # In CALC state we iteratively add/shift to caculate mult
@@ -457,7 +457,7 @@ class IntMulVarLat( Model ):
     s.connect( s.req.msg.op_a,   s.dpath.req_msg_a      )
     s.connect( s.req.msg.op_b,   s.dpath.req_msg_b      )
     s.connect( s.req.msg.opaque, s.dpath.req_msg_opaque )
-    s.connect( s.req.msg.typ,    s.ctrl.req_typ         )
+    s.connect( s.req.msg.type_,  s.ctrl.req_type        )
     s.connect( s.req.val,        s.ctrl.req_val         )
     s.connect( s.req.rdy,        s.ctrl.req_rdy         )
 

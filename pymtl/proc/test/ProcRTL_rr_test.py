@@ -101,7 +101,134 @@ def test_mul_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_mul.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
 
-#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+#'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+
+#-------------------------------------------------------------------------
+# mulh
+#-------------------------------------------------------------------------
+
+import inst_mulh
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulh.gen_basic_test     ) ,
+  asm_test( inst_mulh.gen_value_test     ) ,
+  asm_test( inst_mulh.gen_random_test    ) ,
+])
+def test_mulh( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_mulh_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_mulh.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# mulhsu
+#-------------------------------------------------------------------------
+
+import inst_mulhsu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulhsu.gen_basic_test     ) ,
+  asm_test( inst_mulhsu.gen_value_test     ) ,
+  asm_test( inst_mulhsu.gen_random_test    ) ,
+])
+def test_mulhsu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_mulhsu_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_mulhsu.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# mulhu
+#-------------------------------------------------------------------------
+
+import inst_mulhu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulhu.gen_basic_test     ) ,
+  asm_test( inst_mulhu.gen_value_test     ) ,
+  asm_test( inst_mulhu.gen_random_test    ) ,
+])
+def test_mulhu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_mulhu_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_mulhu.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# div
+#-------------------------------------------------------------------------
+
+import inst_div
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_div.gen_basic_test     ) ,
+  asm_test( inst_div.gen_value_test     ) ,
+  asm_test( inst_div.gen_random_test    ) ,
+])
+def test_div( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_div_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_div.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# divu
+#-------------------------------------------------------------------------
+
+import inst_divu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_divu.gen_basic_test     ) ,
+  asm_test( inst_divu.gen_value_test     ) ,
+  asm_test( inst_divu.gen_random_test    ) ,
+])
+def test_divu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_divu_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_divu.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# rem
+#-------------------------------------------------------------------------
+
+import inst_rem
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_rem.gen_basic_test     ) ,
+  asm_test( inst_rem.gen_value_test     ) ,
+  asm_test( inst_rem.gen_random_test    ) ,
+])
+def test_rem( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_rem_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_rem.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# remu
+#-------------------------------------------------------------------------
+
+import inst_remu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_remu.gen_basic_test     ) ,
+  asm_test( inst_remu.gen_value_test     ) ,
+  asm_test( inst_remu.gen_random_test    ) ,
+])
+def test_remu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_remu_rand_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_remu.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=5, mem_stall_prob=0.5, mem_latency=3 )
+
 #-------------------------------------------------------------------------
 # and
 #-------------------------------------------------------------------------

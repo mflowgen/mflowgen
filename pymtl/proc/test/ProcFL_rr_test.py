@@ -81,6 +81,104 @@ def test_mul( name, test, dump_vcd ):
   run_test( ProcFL, test, dump_vcd )
 
 #-------------------------------------------------------------------------
+# mulh
+#-------------------------------------------------------------------------
+
+import inst_mulh
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulh.gen_basic_test     ) ,
+  asm_test( inst_mulh.gen_value_test     ) ,
+  asm_test( inst_mulh.gen_random_test    ) ,
+])
+def test_mulh( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# mulhsu
+#-------------------------------------------------------------------------
+
+import inst_mulhsu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulhsu.gen_basic_test     ) ,
+  asm_test( inst_mulhsu.gen_value_test     ) ,
+  asm_test( inst_mulhsu.gen_random_test    ) ,
+])
+def test_mulhsu( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# mulhu
+#-------------------------------------------------------------------------
+
+import inst_mulhu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_mulhu.gen_basic_test     ) ,
+  asm_test( inst_mulhu.gen_value_test     ) ,
+  asm_test( inst_mulhu.gen_random_test    ) ,
+])
+def test_mulhu( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# div
+#-------------------------------------------------------------------------
+
+import inst_div
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_div.gen_basic_test     ) ,
+  asm_test( inst_div.gen_value_test     ) ,
+  asm_test( inst_div.gen_random_test    ) ,
+])
+def test_div( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# divu
+#-------------------------------------------------------------------------
+
+import inst_divu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_divu.gen_basic_test     ) ,
+  asm_test( inst_divu.gen_value_test     ) ,
+  asm_test( inst_divu.gen_random_test    ) ,
+])
+def test_divu( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# rem
+#-------------------------------------------------------------------------
+
+import inst_rem
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_rem.gen_basic_test     ) ,
+  asm_test( inst_rem.gen_value_test     ) ,
+  asm_test( inst_rem.gen_random_test    ) ,
+])
+def test_rem( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
+# remu
+#-------------------------------------------------------------------------
+
+import inst_remu
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_remu.gen_basic_test     ) ,
+  asm_test( inst_remu.gen_value_test     ) ,
+  asm_test( inst_remu.gen_random_test    ) ,
+])
+def test_remu( name, test, dump_vcd ):
+  run_test( ProcFL, test, dump_vcd )
+
+#-------------------------------------------------------------------------
 # and
 #-------------------------------------------------------------------------
 

@@ -10,8 +10,6 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 from ProcDpathComponentsPRTL import AluPRTL, ImmGenPRTL
 from TinyRV2InstPRTL         import OPCODE, RS1, RS2, XS1, XS2, RD, SHAMT
 
-from lab1_imul  import IntMulScycleRTL
-
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
 from ifcs import MemReqMsg4B, MemRespMsg4B
@@ -55,6 +53,12 @@ class ProcDpathPRTL( Model ):
     s.mngr2proc_data    = InPort ( 32 )
     s.proc2mngr_data    = OutPort( 32 )
 
+    # mdu ports
+
+    s.mdureq_msg_op_a   = OutPort( 32 )
+    s.mdureq_msg_op_b   = OutPort( 32 )
+    s.mduresp_msg       = InPort ( 32 )
+
     # xcel ports
 
     s.xcelreq_msg_data  = OutPort( 32 )
@@ -74,14 +78,10 @@ class ProcDpathPRTL( Model ):
     s.op2_sel_D         = InPort ( 2 )
     s.csrr_sel_D        = InPort ( 2 )
     s.imm_type_D        = InPort ( 3 )
-    s.imul_req_val_D    = InPort ( 1 )
-    s.imul_req_rdy_D    = OutPort( 1 )
 
     s.reg_en_X          = InPort ( 1 )
     s.alu_fn_X          = InPort ( 4 )
     s.ex_result_sel_X   = InPort ( 2 )
-    s.imul_resp_rdy_X   = InPort ( 1 )
-    s.imul_resp_val_X   = OutPort( 1 )
 
     s.reg_en_M          = InPort ( 1 )
     s.wb_result_sel_M   = InPort ( 2 )
@@ -257,6 +257,11 @@ class ProcDpathPRTL( Model ):
       m.sel,    s.op2_sel_D,
     )
 
+    # send out mdu operands at D stage
+
+    s.connect( s.mdureq_msg_op_a, s.op1_sel_mux_D.out )
+    s.connect( s.mdureq_msg_op_b, s.op2_sel_mux_D.out )
+
     # Risc-V always calcs branch/jal target by adding imm(generated above) to PC
 
     s.pc_plus_imm_D = m = Adder( 32 )
@@ -269,22 +274,6 @@ class ProcDpathPRTL( Model ):
     #---------------------------------------------------------------------
     # X stage
     #---------------------------------------------------------------------
-
-    # imul
-    # Since on the datapath diagram it's slightly left to those registers,
-    # I put it at the beginning of the X stage :)
-
-    s.imul = m = IntMulScycleRTL()
-
-    s.connect_pairs(
-      m.req.val,        s.imul_req_val_D,
-      m.req.rdy,        s.imul_req_rdy_D,
-      m.req.msg[32:64], s.op1_sel_mux_D.out,
-      m.req.msg[0:32],  s.op2_sel_mux_D.out,
-
-      m.resp.val,       s.imul_resp_val_X,
-      m.resp.rdy,       s.imul_resp_rdy_X,
-    )
 
     # br_target_reg_X
     # Since branches are resolved in X stage, we register the target,
@@ -359,7 +348,7 @@ class ProcDpathPRTL( Model ):
     s.ex_result_sel_mux_X = m = Mux( dtype = 32, nports = 3 )
     s.connect_pairs(
       m.in_[0], s.alu_X.out,
-      m.in_[1], s.imul.resp.msg,
+      m.in_[1], s.mduresp_msg,
       m.in_[2], s.pc_incr_X.out,
       m.sel,    s.ex_result_sel_X,
     )
