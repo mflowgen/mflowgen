@@ -265,7 +265,7 @@ class IntDivRem4Ctrl( Model ):
   def __init__( s, nbits, ntypes ):
     s.req_val  = InPort  (1)
     s.req_rdy  = OutPort (1)
-    s.req_typ  = InPort  (clog2(ntypes))
+    s.req_type = InPort  (clog2(ntypes))
     s.resp_val = OutPort (1)
     s.resp_rdy = InPort  (1)
 
@@ -333,8 +333,8 @@ class IntDivRem4Ctrl( Model ):
         s.divisor_mux_sel.value   = D_MUX_SEL_IN
 
         s.buffers_en.value        = 1
-        s.is_div.value            = (s.req_typ[1] == 0) # div/divu = 0b100, 0b101
-        s.is_signed.value         = (s.req_typ[0] == 0) # div/rem = 0b100, 0b110
+        s.is_div.value            = (s.req_type[1] == 0) # div/divu = 0b100, 0b101
+        s.is_signed.value         = (s.req_type[0] == 0) # div/rem = 0b100, 0b110
 
       elif curr_state == s.STATE_DONE:
         s.req_rdy.value     = 0
@@ -388,7 +388,7 @@ class IntDivRem4( Model ):
     s.connect( s.req.msg.op_a,   s.dpath.req_msg_a      )
     s.connect( s.req.msg.op_b,   s.dpath.req_msg_b      )
     s.connect( s.req.msg.opaque, s.dpath.req_msg_opaque )
-    s.connect( s.req.msg.typ,    s.ctrl.req_typ         )
+    s.connect( s.req.msg.type_,  s.ctrl.req_type        )
     s.connect( s.req.val,        s.ctrl.req_val  )
     s.connect( s.req.rdy,        s.ctrl.req_rdy  )
 

@@ -46,6 +46,15 @@ class ProcCtrlPRTL( Model ):
     s.proc2mngr_val    = OutPort( 1 )
     s.proc2mngr_rdy    = InPort ( 1 )
 
+    # mdu ports
+
+    s.mdureq_val       = OutPort( 1 )
+    s.mdureq_rdy       = InPort ( 1 )
+    s.mdureq_msg_type  = OutPort( 3 )
+
+    s.mduresp_rdy      = OutPort( 1 )
+    s.mduresp_val      = InPort ( 1 )
+
     # Control signals (ctrl->dpath)
 
     s.reg_en_F         = OutPort( 1 )
@@ -58,15 +67,10 @@ class ProcCtrlPRTL( Model ):
     s.op2_sel_D        = OutPort( 2 )
     s.csrr_sel_D       = OutPort( 2 )
     s.imm_type_D       = OutPort( 3 )
-    s.mdu_req_val      = OutPort( 1 )
-    s.mdu_req_rdy      = InPort ( 1 )
-    s.mdu_req_typ      = OutPort( 3 )
 
     s.reg_en_X         = OutPort( 1 )
     s.alu_fn_X         = OutPort( 4 )
     s.ex_result_sel_X  = OutPort( 2 )
-    s.mdu_resp_rdy     = OutPort( 1 )
-    s.mdu_resp_val     = InPort ( 1 )
 
     s.reg_en_M         = OutPort( 1 )
     s.wb_result_sel_M  = OutPort( 2 )
@@ -365,7 +369,7 @@ class ProcCtrlPRTL( Model ):
     mem_xr  = Bits( 4, 11 ) # AMO_XOR
 
     # RV32M request type
-    # Set don't care to 8 to simplify everything, e.g. mdu.msg.typ = mdu_D
+    # Set don't care to 8 to simplify everything, e.g. mdu.msg.type_ = mdu_D
 
     md_x    = Bits( 4,  8 ) # not mdu
     md_mul  = Bits( 4,  0 ) # mul
@@ -661,7 +665,7 @@ class ProcCtrlPRTL( Model ):
       s.ostall_mngr_D.value = s.mngr2proc_rdy_D & ~s.mngr2proc_val
 
       # ostall due to mdu
-      s.ostall_mdu_D.value  = s.val_D & ~s.mdu_D[3] & ~s.mdu_req_rdy
+      s.ostall_mdu_D.value  = s.val_D & (s.mdu_D != md_x) & ~s.mdureq_rdy
 
       # put together all ostall conditions
 
@@ -689,9 +693,11 @@ class ProcCtrlPRTL( Model ):
 
       # mdu request valid signal
 
-      s.mdu_req_val.value = s.val_D & ~s.stall_D & ~s.squash_D & ~s.mdu_D[3]
+      s.mdureq_val.value = s.val_D & ~s.stall_D & ~s.squash_D & ~s.mdu_D[3]
 
-      s.mdu_req_typ.value = s.mdu_D[0:3]
+      # send lower 3 bits, since 0-7 are valid types and don't care is 8
+
+      s.mdureq_msg_type.value = s.mdu_D[0:3]
 
       # next valid bit
 
@@ -765,7 +771,7 @@ class ProcCtrlPRTL( Model ):
       s.ostall_dmem_X.value = ( s.dmemreq_type_X != mem_nr ) & ~s.dmemreq_rdy
 
       # ostall due to mdu
-      s.ostall_mdu_X.value = ~s.mdu_X[3] & ~s.mdu_resp_val
+      s.ostall_mdu_X.value = (s.mdu_X != md_x) & ~s.mduresp_val
 
       s.ostall_X.value = s.val_X & ( s.ostall_dmem_X | s.ostall_mdu_X | s.ostall_xcel_X )
 
@@ -805,7 +811,7 @@ class ProcCtrlPRTL( Model ):
 
       # mdu resp ready signal
 
-      s.mdu_resp_rdy.value = s.val_X & ~s.stall_X & ~s.mdu_X[3]
+      s.mduresp_rdy.value = s.val_X & ~s.stall_X & ( s.mdu_X != md_x )
 
       # next valid bit
 

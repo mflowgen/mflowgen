@@ -109,12 +109,12 @@ class ProcPRTL( Model ):
 
       # mdu
 
-      s.ctrl.mdu_req_val,  s.mdureq.val,
-      s.ctrl.mdu_req_rdy,  s.mdureq.rdy,
-      s.ctrl.mdu_req_typ,  s.mdureq.msg.typ,
+      s.ctrl.mdureq_val,       s.mdureq.val,
+      s.ctrl.mdureq_rdy,       s.mdureq.rdy,
+      s.ctrl.mdureq_msg_type,  s.mdureq.msg.type_,
 
-      s.ctrl.mdu_resp_val, s.mduresp.val,
-      s.ctrl.mdu_resp_rdy, s.mduresp.rdy,
+      s.ctrl.mduresp_val,      s.mduresp.val,
+      s.ctrl.mduresp_rdy,      s.mduresp.rdy,
 
       # imem ports
 
@@ -166,10 +166,10 @@ class ProcPRTL( Model ):
 
       # mdu
 
-      s.dpath.mdu_req_opa, s.mdureq.msg.op_a,
-      s.dpath.mdu_req_opb, s.mdureq.msg.op_b,
+      s.dpath.mdureq_msg_op_a, s.mdureq.msg.op_a,
+      s.dpath.mdureq_msg_op_b, s.mdureq.msg.op_b,
 
-      s.dpath.mdu_resp_msg, s.mduresp.msg.result,
+      s.dpath.mduresp_msg, s.mduresp.msg.result,
 
       # imem ports
 

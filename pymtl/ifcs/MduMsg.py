@@ -23,21 +23,21 @@ class MduReqMsg( BitStructDefinition ):
   }
 
   def __init__( s, nbits, ntypes ):
-    s.typ    = BitField( clog2(ntypes) )
+    s.type_  = BitField( clog2(ntypes) )
     s.opaque = BitField( 3 ) # Hard-code at most 8 requesters
     s.op_a   = BitField( nbits )
     s.op_b   = BitField( nbits )
 
   def mk_msg( s, typ, opq, a, b ):
     msg        = s()
-    msg.typ    = typ
+    msg.type_  = typ
     msg.opaque = opq
     msg.op_a    = a
     msg.op_b    = b
     return msg
 
   def __str__( s ):
-    return "{}:{}:{}:{}".format( MduReqMsg.type_str[int(s.typ)], s.opaque, s.op_a, s.op_b )
+    return "{}:{}:{}:{}".format( MduReqMsg.type_str[int(s.type_)], s.opaque, s.op_a, s.op_b )
 
 class MduRespMsg( BitStructDefinition ):
 

@@ -53,6 +53,12 @@ class ProcDpathPRTL( Model ):
     s.mngr2proc_data    = InPort ( 32 )
     s.proc2mngr_data    = OutPort( 32 )
 
+    # mdu ports
+
+    s.mdureq_msg_op_a   = OutPort( 32 )
+    s.mdureq_msg_op_b   = OutPort( 32 )
+    s.mduresp_msg       = InPort ( 32 )
+
     # xcel ports
 
     s.xcelreq_msg_data  = OutPort( 32 )
@@ -72,13 +78,10 @@ class ProcDpathPRTL( Model ):
     s.op2_sel_D         = InPort ( 2 )
     s.csrr_sel_D        = InPort ( 2 )
     s.imm_type_D        = InPort ( 3 )
-    s.mdu_req_opa       = OutPort( 32 )
-    s.mdu_req_opb       = OutPort( 32 )
 
     s.reg_en_X          = InPort ( 1 )
     s.alu_fn_X          = InPort ( 4 )
     s.ex_result_sel_X   = InPort ( 2 )
-    s.mdu_resp_msg      = InPort ( 32 )
 
     s.reg_en_M          = InPort ( 1 )
     s.wb_result_sel_M   = InPort ( 2 )
@@ -256,8 +259,8 @@ class ProcDpathPRTL( Model ):
 
     # send out mdu operands at D stage
 
-    s.connect( s.mdu_req_opa, s.op1_sel_mux_D.out )
-    s.connect( s.mdu_req_opb, s.op2_sel_mux_D.out )
+    s.connect( s.mdureq_msg_op_a, s.op1_sel_mux_D.out )
+    s.connect( s.mdureq_msg_op_b, s.op2_sel_mux_D.out )
 
     # Risc-V always calcs branch/jal target by adding imm(generated above) to PC
 
@@ -345,7 +348,7 @@ class ProcDpathPRTL( Model ):
     s.ex_result_sel_mux_X = m = Mux( dtype = 32, nports = 3 )
     s.connect_pairs(
       m.in_[0], s.alu_X.out,
-      m.in_[1], s.mdu_resp_msg,
+      m.in_[1], s.mduresp_msg,
       m.in_[2], s.pc_incr_X.out,
       m.sel,    s.ex_result_sel_X,
     )

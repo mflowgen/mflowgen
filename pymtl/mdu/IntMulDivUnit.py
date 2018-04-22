@@ -25,7 +25,7 @@ class IntMulDivUnit( Model ):
     s.req  = InValRdyBundle  ( MduReqMsg(nbits, ntypes) )
     s.resp = OutValRdyBundle ( MduRespMsg(nbits) )
 
-    # s.req.msg.typ:
+    # s.req.msg.type_:
     # https://github.com/riscv/riscv-isa-sim/blob/master/riscv/insns/mul.h
     # Assume RV32M
     # 0 - mul       hilo=0 low  32 bits of zext64(a)*b
@@ -36,7 +36,7 @@ class IntMulDivUnit( Model ):
     # 5 - divu  
     # 6 - rem       
     # 7 - remu
-    # As a result, s.req.msg.typ[2] indicates whether we should call imul or idiv
+    # As a result, s.req.msg.type_[2] indicates whether we should call imul or idiv
 
     # Instantiate arith units
 
@@ -54,14 +54,14 @@ class IntMulDivUnit( Model ):
 
     @s.combinational
     def comb_in_val():
-      s.imul.req.val.value = s.req.val & ~s.req.msg.typ[2]
-      s.idiv.req.val.value = s.req.val & s.req.msg.typ[2]
+      s.imul.req.val.value = s.req.val & ~s.req.msg.type_[2]
+      s.idiv.req.val.value = s.req.val & s.req.msg.type_[2]
 
     # Set mdu req.rdy based on msg type and occupancy of the corresponding unit
 
     @s.combinational
     def comb_in_rdy():
-      if ~s.req.msg.typ[2]:
+      if ~s.req.msg.type_[2]:
         s.req.rdy.value = s.imul.req.rdy
       else:
         s.req.rdy.value = s.idiv.req.rdy
@@ -97,7 +97,7 @@ class IntMulDivUnit( Model ):
 
   def line_trace( s ):
     if s.req.val and s.req.rdy:
-      return "({:>4} -> {})".format( MduReqMsg.type_str[s.req.msg.typ.uint()],
+      return "({:>4} -> {})".format( MduReqMsg.type_str[s.req.msg.type_.uint()],
                                    "imul" if s.imul.req.val else "idiv",
                                   )
     return "              "
