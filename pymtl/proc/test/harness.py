@@ -78,6 +78,7 @@ class TestHarness (Model):
 
     if test_verilog:
       s.proc = TranslationTool( s.proc )
+      s.mdu  = TranslationTool( s.mdu  )
 
     # Processor <-> Proc/Mngr
 
@@ -85,9 +86,13 @@ class TestHarness (Model):
     s.connect( s.proc.proc2mngr, s.sink.in_        )
 
     # Processor <-> Mdu
+    # This only works for RTL! Don't connect for FL
 
-    s.connect( s.proc.mdureq,  s.mdu.req )
-    s.connect( s.proc.mduresp, s.mdu.resp )
+    try:
+      s.connect( s.proc.mdureq,  s.mdu.req )
+      s.connect( s.proc.mduresp, s.mdu.resp )
+    except AttributeError:
+      pass
 
     # Processor <-> Xcel
 
