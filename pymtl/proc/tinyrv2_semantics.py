@@ -291,11 +291,63 @@ class TinyRV2Semantics (object):
       s.PC += 4
 
   #-----------------------------------------------------------------------
-  # Mul/Div instructions
+  # RV32M instructions
   #-----------------------------------------------------------------------
 
   def execute_mul( s, inst ):
     s.R[ inst.rd ] = s.R[inst.rs1] * s.R[inst.rs2]
+    s.PC += 4
+
+  def execute_mulh( s, inst ):
+    s.R[ inst.rd ] = (helpers.sext( s.R[inst.rs1], 64 ) * helpers.sext( s.R[inst.rs2], 64 ))[32:64]
+    s.PC += 4
+
+  def execute_mulhsu( s, inst ):
+    s.R[ inst.rd ] = (helpers.sext( s.R[inst.rs1], 64 ) * helpers.zext( s.R[inst.rs2], 64 ))[32:64]
+    s.PC += 4
+
+  def execute_mulhu( s, inst ):
+    s.R[ inst.rd ] = (helpers.zext( s.R[inst.rs1], 64 ) * helpers.zext( s.R[inst.rs2], 64 ))[32:64]
+    s.PC += 4
+
+  def execute_div( s, inst ):
+    a, b = s.R[inst.rs1].int(), s.R[inst.rs2].int()
+    if b == 0:
+      s.R[ inst.rd ] = Bits( 32, -1 )
+    else:
+      res = abs(a) / abs(b)
+      if (a<0) ^ (b<0): res = -res 
+      s.R[ inst.rd ] = Bits( 32, res )
+
+    s.PC += 4
+
+  def execute_divu( s, inst ):
+    a, b = s.R[inst.rs1].uint(), s.R[inst.rs2].uint()
+    if b == 0:
+      s.R[ inst.rd ] = Bits( 32, -1 )
+    else:
+      s.R[ inst.rd ] = Bits( 32, a/b )
+
+    s.PC += 4
+
+  def execute_rem( s, inst ):
+    a, b = s.R[inst.rs1].int(), s.R[inst.rs2].int()
+    if b == 0:
+      s.R[ inst.rd ] = Bits( 32, a )
+    else:
+      res = abs(a) % abs(b)
+      if a<0: res = -res
+      s.R[ inst.rd ] = Bits( 32, res )
+
+    s.PC += 4
+
+  def execute_remu( s, inst ):
+    a, b = s.R[inst.rs1].uint(), s.R[inst.rs2].uint()
+    if b == 0:
+      s.R[ inst.rd ] = Bits( 32, a )
+    else:
+      s.R[ inst.rd ] = Bits( 32, a%b )
+
     s.PC += 4
 
   #-----------------------------------------------------------------------
@@ -458,7 +510,6 @@ class TinyRV2Semantics (object):
     'add'     : execute_add,
     'addi'    : execute_addi,
     'sub'     : execute_sub,
-    'mul'     : execute_mul,
     'and'     : execute_and,
     'andi'    : execute_andi,
     'or'      : execute_or,
@@ -491,6 +542,15 @@ class TinyRV2Semantics (object):
     'bge'     : execute_bge,
     'bltu'    : execute_bltu,
     'bgeu'    : execute_bgeu,
+
+    'mul'     : execute_mul,
+    'mulh'    : execute_mulh,
+    'mulhsu'  : execute_mulhsu,
+    'mulhu'   : execute_mulhu,
+    'div'     : execute_div,
+    'divu'    : execute_divu,
+    'rem'     : execute_rem,
+    'remu'    : execute_remu,
 
     'amoswap' : execute_amoswap,
     'amoadd'  : execute_amoadd,
