@@ -94,7 +94,7 @@ test_case_table = mk_test_case_table([
   [ "direct_remu_3x14",   direct_remu_msgs,   3,        14         ],
 
   [ "direct_mix",         direct_mix_msgs,    0,        0          ],
-  [ "direct_mix_3x14",    direct_mix_msgs,    0,        0          ],
+  [ "direct_mix_3x14",    direct_mix_msgs,    3,        14          ],
 ])
 
 #-------------------------------------------------------------------------

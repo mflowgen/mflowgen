@@ -40,6 +40,7 @@ class Router( Model ):
       if s.in_.val:
         s.out[ s.in_.msg.opaque ].val.value = s.in_.val
         s.out[ s.in_.msg.opaque ].msg.value = s.in_.msg
+        # s.out[ s.in_.msg.opaque ].msg.opaque.value = 0
 
     @s.combinational
     def comb_in_rdy():

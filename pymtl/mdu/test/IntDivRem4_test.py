@@ -67,10 +67,10 @@ req_type  = MduReqMsg( 32, 8 )
 resp_type = MduRespMsg( 32 )
 
 def req( typ, a, b, nbits=32 ):
-  return req_type.mk_msg( typ, 2, Bits( nbits, a, trunc=True ), Bits( nbits, b, trunc=True ) )
+  return req_type.mk_msg( typ, 0, Bits( nbits, a, trunc=True ), Bits( nbits, b, trunc=True ) )
 
 def resp( a, nbits=32 ):
-  return resp_type.mk_msg( 2, Bits( nbits, a, trunc=True ) )
+  return resp_type.mk_msg( 0, Bits( nbits, a, trunc=True ) )
 
 # direct test cases
 # https://github.com/riscv/riscv-tests/blob/master/isa/rv32um/div*.S
