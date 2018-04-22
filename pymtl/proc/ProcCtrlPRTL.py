@@ -693,7 +693,7 @@ class ProcCtrlPRTL( Model ):
 
       # mdu request valid signal
 
-      s.mdureq_val.value = s.val_D & ~s.stall_D & ~s.squash_D & ~s.mdu_D[3]
+      s.mdureq_val.value = s.val_D & ~s.stall_D & ~s.squash_D & (s.mdu_D != md_x)
 
       # send lower 3 bits, since 0-7 are valid types and don't care is 8
 
