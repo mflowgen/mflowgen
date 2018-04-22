@@ -212,7 +212,7 @@ from proc.test import inst_rem
   asm_test( inst_rem.gen_random_test    ) ,
 ])
 def test_rem( name, test, dump_vcd, test_verilog ):
-  run_test( test, dump_vcd, test_verilog, test_verilog )
+  run_test( test, dump_vcd, test_verilog )
 
 def test_rem_rand_delays( dump_vcd, test_verilog ):
   run_test( inst_rem.gen_random_test, dump_vcd, test_verilog,

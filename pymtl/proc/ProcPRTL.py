@@ -40,7 +40,7 @@ class ProcPRTL( Model ):
     # MulDivUnit Interface
 
     s.mdureq    = OutValRdyBundle( MduReqMsg(32, 8) )
-    s.mduresp   = OutValRdyBundle( MduRespMsg(32) )
+    s.mduresp   = InValRdyBundle( MduRespMsg(32) )
 
     # Instruction Memory Request/Response Interface
 
