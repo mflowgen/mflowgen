@@ -11,15 +11,16 @@ from ifcs                import MemMsg
 
 from proc.ProcPRTL           import ProcPRTL
 from cache.BlockingCachePRTL import BlockingCachePRTL
+from mdu.IntMulDivUnit       import IntMulDivUnit
 
 from networks.Funnel import Funnel
 from networks.Router import Router
 
-class CompMcoreArbiterCache( Model ):
+class CompMcoreArbiterMduCache( Model ):
 
   def __init__( s, num_cores=4, mopaque_nbits=8, addr_nbits=32,
                    word_nbits=32, cacheline_nbits=128 ):
-    s.explicit_modulename = "CompMcoreArbiterCache"
+    s.explicit_modulename = "CompMcoreArbiterMduCache"
 
     #---------------------------------------------------------------------
     # Interface
@@ -51,12 +52,15 @@ class CompMcoreArbiterCache( Model ):
     s.net_ireq  = Funnel( num_cores, s.proc_cache_ifc.req )  # N cores - to - 1 cache
     s.net_iresp = Router( num_cores, s.proc_cache_ifc.resp )  # 1 cache - to - N cores
 
-    s.proc   = ProcPRTL[num_cores]( num_cores )
-
+    s.dcache = BlockingCachePRTL( 0 )
     s.net_dreq  = Funnel( num_cores, s.proc_cache_ifc.req )  # N cores - to - 1 cache
     s.net_dresp = Router( num_cores, s.proc_cache_ifc.resp )  # 1 cache - to - N cores
 
-    s.dcache = BlockingCachePRTL( 0 )
+    s.mdu = IntMulDivUnit( 32, 8 )
+    s.net_mreq  = Funnel( num_cores, s.proc_cache_ifc.req )  # N cores - to - 1 cache
+    s.net_mresp = Router( num_cores, s.proc_cache_ifc.resp )  # 1 cache - to - N cores
+
+    s.proc = ProcPRTL[num_cores]( num_cores )
 
     #---------------------------------------------------------------------
     # Connections

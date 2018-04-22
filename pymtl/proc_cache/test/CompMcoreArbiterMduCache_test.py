@@ -1,15 +1,8 @@
 #=========================================================================
-# MultiCoreRTL_test.py
+# CompMcoreArbiterMduCache_test.py
 #=========================================================================
 # In this test we pick representative instruction from each instrucion
 # categories
-#
-# rr:     add, mul
-# rimm:   andi
-# branch: bne
-# csr:    all with multi-core-id test
-# jump:   jal
-# mem:    lw, sw (multi-core version)
 
 import pytest
 import random
@@ -17,7 +10,7 @@ import random
 from pymtl     import *
 from harnesses import asm_test
 
-from proc_cache.CompMcoreArbiterCache import CompMcoreArbiterCache
+from proc_cache.CompMcoreArbiterMduCache import CompMcoreArbiterMduCache
 
 # 4 core, with 2 memory ports, each with 16B data bitwidth
 
@@ -28,7 +21,7 @@ def run_test( test, dump_vcd, test_verilog,
 
   from harnesses import run_test as run
 
-  run( CompMcoreArbiterCache( num_cores ), test, num_cores,
+  run( CompMcoreArbiterMduCache( num_cores ), test, num_cores,
        dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob, mem_latency )
 
 #-------------------------------------------------------------------------
@@ -59,7 +52,7 @@ def test_add_rand_delays( dump_vcd, test_verilog ):
 # mul
 #-------------------------------------------------------------------------
 
-import inst_mul
+from proc.test import inst_mul
 
 @pytest.mark.parametrize( "name,test", [
   asm_test( inst_mul.gen_basic_test     ) ,
@@ -151,7 +144,7 @@ def test_csr_rand_delays( dump_vcd, test_verilog ):
 # jal
 #-------------------------------------------------------------------------
 
-import inst_jal
+from proc.test import inst_jal
 
 @pytest.mark.parametrize( "name,test", [
   asm_test( inst_jal.gen_basic_test        ) ,
@@ -213,4 +206,3 @@ def test_sw_rand_delays( dump_vcd, test_verilog ):
   run_test( inst_sw.gen_diffline_deps_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=5,
             mem_stall_prob=0.5, mem_latency=3 )
-
