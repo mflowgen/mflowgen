@@ -11,6 +11,7 @@ from ifcs                import MemMsg
 
 from proc.ProcPRTL           import ProcPRTL
 from cache.BlockingCachePRTL import BlockingCachePRTL
+from mdu.IntMulDivUnit       import IntMulDivUnit
 
 class ProcCache( Model ):
 
@@ -58,6 +59,7 @@ class ProcCache( Model ):
     #---------------------------------------------------------------------
 
     s.proc   = ProcPRTL( num_cores )
+    s.mdu    = IntMulDivUnit( 32, 8 )
     s.icache = BlockingCachePRTL( 0 )
     s.dcache = BlockingCachePRTL( 0 )
 
@@ -71,6 +73,11 @@ class ProcCache( Model ):
 
     s.connect( s.mngr2proc, s.proc.mngr2proc   )
     s.connect( s.proc2mngr, s.proc.proc2mngr   )
+
+    # mdu
+
+    s.connect( s.proc.mdureq,  s.mdu.req )
+    s.connect( s.proc.mduresp, s.mdu.resp )
 
     # instruction
 

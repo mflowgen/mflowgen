@@ -114,8 +114,8 @@ import inst_mulh
   asm_test( inst_mulh.gen_value_test     ) ,
   asm_test( inst_mulh.gen_random_test    ) ,
 ])
-def test_mulh( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_mulh( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_mulh_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_mulh.gen_random_test, dump_vcd, test_verilog,
@@ -132,8 +132,8 @@ import inst_mulhsu
   asm_test( inst_mulhsu.gen_value_test     ) ,
   asm_test( inst_mulhsu.gen_random_test    ) ,
 ])
-def test_mulhsu( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_mulhsu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_mulhsu_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_mulhsu.gen_random_test, dump_vcd, test_verilog,
@@ -150,8 +150,8 @@ import inst_mulhu
   asm_test( inst_mulhu.gen_value_test     ) ,
   asm_test( inst_mulhu.gen_random_test    ) ,
 ])
-def test_mulhu( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_mulhu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_mulhu_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_mulhu.gen_random_test, dump_vcd, test_verilog,
@@ -168,8 +168,8 @@ import inst_div
   asm_test( inst_div.gen_value_test     ) ,
   asm_test( inst_div.gen_random_test    ) ,
 ])
-def test_div( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_div( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_div_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_div.gen_random_test, dump_vcd, test_verilog,
@@ -186,8 +186,8 @@ import inst_divu
   asm_test( inst_divu.gen_value_test     ) ,
   asm_test( inst_divu.gen_random_test    ) ,
 ])
-def test_divu( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_divu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_divu_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_divu.gen_random_test, dump_vcd, test_verilog,
@@ -204,8 +204,8 @@ import inst_rem
   asm_test( inst_rem.gen_value_test     ) ,
   asm_test( inst_rem.gen_random_test    ) ,
 ])
-def test_rem( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_rem( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_rem_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_rem.gen_random_test, dump_vcd, test_verilog,
@@ -222,8 +222,8 @@ import inst_remu
   asm_test( inst_remu.gen_value_test     ) ,
   asm_test( inst_remu.gen_random_test    ) ,
 ])
-def test_remu( name, test, dump_vcd ):
-  run_test( ProcRTL, test, dump_vcd )
+def test_remu( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
 
 def test_remu_rand_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_remu.gen_random_test, dump_vcd, test_verilog,
