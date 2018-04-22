@@ -17,7 +17,7 @@ from XcelMsg import XcelReqMsg, XcelRespMsg
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs import MemReqMsg4B, MemRespMsg4B
+from ifcs import MemReqMsg4B, MemRespMsg4B, MduReqMsg, MduRespMsg
 
 class ProcPRTL( Model ):
 
@@ -36,6 +36,11 @@ class ProcPRTL( Model ):
 
     s.mngr2proc = InValRdyBundle ( 32 )
     s.proc2mngr = OutValRdyBundle( 32 )
+
+    # MulDivUnit Interface
+
+    s.mdureq    = OutValRdyBundle( MduReqMsg(32, 8) )
+    s.mduresp   = OutValRdyBundle( MduRespMsg(32) )
 
     # Instruction Memory Request/Response Interface
 
@@ -102,6 +107,15 @@ class ProcPRTL( Model ):
 
     s.connect_pairs(
 
+      # mdu
+
+      s.ctrl.mdu_req_val,  s.mdureq.val,
+      s.ctrl.mdu_req_rdy,  s.mdureq.rdy,
+      s.ctrl.mdu_req_typ,  s.mdureq.msg.typ,
+
+      s.ctrl.mdu_resp_val, s.mduresp.val,
+      s.ctrl.mdu_resp_rdy, s.mduresp.rdy,
+
       # imem ports
 
       s.ctrl.imemreq_val,   s.imemreq_queue.enq.val,
@@ -149,6 +163,13 @@ class ProcPRTL( Model ):
     # Dpath
 
     s.connect_pairs(
+
+      # mdu
+
+      s.dpath.mdu_req_opa, s.mdureq.msg.op_a,
+      s.dpath.mdu_req_opb, s.mdureq.msg.op_b,
+
+      s.dpath.mdu_resp_msg, s.mduresp.msg.result,
 
       # imem ports
 
