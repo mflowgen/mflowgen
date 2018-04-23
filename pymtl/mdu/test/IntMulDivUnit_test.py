@@ -69,6 +69,28 @@ random.shuffle( mix_lists )
 
 direct_mix_msgs = reduce( lambda x,y:x+y, mix_lists )
 
+# dump to Verilog file
+
+inp = [ x.uint() for x in direct_mix_msgs[::2] ]
+oup = [ x.result().uint() for x in direct_mix_msgs[1::2] ]
+
+with open( "mdu_test_cases.v", "w") as f:
+  f.write("num_inputs = %d;\n" % len(inp))
+  for i in xrange(len(inp)):
+
+    x = hex(inp[i])[2:]
+    if x[-1] == 'L':
+      x = x[:-1]
+
+    y = hex(oup[i])[2:]
+    if y[-1] == 'L':
+      y = y[:-1]
+
+    f.write( "init( %d, %d'h%s, %d'h%s );\n" % (i,
+                                                direct_mix_msgs[0].nbits, x,
+                                                direct_mix_msgs[1].nbits, y) );
+
+
 #-------------------------------------------------------------------------
 # Test Case Table
 #-------------------------------------------------------------------------

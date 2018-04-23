@@ -53,7 +53,7 @@ class IntMulDivUnit( Model ):
     # Set individual unit req.val signal based on msg type
 
     s.is_div = Wire( 1 ) # 0,1,2,3 -- mul, 4,5,6,7 -- div
-    s.connect( s.is_div, s.req.msg.typ[2] )
+    s.connect( s.is_div, s.req.msg.type_[2] )
 
     @s.combinational
     def comb_in_val():
