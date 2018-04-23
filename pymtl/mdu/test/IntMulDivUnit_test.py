@@ -29,7 +29,7 @@ class TestHarness (Model):
 
     s.src  = TestSource   ( MduReqMsg(nbits, 8), src_msgs,  src_delay  )
     s.imul = IntMulDivUnit( nbits, 8 )
-    s.sink = TestNetSink     ( MduRespMsg(nbits), sink_msgs, sink_delay )
+    s.sink = TestNetSink  ( MduRespMsg(nbits), sink_msgs, sink_delay )
 
     # Dump VCD
 
@@ -72,7 +72,7 @@ direct_mix_msgs = reduce( lambda x,y:x+y, mix_lists )
 # dump to Verilog file
 
 inp = [ x.uint() for x in direct_mix_msgs[::2] ]
-oup = [ x.result().uint() for x in direct_mix_msgs[1::2] ]
+oup = [ x.result.uint() for x in direct_mix_msgs[1::2] ]
 
 with open( "mdu_test_cases.v", "w") as f:
   f.write("num_inputs = %d;\n" % len(inp))

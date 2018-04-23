@@ -180,8 +180,8 @@ module IntMulVarLat_0x4fa87c8a5af4e991
   // ctrl temporaries
   wire   [   0:0] ctrl$is_b_zero;
   wire   [   0:0] ctrl$resp_rdy;
-  wire   [   2:0] ctrl$req_typ;
   wire   [   0:0] ctrl$clk;
+  wire   [   2:0] ctrl$req_type;
   wire   [   0:0] ctrl$req_val;
   wire   [   0:0] ctrl$b_lsb;
   wire   [   0:0] ctrl$reset;
@@ -199,8 +199,8 @@ module IntMulVarLat_0x4fa87c8a5af4e991
   (
     .is_b_zero      ( ctrl$is_b_zero ),
     .resp_rdy       ( ctrl$resp_rdy ),
-    .req_typ        ( ctrl$req_typ ),
     .clk            ( ctrl$clk ),
+    .req_type       ( ctrl$req_type ),
     .req_val        ( ctrl$req_val ),
     .b_lsb          ( ctrl$b_lsb ),
     .reset          ( ctrl$reset ),
@@ -257,7 +257,7 @@ module IntMulVarLat_0x4fa87c8a5af4e991
   assign ctrl$b_lsb           = dpath$b_lsb;
   assign ctrl$clk             = clk;
   assign ctrl$is_b_zero       = dpath$is_b_zero;
-  assign ctrl$req_typ         = req_msg[69:67];
+  assign ctrl$req_type        = req_msg[69:67];
   assign ctrl$req_val         = req_val;
   assign ctrl$reset           = reset;
   assign ctrl$resp_rdy        = resp_rdy;
@@ -301,7 +301,7 @@ module IntMulVarLatCtrl_0x4a27551a25d9401d
   input  wire [   0:0] is_b_zero,
   output reg  [   0:0] is_hi,
   output reg  [   0:0] req_rdy,
-  input  wire [   2:0] req_typ,
+  input  wire [   2:0] req_type,
   input  wire [   0:0] req_val,
   input  wire [   0:0] reset,
   input  wire [   0:0] resp_rdy,
@@ -451,21 +451,21 @@ module IntMulVarLatCtrl_0x4a27551a25d9401d
   //         s.req_rdy.value        = 1
   //         s.resp_val.value       = 0
   //
-  //         if s.req_typ == MduReqMsg.TYPE_MULHSU or s.req_typ == MduReqMsg.TYPE_MULH:
+  //         if s.req_type == MduReqMsg.TYPE_MULHSU or s.req_type == MduReqMsg.TYPE_MULH:
   //           s.a_mux_sel.value = A_MUX_SEL_SEXT
   //         else:
   //           s.a_mux_sel.value = A_MUX_SEL_LD
   //
   //         s.b_mux_sel.value      = B_MUX_SEL_LD
   //
-  //         if s.req_typ == MduReqMsg.TYPE_MULH:
+  //         if s.req_type == MduReqMsg.TYPE_MULH:
   //           s.result_mux_sel.value = RESULT_MUX_SEL_MULH
   //         else:
   //           s.result_mux_sel.value = RESULT_MUX_SEL_0
   //
   //         s.result_reg_en.value  = 1
   //         s.buffers_en.value     = 1
-  //         s.is_hi.value          = (s.req_typ != 0)
+  //         s.is_hi.value          = (s.req_type != 0)
   //         s.add_mux_sel.value    = ADD_MUX_SEL_X
   //
   //       # In CALC state we iteratively add/shift to caculate mult
@@ -518,14 +518,14 @@ module IntMulVarLatCtrl_0x4a27551a25d9401d
     if ((current_state__1 == STATE_IDLE)) begin
       req_rdy = 1;
       resp_val = 0;
-      if (((req_typ == TYPE_MULHSU)||(req_typ == TYPE_MULH))) begin
+      if (((req_type == TYPE_MULHSU)||(req_type == TYPE_MULH))) begin
         a_mux_sel = A_MUX_SEL_SEXT;
       end
       else begin
         a_mux_sel = A_MUX_SEL_LD;
       end
       b_mux_sel = B_MUX_SEL_LD;
-      if ((req_typ == TYPE_MULH)) begin
+      if ((req_type == TYPE_MULH)) begin
         result_mux_sel = RESULT_MUX_SEL_MULH;
       end
       else begin
@@ -533,7 +533,7 @@ module IntMulVarLatCtrl_0x4a27551a25d9401d
       end
       result_reg_en = 1;
       buffers_en = 1;
-      is_hi = (req_typ != 0);
+      is_hi = (req_type != 0);
       add_mux_sel = ADD_MUX_SEL_X;
     end
     else begin
@@ -1585,10 +1585,10 @@ module IntDivRem4_0x18c371d1cf60a588
 
   // ctrl temporaries
   wire   [   0:0] ctrl$resp_rdy;
-  wire   [   2:0] ctrl$req_typ;
   wire   [   0:0] ctrl$sub_negative1;
   wire   [   0:0] ctrl$sub_negative2;
   wire   [   0:0] ctrl$clk;
+  wire   [   2:0] ctrl$req_type;
   wire   [   0:0] ctrl$req_val;
   wire   [   0:0] ctrl$reset;
   wire   [   0:0] ctrl$remainder_reg_en;
@@ -1605,10 +1605,10 @@ module IntDivRem4_0x18c371d1cf60a588
   IntDivRem4Ctrl_0x18c371d1cf60a588 ctrl
   (
     .resp_rdy          ( ctrl$resp_rdy ),
-    .req_typ           ( ctrl$req_typ ),
     .sub_negative1     ( ctrl$sub_negative1 ),
     .sub_negative2     ( ctrl$sub_negative2 ),
     .clk               ( ctrl$clk ),
+    .req_type          ( ctrl$req_type ),
     .req_val           ( ctrl$req_val ),
     .reset             ( ctrl$reset ),
     .remainder_reg_en  ( ctrl$remainder_reg_en ),
@@ -1665,7 +1665,7 @@ module IntDivRem4_0x18c371d1cf60a588
 
   // signal connections
   assign ctrl$clk                = clk;
-  assign ctrl$req_typ            = req_msg[69:67];
+  assign ctrl$req_type           = req_msg[69:67];
   assign ctrl$req_val            = req_val;
   assign ctrl$reset              = reset;
   assign ctrl$resp_rdy           = resp_rdy;
@@ -1714,7 +1714,7 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   output reg  [   1:0] remainder_mux_sel,
   output reg  [   0:0] remainder_reg_en,
   output reg  [   0:0] req_rdy,
-  input  wire [   2:0] req_typ,
+  input  wire [   2:0] req_type,
   input  wire [   0:0] req_val,
   input  wire [   0:0] reset,
   input  wire [   0:0] resp_rdy,
@@ -1826,8 +1826,8 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   //         s.divisor_mux_sel.value   = D_MUX_SEL_IN
   //
   //         s.buffers_en.value        = 1
-  //         s.is_div.value            = (s.req_typ[1] == 0) # div/divu = 0b100, 0b101
-  //         s.is_signed.value         = (s.req_typ[0] == 0) # div/rem = 0b100, 0b110
+  //         s.is_div.value            = (s.req_type[1] == 0) # div/divu = 0b100, 0b101
+  //         s.is_signed.value         = (s.req_type[0] == 0) # div/rem = 0b100, 0b110
   //
   //       elif curr_state == s.STATE_DONE:
   //         s.req_rdy.value     = 0
@@ -1870,8 +1870,8 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
       quotient_reg_en = 1;
       divisor_mux_sel = D_MUX_SEL_IN;
       buffers_en = 1;
-      is_div = (req_typ[1] == 0);
-      is_signed = (req_typ[0] == 0);
+      is_div = (req_type[1] == 0);
+      is_signed = (req_type[0] == 0);
     end
     else begin
       if ((curr_state__1 == STATE_DONE)) begin

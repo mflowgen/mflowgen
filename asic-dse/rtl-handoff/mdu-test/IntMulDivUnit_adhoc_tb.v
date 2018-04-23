@@ -1,5 +1,9 @@
-`include "stdcells.v"
-`include "IntDivRem4.vcs.v"
+`ifdef BRG_GL_TESTING
+  `include "stdcells.v"
+  `include "IntMulDivUnit.vcs.v"
+`else
+  `include "IntMulDivUnit.v"
+`endif
 
 //------------------------------------------------------------------------
 // Simulation driver
@@ -89,15 +93,14 @@ module top;
     .resp_rdy  (resp_rdy)
   );
 
-  logic [resp_nbits-1:0] ans;
-
   integer passed = 0;
   integer cycle;
+  integer current_test_case;
 
   initial begin
 
     #1;
-    `include "../../../pymtl/build/mdu_cases.v"
+    `include "../../../pymtl/build/mdu_test_cases.v"
 
     // Reset signal
 
@@ -107,23 +110,22 @@ module top;
     // Run the simulation
 
     cycle = 0;
+    current_test_case = 0;
 
     while (cycle < ncycles) begin
       req_val = 1;
       resp_rdy = 1;
-      req_msg = inp[ cycle % num_inputs ];
-
-      if (req_rdy)
-        ans = oup[cycle % num_inputs];
+      req_msg = inp[ current_test_case ];
 
       #10;
 
-      if (resp_val) begin
-        if (resp_msg != ans) begin
-          $display("Test failed! ans: %x != ref: %x", resp_msg, ans);
+      if (resp_val & resp_rdy) begin
+        if (resp_msg != oup[current_test_case]) begin
+          $display("Test failed! ans: %x != ref: %x", resp_msg, oup[current_test_case]);
           $finish;
         end
         passed += 1;
+        current_test_case = (current_test_case + 1) % num_inputs;
       end
 
       cycle += 1;
