@@ -6254,6 +6254,9 @@ inv_logic inv_at_out_n2(
 endmodule
 
 module ring_oscillator_top (
+  clk,    // <-- ctorng
+  ct_in,  // <-- ctorng
+  ct_out, // <-- ctorng
 	in_param_enable_n1,
 	in_param_enable_n2,
 	in_param_enable_n3,
@@ -6309,6 +6312,20 @@ input [36:0] in_param_FCE_additional_ctrl;
 
 output out_pll_clk;
 output out_clk;
+
+//------------------------------------------------------------------------
+// ctorng little section to insert a little dummy clocked region so we can
+// push this module (which has no clk) through CTS
+//------------------------------------------------------------------------
+
+input  wire clk;
+input  wire ct_in;
+output reg  ct_out;
+always @ (posedge clk) begin
+  ct_out <= ct_in;
+end
+
+//------------------------------------------------------------------------
 
 wire ro_out_n1;
 wire ro_out_n2;

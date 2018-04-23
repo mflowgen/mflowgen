@@ -12,8 +12,9 @@
 # conservative implementation.
 
 #set CLOCK_NET in_clk_ref
+set CLOCK_NET clk
 
-#create_clock ${CLOCK_NET} -name ideal_clock -period ${dc_clock_period}
+create_clock ${CLOCK_NET} -name ideal_clock -period ${dc_clock_period}
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is
@@ -36,11 +37,11 @@ set_dont_touch ${DESIGN_NAME}
 
 # set_input_delay constraints for input ports
 
-#set_input_delay -clock ideal_clock 0 [all_inputs]
+set_input_delay -clock ideal_clock 0 [all_inputs]
 
 # set_output_delay constraints for output ports
 
-#set_output_delay -clock ideal_clock 0 [all_outputs]
+set_output_delay -clock ideal_clock 0 [all_outputs]
 
 #Make all signals limit their fanout
 
