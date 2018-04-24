@@ -140,7 +140,12 @@ def gen_value_test():
     gen_ld_value_test( "lhu",  -5, 0x00002015, 0x00000e0f ),
     gen_ld_value_test( "lhu",  -1, 0x00002015, 0x0000cafe ),
 
-    # Test negative offset with unaligned base
+    # Test subword accesses
+
+    gen_ld_value_test( "lhu",   0, 0x00002000, 0x0000beef ),
+    gen_ld_value_test( "lhu",   0, 0x00002002, 0x0000dead ),
+    gen_ld_value_test( "lhu",   0, 0x00002004, 0x00000203 ),
+    gen_ld_value_test( "lhu",   0, 0x00002006, 0x00000001 ),
 
     gen_word_data([
       0xdeadbeef,

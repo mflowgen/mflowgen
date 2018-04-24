@@ -140,7 +140,12 @@ def gen_value_test():
     gen_ld_value_test( "lb",  -5, 0x00002015, 0x0000000f ),
     gen_ld_value_test( "lb",  -1, 0x00002015, 0xfffffffe ),
 
-    # Test negative offset with unaligned base
+    # Test subword accesses
+
+    gen_ld_value_test( "lb",   0, 0x00002000, 0xffffffef ),
+    gen_ld_value_test( "lb",   0, 0x00002001, 0xffffffbe ),
+    gen_ld_value_test( "lb",   0, 0x00002002, 0xffffffad ),
+    gen_ld_value_test( "lb",   0, 0x00002003, 0xffffffde ),
 
     gen_word_data([
       0xdeadbeef,

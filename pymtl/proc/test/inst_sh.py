@@ -197,6 +197,13 @@ def gen_value_test():
     gen_st_value_test( "sh", 0x88898a8b,  -5, 0x00002015, 0x0c0d8a8b ),
     gen_st_value_test( "sh", 0x8c8d8e8f,  -1, 0x00002015, 0xcafe8e8f ),
 
+    # Test subword accesses
+
+    gen_st_value_test( "sh", 0x99999999, 0, 0x00002000, 0xdead9999 ),
+    gen_st_value_test( "sh", 0x99999999, 0, 0x00002002, 0x99999999 ),
+    gen_st_value_test( "sh", 0x99999999, 0, 0x00002004, 0x00019999 ),
+    gen_st_value_test( "sh", 0x99999999, 0, 0x00002006, 0x99999999 ),
+
     gen_word_data([
       0xdeadbeef,
       0x00010203,

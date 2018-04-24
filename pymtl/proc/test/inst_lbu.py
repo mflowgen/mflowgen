@@ -140,7 +140,12 @@ def gen_value_test():
     gen_ld_value_test( "lbu",  -5, 0x00002015, 0x0000000f ),
     gen_ld_value_test( "lbu",  -1, 0x00002015, 0x000000fe ),
 
-    # Test negative offset with unaligned base
+    # Test subword accesses
+
+    gen_ld_value_test( "lbu",   0, 0x00002000, 0x000000ef ),
+    gen_ld_value_test( "lbu",   0, 0x00002001, 0x000000be ),
+    gen_ld_value_test( "lbu",   0, 0x00002002, 0x000000ad ),
+    gen_ld_value_test( "lbu",   0, 0x00002003, 0x000000de ),
 
     gen_word_data([
       0xdeadbeef,

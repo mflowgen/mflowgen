@@ -197,6 +197,13 @@ def gen_value_test():
     gen_st_value_test( "sb", 0x88898a8b,  -5, 0x00002015, 0x0c0d0e8b ),
     gen_st_value_test( "sb", 0x8c8d8e8f,  -1, 0x00002015, 0xcafeca8f ),
 
+    # Test subword accesses
+
+    gen_st_value_test( "sb", 0x99999999, 0, 0x00002000, 0xdeadbe99 ),
+    gen_st_value_test( "sb", 0x99999999, 0, 0x00002001, 0xdead9999 ),
+    gen_st_value_test( "sb", 0x99999999, 0, 0x00002002, 0xde999999 ),
+    gen_st_value_test( "sb", 0x99999999, 0, 0x00002003, 0x99999999 ),
+
     gen_word_data([
       0xdeadbeef,
       0x00010203,
