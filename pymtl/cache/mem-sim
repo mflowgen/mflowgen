@@ -54,9 +54,9 @@ import random
 
 random.seed(0xdeadbeef)
 
-from pymtl                     import *
-from BlockingCacheRTL          import BlockingCacheRTL
-from test.BlockingCacheFL_test import TestHarness, req, resp
+from pymtl                           import *
+from BlockingCacheRTL                import BlockingCacheRTL
+from cache.test.BlockingCacheFL_test import TestHarness, req, resp
 
 #-------------------------------------------------------------------------
 # Command line processing

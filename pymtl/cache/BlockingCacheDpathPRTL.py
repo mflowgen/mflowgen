@@ -14,9 +14,9 @@ from ifcs import MemReqMsg16B, MemRespMsg16B
 # LAB TASK: Include necessary files
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
-from pclib.rtl        import Mux, RegEnRst
-from pclib.rtl.arith  import EqComparator
-from sram.SramPRTL    import SRAM_32x256_1P, SRAM_128x256_1P
+from pclib.rtl            import Mux, RegEnRst
+from pclib.rtl.arith      import EqComparator
+from sram.SramGenericPRTL import SramGenericPRTL
 
 size           = 8192             # Cache size in bytes
 p_opaque_nbits = 8
@@ -257,18 +257,16 @@ class BlockingCacheDpathPRTL( Model ):
 
     # Concat
 
-    s.temp_cachereq_tag    = Wire( abw )
-    s.cachereq_msg_addr    = Wire( abw )
-    s.cur_cachereq_idx     = Wire( idw )
+    s.temp_cachereq_tag = Wire( abw )
+    s.cachereq_msg_addr = Wire( abw )
+    s.cur_cachereq_idx  = Wire( idw )
 
-    s.tag_array_0_wen_bar  = Wire(  1  )
-    s.tag_array_1_wen_bar  = Wire(  1  )
-    s.data_array_0_wen_bar = Wire(  1  )
-    s.data_array_1_wen_bar = Wire(  1  )
-    s.sram_tag_0_en_bar    = Wire(  1  )
-    s.sram_tag_1_en_bar    = Wire(  1  )
-    s.sram_data_0_en_bar   = Wire(  1  )
-    s.sram_data_1_en_bar   = Wire(  1  )
+    s.data_array_0_wen  = Wire(  1  )
+    s.data_array_1_wen  = Wire(  1  )
+    s.sram_tag_0_en     = Wire(  1  )
+    s.sram_tag_1_en     = Wire(  1  )
+    s.sram_data_0_en    = Wire(  1  )
+    s.sram_data_1_en    = Wire(  1  )
 
     @s.combinational
     def comb_tag():
@@ -279,81 +277,78 @@ class BlockingCacheDpathPRTL( Model ):
       else:
         s.cur_cachereq_idx.value  = s.cachereq_idx
 
-      s.tag_array_0_wen_bar.value  = ~s.tag_array_0_wen
-      s.tag_array_1_wen_bar.value  = ~s.tag_array_1_wen
-      s.data_array_0_wen_bar.value = ~(s.data_array_wen & (s.way_sel_current == 0))
-      s.data_array_1_wen_bar.value = ~(s.data_array_wen & (s.way_sel_current == 1))
-      s.sram_tag_0_en_bar.value    = ~(s.tag_array_0_wen | s.tag_array_0_ren)
-      s.sram_tag_1_en_bar.value    = ~(s.tag_array_1_wen | s.tag_array_1_ren)
-      s.sram_data_0_en_bar.value   = ~((s.data_array_wen & (s.way_sel_current==0)) | s.data_array_ren)
-      s.sram_data_1_en_bar.value   = ~((s.data_array_wen & (s.way_sel_current==1)) | s.data_array_ren)
+      s.data_array_0_wen.value =  (s.data_array_wen & (s.way_sel_current == 0))
+      s.data_array_1_wen.value =  (s.data_array_wen & (s.way_sel_current == 1))
+      s.sram_tag_0_en.value    =  (s.tag_array_0_wen | s.tag_array_0_ren)
+      s.sram_tag_1_en.value    =  (s.tag_array_1_wen | s.tag_array_1_ren)
+      s.sram_data_0_en.value   =  ((s.data_array_wen & (s.way_sel_current==0)) | s.data_array_ren)
+      s.sram_data_1_en.value   =  ((s.data_array_wen & (s.way_sel_current==1)) | s.data_array_ren)
 
     # Tag array 0
 
     s.tag_array_0_read_out = Wire( abw )
 
-    s.tag_array_0 = m = SRAM_32x256_1P()
+    s.tag_array_0 = m = SramGenericPRTL(num_bits      =  32          ,
+                                        num_words     = 256          ,
+                                        instance_name = 'sram_32_256')
 
     s.connect_pairs(
-      m.A1,    s.cur_cachereq_idx,
-      m.O1,    s.tag_array_0_read_out,
-      m.WEB1,  s.tag_array_0_wen_bar,
-      m.WBM1,  0b1111,
-      m.I1,    s.temp_cachereq_tag,
-      m.CE1,   s.clk,
-      m.OEB1,  0,
-      m.CSB1,  s.sram_tag_0_en_bar
+      m.addr,  s.cur_cachereq_idx,
+      m.out,   s.tag_array_0_read_out,
+      m.wen,   s.tag_array_0_wen,
+      m.mask,  0b1111,
+      m.in_,   s.temp_cachereq_tag,
+      m.cen,   s.sram_tag_0_en
     )
 
     # Tag array 1
 
     s.tag_array_1_read_out = Wire( abw )
 
-    s.tag_array_1 = m = SRAM_32x256_1P()
-
+    s.tag_array_1 = m = SramGenericPRTL(num_bits      =  32          ,
+                                        num_words     = 256          ,
+                                        instance_name = 'sram_32_256')
     s.connect_pairs(
-      m.A1,    s.cur_cachereq_idx,
-      m.O1,    s.tag_array_1_read_out,
-      m.WEB1,  s.tag_array_1_wen_bar,
-      m.WBM1,  0b1111,
-      m.I1,    s.temp_cachereq_tag,
-      m.CE1,   s.clk,
-      m.OEB1,  0,
-      m.CSB1,  s.sram_tag_1_en_bar
+      m.addr,  s.cur_cachereq_idx,
+      m.out,   s.tag_array_1_read_out,
+      m.wen,   s.tag_array_1_wen,
+      m.mask,  0b1111,
+      m.in_,   s.temp_cachereq_tag,
+      m.cen,   s.sram_tag_1_en
     )
 
     # Data array 0
 
     s.data_array_0_read_out = Wire( clw )
 
-    s.data_array_0 = m = SRAM_128x256_1P()
+    s.data_array_0 = m = SramGenericPRTL(num_bits      = 128           ,
+                                         num_words     = 256           ,
+                                         instance_name = 'sram_128_256')
 
     s.connect_pairs(
-      m.A1,    s.cur_cachereq_idx,
-      m.O1,    s.data_array_0_read_out,
-      m.WEB1,  s.data_array_0_wen_bar,
-      m.WBM1,  s.data_array_wben,
-      m.I1,    s.refill_mux.out,
-      m.CE1,   s.clk,
-      m.OEB1,  0,
-      m.CSB1,  s.sram_data_0_en_bar
+      m.addr,  s.cur_cachereq_idx,
+      m.out,   s.data_array_0_read_out,
+      m.wen,   s.data_array_0_wen,
+      m.mask,  s.data_array_wben,
+      m.in_,   s.refill_mux.out,
+      m.cen,   s.sram_data_0_en
     )
 
     # Data array 1
 
     s.data_array_1_read_out = Wire( clw )
 
-    s.data_array_1 = m = SRAM_128x256_1P()
+    s.data_array_1 = m = SramGenericPRTL(num_bits      = 128           ,
+                                         num_words     = 256           ,
+                                         instance_name = 'sram_128_256')
 
     s.connect_pairs(
-      m.A1,    s.cur_cachereq_idx,
-      m.O1,    s.data_array_1_read_out,
-      m.WEB1,  s.data_array_1_wen_bar,
-      m.WBM1,  s.data_array_wben,
-      m.I1,    s.refill_mux.out,
-      m.CE1,   s.clk,
-      m.OEB1,  0,
-      m.CSB1,  s.sram_data_1_en_bar
+      m.addr,  s.cur_cachereq_idx,
+      m.out,   s.data_array_1_read_out,
+      m.wen,   s.data_array_1_wen,
+      m.mask,  s.data_array_wben,
+      m.in_,   s.refill_mux.out,
+      m.cen,   s.sram_data_1_en
     )
 
     # Data read mux
