@@ -1,8 +1,11 @@
 test-gl-no-delay: simv-gl-no-delay
-	./simv-gl-no-delay +cycle=100000
+	./simv-gl-no-delay
 
 test-rtl: simv-rtl
-	./simv-rtl +cycle=100000
+	./simv-rtl
+
+debug-rtl: simv-rtl-debug
+	./simv-rtl
 
 simv-gl-no-delay: IntMulDivUnit_adhoc_tb.v ../../build/results/innovus/IntMulDivUnit.vcs.v
 	vcs -full64 -sverilog +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE +v2k +rad +vcs+initreg+random +neg_tchk -noIncrComp \
@@ -16,6 +19,26 @@ simv-rtl: IntMulDivUnit_adhoc_tb.v ../IntMulDivUnit.v
 	+incdir+/work/global/brg/install/adk-pkgs/tsmc-28nm-cln28hpc-brg/stdview \
 	+incdir+.. \
 	IntMulDivUnit_adhoc_tb.v -o simv-rtl
+
+simv-rtl-debug: IntMulDivUnit_adhoc_tb.v ../IntMulDivUnit.v
+# 	export VCS_PRINT_INITREG_INITIALIZATION=1
+
+	vcs -full64 -sverilog +v2k +noportcoerce +vc -notice -V\
+	+vcs+lic_wait +vcs+loopreport \
+	+libext+.v+.vlib+.vh \
+	-timescale=1ps/1ps -diag timescale \
+# 	+optconfigurefile+${}/timing_config \
+# 	-bom IntMuld -bfl ${resultsdir}/vcs_file_list
+# -top 
+	+lint=all,noVCDE,noTFIPC,noIWU,noOUDPE \
+	+rad \
+	+notimingcheck +nospecify \
+# 	+define+INITIALIZE_MEMORY
+	-debug_pp \
+	+incdir+/work/global/brg/install/adk-pkgs/tsmc-28nm-cln28hpc-brg/stdview \
+	+incdir+.. \
+	IntMulDivUnit_adhoc_tb.v \
+	-o simv-rtl
 
 # sim-delay:
 # 	vcs -full64 -sverilog +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE +v2k +rad +vcs+initreg+random +neg_tchk -noIncrComp +incdir+/work/global/brg/install/adk-pkgs/tsmc-28nm-cln28hpc-brg/stdview IntMulDivUnit_adhoc_tb.v -o simv-delay +define+ARM_UD_MODEL

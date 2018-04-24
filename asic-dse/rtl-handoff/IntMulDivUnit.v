@@ -918,6 +918,7 @@ module IntMulVarLatDpath_0x1ea05e108635c477
   assign a_reg$clk            = clk;
   assign a_reg$in_            = a_mux$out;
   assign a_reg$reset          = reset;
+  assign add$cin              = 1'd0;
   assign add$clk              = clk;
   assign add$in0              = a_reg$out;
   assign add$in1              = result_reg$out;

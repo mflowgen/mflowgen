@@ -72,7 +72,7 @@ direct_mix_msgs = reduce( lambda x,y:x+y, mix_lists )
 # dump to Verilog file
 
 inp = [ x.uint() for x in direct_mix_msgs[::2] ]
-oup = [ x.result.uint() for x in direct_mix_msgs[1::2] ]
+oup = [ x.uint() for x in direct_mix_msgs[1::2] ]
 
 with open( "mdu_test_cases.v", "w") as f:
   f.write("num_inputs = %d;\n" % len(inp))

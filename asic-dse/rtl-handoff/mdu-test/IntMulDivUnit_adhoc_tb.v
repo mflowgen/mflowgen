@@ -24,7 +24,7 @@ module top;
   initial begin
 
     if ( !$value$plusargs( "cycle=%d", ncycles ) ) begin
-      ncycles = 100;
+      ncycles = 10000;
     end
 
     if ( $test$plusargs( "help" ) ) begin
@@ -32,7 +32,6 @@ module top;
       $display( " mdu-tb [options]" );
       $display( "" );
       $display( "   +help                 : this message" );
-      $display( "   +cycle=<int>          : number of cycles to simulate" );
       $display( "" );
       $finish;
     end
@@ -52,8 +51,10 @@ module top;
 
   logic reset = 1'b1;
 
-  logic [req_nbits-1:0] inp[100000:0];
-  logic [resp_nbits-1:0] oup[100000:0];
+  logic [req_nbits-1:0] inp[999:0];
+  logic [resp_nbits-1:0] oup[999:0];
+
+  logic [999:0] all_seen; // at most 999 different messages
 
   task init
   (
@@ -95,45 +96,89 @@ module top;
 
   integer passed = 0;
   integer cycle;
-  integer current_test_case;
+  integer to_send, received;
+  integer seen, mark, i;
+
+  always @(posedge clk) begin
+    resp_rdy = 1; // $urandom % 2
+    if (req_val & req_rdy)
+      to_send += 1;
+
+    req_val = 0;
+    req_msg = 0;
+    if (to_send < num_inputs ) begin
+      req_val = 1; // $urandom % 2
+      req_msg = inp[ to_send ];
+    end
+
+  end
 
   initial begin
 
     #1;
     `include "../../../pymtl/build/mdu_test_cases.v"
 
+    num_inputs = 88;
+
     // Reset signal
 
-          reset = 1'b1;
-    #200; reset = 1'b0;
+         reset = 1'b1;
+    #20; reset = 1'b0;
 
     // Run the simulation
 
     cycle = 0;
-    current_test_case = 0;
+    to_send  = 0;
+    received = 0;
+    all_seen = 0;
 
-    while (cycle < ncycles) begin
-      req_val = 1;
-      resp_rdy = 1;
-      req_msg = inp[ current_test_case ];
+    req_val  = 0;
+    resp_rdy = 0;
 
+    while (cycle < ncycles && received < num_inputs) begin
+      // Doing stuff in the loop iteration doesn't make the expecting
+      // effects because we want to set req_val or check resp_rdy at the
+      // beginning of the clock cycle. After #10 all combinational logics
+      // are already fired.
       #10;
-
       if (resp_val & resp_rdy) begin
-        if (resp_msg != oup[current_test_case]) begin
-          $display("Test failed! ans: %x != ref: %x", resp_msg, oup[current_test_case]);
+        received += 1;
+        seen = 0; // whether there is a response in the whole list
+        mark = 0; // whether an unmarked response is marked
+
+        for (i=0; i<num_inputs; i+=1)
+          if (resp_msg == oup[i]) begin
+            seen = 1;
+            if ( !all_seen[i] ) begin
+              // this response hasn't been marked, mark it and break
+              all_seen[i] = 1;
+              mark = 1;
+              passed += 1;
+              break;
+            end
+          end
+
+        if (!seen) begin
+          $display("Test failed! ans %x is not found in response messages", resp_msg);
           $finish;
         end
-        passed += 1;
-        current_test_case = (current_test_case + 1) % num_inputs;
+        else if (!mark) begin
+          $display("Test failed! ans %x arrives twice", resp_msg);
+          $finish;
+        end
       end
-
       cycle += 1;
-
+      $display("%d: val %d rdy %d req %x | val %d rdy %d resp %x", cycle, req_val, req_rdy, req_msg, resp_val, resp_rdy, resp_msg);
     end
 
-    $write( "[%d passed] mdu", passed );
-    $finish;
+    if (cycle == ncycles) begin
+      $display( "This test has been running for %d cycles without end. Please debug. %d/%d", ncycles, passed, num_inputs );
+      $finish;
+    end
+    else begin
+      $display( "[%d passed in %d cycles] mdu", passed, cycle );
+      $finish;
+    end
 
   end
 

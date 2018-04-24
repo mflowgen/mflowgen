@@ -218,6 +218,7 @@ class IntMulVarLatDpath( Model ):
     s.connect_dict({
       m.in0 : s.a_reg.out,
       m.in1 : s.result_reg.out,
+      m.cin : 0
     })
 
     # Add mux
