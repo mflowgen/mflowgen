@@ -9,24 +9,19 @@ from pymtl import *
 
 class SramGenericPRTL( Model ):
 
-  def __init__( s, num_bits = 32, num_words = 256 ):
+  def __init__( s, num_bits = 32, num_words = 256, instance_name = '' ):
 
     addr_width = clog2( num_words )      # address width
     nbytes     = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
 
-    # port names set to match the ARM memory compiler
+    # BRG SRAM's golden interface
 
-    # clock (in PyMTL simulation it uses implict .clk port when
-    # translated to Verilog, actual clock ports should be CE1
-
-    s.CE1  = InPort ( 1 )          # clk
-    s.WEB1 = InPort ( 1 )          # bar( write en )
-    s.OEB1 = InPort ( 1 )          # bar( out en )
-    s.CSB1 = InPort ( 1 )          # bar( whole SRAM en )
-    s.A1   = InPort ( addr_width ) # address
-    s.I1   = InPort ( num_bits )   # write data
-    s.O1   = OutPort( num_bits )   # read data
-    s.WBM1 = InPort ( nbytes )     # byte write en
+    s.wen  = InPort ( 1 )          # write en
+    s.cen  = InPort ( 1 )          # whole SRAM en
+    s.addr = InPort ( addr_width ) # address
+    s.in_  = InPort ( num_bits )   # write data
+    s.out  = OutPort( num_bits )   # read data
+    s.mask = InPort ( nbytes )     # byte write en
 
     # memory array
 
@@ -38,8 +33,8 @@ class SramGenericPRTL( Model ):
 
     @s.posedge_clk
     def read_logic():
-      if ( not s.CSB1 ) and s.WEB1:
-        s.dout.next = s.ram[ s.A1 ]
+      if s.cen and ( not s.wen ):
+        s.dout.next = s.ram[ s.addr ]
       else:
         s.dout.next = 0
 
@@ -48,16 +43,13 @@ class SramGenericPRTL( Model ):
     @s.posedge_clk
     def write_logic():
       for i in xrange( nbytes ):
-        if ~s.CSB1 and ~s.WEB1 and s.WBM1[i]:
-          s.ram[s.A1][ i*8 : i*8+8 ].next = s.I1[ i*8 : i*8+8 ]
+        if s.cen and s.wen and s.mask[i]:
+          s.ram[s.addr][ i*8 : i*8+8 ].next = s.in_[ i*8 : i*8+8 ]
 
     @s.combinational
     def comb_logic():
-      if not s.OEB1:
-        s.O1.value = s.dout
-      else:
-        s.O1.value = 0
+      s.out.value = s.dout
 
 
   def line_trace( s ):
-    return "(A1={} I1A={} O1={})".format( s.A1, s.I1, s.O1 )
+    return "(addr={} din={} dout={})".format( s.addr, s.in_, s.out )
