@@ -375,6 +375,9 @@ class ProcDpathPRTL( Model ):
 
     # Data memory response subword manipulation
 
+    s.dmemresp_msg_data_truncated8_M   = Wire(  8 )
+    s.dmemresp_msg_data_truncated16_M  = Wire( 16 )
+
     s.dmemresp_msg_data_lb_M  = Wire( 32 )
     s.dmemresp_msg_data_lh_M  = Wire( 32 )
     s.dmemresp_msg_data_lw_M  = Wire( 32 )
@@ -383,11 +386,14 @@ class ProcDpathPRTL( Model ):
 
     @s.combinational
     def dmemresp_logic_M():
-      s.dmemresp_msg_data_lb_M.value  = sext( s.dmemresp_msg_data[0:8],  32 )
-      s.dmemresp_msg_data_lh_M.value  = sext( s.dmemresp_msg_data[0:16], 32 )
+      s.dmemresp_msg_data_truncated8_M.value  = s.dmemresp_msg_data[0:8]
+      s.dmemresp_msg_data_truncated16_M.value = s.dmemresp_msg_data[0:16]
+
+      s.dmemresp_msg_data_lb_M.value  = sext( s.dmemresp_msg_data_truncated8_M,  32 )
+      s.dmemresp_msg_data_lh_M.value  = sext( s.dmemresp_msg_data_truncated16_M, 32 )
       s.dmemresp_msg_data_lw_M.value  = s.dmemresp_msg_data
-      s.dmemresp_msg_data_lbu_M.value = zext( s.dmemresp_msg_data[0:8],  32 )
-      s.dmemresp_msg_data_lhu_M.value = zext( s.dmemresp_msg_data[0:16], 32 )
+      s.dmemresp_msg_data_lbu_M.value = zext( s.dmemresp_msg_data_truncated8_M,  32 )
+      s.dmemresp_msg_data_lhu_M.value = zext( s.dmemresp_msg_data_truncated16_M, 32 )
 
     # Data memory response mux
 
