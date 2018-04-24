@@ -133,6 +133,7 @@ class ProcPRTL( Model ):
       s.ctrl.dmemreq_val,   s.dmemreq_queue.enq.val,
       s.ctrl.dmemreq_rdy,   s.dmemreq_queue.enq.rdy,
       s.ctrl.dmemreq_msg_type, s.dmemreq_queue.enq.msg.type_,
+      s.ctrl.dmemreq_msg_len,  s.dmemreq_queue.enq.msg.len,
 
       s.ctrl.dmemresp_val,  s.dmemresp.val,
       s.ctrl.dmemresp_rdy,  s.dmemresp.rdy,

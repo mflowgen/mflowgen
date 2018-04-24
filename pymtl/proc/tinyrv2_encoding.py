@@ -52,9 +52,15 @@ tinyrv2_encoding_table = \
   #----------------------------------------------------------------------
 
   # Loads
+  [ "lb      rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000000000000000011 ], # I-type
+  [ "lh      rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000001000000000011 ], # I-type
   [ "lw      rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000010000000000011 ], # I-type, tinyrv{1,2}
+  [ "lbu     rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000100000000000011 ], # I-type
+  [ "lhu     rd, i_imm(rs1)",   0b00000000000000000111000001111111, 0b00000000000000000101000000000011 ], # I-type
 
   # Stores
+  [ "sb      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000100011 ], # S-type
+  [ "sh      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000001000000100011 ], # S-type
   [ "sw      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000010000000100011 ], # S-type, tinyrv{1,2}
 
   # Shifts
@@ -132,12 +138,6 @@ tinyrv2_encoding_table = \
   # See "The RISC-V Instruction Set Manual Volume II Privileged Architecture.pdf" pp.13-21
   [ "csrr    rd, csrnum",       0b00000000000011111111000001111111, 0b00000000000000000010000001110011 ], # I-type, csrrs
   [ "csrw    csrnum, rs1",      0b00000000000000000111111111111111, 0b00000000000000000001000001110011 ], # I-type, csrrw
-
-
-  # These two are for elf execution.
-
-  [ "lb      rd,  i_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000000011 ], # I-type
-  [ "sb      rs2, s_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000000000000100011 ], # S-type
 
   # Accelerator
   ['custom0  rd, rs1, rs2, funct7', 0b00000000000000000000000001111111, 0b00000000000000000000000000001011 ], # ...
@@ -963,12 +963,16 @@ def decode_inst_name( inst ):
       elif inst[funct7] == 0b0100000:   inst_name = "srai"
 
   elif inst[opcode] == 0b0100011:
-    if   inst[funct3] == 0b010:         inst_name = "sw"
-    elif inst[funct3] == 0b000:         inst_name = "sb"
+    if   inst[funct3] == 0b000:         inst_name = "sb"
+    elif inst[funct3] == 0b001:         inst_name = "sh"
+    elif inst[funct3] == 0b010:         inst_name = "sw"
 
   elif inst[opcode] == 0b0000011:
-    if   inst[funct3] == 0b010:         inst_name = "lw"
-    elif inst[funct3] == 0b000:         inst_name = "lb"
+    if   inst[funct3] == 0b000:         inst_name = "lb"
+    elif inst[funct3] == 0b001:         inst_name = "lh"
+    elif inst[funct3] == 0b010:         inst_name = "lw"
+    elif inst[funct3] == 0b100:         inst_name = "lbu"
+    elif inst[funct3] == 0b101:         inst_name = "lhu"
 
   elif inst[opcode] == 0b1100011:
     if   inst[funct3] == 0b000:         inst_name = "beq"

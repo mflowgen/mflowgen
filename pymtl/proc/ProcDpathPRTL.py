@@ -84,6 +84,7 @@ class ProcDpathPRTL( Model ):
     s.ex_result_sel_X   = InPort ( 2 )
 
     s.reg_en_M          = InPort ( 1 )
+    s.dm_resp_sel_M     = InPort ( 3 )
     s.wb_result_sel_M   = InPort ( 2 )
 
     s.reg_en_W          = InPort ( 1 )
@@ -372,12 +373,40 @@ class ProcDpathPRTL( Model ):
       m.in_, s.ex_result_sel_mux_X.out
     )
 
+    # Data memory response subword manipulation
+
+    s.dmemresp_msg_data_lb_M  = Wire( 32 )
+    s.dmemresp_msg_data_lh_M  = Wire( 32 )
+    s.dmemresp_msg_data_lw_M  = Wire( 32 )
+    s.dmemresp_msg_data_lbu_M = Wire( 32 )
+    s.dmemresp_msg_data_lhu_M = Wire( 32 )
+
+    @s.combinational
+    def dmemresp_logic_M():
+      s.dmemresp_msg_data_lb_M.value  = sext( s.dmemresp_msg_data[0:8],  32 )
+      s.dmemresp_msg_data_lh_M.value  = sext( s.dmemresp_msg_data[0:16], 32 )
+      s.dmemresp_msg_data_lw_M.value  = s.dmemresp_msg_data
+      s.dmemresp_msg_data_lbu_M.value = zext( s.dmemresp_msg_data[0:8],  32 )
+      s.dmemresp_msg_data_lhu_M.value = zext( s.dmemresp_msg_data[0:16], 32 )
+
+    # Data memory response mux
+
+    s.dmemresp_mux_M = m = Mux( dtype = 32, nports = 5 )
+    s.connect_pairs(
+      m.in_[0], s.dmemresp_msg_data_lb_M,
+      m.in_[1], s.dmemresp_msg_data_lh_M,
+      m.in_[2], s.dmemresp_msg_data_lw_M,
+      m.in_[3], s.dmemresp_msg_data_lbu_M,
+      m.in_[4], s.dmemresp_msg_data_lhu_M,
+      m.sel,    s.dm_resp_sel_M,
+    )
+
     # Writeback result selection mux
 
     s.wb_result_sel_mux_M = m = Mux( dtype = 32, nports = 3 )
     s.connect_pairs(
       m.in_[0], s.ex_result_reg_M.out,
-      m.in_[1], s.dmemresp_msg_data,
+      m.in_[1], s.dmemresp_mux_M.out,
       # xcel
       m.in_[2], s.xcelresp_msg_data,
       m.sel,    s.wb_result_sel_M

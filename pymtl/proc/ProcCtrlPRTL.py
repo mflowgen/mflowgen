@@ -34,6 +34,7 @@ class ProcCtrlPRTL( Model ):
     s.dmemreq_val      = OutPort( 1 )
     s.dmemreq_rdy      = InPort ( 1 )
     s.dmemreq_msg_type = OutPort( 4 )
+    s.dmemreq_msg_len  = OutPort( 2 )
 
     s.dmemresp_val     = InPort ( 1 )
     s.dmemresp_rdy     = OutPort( 1 )
@@ -73,6 +74,7 @@ class ProcCtrlPRTL( Model ):
     s.ex_result_sel_X  = OutPort( 2 )
 
     s.reg_en_M         = OutPort( 1 )
+    s.dm_resp_sel_M    = OutPort( 3 )
     s.wb_result_sel_M  = OutPort( 2 )
 
     s.reg_en_W         = OutPort( 1 )
@@ -278,6 +280,8 @@ class ProcCtrlPRTL( Model ):
     s.rs2_en_D              = Wire( 1 )
     s.alu_fn_D              = Wire( 4 )
     s.dmemreq_type_D        = Wire( 4 )
+    s.dmemreq_len_D         = Wire( 2 )
+    s.dm_resp_sel_D         = Wire( 3 )
     s.wb_result_sel_D       = Wire( 2 )
     s.rf_wen_pending_D      = Wire( 1 )
     s.rf_waddr_sel_D        = Wire( 3 )
@@ -368,6 +372,13 @@ class ProcCtrlPRTL( Model ):
     mem_mxu = Bits( 4, 10 ) # AMO_MAXU
     mem_xr  = Bits( 4, 11 ) # AMO_XOR
 
+    # Memory request length
+
+    mlen_x = Bits( 2, 0 ) # don't care
+    mlen_w = Bits( 2, 0 ) # 32 bits
+    mlen_b = Bits( 2, 1 ) #  8 bits
+    mlen_h = Bits( 2, 2 ) # 16 bits
+
     # RV32M request type
     # Set don't care to 8 to simplify everything, e.g. mdu.msg.type_ = mdu_D
 
@@ -388,6 +399,15 @@ class ProcCtrlPRTL( Model ):
     xm_m = Bits( 2, 1 ) # Multiplier
     xm_p = Bits( 2, 2 ) # Pc+4
 
+    # Data memory response message data mux select
+
+    dm_x  = Bits( 3, 0 ) # don't care
+    dm_b  = Bits( 3, 0 ) # lb
+    dm_h  = Bits( 3, 1 ) # lh
+    dm_w  = Bits( 3, 2 ) # lw
+    dm_bu = Bits( 3, 3 ) # lbu
+    dm_hu = Bits( 3, 4 ) # lhu
+
     # Write-back mux select
 
     wm_x = Bits( 2, 0 )
@@ -405,87 +425,95 @@ class ProcCtrlPRTL( Model ):
     # jump: jal, jalr
     # branch: beq, bne, blt, bge, bltu, bgeu
 
-    s.cs = Wire( 32 )
+    s.cs = Wire( 37 )
 
     @s.combinational
     def comb_control_table_D():
       inst = s.inst_type_decoder_D.out.value
-      #                                             br    jal op1   rs1 imm    op2    rs2 alu      dmm      xres  wbmux rf  rv32m    cs cs
-      #                                         val type   D  muxsel en type   muxsel  en fn       typ      sel   sel   wen          rr rw
-      if   inst == NOP    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  xm_x, wm_a, n,  md_x,    n, n )
+      #                                             br    jal op1   rs1 imm    op2    rs2 alu      dmm      dmm     xres  dmmux  wbmux rf  rv32m    cs cs
+      #                                         val type   D  muxsel en type   muxsel  en fn       typ      len     sel   sel    sel   wen          rr rw
+      if   inst == NOP    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_a, n,  md_x,    n, n )
       # RV32I
       # xcel/csrr/csrw
-      elif inst == CSRRX  : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_imm, n, alu_cp1, mem_nr,  xm_a, wm_c, y,  md_x,    y, n )
-      elif inst == CSRR   : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_csr, n, alu_cp1, mem_nr,  xm_a, wm_a, y,  md_x,    y, n )
-      elif inst == CSRW   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_cp0, mem_nr,  xm_a, wm_a, n,  md_x,    n, y )
+      elif inst == CSRRX  : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_c, y,  md_x,    y, n )
+      elif inst == CSRR   : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_csr, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    y, n )
+      elif inst == CSRW   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_cp0, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, n,  md_x,    n, y )
       # reg-reg
-      elif inst == ADD    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_add, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SUB    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sub, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == AND    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_and, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == OR     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_or , mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == XOR    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_xor, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLT    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_lt , mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLTU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_ltu, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SRA    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sra, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SRL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_srl, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sll, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
+      elif inst == ADD    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SUB    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sub, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == AND    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == OR     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == XOR    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLT    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLTU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SRA    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SRL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
       # reg-imm
-      elif inst == ADDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == ANDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_and, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == ORI    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_or , mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == XORI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_xor, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLTI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_lt , mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLTIU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_ltu, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SRAI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sra, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SRLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_srl, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == SLLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sll, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == LUI    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_u, bm_imm, n, alu_cp1, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
-      elif inst == AUIPC  : s.cs.value = concat( y, br_na, n, am_pc, n, imm_u, bm_imm, n, alu_add, mem_nr,  xm_a, wm_a, y,  md_x,    n, n )
+      elif inst == ADDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == ANDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == ORI    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == XORI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLTI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLTIU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SRAI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SRLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == SLLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == LUI    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_u, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == AUIPC  : s.cs.value = concat( y, br_na, n, am_pc, n, imm_u, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
       # branch
-      elif inst == BNE    : s.cs.value = concat( y, br_ne, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
-      elif inst == BEQ    : s.cs.value = concat( y, br_eq, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
-      elif inst == BLT    : s.cs.value = concat( y, br_lt, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
-      elif inst == BLTU   : s.cs.value = concat( y, br_lu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
-      elif inst == BGE    : s.cs.value = concat( y, br_ge, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
-      elif inst == BGEU   : s.cs.value = concat( y, br_gu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  xm_a, wm_x, n,  md_x,    n, n )
+      elif inst == BNE    : s.cs.value = concat( y, br_ne, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+      elif inst == BEQ    : s.cs.value = concat( y, br_eq, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+      elif inst == BLT    : s.cs.value = concat( y, br_lt, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+      elif inst == BLTU   : s.cs.value = concat( y, br_lu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+      elif inst == BGE    : s.cs.value = concat( y, br_ge, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+      elif inst == BGEU   : s.cs.value = concat( y, br_gu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
       # jump
-      elif inst == JAL    : s.cs.value = concat( y, br_na, y, am_x,  n, imm_j, bm_x,   n, alu_x,   mem_nr,  xm_p, wm_a, y,  md_x,    n, n )
-      elif inst == JALR   : s.cs.value = concat( y, jalr , n, am_rf, y, imm_i, bm_imm, n, alu_adz, mem_nr,  xm_p, wm_a, y,  md_x,    n, n )
+      elif inst == JAL    : s.cs.value = concat( y, br_na, y, am_x,  n, imm_j, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
+      elif inst == JALR   : s.cs.value = concat( y, jalr , n, am_rf, y, imm_i, bm_imm, n, alu_adz, mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
       # mem
-      elif inst == LW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == SW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  xm_a, wm_m, n,  md_x,    n, n )
+      elif inst == LB     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_b,  wm_m, y,  md_x,    n, n )
+      elif inst == LH     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_h,  wm_m, y,  md_x,    n, n )
+      elif inst == LW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+      elif inst == LBU    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_bu, wm_m, y,  md_x,    n, n )
+      elif inst == LHU    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_hu, wm_m, y,  md_x,    n, n )
+      elif inst == SB     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_b, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+      elif inst == SH     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_h, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+      elif inst == SW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_w, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
       # RV32A
-      elif inst == AMOADD : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_ad,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOAND : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_an,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOOR  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_or,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOSWAP: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_sp,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOMIN : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mn,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOMINU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mnu, xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOMAX : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mx,  xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOMAXU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mxu, xm_a, wm_m, y,  md_x,    n, n )
-      elif inst == AMOXOR : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_xr,  xm_a, wm_m, y,  md_x,    n, n )
+      elif inst == AMOADD : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_ad,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOAND : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_an,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOOR  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_or,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOSWAP: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_sp,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOMIN : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mn,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOMINU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mnu, mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOMAX : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mx,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOMAXU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mxu, mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
+      elif inst == AMOXOR : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_xr,  mlen_x, xm_a, dm_x,  wm_m, y,  md_x,    n, n )
       # RV32M
-      elif inst == MUL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_mul,  n, n )
-      elif inst == MULH   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_mh,   n, n )
-      elif inst == MULHSU : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_mhsu, n, n )
-      elif inst == MULHU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_mhu,  n, n )
-      elif inst == DIV    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_div,  n, n )
-      elif inst == DIVU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_divu, n, n )
-      elif inst == REM    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_rem,  n, n )
-      elif inst == REMU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x  , mem_nr,  xm_m, wm_a, y,  md_remu, n, n )
-      else:                 s.cs.value = concat( n, br_x,  n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  xm_x, wm_x, n,  n,       n, n )
+      elif inst == MUL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mul,  n, n )
+      elif inst == MULH   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mh,   n, n )
+      elif inst == MULHSU : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhsu, n, n )
+      elif inst == MULHU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhu,  n, n )
+      elif inst == DIV    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_div,  n, n )
+      elif inst == DIVU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_divu, n, n )
+      elif inst == REM    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_rem,  n, n )
+      elif inst == REMU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_remu, n, n )
+      else:                 s.cs.value = concat( n, br_x,  n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_x, n,  n,       n, n )
 
-      s.inst_val_D.value       = s.cs[31:32]
-      s.br_type_D.value        = s.cs[28:31]
-      s.jal_D.value            = s.cs[27:28]
-      s.op1_sel_D.value        = s.cs[26:27]
-      s.rs1_en_D.value         = s.cs[25:26]
-      s.imm_type_D.value       = s.cs[22:25]
-      s.op2_sel_D.value        = s.cs[20:22]
-      s.rs2_en_D.value         = s.cs[19:20]
-      s.alu_fn_D.value         = s.cs[15:19]
-      s.dmemreq_type_D.value   = s.cs[11:15]
-      s.ex_result_sel_D.value  = s.cs[9:11]
+      s.inst_val_D.value       = s.cs[36:37]
+      s.br_type_D.value        = s.cs[33:36]
+      s.jal_D.value            = s.cs[32:33]
+      s.op1_sel_D.value        = s.cs[31:32]
+      s.rs1_en_D.value         = s.cs[30:31]
+      s.imm_type_D.value       = s.cs[27:30]
+      s.op2_sel_D.value        = s.cs[25:27]
+      s.rs2_en_D.value         = s.cs[24:25]
+      s.alu_fn_D.value         = s.cs[20:24]
+      s.dmemreq_type_D.value   = s.cs[16:20]
+      s.dmemreq_len_D.value    = s.cs[14:16]
+      s.ex_result_sel_D.value  = s.cs[12:14]
+      s.dm_resp_sel_D.value    = s.cs[9:12]
       s.wb_result_sel_D.value  = s.cs[7:9]
       s.rf_wen_pending_D.value = s.cs[6:7]
       s.mdu_D.value            = s.cs[2:6]
@@ -715,6 +743,8 @@ class ProcCtrlPRTL( Model ):
     s.rf_wen_pending_X = Wire( 1 )
     s.proc2mngr_val_X  = Wire( 1 )
     s.dmemreq_type_X   = Wire( 4 )
+    s.dmemreq_len_X    = Wire( 2 )
+    s.dm_resp_sel_X    = Wire( 3 )
     s.wb_result_sel_X  = Wire( 2 )
     s.stats_en_wen_X   = Wire( 1 )
     s.br_type_X        = Wire( 3 )
@@ -733,6 +763,8 @@ class ProcCtrlPRTL( Model ):
         s.rf_waddr_X.next       = s.rf_waddr_D
         s.proc2mngr_val_X.next  = s.proc2mngr_val_D
         s.dmemreq_type_X.next   = s.dmemreq_type_D
+        s.dmemreq_len_X.next    = s.dmemreq_len_D
+        s.dm_resp_sel_X.next    = s.dm_resp_sel_D
         s.wb_result_sel_X.next  = s.wb_result_sel_D
         s.stats_en_wen_X.next   = s.stats_en_wen_D
         s.br_type_X.next        = s.br_type_D
@@ -804,6 +836,10 @@ class ProcCtrlPRTL( Model ):
       elif s.dmemreq_type_X == mem_xr  : s.dmemreq_msg_type.value = MemReqMsg.TYPE_AMO_XOR
       else                             : s.dmemreq_msg_type.value = MemReqMsg.TYPE_READ
 
+      # set dmemreq len
+
+      s.dmemreq_msg_len.value = s.dmemreq_len_X
+
       # send xcelreq if not stalling
 
       s.xcelreq_val.value = s.val_X & ~s.stall_X & s.xcelreq_X
@@ -829,6 +865,7 @@ class ProcCtrlPRTL( Model ):
     s.rf_wen_pending_M = Wire( 1 )
     s.proc2mngr_val_M  = Wire( 1 )
     s.dmemreq_type_M   = Wire( 4 )
+    s.dmemreq_len_M    = Wire( 2 )
     s.stats_en_wen_M   = Wire( 1 )
 
     @s.posedge_clk
@@ -843,6 +880,8 @@ class ProcCtrlPRTL( Model ):
         s.rf_waddr_M.next       = s.rf_waddr_X
         s.proc2mngr_val_M.next  = s.proc2mngr_val_X
         s.dmemreq_type_M.next   = s.dmemreq_type_X
+        s.dmemreq_len_M.next    = s.dmemreq_len_X
+        s.dm_resp_sel_M.next    = s.dm_resp_sel_X
         s.wb_result_sel_M.next  = s.wb_result_sel_X
         s.stats_en_wen_M.next   = s.stats_en_wen_X
         # xcel
