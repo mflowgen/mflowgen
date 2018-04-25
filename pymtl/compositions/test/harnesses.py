@@ -27,10 +27,9 @@ from proc.tinyrv2_encoding        import assemble
 class SimHarness( Model ):
 
   def __init__( s, model, dump_vcd, test_verilog,
-                num_cores=1, mem_stall=False ):
+                num_cores=1, mem_stall=False, data_nbits=128 ):
 
     num_memports = 2   # 1 dmem, 1 imem
-    data_nbits   = 128 # 16B cacheline
 
     # Instantiate models
 
@@ -126,11 +125,10 @@ class TestHarness( Model ):
   # constructor
   #-----------------------------------------------------------------------
 
-  def __init__( s, model, dump_vcd, test_verilog, num_cores,
+  def __init__( s, model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
                 src_delay, sink_delay, mem_stall_prob, mem_latency ):
 
     num_memports = 2   # 1 dmem, 1 imem
-    data_nbits   = 128 # 16B cacheline
 
     s.num_cores = num_cores
 
@@ -141,7 +139,7 @@ class TestHarness( Model ):
     if test_verilog:
       s.model = TranslationTool( s.model )
 
-    s.mem    = TestMemory( MemMsg(8,32,data_nbits), num_memports,
+    s.mem    = TestMemory( MemMsg(8,32,cacheline_nbits), num_memports,
                            mem_stall_prob, mem_latency )
 
     # Composition <-> Memory
@@ -249,14 +247,14 @@ class TestHarness( Model ):
 # run_test
 #=========================================================================
 
-def run_test( model, gen_test, num_cores,
+def run_test( model, gen_test, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
               mem_stall_prob=0, mem_latency=0, max_cycles=20000 ):
 
   # Instantiate and elaborate the model
 
   model = TestHarness( model, dump_vcd, test_verilog, num_cores,
-                       src_delay, sink_delay, mem_stall_prob, mem_latency )
+                       src_delay, sink_delay, mem_stall_prob, mem_latency, cacheline_nbits )
 
   model.vcd_file = dump_vcd
   model.elaborate()

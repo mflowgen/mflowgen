@@ -10,7 +10,7 @@ import random
 from pymtl     import *
 from harnesses import asm_test
 
-from proc_cache.CompMcoreArbiterMduCache import CompMcoreArbiterMduCache
+from compositions.CompMcoreArbiterMduCache import CompMcoreArbiterMduCache
 
 # 4 core, with 2 memory ports, each with 16B data bitwidth
 

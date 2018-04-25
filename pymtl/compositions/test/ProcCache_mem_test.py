@@ -8,7 +8,7 @@ import random
 from pymtl     import *
 from harnesses import asm_test
 
-from proc_cache.ProcCache import ProcCache
+from compositions.ProcCache import ProcCache
 
 def run_test( test, dump_vcd, test_verilog,
               src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
