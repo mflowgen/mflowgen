@@ -15,6 +15,11 @@ class SramSpHde28nmFuncPRTL( Model ):
     # Module name
     s.explicit_modulename = instance_name
 
+    s.vblackbox      = True
+    s.vbb_modulename = instance_name
+    s.vbb_no_reset   = True
+    s.vbb_no_clk     = True
+
     # port names set to match the ARM memory compiler
 
     # clock (in PyMTL simulation it uses implict .clk port when
@@ -24,7 +29,7 @@ class SramSpHde28nmFuncPRTL( Model ):
     s.AY        = OutPort( AW )
     s.Q         = OutPort( BW )
     s.SO        = OutPort(  3 )
-    #s.CLK      = InPort (  1 )
+    s.CLK       = InPort (  1 )
     s.CEN       = InPort (  1 )
     s.WEN       = InPort ( BW )
     s.A         = InPort ( AW )

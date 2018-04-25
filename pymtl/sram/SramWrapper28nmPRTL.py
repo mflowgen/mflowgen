@@ -55,6 +55,9 @@ class SramWrapper28nmPRTL( Model ):
     # Connect
     s.connect_pairs (
 
+      # Special Ports
+      s    .clk       , s.mem.CLK       ,
+
       # Input
       s    .CENY      , s.mem.CENY      ,
       s    .WENY      , s.mem.WENY      ,
