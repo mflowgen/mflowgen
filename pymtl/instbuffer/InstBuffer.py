@@ -18,6 +18,8 @@ class InstBuffer( Model ):
 
   def __init__( s, num_entries, line_nbytes ):
 
+    s.explicit_modulename = "InstBuffer_{}_{}B".format( num_entries, line_nbytes)
+
     opaque_nbits = 8
     data_nbits   = 32
     addr_nbits   = 32
@@ -96,22 +98,13 @@ class InstBuffer( Model ):
 
     s.connect_auto( s.ctrl, s.dpath )
 
-    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
-
   def line_trace( s ):
-    print s.dpath.buffreq_addr_reg.out
-
-    #: return ""
-
-    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    # LAB TASK: Create line tracing
-    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
     state = s.ctrl.state_reg
 
     if   state == s.ctrl.STATE_IDLE:           state_str = "(I )"
     elif state == s.ctrl.STATE_TAG_CHECK:      state_str = "(TC)"
-    elif state == s.ctrl.STATE_READ_MISS:      state_str = "(RD)"
+    elif state == s.ctrl.STATE_MISS_ACCESS:    state_str = "(RD)"
     elif state == s.ctrl.STATE_REFILL_REQUEST: state_str = "(RR)"
     elif state == s.ctrl.STATE_REFILL_WAIT:    state_str = "(RW)"
     elif state == s.ctrl.STATE_REFILL_UPDATE:  state_str = "(RU)"
@@ -120,6 +113,3 @@ class InstBuffer( Model ):
     else :                                     state_str = "(? )"
 
     return state_str
-
-    #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
-

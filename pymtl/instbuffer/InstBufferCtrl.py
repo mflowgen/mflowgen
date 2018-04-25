@@ -42,7 +42,7 @@ class InstBufferCtrl( Model ):
 
     s.STATE_IDLE           = Bits( 3, 0 )
     s.STATE_TAG_CHECK      = Bits( 3, 1 )
-    s.STATE_READ_MISS      = Bits( 3, 2 )
+    s.STATE_MISS_ACCESS    = Bits( 3, 2 )
     s.STATE_WAIT_HIT       = Bits( 3, 3 )
     s.STATE_WAIT_MISS      = Bits( 3, 4 )
     s.STATE_REFILL_REQUEST = Bits( 3, 5 )
@@ -67,21 +67,14 @@ class InstBufferCtrl( Model ):
     s.in_go     = Wire( 1 )
     s.out_go    = Wire( 1 )
     s.hit_mask  = Wire( num_entries )
-    s.miss_mask = Wire( num_entries )
     s.hit       = Wire( 1 )
-    s.refill    = Wire( 1 )
 
     @s.combinational
     def comb_state_transition():
       s.in_go.value     = s.buffreq_val  & s.buffreq_rdy
       s.out_go.value    = s.buffresp_val & s.buffresp_rdy
       s.hit_mask.value  = s.is_valid_mask & s.tag_match_mask
-      s.miss_mask.value = ~s.hit_mask
       s.hit.value       = reduce_or( s.hit_mask )
-
-      # Hardcoded for 2 entries
-      s.refill.value    = (s.miss_mask[0] & ~s.lru_way) | \
-                          (s.miss_mask[1] &  s.lru_way)
 
     s.state_reg  = Wire( 3 )
     s.state_next = Wire( 3 )
@@ -95,14 +88,17 @@ class InstBufferCtrl( Model ):
 
       elif s.state_reg == s.STATE_TAG_CHECK:
         if s.hit:
-          if s.buffresp_rdy:
-            if    s.buffreq_val: s.state_next.value = s.STATE_TAG_CHECK
-            elif ~s.buffreq_val: s.state_next.value = s.STATE_IDLE
-          elif ~s.buffresp_rdy : s.state_next.value = s.STATE_WAIT_HIT
-        # Do I even need the refill signal??
-        elif ( s.refill )      : s.state_next.value = s.STATE_REFILL_REQUEST
+          # requester is not ready to accept a response, wait
+          if ~s.buffresp_rdy:  s.state_next.value = s.STATE_WAIT_HIT
+          # can send the response, and there is an upcoming request, stay in TC for b-2-b reqs
+          elif s.buffreq_val:  s.state_next.value = s.STATE_TAG_CHECK
+          # can send the response, but no upcoming request, return to idle
+          else:                s.state_next.value = s.STATE_IDLE
 
-      elif s.state_reg == s.STATE_READ_MISS:
+        else: # miss -- need to refill
+          s.state_next.value = s.STATE_REFILL_REQUEST
+
+      elif s.state_reg == s.STATE_MISS_ACCESS:
         s.state_next.value = s.STATE_WAIT_MISS
 
       elif s.state_reg == s.STATE_REFILL_REQUEST:
@@ -112,7 +108,7 @@ class InstBufferCtrl( Model ):
         if s.memresp_val: s.state_next.value = s.STATE_REFILL_UPDATE
 
       elif s.state_reg == s.STATE_REFILL_UPDATE:
-        s.state_next.value = s.STATE_READ_MISS
+        s.state_next.value = s.STATE_MISS_ACCESS
 
       elif s.state_reg == s.STATE_WAIT_HIT:
         if s.out_go: s.state_next.value = s.STATE_IDLE
@@ -134,9 +130,8 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_valid_bits():
-      # Hardcoded for 2 entries
-      s.valid_bits_wen_mask[0].value = s.valid_bits_wen & ~s.way_sel_current
-      s.valid_bits_wen_mask[1].value = s.valid_bits_wen &  s.way_sel_current
+      for i in xrange(num_entries):
+        s.valid_bits_wen_mask[i].value = s.valid_bits_wen & (s.way_sel_current == i)
 
     s.valid_bits = RegEnRst[num_entries]( dtype = 1, reset_value = 0 )
 
@@ -174,6 +169,7 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_way_select():
+      # Hardcoded for 2 entries
       if   s.hit_mask[0]:
         s.way_record_in.value = Bits( 1, 0 )
       elif s.hit_mask[1]:
@@ -201,8 +197,8 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_arrays_en():
-      s.arrays_wen_mask[0].value = s.arrays_wen & ~s.way_sel_current
-      s.arrays_wen_mask[1].value = s.arrays_wen &  s.way_sel_current
+      for i in xrange(num_entries):
+        s.arrays_wen_mask[i].value = s.arrays_wen & (s.way_sel_current == i)
 
     #----------------------------------------------------------------------
     # State Outputs
@@ -241,7 +237,7 @@ class InstBufferCtrl( Model ):
       s.cs.value                                    = concat( n,  n,   n,  n,   x,   x,   x,  n,  n,  n,   n,      n  )
       if   sr == s.STATE_IDLE:           s.cs.value = concat( y,  n,   n,  n,   y,   n,   x,  n,  n,  n,   n,      n  )
       elif sr == s.STATE_TAG_CHECK:      s.cs.value = concat( n,  n,   n,  n,   n,   n,   x,  n,  y,  y,   n,      n  )
-      elif sr == s.STATE_READ_MISS:      s.cs.value = concat( n,  n,   n,  n,   n,   n,   x,  n,  y,  n,   n,      n  )
+      elif sr == s.STATE_MISS_ACCESS:    s.cs.value = concat( n,  n,   n,  n,   n,   n,   x,  n,  y,  n,   n,      n  )
       elif sr == s.STATE_REFILL_REQUEST: s.cs.value = concat( n,  n,   y,  n,   n,   n,   x,  n,  n,  n,   n,      n  )
       elif sr == s.STATE_REFILL_WAIT:    s.cs.value = concat( n,  n,   n,  y,   n,   y,   x,  n,  n,  n,   n,      n  )
       elif sr == s.STATE_REFILL_UPDATE:  s.cs.value = concat( n,  n,   n,  n,   n,   n,   y,  y,  n,  n,   n,      y  )
@@ -266,7 +262,7 @@ class InstBufferCtrl( Model ):
 
       # set buffresp_val when there is a hit for one hit latency
 
-      if s.hit & s.state_reg == s.STATE_TAG_CHECK:
+      if s.hit & (s.state_reg == s.STATE_TAG_CHECK): # operator priority!!!
         s.buffresp_val.value = 1
         s.buffresp_hit.value = 1
 

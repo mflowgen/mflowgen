@@ -104,38 +104,11 @@ def resp( type_, opaque, test, len, data ):
   msg.data   = data
   return msg
 
-#----------------------------------------------------------------------
-# Test Case: read miss and hit path, many requests
-#----------------------------------------------------------------------
-# The test field in the response message: 0 == MISS, 1 == HIT
-# Capacity is 16 cache lines, so cause capacity misses by streaming 20
-
-def read_capacity( base_addr ):
-  array = []
-  #                    type  opq  addr          len data
-  for i in xrange(20):
-    array.append(req(  'rd', 0x1, base_addr+16*i, 0, 0 ))
-  #                    type  opq  test          len data
-    array.append(resp( 'rd', 0x1, 0,              0, i ))
-
-  return array
-
-# Data to be loaded into memory before running the test
-# 16 bytes in each cache line
-def read_capacity_mem( base_addr ):
-  mem = []
-  for i in xrange(20):
-    # addr
-    mem.append(16*i)
-    #data (in int)
-    mem.append(i)
-  return mem
-
 #-------------------------------------------------------------------------
-# Test Case: read miss path
+# Test Case: simple
 #-------------------------------------------------------------------------
 
-def read_miss_1word_msg( base_addr ):
+def simple_msgs( base_addr, num_entries, line_nbytes ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
     req( 'rd', 0x00, 0x00000000, 0, 0          ), resp('rd', 0x00, 0, 0, 0xdeadbeef ), # read word  0x00000000
@@ -144,37 +117,83 @@ def read_miss_1word_msg( base_addr ):
 
 # Data to be loaded into memory before running the test
 
-def read_miss_1word_mem( base_addr ):
+def simple_mem( base_addr, num_entries, line_nbytes ):
   return [
     # addr      data (in int)
     0x00000000, 0xdeadbeef,
     0x00000004, 0x00c0ffee,
   ]
 
+#----------------------------------------------------------------------
+# Test Case: read miss and hit path, many requests
+#----------------------------------------------------------------------
+# The test field in the response message: 0 == MISS, 1 == HIT
+# If I increment the address by half the line size, every other request
+# starting from the first one, will be miss, and the one after each is a
+# hit
+
+def stream_msgs( base_addr, num_entries, line_nbytes ):
+  array = []
+  #                    type  opq  addr          len data
+  for i in xrange(100):
+    array.append(req(  'rd', 0x1, base_addr+line_nbytes/2*i, 0, 0 ))
+  #                    type  opq  test          len data
+    array.append(resp( 'rd', 0x1, i%2,              0, i ))
+
+  return array
+
+def stream_mem( base_addr, num_entries, line_nbytes ):
+  mem = []
+  for i in xrange(100):
+    # addr
+    mem.append(line_nbytes/2*i)
+    #data (in int)
+    mem.append(i)
+  return mem
+
 #-------------------------------------------------------------------------
 # Test table for generic test
 #-------------------------------------------------------------------------
 
 test_case_table_generic = mk_test_case_table([
-  (                         "msg_func               mem_data_func         stall lat src sink"),
-  [ "read_capacity",         read_capacity,         read_capacity_mem,    0.0,  0,  0,  0    ],
-  [ "read_miss_1word",       read_miss_1word_msg,   read_miss_1word_mem,  0.0,  0,  0,  0    ],
+  (                  "msg_func        mem_data_func    stall lat src sink"),
+  [ "stream",         stream_msgs,    stream_mem,      0.0,  0,  0,  0    ],
+  [ "simple",         simple_msgs,    simple_mem,      0.0,  0,  0,  0    ],
+
+  [ "stream_lat",     stream_msgs,    stream_mem,      0.5,  4,  3,  14   ],
+  [ "simple_lat",     simple_msgs,    simple_mem,      0.5,  4,  3,  14   ],
 
 ])
 
 @pytest.mark.parametrize( **test_case_table_generic )
-def test_instbuffer( test_params, dump_vcd, test_verilog ):
-  msgs = test_params.msg_func( 0 )
+def test_instbuffer_2entries_16byte( test_params, dump_vcd, test_verilog ):
+  msgs = test_params.msg_func( 0, 2, 16 )
   if test_params.mem_data_func != None:
-    mem = test_params.mem_data_func( 0 )
+    mem = test_params.mem_data_func( 0, 2, 16 )
   # Instantiate testharness
   harness = TestHarness( msgs[::2], msgs[1::2],
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
-                         InstBuffer, 2, 32, False, dump_vcd, test_verilog )
+                         InstBuffer, 2, 16, True, dump_vcd, test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
   # Run the test
   run_sim( harness, dump_vcd )
 
+
+@pytest.mark.parametrize( **test_case_table_generic )
+def test_instbuffer_2entries_32byte( test_params, dump_vcd, test_verilog ):
+  msgs = test_params.msg_func( 0, 2, 32 )
+  if test_params.mem_data_func != None:
+    mem = test_params.mem_data_func( 0, 2, 32 )
+  # Instantiate testharness
+  harness = TestHarness( msgs[::2], msgs[1::2],
+                         test_params.stall, test_params.lat,
+                         test_params.src, test_params.sink,
+                         InstBuffer, 2, 32, True, dump_vcd, test_verilog )
+  # Load memory before the test
+  if test_params.mem_data_func != None:
+    harness.load( mem[::2], mem[1::2] )
+  # Run the test
+  run_sim( harness, dump_vcd )
