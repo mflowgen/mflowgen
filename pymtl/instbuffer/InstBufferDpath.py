@@ -38,7 +38,6 @@ class InstBufferDpath( Model ):
     # control signals (ctrl->dpath)
 
     s.buffreq_en      = InPort( 1 )
-    s.memresp_en      = InPort( 1 )
     s.arrays_wen_mask = InPort( num_entries )
     s.way_sel         = InPort( 1 )
     s.way_sel_current = InPort( 1 )
@@ -62,15 +61,6 @@ class InstBufferDpath( Model ):
       m.en,  s.buffreq_en,
       m.in_, s.buffreq_msg.opaque,
       m.out, s.buffresp_msg.opaque,
-    )
-
-    # Register the unpacked data from memresp_msg
-
-    s.memresp_data_reg = m = RegEnRst( dtype = line_nbits, reset_value = 0 )
-
-    s.connect_pairs(
-      m.en,  s.memresp_en,
-      m.in_, s.memresp_msg.data,
     )
 
     # Tag array/data arrary
