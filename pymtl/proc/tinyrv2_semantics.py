@@ -439,6 +439,13 @@ class TinyRV2Semantics (object):
     s.M[addr:addr+4] = max( read_data, s.R[inst.rs2] )
     s.PC += 4
 
+  # Fence
+
+  def execute_fence( s, inst ):
+    s.PC += 4
+
+  def execute_fencei( s, inst ):
+    s.PC += 4
   #-----------------------------------------------------------------------
   # CSR instructions
   #-----------------------------------------------------------------------
@@ -587,6 +594,9 @@ class TinyRV2Semantics (object):
     'amomax'  : execute_amomax,
     'amominu' : execute_amominu,
     'amomaxu' : execute_amomaxu,
+
+    'fence'   : execute_fence,
+    'fence.i' : execute_fencei,
 
     'csrr'    : execute_csrr,
     'csrw'    : execute_csrw,

@@ -139,6 +139,10 @@ tinyrv2_encoding_table = \
   [ "csrr    rd, csrnum",       0b00000000000011111111000001111111, 0b00000000000000000010000001110011 ], # I-type, csrrs
   [ "csrw    csrnum, rs1",      0b00000000000000000111111111111111, 0b00000000000000000001000001110011 ], # I-type, csrrw
 
+  # Fences
+  [ "fence   i_imm       ",     0b11110000000011111111111111111111, 0b00000000000000000000000000001111 ], #
+  [ "fence.i             ",     0b11111111111111111111111111111111, 0b00000000000000000001000000001111 ], #
+
   # Accelerator
   ['custom0  rd, rs1, rs2, funct7', 0b00000000000000000000000001111111, 0b00000000000000000000000000001011 ], # ...
 ]
@@ -174,8 +178,12 @@ tinyrv2_encoding_table = \
 # AMOs are R-type but split out the bottom two bits of funct7 for acquire
 # and release
 
-#  31    27  26   25  24   20 19   15 14    12 11          7 6      0
-# | funct5 | aq | rl | rs2   | rs1   | funct3 | rd          | opcode |  R-type, AMO
+#  31    27  26   25  24   20 19   15 14    12 11  7 6      0
+# | funct5 | aq | rl | rs2   | rs1   | funct3 | rd  | opcode |  R-type, AMO
+
+# Fences are I-type. Fence split out the bottom 11 bits for pred/succ
+#  31  28  27   26   25   24   23   22   21   20  19   15  14    12 11  7 6      0
+# |  0   | PI | PO | PR | PW | SI | SO | SR | SW |  rs1   | funct3 | rd  | opcode |  I-type, Fence
 
 # Note python slice [ a, b ) == above slice [ b-1, a ]
 
@@ -1005,6 +1013,9 @@ def decode_inst_name( inst ):
       elif inst[funct5] == 0b10100:     inst_name = "amomax"
       elif inst[funct5] == 0b11000:     inst_name = "amominu"
       elif inst[funct5] == 0b11100:     inst_name = "amomaxu"
+  elif inst[opcode] == 0b0001111:
+    if   inst[funct3] == 0b000:         inst_name = "fence"
+    elif inst[funct3] == 0b001:         inst_name = "fence.i"
 
   # custom
   elif inst[opcode]   == 0b0001011:     inst_name = "custom0"
