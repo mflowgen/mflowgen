@@ -1,0 +1,23 @@
+#=========================================================================
+# Modular C++ Build System Subproject Makefile Fragment
+#=========================================================================
+# Please read the documenation in 'mcppbs-uguide.txt' for more details
+# on how the Modular C++ Build System works.
+
+mtbmark_intdeps  = @mtbmark_intdeps@
+mtbmark_cppflags = @mtbmark_cppflags@
+mtbmark_ldflags  = @mtbmark_ldflags@
+mtbmark_libs     = @mtbmark_libs@
+
+mtbmark_hdrs = \
+
+mtbmark_srcs = \
+
+mtbmark_install_prog_srcs = \
+  mtbmark-vvadd.c \
+  mtbmark-bsearch.c \
+  mtbmark-mfilt.c \
+  mtbmark-cmult.c \
+  mtbmark-sort.c \
+  mtbmark-sort-v2.c \
+  mtbmark-sort-v3.c \

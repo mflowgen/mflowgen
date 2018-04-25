@@ -1,0 +1,31 @@
+#=========================================================================
+# Modular C++ Build System Subproject Makefile Fragment
+#=========================================================================
+# Please read the documenation in 'mcppbs-uguide.txt' for more details
+# on how the Modular C++ Build System works.
+
+proj_intdeps  = @proj_intdeps@
+proj_cppflags = @proj_cppflags@
+proj_ldflags  = @proj_ldflags@
+proj_libs     = @proj_libs@
+
+proj_hdrs = \
+
+proj_srcs = \
+
+proj_install_prog_srcs = \
+  proj-incr.c \
+  proj-incr-inline-asm.c \
+
+# Include assembly files and programs that depend on assembly files below
+
+ifeq ($(riscv_crosscompile),yes)
+
+proj_srcs += \
+  proj-incr-asm-impl.S
+
+proj_install_prog_srcs += \
+  proj-incr-asm.c \
+
+endif
+

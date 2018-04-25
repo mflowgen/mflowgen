@@ -1,0 +1,29 @@
+#=========================================================================
+# Modular C++ Build System Subproject Makefile Fragment
+#=========================================================================
+# Please read the documenation in 'mcppbs-uguide.txt' for more details
+# on how the Modular C++ Build System works.
+
+common_intdeps  = @common_intdeps@
+common_cppflags = @common_cppflags@
+common_ldflags  = @common_ldflags@
+common_libs     = @common_libs@
+
+common_hdrs = \
+  common.h \
+  common-wprint.h \
+  common-bthread.h \
+
+common_srcs = \
+  common-wprint.c \
+  common-bthread.c \
+
+common_install_prog_srcs = \
+  common-wprint-ex.c \
+
+ifeq ($(riscv_crosscompile),yes)
+
+common_srcs += \
+  crt0.S
+
+endif

@@ -1,0 +1,8 @@
+#=========================================================================
+# Modular C++ Build System Subproject Autoconf Fragment
+#=========================================================================
+# Please read the documenation in 'mcppbs-uguide.txt' for more details
+# on how the Modular C++ Build System works.
+
+MCPPBS_SUBPROJECT([ubmark],[common])
+
