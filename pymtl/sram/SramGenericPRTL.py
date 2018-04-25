@@ -52,4 +52,4 @@ class SramGenericPRTL( Model ):
 
 
   def line_trace( s ):
-    return "(addr={} din={} dout={})".format( s.addr, s.in_, s.out )
+    return '({} {} sram[{}] {} {})'.format( s.in_, '->' if s.cen and s.wen else '  ', s.addr, '->' if s.cen and (not s.wen) else '  ', s.out )
