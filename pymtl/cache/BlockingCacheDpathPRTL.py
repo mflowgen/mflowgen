@@ -277,6 +277,8 @@ class BlockingCacheDpathPRTL( Model ):
       else:
         s.cur_cachereq_idx.value  = s.cachereq_idx
 
+      # Shunning: This data_array_x_wen is built up in the same way as
+      #           tag_array_x_wen. Why is this guy here, but the tag one is in ctrl?
       s.data_array_0_wen.value =  (s.data_array_wen & (s.way_sel_current == 0))
       s.data_array_1_wen.value =  (s.data_array_wen & (s.way_sel_current == 1))
       s.sram_tag_0_en.value    =  (s.tag_array_0_wen | s.tag_array_0_ren)

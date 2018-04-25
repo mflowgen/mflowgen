@@ -138,7 +138,7 @@ class AluPRTL( Model ):
       elif s.fn == 13:                                   # ADDZ for clearing LSB
         s.tmp_b.value = s.in0 + s.in1
         s.out[0].value = 0
-        s.out.value[1:32] = s.tmp_b[1:32]
+        s.out[1:32].value = s.tmp_b[1:32]
         
 
       #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
