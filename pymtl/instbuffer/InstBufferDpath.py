@@ -1,12 +1,12 @@
 #=========================================================================
-# BlockingCacheDpathPRTL.py
+# InstBufferDpath.py
 #=========================================================================
 
 from pymtl      import *
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs import MemReqMsg
+from ifcs import MemReqMsg, MemRespMsg
 from ifcs import MemReqMsg4B, MemRespMsg4B
 
 from pclib.rtl        import Mux, RegEnRst
@@ -33,7 +33,7 @@ class InstBufferDpath( Model ):
     s.buffreq_msg     = InPort ( MemReqMsg4B   )
     s.buffresp_msg    = OutPort( MemRespMsg4B  )
     s.memreq_msg      = OutPort( MemReqMsg( opaque_nbits, data_nbits, line_nbits )  )
-    s.memresp_msg     = InPort ( MemRespMsg( opaque_nbits, line_nbits )
+    s.memresp_msg     = InPort ( MemRespMsg( opaque_nbits, line_nbits ) )
 
     # control signals (ctrl->dpath)
 
@@ -46,24 +46,22 @@ class InstBufferDpath( Model ):
 
     # status signals (dpath->ctrl)
 
-    s.buffreq_addr    = OutPort ( addr_nbits )
     s.tag_match_mask  = OutPort ( num_entries )
 
-    # Register the unpacked cachereq_msg
+    # Register the unpacked buffreq_msg
     # No need to store data/type because I$ requests are READ-ONLY
 
-    s.cachereq_addr_reg = m = RegEnRst( dtype = addr_nbits, reset_value = 0 )
+    s.buffreq_addr_reg = m = RegEnRst( dtype = addr_nbits, reset_value = 0 )
     s.connect_pairs(
-      m.en,  s.cachereq_en,
-      m.in_, s.cachereq_msg.addr,
-      m.out, s.cachereq_addr
+      m.en,  s.buffreq_en,
+      m.in_, s.buffreq_msg.addr,
     )
 
-    s.cachereq_opaque_reg = m = RegEnRst( dtype = opaque_nbits, reset_value = 0 )
+    s.buffreq_opaque_reg = m = RegEnRst( dtype = opaque_nbits, reset_value = 0 )
     s.connect_pairs(
-      m.en,  s.cachereq_en,
-      m.in_, s.cachereq_msg.opaque,
-      m.out, s.cacheresp_msg.opaque,
+      m.en,  s.buffreq_en,
+      m.in_, s.buffreq_msg.opaque,
+      m.out, s.buffresp_msg.opaque,
     )
 
     # Register the unpacked data from memresp_msg
@@ -81,19 +79,18 @@ class InstBufferDpath( Model ):
     # Also, we don't need those xxx_bar and sram_xxx signals -- no SRAM!
     # Each entry in the tag/data array stores the tag/data of each line
 
-    s.tag_array  = RegEnRst[num_entries]( dtype = addr_nbits, reset_value = 0 )
+    s.tag_array  = RegEnRst[num_entries]( dtype = tag_nbits, reset_value = 0 )
     s.data_array = RegEnRst[num_entries]( dtype = line_nbits, reset_value = 0 )
 
     for i in xrange(num_entries):
       s.connect_pairs(
-        s.tag_array[i].en,  s.tag_array_wen_mask[i],
+        s.tag_array[i].en,   s.arrays_wen_mask[i],
         # Get the tag of current request
-        s.tag_array[i].in_, s.cachereq_addr_reg.out[line_bw:addr_nbits],
+        s.tag_array[i].in_,  s.buffreq_addr_reg.out[line_bw:addr_nbits],
 
-        s.data_array[i].en,  s.data_array_wen, # only need to support full line write!
+        s.data_array[i].en,  s.arrays_wen_mask[i], # only need to support full line write!
         s.data_array[i].in_, s.memresp_msg.data,
       )
-    )
 
     # Eq comparator to check for tag matching (tag_compare_0)
 
@@ -101,9 +98,9 @@ class InstBufferDpath( Model ):
 
     for i in xrange(num_entries):
       s.connect_pairs(
-        s.tag_compare[i].in0, s.cachereq_tag,
+        s.tag_compare[i].in0, s.buffreq_addr_reg.out[line_bw:addr_nbits],
         s.tag_compare[i].in1, s.tag_array[i].out,
-        s.tag_compare[i].out, s.tag_match[i],
+        s.tag_compare[i].out, s.tag_match_mask[i],
       )
 
     # Data read mux
@@ -120,30 +117,30 @@ class InstBufferDpath( Model ):
       m.out, s.read_data,
     )
 
-    # Select word for cache response (always 4B aligned)
+    # Select word for buff response (always 4B aligned)
 
     s.read_word_sel_mux = m = Mux( dtype = data_nbits, nports = line_nwords )
 
     for i in xrange( line_nwords ):
       s.connect( m.in_[i], s.read_data[i*addr_nbits:(i+1)*addr_nbits] )
 
-    # Choose word to read from cacheline based on what the offset was
-    s.connect( m.sel, s.cachereq_addr[2:line_bw] )
+    # Choose word to read from buffline based on what the offset was
+    s.connect( m.sel, s.buffreq_addr_reg.out[2:line_bw] )
 
     # READ-ONLY for InstBuffer
 
     @s.combinational
-    def comb_cacheresp_msg_pack():
-      s.cacheresp_msg.type_.value = MemRespMsg.TYPE_READ
-      s.cacheresp_msg.test.value  = concat( Bits( 1, 0 ), s.cacheresp_hit )
-      s.cacheresp_msg.len.value   = Bits( 2, 0 )
-      s.cacheresp_msg.data.value  = s.read_word_sel_mux.out
+    def comb_buffresp_msg_pack():
+      s.buffresp_msg.type_.value = MemRespMsg.TYPE_READ
+      s.buffresp_msg.test.value  = concat( Bits( 1, 0 ), s.buffresp_hit )
+      s.buffresp_msg.len.value   = Bits( 2, 0 )
+      s.buffresp_msg.data.value  = s.read_word_sel_mux.out
 
     @s.combinational
     def comb_memreq_msg_pack():
       s.memreq_msg.type_.value  = MemReqMsg.TYPE_READ
       s.memreq_msg.opaque.value = Bits ( opaque_nbits, 0 )
       # No need to select/register the tag from tag array since there is no eviction!
-      s.memreq_msg.addr.value   = concat(s.cachereq_tag, Bits(4, 0))
+      s.memreq_msg.addr.value   = concat(s.buffreq_addr_reg.out[line_bw:addr_nbits], Bits(line_bw, 0))
       s.memreq_msg.len.value    = Bits ( 4, 0 )
 

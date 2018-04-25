@@ -7,8 +7,7 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs import MemReqMsg4B, MemRespMsg4B
-from ifcs import MemReqMsg16B, MemRespMsg16B
+from ifcs import MemReqMsg, MemRespMsg
 
 from pclib.rtl.queues import SingleElementBypassQueue
 
@@ -20,25 +19,27 @@ class InstBuffer( Model ):
   def __init__( s, num_entries, line_nbytes ):
 
     opaque_nbits = 8
+    data_nbits   = 32
+    addr_nbits   = 32
     line_nbits   = line_nbytes * 8
 
     # Proc <-> Buffer
 
-    s.buffreq  = InValRdyBundle ( MemReqMsg4B   )
-    s.buffresp = OutValRdyBundle( MemRespMsg4B  )
+    s.buffreq  = InValRdyBundle ( MemReqMsg(opaque_nbits, addr_nbits, data_nbits) )
+    s.buffresp = OutValRdyBundle( MemRespMsg(opaque_nbits, data_nbits)  )
 
     # Buffer <-> Mem
 
-    s.memreq    = OutValRdyBundle( MemReqMsg( opaque_nbits, data_nbits, line_nbits )  )
-    s.memresp   = InValRdyBundle ( MemRespMsg( opaque_nbits, line_nbits ) )
+    s.memreq    = OutValRdyBundle( MemReqMsg(opaque_nbits, data_nbits, line_nbits) )
+    s.memresp   = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
 
-    s.ctrl      = InstBufferCtrl ( num_entries, line_nbytes )
-    s.dpath     = InstBufferDpath( num_entries )
+    s.ctrl      = InstBufferCtrl ( num_entries )
+    s.dpath     = InstBufferDpath( num_entries, line_nbytes )
 
     # Bypass Queue to cut the ready path because we allow back-to-back
     # requests by letting cachereq_rdy = cacheresp_rdy 
 
-    s.resp_bypass = SingleElementBypassQueue( MemRespMsg4B )
+    s.resp_bypass = SingleElementBypassQueue( MemRespMsg(opaque_nbits, data_nbits) )
 
     # Control
 
@@ -98,6 +99,7 @@ class InstBuffer( Model ):
     #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 
   def line_trace( s ):
+    print s.dpath.buffreq_addr_reg.out
 
     #: return ""
 
@@ -107,15 +109,15 @@ class InstBuffer( Model ):
 
     state = s.ctrl.state_reg
 
-    if   state == s.ctrl.STATE_IDLE:                        state_str = "(I )"
-    elif state == s.ctrl.STATE_TAG_CHECK:                   state_str = "(TC)"
-    elif state == s.ctrl.STATE_READ_DATA_ACCESS_MISS:       state_str = "(RD)"
-    elif state == s.ctrl.STATE_REFILL_REQUEST:              state_str = "(RR)"
-    elif state == s.ctrl.STATE_REFILL_WAIT:                 state_str = "(RW)"
-    elif state == s.ctrl.STATE_REFILL_UPDATE:               state_str = "(RU)"
-    elif state == s.ctrl.STATE_WAIT_HIT:                    state_str = "(W )"
-    elif state == s.ctrl.STATE_WAIT_MISS:                   state_str = "(W )"
-    else :                                                  state_str = "(? )"
+    if   state == s.ctrl.STATE_IDLE:           state_str = "(I )"
+    elif state == s.ctrl.STATE_TAG_CHECK:      state_str = "(TC)"
+    elif state == s.ctrl.STATE_READ_MISS:      state_str = "(RD)"
+    elif state == s.ctrl.STATE_REFILL_REQUEST: state_str = "(RR)"
+    elif state == s.ctrl.STATE_REFILL_WAIT:    state_str = "(RW)"
+    elif state == s.ctrl.STATE_REFILL_UPDATE:  state_str = "(RU)"
+    elif state == s.ctrl.STATE_WAIT_HIT:       state_str = "(W )"
+    elif state == s.ctrl.STATE_WAIT_MISS:      state_str = "(W )"
+    else :                                     state_str = "(? )"
 
     return state_str
 

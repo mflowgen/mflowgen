@@ -1,14 +1,8 @@
 #=========================================================================
-# BlockingCacheCtrlPRTL.py
+# InstBufferCtrl.py
 #=========================================================================
 
 from pymtl      import *
-
-# BRGTC2 custom MemMsg modified for RISC-V 32
-
-from ifcs import MemReqMsg
-from ifcs import MemReqMsg4B, MemRespMsg4B
-from ifcs import MemReqMsg16B, MemRespMsg16B
 
 from pclib.rtl     import RegisterFile, RegEnRst
 
@@ -36,12 +30,11 @@ class InstBufferCtrl( Model ):
     s.arrays_wen_mask = OutPort( num_entries )
     s.way_sel         = OutPort( 1 )
     s.way_sel_current = OutPort( 1 )
-    s.cacheresp_hit   = OutPort( 1 )
+    s.buffresp_hit    = OutPort( 1 )
 
     # status signals (dpath->ctrl)
 
-    s.buffreq_addr       = InPort( addr_nbits )
-    s.tag_match          = InPort( num_entries )
+    s.tag_match_mask  = InPort( num_entries )
 
     #----------------------------------------------------------------------
     # State Definitions
@@ -80,11 +73,11 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_state_transition():
-      s.in_go.value     = s.cachereq_val  & s.cachereq_rdy
-      s.out_go.value    = s.cacheresp_val & s.cacheresp_rdy
+      s.in_go.value     = s.buffreq_val  & s.buffreq_rdy
+      s.out_go.value    = s.buffresp_val & s.buffresp_rdy
       s.hit_mask.value  = s.is_valid_mask & s.tag_match_mask
       s.miss_mask.value = ~s.hit_mask
-      s.hit.value       = reduce_or( hit_mask )
+      s.hit.value       = reduce_or( s.hit_mask )
 
       # Hardcoded for 2 entries
       s.refill.value    = (s.miss_mask[0] & ~s.lru_way) | \
@@ -160,8 +153,8 @@ class InstBufferCtrl( Model ):
     s.lru_way = Wire( 1 )
 
     @s.combinational
-    def comb_lru_bit_in():
-      s.lru_bit_in.value = ~s.way_sel_current 
+    def comb_lru_in():
+      s.lru_in.value = ~s.way_sel_current 
 
     s.lru = m = RegEnRst( dtype = 1, reset_value = 0 )
     s.connect_pairs(
@@ -181,9 +174,9 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_way_select():
-      if   s.hit[0]:
+      if   s.hit_mask[0]:
         s.way_record_in.value = Bits( 1, 0 )
-      elif s.hit[1]:
+      elif s.hit_mask[1]:
         s.way_record_in.value = Bits( 1, 1 )
       else:
         s.way_record_in.value = s.lru_way
@@ -204,6 +197,8 @@ class InstBufferCtrl( Model ):
     # data/tag array enables
     #---------------------------------------------------------------------
 
+    s.arrays_wen = Wire( 1 )
+
     @s.combinational
     def comb_arrays_en():
       s.arrays_wen_mask[0].value = s.arrays_wen & ~s.way_sel_current
@@ -219,17 +214,17 @@ class InstBufferCtrl( Model ):
 
     # Control signal bit slices
 
-    CS_cachereq_rdy   = slice( 11, 12 )
-    CS_cacheresp_val  = slice( 10, 11 )
+    CS_buffreq_rdy    = slice( 11, 12 )
+    CS_buffresp_val   = slice( 10, 11 )
     CS_memreq_val     = slice( 9,  10 )
     CS_memresp_rdy    = slice( 8,  9  )
-    CS_cachereq_en    = slice( 7,  8  )
+    CS_buffreq_en     = slice( 7,  8  )
     CS_memresp_en     = slice( 6,  7  )
     CS_valid_bit_in   = slice( 5,  6  )
     CS_valid_bits_wen = slice( 4,  5  )
     CS_lru_wen        = slice( 3,  4  )
     CS_way_record_en  = slice( 2,  3  )
-    CS_cacheresp_hit  = slice( 1,  2  )
+    CS_buffresp_hit   = slice( 1,  2  )
     # Control bits based on next state
     # No read_en anymore because we use registers
     CS_NS_arrays_wen  = slice( 0,  1  )
@@ -256,25 +251,25 @@ class InstBufferCtrl( Model ):
 
       # Unpack signals
 
-      s.cachereq_rdy.value   = s.cs[ CS_cachereq_rdy   ]
-      s.cacheresp_val.value  = s.cs[ CS_cacheresp_val  ]
+      s.buffreq_rdy.value    = s.cs[ CS_buffreq_rdy   ]
+      s.buffresp_val.value   = s.cs[ CS_buffresp_val  ]
       s.memreq_val.value     = s.cs[ CS_memreq_val     ]
       s.memresp_rdy.value    = s.cs[ CS_memresp_rdy    ]
-      s.cachereq_en.value    = s.cs[ CS_cachereq_en    ]
+      s.buffreq_en.value     = s.cs[ CS_buffreq_en    ]
       s.memresp_en.value     = s.cs[ CS_memresp_en     ]
       s.valid_bit_in.value   = s.cs[ CS_valid_bit_in   ]
       s.valid_bits_wen.value = s.cs[ CS_valid_bits_wen ]
-      s.lru_wen.value        = s.cs[ CS_lru_bits_wen   ]
+      s.lru_wen.value        = s.cs[ CS_lru_wen   ]
       s.way_record_en.value  = s.cs[ CS_way_record_en  ]
-      s.cacheresp_hit.value  = s.cs[ CS_cacheresp_hit  ]
+      s.buffresp_hit.value   = s.cs[ CS_buffresp_hit  ]
       s.arrays_wen.value     = s.cs[ CS_NS_arrays_wen  ]
 
-      # set cacheresp_val when there is a hit for one hit latency
+      # set buffresp_val when there is a hit for one hit latency
 
-      if s.hit && s.state_reg == s.STATE_TAG_CHECK:
-        s.cacheresp_val.value = 1
-        s.cacheresp_hit.value = 1
+      if s.hit & s.state_reg == s.STATE_TAG_CHECK:
+        s.buffresp_val.value = 1
+        s.buffresp_hit.value = 1
 
-        # if can send response, immediately take new cachereq
-        s.cachereq_rdy.value  = s.cacheresp_rdy
-        s.cachereq_en.value   = s.cacheresp_rdy
+        # if can send response, immediately take new buffreq
+        s.buffreq_rdy.value  = s.buffresp_rdy
+        s.buffreq_en.value   = s.buffresp_rdy
