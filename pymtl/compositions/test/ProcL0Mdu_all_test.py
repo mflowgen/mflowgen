@@ -121,9 +121,7 @@ class TestHarness( Model ):
     @s.combinational
     def comb_resp():
       s.model.dmemresp.msg.data.value = s.mem.resps[1].msg.data[0:32]
-      s.model.dmemresp.msg.len.value = s.mem.resps[1].msg.len
-      if s.mem.resps[1].msg.len == 4:
-        s.model.dmemresp.msg.len.value = 0
+      s.model.dmemresp.msg.len.value = s.mem.resps[1].msg.len & 3
 
     # Processor <-> Proc/Mngr
 

@@ -155,6 +155,7 @@ class TestMemory( Model ):
             # AMOs may do signed operations, so only use nbytes of data
 
             read_data = Bits( nbytes*8 )
+            req_data_ = req_data[0:nbytes*8]
 
             # Copy the bytes from the bytearray into read data bits
 
@@ -163,7 +164,7 @@ class TestMemory( Model ):
 
             # compute the data to be written
 
-            write_data = AMO_FUNS[ memreq.type_.uint() ]( read_data, req_data )
+            write_data = AMO_FUNS[ memreq.type_.uint() ]( read_data, req_data_ )
 
             # Copy write data bits into bytearray
 
