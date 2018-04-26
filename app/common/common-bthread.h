@@ -128,5 +128,95 @@ int bthread_spawn( int thread_id, void (*start_routine)(void*), void* arg );
 
 int bthread_join( int thread_id );
 
+
+#ifdef _RISCV
+// gem5 by default has a 32 byte cache line
+#define BTHREAD_CACHE_LINE_SIZE 32
+#else
+// xeons have a 64 byte cache line but prefetch 2 at a time
+#define BTHREAD_CACHE_LINE_SIZE 128
+#endif
+
+#define BTHREAD_ATTRIBUTE_ALIGN_CACHE_LINE \
+  __attribute__((aligned(BTHREAD_CACHE_LINE_SIZE)))
+
+template <typename T>
+struct CacheLineStorage {
+
+    BTHREAD_ATTRIBUTE_ALIGN_CACHE_LINE T data;
+    char pad[ BTHREAD_CACHE_LINE_SIZE % sizeof( T ) ?
+            ( BTHREAD_CACHE_LINE_SIZE - ( sizeof( T ) % BTHREAD_CACHE_LINE_SIZE ) ) : 0 ];
+
+    CacheLineStorage() : data()
+    {}
+
+    explicit CacheLineStorage( const T& val ) : data ( val )
+    {}
+
+};
+
+class bthread_Mutex {
+   public:
+
+    //--------------------------------------------------------------------
+    // Constructor/Destructors
+    //--------------------------------------------------------------------
+
+    bthread_Mutex();
+    ~bthread_Mutex();
+
+    //--------------------------------------------------------------------
+    // Locking Functions
+    //--------------------------------------------------------------------
+
+    // Block and only return once we have locked the mutex
+    void lock();
+
+    // Unlock the mutex
+    void unlock();
+
+    // Try to lock the mutex. Return true if sucessful, false otherwise.
+    bool trylock();
+
+    //--------------------------------------------------------------------
+    // Implementation Details
+    //--------------------------------------------------------------------
+
+   private:
+
+    volatile unsigned int m_lock;
+  };
+  //----------------------------------------------------------------------
+  // Mutex: Constructors/Destructors
+  //----------------------------------------------------------------------
+
+  inline bthread_Mutex::bthread_Mutex()
+  {
+    m_lock = 0;
+  }
+
+  inline bthread_Mutex::~bthread_Mutex()
+  { }
+
+  //----------------------------------------------------------------------
+  // Mutex: Locking Functions
+  //----------------------------------------------------------------------
+
+  inline void bthread_Mutex::lock()
+  {
+    while( trylock() )
+      ;
+  }
+
+  inline void bthread_Mutex::unlock()
+  {
+    m_lock = 0;
+  }
+
+  inline bool bthread_Mutex::trylock()
+  {
+    return __sync_fetch_and_or( &m_lock, 1 );
+  }
+
 #endif /* COMMON_BTHREAD_H */
 
