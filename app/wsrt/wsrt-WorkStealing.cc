@@ -16,6 +16,7 @@ namespace wsrt {
 
     (*task.m_func_ptr) ( task.m_args_ptr, task_vptr );
 
+    asm volatile("": : :"memory");
     assert(task.m_ref_count_ptr != NULL);
     //if ( task.m_ref_count_ptr != NULL ) {
       __sync_fetch_and_sub( task.m_ref_count_ptr, 1 );

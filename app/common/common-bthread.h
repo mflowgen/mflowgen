@@ -205,12 +205,14 @@ class bthread_Mutex {
   inline void bthread_Mutex::lock()
   {
     while( trylock() )
-      ;
+    {
+
+    }
   }
 
   inline void bthread_Mutex::unlock()
   {
-    m_lock = 0;
+    __sync_lock_release( &m_lock );
   }
 
   inline bool bthread_Mutex::trylock()

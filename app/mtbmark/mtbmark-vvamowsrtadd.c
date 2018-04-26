@@ -43,6 +43,25 @@ void vvadd_mt( void* arg_vptr, void* null_ptr )
   int  begin = arg_ptr->begin;
   int  end   = arg_ptr->end;
 
+  if(begin == 42) {
+    
+    arg_t arg13 = { dest, src0, src1,   93,           100 };
+    arg_t arg12 = { dest, src0, src1,   88,           93 };
+    wsrt::TaskGroup tg1;
+    wsrt::TaskDescriptor task14(&vvadd_mt, &arg13 );
+    wsrt::TaskDescriptor task13(&vvadd_mt, &arg12 );
+    tg1.run( task13 );
+    tg1.run_and_wait( task14 );
+  }
+  if (begin == 79 ) {
+    arg_t arg8 = { dest, src0, src1,   60,           72 };
+    arg_t arg9 = { dest, src0, src1,   72,           79 };
+    wsrt::TaskGroup tg2;
+    wsrt::TaskDescriptor task9(&vvadd_mt, &arg8 );
+    wsrt::TaskDescriptor task10(&vvadd_mt, &arg9 );
+    tg2.run( task9 );
+    tg2.run_and_wait( task10 );
+  }
   // Do the actual work.
 
   for ( int i = begin; i < end; i++ )
@@ -104,12 +123,8 @@ int main( int argc, char* argv[] )
   arg_t arg5 = { dest, src0, src1,   42,           51 };
   arg_t arg6 = { dest, src0, src1,   51,           58 };
   arg_t arg7 = { dest, src0, src1,   58,           60 };
-  arg_t arg8 = { dest, src0, src1,   60,           72 };
-  arg_t arg9 = { dest, src0, src1,   72,           79 };
   arg_t arg10 = { dest, src0, src1,   79,           84 };
   arg_t arg11 = { dest, src0, src1,   84,           88};
-  arg_t arg12 = { dest, src0, src1,   88,           93 };
-  arg_t arg13 = { dest, src0, src1,   93,           100 };
   wsrt::TaskGroup tg;
   wsrt::TaskDescriptor task1(&vvadd_mt, &arg0 );
   wsrt::TaskDescriptor task2(&vvadd_mt, &arg1 );
@@ -119,12 +134,8 @@ int main( int argc, char* argv[] )
   wsrt::TaskDescriptor task6(&vvadd_mt, &arg5 );
   wsrt::TaskDescriptor task7(&vvadd_mt, &arg6 );
   wsrt::TaskDescriptor task8(&vvadd_mt, &arg7 );
-  wsrt::TaskDescriptor task9(&vvadd_mt, &arg8 );
-  wsrt::TaskDescriptor task10(&vvadd_mt, &arg9 );
   wsrt::TaskDescriptor task11(&vvadd_mt, &arg10 );
   wsrt::TaskDescriptor task12(&vvadd_mt, &arg11 );
-  wsrt::TaskDescriptor task13(&vvadd_mt, &arg12 );
-  wsrt::TaskDescriptor task14(&vvadd_mt, &arg13 );
 
   wsrt::task_scheduler_init();
   test_stats_on();
@@ -136,12 +147,8 @@ int main( int argc, char* argv[] )
   tg.run( task6 );
   tg.run( task7 );
   tg.run( task8 );
-  tg.run( task9 );
-  tg.run( task10 );
   tg.run( task11 );
   tg.run( task12 );
-  tg.run( task13 );
-  tg.run( task14 );
   tg.wait();
 
   test_stats_off();

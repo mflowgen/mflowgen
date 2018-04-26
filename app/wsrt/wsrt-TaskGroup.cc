@@ -45,6 +45,7 @@ namespace wsrt {
 
     task.m_ref_count_ptr = &m_ref_count;
     __sync_fetch_and_add( &m_ref_count, 1 );
+    asm volatile("": : :"memory");
     execute_task( thread_id, task );
     wait();
   }

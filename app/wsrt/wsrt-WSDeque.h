@@ -40,8 +40,8 @@ namespace wsrt {
 
     struct DequeNode {
       ItemType    task_array[deque_node_size];
-      DequeNode*  next_ptr = NULL;
-      DequeNode*  prev_ptr = NULL;
+      //DequeNode*  next_ptr = NULL;
+      //DequeNode*  prev_ptr = NULL;
     };
 
     // Structures for the head and the tail, which contains a pointer to
@@ -89,9 +89,9 @@ namespace wsrt {
 
   private:
 
+    bthread_Mutex  m_mutex;
     DequeHead      m_head;
     DequeTail      m_tail;
-    bthread_Mutex  m_mutex;
     int            m_task_count;
     DequeNode      nodes[1];
     int            node_counter = 0;
