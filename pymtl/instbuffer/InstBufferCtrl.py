@@ -34,6 +34,7 @@ class InstBufferCtrl( Model ):
     # status signals (dpath->ctrl)
 
     s.tag_match_mask  = InPort( num_entries )
+    s.is_valid_mask   = InPort( num_entries )
 
     #----------------------------------------------------------------------
     # State Definitions
@@ -118,27 +119,6 @@ class InstBufferCtrl( Model ):
       else:
         s.state_next.value = s.STATE_IDLE
 
-    #----------------------------------------------------------------------
-    # Valid/Dirty bits record
-    #----------------------------------------------------------------------
-
-    s.valid_bit_in        = Wire( 1 )
-    s.valid_bits_wen      = Wire( 1 )
-    s.valid_bits_wen_mask = Wire( num_entries )
-    s.is_valid_mask       = Wire( num_entries )
-
-    @s.combinational
-    def comb_valid_bits():
-      for i in xrange(num_entries):
-        s.valid_bits_wen_mask[i].value = s.valid_bits_wen & (s.way_sel_current == i)
-
-    s.valid_bits = RegEnRst[num_entries]( dtype = 1, reset_value = 0 )
-
-    for i in xrange( num_entries ):
-      s.connect( s.valid_bits[i].en,  s.valid_bits_wen_mask[i] )
-      s.connect( s.valid_bits[i].in_, s.valid_bit_in )
-      s.connect( s.valid_bits[i].out, s.is_valid_mask[i] )
-
     #---------------------------------------------------------------------
     # LRU bit record
     #---------------------------------------------------------------------
@@ -148,6 +128,7 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_lru_in():
+      # Currently hardcoded for 2 entries
       s.lru_in.value = ~s.way_sel_current 
 
     s.lru = m = RegEnRst( dtype = 1, reset_value = 0 )
@@ -168,7 +149,7 @@ class InstBufferCtrl( Model ):
 
     @s.combinational
     def comb_way_select():
-      # Hardcoded for 2 entries
+      # Currently hardcoded for 2 entries
       if   s.hit_mask[0]:
         s.way_record_in.value = Bits( 1, 0 )
       elif s.hit_mask[1]:
@@ -195,7 +176,7 @@ class InstBufferCtrl( Model ):
     s.arrays_wen = Wire( 1 )
 
     @s.combinational
-    def comb_arrays_en():
+    def comb_arrays_wen():
       for i in xrange(num_entries):
         s.arrays_wen_mask[i].value = s.arrays_wen & (s.way_sel_current == i)
 
@@ -209,39 +190,35 @@ class InstBufferCtrl( Model ):
 
     # Control signal bit slices
 
-    CS_buffreq_rdy    = slice( 10, 11 )
-    CS_buffresp_val   = slice( 9,  10 )
-    CS_memreq_val     = slice( 8,  9  )
-    CS_memresp_rdy    = slice( 7,  8  )
-    CS_buffreq_en     = slice( 6,  7  )
-    CS_valid_bit_in   = slice( 5,  6  )
-    CS_valid_bits_wen = slice( 4,  5  )
-    CS_lru_wen        = slice( 3,  4  )
-    CS_way_record_en  = slice( 2,  3  )
-    CS_buffresp_hit   = slice( 1,  2  )
-    # Control bits based on next state
-    # No read_en anymore because we use registers
-    CS_NS_arrays_wen  = slice( 0,  1  )
+    CS_buffreq_rdy    = slice( 8, 9 )
+    CS_buffresp_val   = slice( 7, 8 )
+    CS_memreq_val     = slice( 6, 7 )
+    CS_memresp_rdy    = slice( 5, 6 )
+    CS_buffreq_en     = slice( 4, 5 )
+    CS_lru_wen        = slice( 3, 4 )
+    CS_way_record_en  = slice( 2, 3 )
+    CS_buffresp_hit   = slice( 1, 2 )
+    CS_arrays_wen     = slice( 0, 1 )
 
-    s.cs = Wire( 11 )
+    s.cs = Wire( 9 )
 
     @s.combinational
     def comb_control_table():
       sr = s.state_reg
 
-      #                                                       $   $    mem mem  $   val val lru way  $       arrays
-      #                                                       req resp req resp req bit wen wen rec  resp N  wen
-      #                                                       rdy val  val rdy  en  in          en   hit  S
-      s.cs.value                                    = concat( n,  n,   n,  n,   x,  x,  n,  n,  n,   n,      n  )
-      if   sr == s.STATE_IDLE:           s.cs.value = concat( y,  n,   n,  n,   y,  x,  n,  n,  n,   n,      n  )
-      elif sr == s.STATE_TAG_CHECK:      s.cs.value = concat( n,  n,   n,  n,   n,  x,  n,  y,  y,   n,      n  )
-      elif sr == s.STATE_MISS_ACCESS:    s.cs.value = concat( n,  n,   n,  n,   n,  x,  n,  y,  n,   n,      n  )
-      elif sr == s.STATE_REFILL_REQUEST: s.cs.value = concat( n,  n,   y,  n,   n,  x,  n,  n,  n,   n,      n  )
-      elif sr == s.STATE_REFILL_WAIT:    s.cs.value = concat( n,  n,   n,  y,   n,  x,  n,  n,  n,   n,      n  )
-      elif sr == s.STATE_REFILL_UPDATE:  s.cs.value = concat( n,  n,   n,  n,   n,  y,  y,  n,  n,   n,      y  )
-      elif sr == s.STATE_WAIT_HIT:       s.cs.value = concat( n,  y,   n,  n,   n,  x,  n,  n,  n,   y,      n  )
-      elif sr == s.STATE_WAIT_MISS:      s.cs.value = concat( n,  y,   n,  n,   n,  x,  n,  n,  n,   n,      n  )
-      else:                              s.cs.value = concat( n,  n,   n,  n,   n,  x,  n,  n,  n,   n,      n  )
+      #                                                       $   $    mem mem  $   lru way  $    arrays
+      #                                                       req resp req resp req wen rec  resp wen
+      #                                                       rdy val  val rdy  en      en   hit  
+      s.cs.value                                    = concat( n,  n,   n,  n,   x,  n,  n,   n,   n  )
+      if   sr == s.STATE_IDLE:           s.cs.value = concat( y,  n,   n,  n,   y,  n,  n,   n,   n  )
+      elif sr == s.STATE_TAG_CHECK:      s.cs.value = concat( n,  n,   n,  n,   n,  y,  y,   n,   n  )
+      elif sr == s.STATE_MISS_ACCESS:    s.cs.value = concat( n,  n,   n,  n,   n,  y,  n,   n,   n  )
+      elif sr == s.STATE_REFILL_REQUEST: s.cs.value = concat( n,  n,   y,  n,   n,  n,  n,   n,   n  )
+      elif sr == s.STATE_REFILL_WAIT:    s.cs.value = concat( n,  n,   n,  y,   n,  n,  n,   n,   n  )
+      elif sr == s.STATE_REFILL_UPDATE:  s.cs.value = concat( n,  n,   n,  n,   n,  n,  n,   n,   y  )
+      elif sr == s.STATE_WAIT_HIT:       s.cs.value = concat( n,  y,   n,  n,   n,  n,  n,   y,   n  )
+      elif sr == s.STATE_WAIT_MISS:      s.cs.value = concat( n,  y,   n,  n,   n,  n,  n,   n,   n  )
+      else:                              s.cs.value = concat( n,  n,   n,  n,   n,  n,  n,   n,   n  )
 
       # Unpack signals
 
@@ -250,12 +227,10 @@ class InstBufferCtrl( Model ):
       s.memreq_val.value     = s.cs[ CS_memreq_val     ]
       s.memresp_rdy.value    = s.cs[ CS_memresp_rdy    ]
       s.buffreq_en.value     = s.cs[ CS_buffreq_en     ]
-      s.valid_bit_in.value   = s.cs[ CS_valid_bit_in   ]
-      s.valid_bits_wen.value = s.cs[ CS_valid_bits_wen ]
       s.lru_wen.value        = s.cs[ CS_lru_wen        ]
       s.way_record_en.value  = s.cs[ CS_way_record_en  ]
       s.buffresp_hit.value   = s.cs[ CS_buffresp_hit   ]
-      s.arrays_wen.value     = s.cs[ CS_NS_arrays_wen  ]
+      s.arrays_wen.value     = s.cs[ CS_arrays_wen     ]
 
       # set buffresp_val when there is a hit for one hit latency
 

@@ -46,6 +46,7 @@ class InstBufferDpath( Model ):
     # status signals (dpath->ctrl)
 
     s.tag_match_mask  = OutPort ( num_entries )
+    s.is_valid_mask   = OutPort( num_entries )
 
     # Register the unpacked buffreq_msg
     # No need to store data/type because I$ requests are READ-ONLY
@@ -63,62 +64,63 @@ class InstBufferDpath( Model ):
       m.out, s.buffresp_msg.opaque,
     )
 
-    # Tag array/data arrary
+    # Tag array / data array / valid_bit array
     # Note that for the fully associative InstBuffer we don't need a huge
     # array -- instead we just need 2/4 registers to hold the tags
     # Also, we don't need those xxx_bar and sram_xxx signals -- no SRAM!
     # Each entry in the tag/data array stores the tag/data of each line
 
-    s.tag_array  = RegEnRst[num_entries]( dtype = tag_nbits, reset_value = 0 )
-    s.data_array = RegEnRst[num_entries]( dtype = line_nbits, reset_value = 0 )
+    s.valid_array = RegEnRst[num_entries]( dtype = 1, reset_value = 0 )
+    s.tag_array   = RegEnRst[num_entries]( dtype = tag_nbits, reset_value = 0 )
+    s.data_array  = RegEnRst[num_entries]( dtype = line_nbits, reset_value = 0 )
+
+    # Writing the arrays:
+    # - All enable signals come from the same array_wen_mask
+    # - valid array's input is always 1 as there is no coherence
+    # - tag array's input is the current request's tag in addr
+    # - data array's input is the memory response data
 
     for i in xrange(num_entries):
       s.connect_pairs(
-        s.tag_array[i].en,   s.arrays_wen_mask[i],
-        # Get the tag of current request
-        s.tag_array[i].in_,  s.buffreq_addr_reg.out[line_bw:addr_nbits],
+        s.valid_array[i].en,  s.arrays_wen_mask[i],
+        s.valid_array[i].in_, 1,
 
-        s.data_array[i].en,  s.arrays_wen_mask[i], # only need to support full line write!
-        s.data_array[i].in_, s.memresp_msg.data,
+        s.tag_array[i].en,    s.arrays_wen_mask[i],
+        s.tag_array[i].in_,   s.buffreq_addr_reg.out[line_bw:addr_nbits],
+
+        s.data_array[i].en,   s.arrays_wen_mask[i], # only need to support full line write!
+        s.data_array[i].in_,  s.memresp_msg.data,
       )
 
-    # Eq comparator to check for tag matching (tag_compare_0)
+    # Reading the arrays:
+    # - valid bits are read out, bundled, and send to ctrl
+    # - tags are read out for tag checking with request addr in EqComparator
+    # - data entries are read out and selected in the big mux based on ctrl signal
 
-    s.tag_compare = EqComparator[num_entries]( nbits = tag_nbits )
+    s.tag_compare   = EqComparator[num_entries]( nbits = tag_nbits )
+    s.data_read_mux = Mux( dtype = line_nbits, nports = num_entries )
+    s.connect( s.data_read_mux.sel, s.way_sel_current )
 
     for i in xrange(num_entries):
       s.connect_pairs(
+        s.valid_array[i].out,  s.is_valid_mask[i],
+
         s.tag_compare[i].in0, s.buffreq_addr_reg.out[line_bw:addr_nbits],
         s.tag_compare[i].in1, s.tag_array[i].out,
         s.tag_compare[i].out, s.tag_match_mask[i],
+
+        s.data_array[i].out,  s.data_read_mux.in_[i],
       )
 
-    # Data read mux
-
-    s.read_data = Wire( line_nbits )
-
-    s.data_read_mux = m = Mux( dtype = line_nbits, nports = num_entries )
-
-    for i in xrange( num_entries ):
-      s.connect( m.in_[i],  s.data_array[i].out )
-
-    s.connect_pairs(
-      m.sel, s.way_sel_current,
-      m.out, s.read_data,
-    )
-
-    # Select word for buff response (always 4B aligned)
+    # Select word for buff response (always 4B aligned) based on the offset
 
     s.read_word_sel_mux = m = Mux( dtype = data_nbits, nports = line_nwords )
-
-    for i in xrange( line_nwords ):
-      s.connect( m.in_[i], s.read_data[i*addr_nbits:(i+1)*addr_nbits] )
-
-    # Choose word to read from buffline based on what the offset was
     s.connect( m.sel, s.buffreq_addr_reg.out[2:line_bw] )
 
-    # READ-ONLY for InstBuffer
+    for i in xrange( line_nwords ):
+      s.connect( m.in_[i], s.data_read_mux.out[i*addr_nbits:(i+1)*addr_nbits] )
 
+    # InstBuffer is READ-ONLY
     @s.combinational
     def comb_buffresp_msg_pack():
       s.buffresp_msg.type_.value = MemRespMsg.TYPE_READ
