@@ -36,12 +36,12 @@ namespace wsrt {
   class WSDeque {
   public:
 
-    static const int deque_node_size = 3000;
+    static const int deque_node_size = 300;
 
     struct DequeNode {
       ItemType    task_array[deque_node_size];
-      DequeNode*  next_ptr;
-      DequeNode*  prev_ptr;
+      DequeNode*  next_ptr = NULL;
+      DequeNode*  prev_ptr = NULL;
     };
 
     // Structures for the head and the tail, which contains a pointer to
@@ -93,7 +93,7 @@ namespace wsrt {
     DequeTail      m_tail;
     bthread_Mutex  m_mutex;
     int            m_task_count;
-    DequeNode      nodes[20];
+    DequeNode      nodes[1];
     int            node_counter = 0;
 
   };

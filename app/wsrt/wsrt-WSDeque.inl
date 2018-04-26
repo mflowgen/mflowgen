@@ -99,10 +99,11 @@ namespace wsrt {
     // Decide whether or not need to move to the previous node.
     if ( old_tail.index > 0 ) {
       new_tail.index--;
-    } else if ( old_tail.node_ptr->prev_ptr != NULL ) {
-      new_tail.node_ptr = old_tail.node_ptr->prev_ptr;
-      new_tail.index    = deque_node_size - 1;
-    }
+    } 
+    //else if ( old_tail.node_ptr->prev_ptr != NULL ) {
+    //  new_tail.node_ptr = old_tail.node_ptr->prev_ptr;
+    //  new_tail.index    = deque_node_size - 1;
+    //}
 
     // Get the task content and update the tail
     task = new_tail.node_ptr->task_array[new_tail.index];
@@ -184,6 +185,7 @@ namespace wsrt {
     if ( m_head == current_head ) {
       if ( head_node_moved ) {
         //delete current_head.node_ptr;
+        node_counter--;
         new_head.node_ptr->prev_ptr = NULL;
       }
       m_head = new_head;

@@ -30,7 +30,7 @@ _start:
   addi  gp, gp, %pcrel_lo(1b)
 
   # Initialize stack pointer to 0xffffc
-  lui   sp, 256
+  lui   sp, 65536
   addi  sp, sp, -4
 
   # This piece of code allocate 0x4000 (16KB) stack memory for each core
@@ -40,7 +40,7 @@ _start:
   # core #3 uses 0xf40000-0xf0000 as stack
 
   addi  t0, zero, 0
-  lui   t0, 4
+  lui   t0, 4096
   csrr  t1, 0xF14
   mul   t2, t0, t1
   sub   sp, sp, t2
@@ -52,9 +52,11 @@ _start:
 1:
   # bthread_init need this ...
 
-  sw      zero,0(t0)
-  addi    t0, t0, 4
-  bltu    t0, t1, 1b
+  #sw      zero,0(t0)
+  #addi    t0, t0, 4
+  #bltu    t0, t1, 1b
+
+  # Lin: assume memory has already been 0'ed
 
   call    main
 1:
