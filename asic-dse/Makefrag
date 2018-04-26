@@ -33,7 +33,7 @@ design_flow = default
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-28nm-cln28hpc-brg
+adk      = tsmc-28nm-cln28hpc
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-mdu
+design_select = pymtl-procl0mdu
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -64,6 +64,27 @@ ifeq ($(design_select),pymtl-mdu)
   verilog_src  = rtl-handoff/IntMulDivUnit.v
 endif
 
+#-------------------------------------------------------------------------
+# PyMTL InstBuffer
+#-------------------------------------------------------------------------
+
+ifeq ($(design_select),pymtl-instbuffer-2-16B)
+  design_name  = InstBuffer_2_16B
+  clock_period = 1.0
+  verilog_src  = rtl-handoff/InstBuffer_2_16B.v
+endif
+
+ifeq ($(design_select),pymtl-instbuffer-2-32B)
+  design_name  = InstBuffer_2_32B
+  clock_period = 1.0
+  verilog_src  = rtl-handoff/InstBuffer_2_32B.v
+endif
+
+ifeq ($(design_select),pymtl-procl0mdu)
+  design_name  = ProcL0Mdu
+  clock_period = 0.5
+  verilog_src  = rtl-handoff/ProcL0Mdu.v
+endif
 #-------------------------------------------------------------------------
 # Synthesizable PLL
 #-------------------------------------------------------------------------
