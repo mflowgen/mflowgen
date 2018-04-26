@@ -518,5 +518,5 @@ module DW_fp_mult (a, b, rnd, z, status);
 
 endmodule
 
-// verilator lint_off WIDTH
+// verilator lint_on WIDTH
 
