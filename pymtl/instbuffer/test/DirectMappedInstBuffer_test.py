@@ -236,3 +236,19 @@ def test_instbuffer_4entries_32byte( test_params, dump_vcd, test_verilog ):
     harness.load( mem[::2], mem[1::2] )
   # Run the test
   run_sim( harness, dump_vcd )
+
+@pytest.mark.parametrize( **test_case_table_generic )
+def test_instbuffer_4entries_16byte( test_params, dump_vcd, test_verilog ):
+  msgs = test_params.msg_func( 0, 4, 16 )
+  if test_params.mem_data_func != None:
+    mem = test_params.mem_data_func( 0, 4, 16 )
+  # Instantiate testharness
+  harness = TestHarness( msgs[::2], msgs[1::2],
+                         test_params.stall, test_params.lat,
+                         test_params.src, test_params.sink,
+                         DirectMappedInstBuffer, 4, 16, True, dump_vcd, test_verilog )
+  # Load memory before the test
+  if test_params.mem_data_func != None:
+    harness.load( mem[::2], mem[1::2] )
+  # Run the test
+  run_sim( harness, dump_vcd )
