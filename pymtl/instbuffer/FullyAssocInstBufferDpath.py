@@ -1,5 +1,5 @@
 #=========================================================================
-# InstBufferDpath.py
+# FullyAssocInstBufferDpath.py
 #=========================================================================
 
 from pymtl      import *
@@ -14,7 +14,7 @@ from pclib.rtl.arith  import EqComparator
 
 # No index anymore since it's fully associative!
 
-class InstBufferDpath( Model ):
+class FullyAssocInstBufferDpath( Model ):
 
   def __init__( s, num_entries, line_nbytes ):
 

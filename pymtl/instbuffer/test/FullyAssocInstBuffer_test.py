@@ -1,5 +1,5 @@
 #=========================================================================
-# InstBuffer_test.py
+# FullyAssocInstBuffer_test.py
 #=========================================================================
 
 import pytest
@@ -20,7 +20,7 @@ from ifcs import MemMsg, MemReqMsg, MemRespMsg
 
 from cache.test.TestCacheSink   import TestCacheSink
 
-from instbuffer.InstBuffer import InstBuffer
+from instbuffer.FullyAssocInstBuffer import FullyAssocInstBuffer
 
 #-------------------------------------------------------------------------
 # TestHarness
@@ -151,17 +151,40 @@ def stream_mem( base_addr, num_entries, line_nbytes ):
     mem.append(i)
   return mem
 
+#----------------------------------------------------------------------
+# Test Case: read miss and hit path, many requests
+#----------------------------------------------------------------------
+
+def fully_assoc_msgs( base_addr, num_entries, line_nbytes ):
+  array = []
+  #                    type  opq  addr                     len data      type  opq  test len data
+  array.extend( [ req( 'rd', 0x0, base_addr,               0, 0 ), resp( 'rd', 0x0, 0,   0,  1 ) ] )
+  array.extend( [ req( 'rd', 0x0, base_addr+2*line_nbytes, 0, 0 ), resp( 'rd', 0x0, 0,   0,  2 ) ] )
+  array.extend( [ req( 'rd', 0x0, base_addr,               0, 0 ), resp( 'rd', 0x0, 1,   0,  1 ) ] )
+  array.extend( [ req( 'rd', 0x0, base_addr+2*line_nbytes, 0, 0 ), resp( 'rd', 0x0, 1,   0,  2 ) ] )
+
+  return array
+
+def fully_assoc_mem( base_addr, num_entries, line_nbytes ):
+  mem = [
+    base_addr,               1,
+    base_addr+2*line_nbytes, 2,
+  ]
+  return mem
+
 #-------------------------------------------------------------------------
 # Test table for generic test
 #-------------------------------------------------------------------------
 
 test_case_table_generic = mk_test_case_table([
-  (                  "msg_func        mem_data_func    stall lat src sink"),
-  [ "stream",         stream_msgs,    stream_mem,      0.0,  0,  0,  0    ],
-  [ "simple",         simple_msgs,    simple_mem,      0.0,  0,  0,  0    ],
+  (                   "msg_func          mem_data_func    stall lat src sink"),
+  [ "stream",          stream_msgs,      stream_mem,      0.0,  0,  0,  0    ],
+  [ "simple",          simple_msgs,      simple_mem,      0.0,  0,  0,  0    ],
+  [ "fully_assoc",     fully_assoc_msgs, fully_assoc_mem, 0.0,  0,  0,  0    ],
 
-  [ "stream_lat",     stream_msgs,    stream_mem,      0.5,  4,  3,  14   ],
-  [ "simple_lat",     simple_msgs,    simple_mem,      0.5,  4,  3,  14   ],
+  [ "stream_lat",      stream_msgs,      stream_mem,      0.5,  4,  3,  14   ],
+  [ "simple_lat",      simple_msgs,      simple_mem,      0.5,  4,  3,  14   ],
+  [ "fully_assoc_lat", fully_assoc_msgs, fully_assoc_mem, 0.5,  4,  3,  14   ],
 
 ])
 
@@ -174,13 +197,12 @@ def test_instbuffer_2entries_16byte( test_params, dump_vcd, test_verilog ):
   harness = TestHarness( msgs[::2], msgs[1::2],
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
-                         InstBuffer, 2, 16, True, dump_vcd, test_verilog )
+                         FullyAssocInstBuffer, 2, 16, True, dump_vcd, test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
   # Run the test
   run_sim( harness, dump_vcd )
-
 
 @pytest.mark.parametrize( **test_case_table_generic )
 def test_instbuffer_2entries_32byte( test_params, dump_vcd, test_verilog ):
@@ -191,7 +213,7 @@ def test_instbuffer_2entries_32byte( test_params, dump_vcd, test_verilog ):
   harness = TestHarness( msgs[::2], msgs[1::2],
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
-                         InstBuffer, 2, 32, True, dump_vcd, test_verilog )
+                         FullyAssocInstBuffer, 2, 32, True, dump_vcd, test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )

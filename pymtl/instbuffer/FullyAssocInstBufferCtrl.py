@@ -1,12 +1,12 @@
 #=========================================================================
-# InstBufferCtrl.py
+# FullyAssocInstBufferCtrl.py
 #=========================================================================
 
 from pymtl      import *
 
 from pclib.rtl     import RegisterFile, RegEnRst
 
-class InstBufferCtrl( Model ):
+class FullyAssocInstBufferCtrl( Model ):
 
   def __init__( s, num_entries ):
 

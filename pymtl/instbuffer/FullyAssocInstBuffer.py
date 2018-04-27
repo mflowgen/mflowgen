@@ -1,5 +1,5 @@
 #=========================================================================
-# InstBuffer.py
+# FullyAssocInstBuffer.py
 #=========================================================================
 
 from pymtl      import *
@@ -11,14 +11,14 @@ from ifcs import MemReqMsg, MemRespMsg
 
 from pclib.rtl.queues import SingleElementBypassQueue
 
-from InstBufferCtrl  import InstBufferCtrl
-from InstBufferDpath import InstBufferDpath
+from FullyAssocInstBufferCtrl  import FullyAssocInstBufferCtrl
+from FullyAssocInstBufferDpath import FullyAssocInstBufferDpath
 
-class InstBuffer( Model ):
+class FullyAssocInstBuffer( Model ):
 
   def __init__( s, num_entries, line_nbytes ):
 
-    s.explicit_modulename = "InstBuffer_{}_{}B".format( num_entries, line_nbytes)
+    s.explicit_modulename = "FullyAssocInstBuffer_{}_{}B".format( num_entries, line_nbytes)
 
     opaque_nbits = 8
     data_nbits   = 32
@@ -35,8 +35,8 @@ class InstBuffer( Model ):
     s.memreq    = OutValRdyBundle( MemReqMsg(opaque_nbits, data_nbits, line_nbits) )
     s.memresp   = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
 
-    s.ctrl      = InstBufferCtrl ( num_entries )
-    s.dpath     = InstBufferDpath( num_entries, line_nbytes )
+    s.ctrl      = FullyAssocInstBufferCtrl ( num_entries )
+    s.dpath     = FullyAssocInstBufferDpath( num_entries, line_nbytes )
 
     # Bypass Queue to cut the ready path because we allow back-to-back
     # requests by letting cachereq_rdy = cacheresp_rdy 
