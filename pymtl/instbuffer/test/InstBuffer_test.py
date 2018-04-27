@@ -20,7 +20,7 @@ from ifcs import MemMsg, MemReqMsg, MemRespMsg
 
 from cache.test.TestCacheSink   import TestCacheSink
 
-from instbuffer.DirectMappedInstBuffer import DirectMappedInstBuffer
+from instbuffer.InstBuffer import InstBuffer
 
 #-------------------------------------------------------------------------
 # TestHarness
@@ -29,7 +29,7 @@ from instbuffer.DirectMappedInstBuffer import DirectMappedInstBuffer
 class TestHarness( Model ):
 
   def __init__( s, src_msgs, sink_msgs, stall_prob, latency,
-                src_delay, sink_delay, model, num_entries, line_nbytes, check_test,
+                src_delay, sink_delay, model, num_entries, line_nbytes, host_off,
                 dump_vcd, test_verilog=False ):
 
     # Messge type
@@ -42,7 +42,7 @@ class TestHarness( Model ):
     s.src   = TestSource   ( buff_msgs.req,  src_msgs,  src_delay  )
     s.model = model        ( num_entries, line_nbytes )
     s.mem   = TestMemory   ( mem_msgs, 1, stall_prob, latency )
-    s.sink  = TestCacheSink( buff_msgs.resp, sink_msgs, sink_delay, check_test )
+    s.sink  = TestCacheSink( buff_msgs.resp, sink_msgs, sink_delay, not host_off )
 
     # Dump VCD
 
@@ -55,6 +55,8 @@ class TestHarness( Model ):
       s.model = TranslationTool( s.model )
 
     # Connect
+
+    s.connect( s.model.host_off, host_off )
 
     s.connect( s.src.out,      s.model.buffreq  )
     s.connect( s.sink.in_,     s.model.buffresp )
@@ -178,32 +180,12 @@ def fully_assoc_mem( base_addr, num_entries, line_nbytes ):
 #-------------------------------------------------------------------------
 
 test_case_table_generic = mk_test_case_table([
-  (                   "msg_func          mem_data_func    stall lat src sink"),
-  [ "stream",          stream_msgs,      stream_mem,      0.0,  0,  0,  0    ],
-  [ "simple",          simple_msgs,      simple_mem,      0.0,  0,  0,  0    ],
-  [ "fully_assoc",     fully_assoc_msgs, fully_assoc_mem, 0.0,  0,  0,  0    ],
-
-  [ "stream_lat",      stream_msgs,      stream_mem,      0.5,  4,  3,  14   ],
-  [ "simple_lat",      simple_msgs,      simple_mem,      0.5,  4,  3,  14   ],
-  [ "fully_assoc_lat", fully_assoc_msgs, fully_assoc_mem, 0.5,  4,  3,  14   ],
-
+  (                   "msg_func          mem_data_func    off stall lat src sink"),
+  [ "stream_on",       stream_msgs,      stream_mem,      0,  0.0,  0,  0,  0    ],
+  [ "stream_on_lat",   stream_msgs,      stream_mem,      0,  0.5,  4,  3,  14   ],
+  [ "stream_off_lat",  stream_msgs,      stream_mem,      1,  0.0,  0,  0,  0    ],
+  [ "stream_off_lat",  stream_msgs,      stream_mem,      1,  0.5,  4,  3,  14   ],
 ])
-
-@pytest.mark.parametrize( **test_case_table_generic )
-def test_instbuffer_2entries_16byte( test_params, dump_vcd, test_verilog ):
-  msgs = test_params.msg_func( 0, 2, 16 )
-  if test_params.mem_data_func != None:
-    mem = test_params.mem_data_func( 0, 2, 16 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         DirectMappedInstBuffer, 2, 16, True, dump_vcd, test_verilog )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
 
 @pytest.mark.parametrize( **test_case_table_generic )
 def test_instbuffer_2entries_32byte( test_params, dump_vcd, test_verilog ):
@@ -214,57 +196,10 @@ def test_instbuffer_2entries_32byte( test_params, dump_vcd, test_verilog ):
   harness = TestHarness( msgs[::2], msgs[1::2],
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
-                         DirectMappedInstBuffer, 2, 32, True, dump_vcd, test_verilog )
+                         InstBuffer, 2, 32, test_params.off, dump_vcd, test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
   # Run the test
   run_sim( harness, dump_vcd )
 
-@pytest.mark.parametrize( **test_case_table_generic )
-def test_instbuffer_4entries_16byte( test_params, dump_vcd, test_verilog ):
-  msgs = test_params.msg_func( 0, 4, 16 )
-  if test_params.mem_data_func != None:
-    mem = test_params.mem_data_func( 0, 4, 16 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         DirectMappedInstBuffer, 4, 16, True, dump_vcd, test_verilog )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
-
-@pytest.mark.parametrize( **test_case_table_generic )
-def test_instbuffer_4entries_32byte( test_params, dump_vcd, test_verilog ):
-  msgs = test_params.msg_func( 0, 4, 32 )
-  if test_params.mem_data_func != None:
-    mem = test_params.mem_data_func( 0, 4, 32 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         DirectMappedInstBuffer, 4, 32, True, dump_vcd, test_verilog )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
-
-@pytest.mark.parametrize( **test_case_table_generic )
-def test_instbuffer_8entries_16byte( test_params, dump_vcd, test_verilog ):
-  msgs = test_params.msg_func( 0, 8, 16 )
-  if test_params.mem_data_func != None:
-    mem = test_params.mem_data_func( 0, 8, 16 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         DirectMappedInstBuffer, 8, 16, True, dump_vcd, test_verilog )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
