@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-instbuffer-4-16B
+design_select = pymtl-fa-ibuffer-2-16B
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -68,28 +68,40 @@ endif
 # PyMTL InstBuffer
 #-------------------------------------------------------------------------
 
-ifeq ($(design_select),pymtl-instbuffer-2-16B)
+ifeq ($(design_select),pymtl-dm-ibuffer-2-16B)
   design_name  = DirectMappedInstBuffer_2_16B
   clock_period = 0.5
   verilog_src  = ../pymtl/build/DirectMappedInstBuffer_2_16B.v
 endif
 
-ifeq ($(design_select),pymtl-instbuffer-2-32B)
+ifeq ($(design_select),pymtl-dm-ibuffer-2-32B)
   design_name  = DirectMappedInstBuffer_2_32B
   clock_period = 0.5
   verilog_src  = ../pymtl/build/DirectMappedInstBuffer_2_32B.v
 endif
 
-ifeq ($(design_select),pymtl-instbuffer-4-16B)
+ifeq ($(design_select),pymtl-dm-ibuffer-4-16B)
   design_name  = DirectMappedInstBuffer_4_16B
   clock_period = 0.5
   verilog_src  = ../pymtl/build/DirectMappedInstBuffer_4_16B.v
 endif
 
-ifeq ($(design_select),pymtl-instbuffer-4-32B)
+ifeq ($(design_select),pymtl-dm-ibuffer-4-32B)
   design_name  = DirectMappedInstBuffer_4_32B
   clock_period = 0.5
   verilog_src  = ../pymtl/build/DirectMappedInstBuffer_4_32B.v
+endif
+
+ifeq ($(design_select),pymtl-fa-ibuffer-2-16B)
+  design_name  = FullyAssocInstBuffer_2_16B
+  clock_period = 0.5
+  verilog_src  = ../pymtl/build/FullyAssocInstBuffer_2_16B.v
+endif
+
+ifeq ($(design_select),pymtl-fa-ibuffer-2-32B)
+  design_name  = FullyAssocInstBuffer_2_32B
+  clock_period = 0.5
+  verilog_src  = ../pymtl/build/FullyAssocInstBuffer_2_32B.v
 endif
 
 ifeq ($(design_select),pymtl-procl0mdu)
