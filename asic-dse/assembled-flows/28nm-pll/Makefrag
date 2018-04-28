@@ -36,7 +36,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = ring_oscillator_top
+design_name  = pll
 clock_period = 1.0
 verilog_src  = rtl-handoff/pll.v
 

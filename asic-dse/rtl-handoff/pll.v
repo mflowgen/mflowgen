@@ -3457,7 +3457,7 @@ module pll_loop (
         in_param_N,
         in_param_alpha,
         in_param_sel_width_of_vdiv,
-	in_param_sel_width_of_rst,
+	in_param_sel_width_of_rst,                  // <-- not in celerity
 	in_param_sel_time_ctrl_clk_alpha_and_accum,
 	in_param_sel_time_ctrl_clk_dlc,
 	in_param_sel_time_ctrl_clk_dco_drift,
@@ -3507,22 +3507,22 @@ module pll_loop (
 	in_param_enable_n10,
 	in_param_enable_n11,
 	in_param_enable_n12,
-	in_param_enable_n13,
-	in_param_enable_n14,
-	in_param_enable_n15,
-	in_param_enable_n16,
+	in_param_enable_n13,            // <-- not in celerity
+	in_param_enable_n14,            // <-- not in celerity
+	in_param_enable_n15,            // <-- not in celerity
+	in_param_enable_n16,            // <-- not in celerity
 	in_param_sel_ring,
 	in_param_sel_divider_modulus,
         in_param_sel_re_time_version,
 	in_param_additional_freq_ctrl,
-	in_param_read_p_of_n,
-	in_param_read_iba_to_therm_enc,
-	in_param_read_iba_to_dsm,
-	in_param_read_y_of_n,
-	out_to_spi_p_of_n,
-	out_to_spi_iba_to_therm_encod,
-	out_to_spi_iba_to_dsm,
-	out_to_spi_y_of_n,
+	in_param_read_p_of_n,           // <-- not in celerity
+	in_param_read_iba_to_therm_enc, // <-- not in celerity
+	in_param_read_iba_to_dsm,       // <-- not in celerity
+	in_param_read_y_of_n,           // <-- not in celerity
+	out_to_spi_p_of_n,              // <-- not in celerity
+	out_to_spi_iba_to_therm_encod,  // <-- not in celerity
+	out_to_spi_iba_to_dsm,          // <-- not in celerity
+	out_to_spi_y_of_n,              // <-- not in celerity
         out_clk
         );
 
@@ -6254,9 +6254,9 @@ inv_logic inv_at_out_n2(
 endmodule
 
 module ring_oscillator_top (
-  clk,    // <-- ctorng
-  ct_in,  // <-- ctorng
-  ct_out, // <-- ctorng
+//  clk,    // <-- ctorng
+//  ct_in,  // <-- ctorng
+//  ct_out, // <-- ctorng
 	in_param_enable_n1,
 	in_param_enable_n2,
 	in_param_enable_n3,
@@ -6318,12 +6318,12 @@ output out_clk;
 // push this module (which has no clk) through CTS
 //------------------------------------------------------------------------
 
-input  wire clk;
-input  wire ct_in;
-output reg  ct_out;
-always @ (posedge clk) begin
-  ct_out <= ct_in;
-end
+//input  wire clk;
+//input  wire ct_in;
+//output reg  ct_out;
+//always @ (posedge clk) begin
+//  ct_out <= ct_in;
+//end
 
 //------------------------------------------------------------------------
 
