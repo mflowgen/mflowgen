@@ -176,12 +176,12 @@ set vars(pre_place_tcl)               $vars(plug_dir)/pre_place.tcl
 set vars(post_place_tcl)              $vars(plug_dir)/post_place.tcl
 #set vars(pre_prects_tcl)              $vars(plug_dir)/pre_prects.tcl
 #set vars(post_prects_tcl)             $vars(plug_dir)/post_prects.tcl
-#set vars(pre_cts_tcl)                 $vars(plug_dir)/pre_cts.tcl
+set vars(pre_cts_tcl)                 $vars(plug_dir)/pre_cts.tcl
 #set vars(post_cts_tcl)                $vars(plug_dir)/post_cts.tcl
 #set vars(pre_postcts_tcl)             $vars(plug_dir)/pre_postcts.tcl
 #set vars(post_postcts_tcl)            $vars(plug_dir)/post_postcts.tcl
-set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postcts_hold.tcl
-#set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postcts_hold.tcl
+set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postctshold.tcl
+#set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postctshold.tcl
 #set vars(pre_route_tcl)               $vars(plug_dir)/pre_route.tcl
 #set vars(post_route_tcl)              $vars(plug_dir)/post_route.tcl
 set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
@@ -281,7 +281,7 @@ set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
 # Multithreading and distributed processing
 # FIXME
 
-set vars(local_cpus) 8
+set vars(local_cpus) 16
 
 # Flow control
 # - Controls when hold optimization is enabled
