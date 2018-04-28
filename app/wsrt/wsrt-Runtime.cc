@@ -46,6 +46,8 @@ namespace wsrt {
     // tools, else the threads are busy executing the wait loop in bthreads
     // user thread-pool space
     //__asm__ __volatile__( "stop" );
+    int tid = bthread_get_core_id();
+    details::g_task_queues[tid].data.init_node();
     work_stealing_loop( &details::g_task_scheduler_running );
     //__asm__ __volatile__( "stop" );
     return;
@@ -61,6 +63,10 @@ namespace wsrt {
       details::g_task_scheduler_running = 1;
 
       int nthreads = bthread_get_num_cores();
+      details::g_task_queues[0].data = WSDeque< TaskDescriptor >();
+      details::g_task_queues[1].data = WSDeque< TaskDescriptor >();
+      details::g_task_queues[2].data = WSDeque< TaskDescriptor >();
+      details::g_task_queues[3].data = WSDeque< TaskDescriptor >();
 
       int ret = -1;
       for(int i=1;i<nthreads;i++) {
@@ -70,6 +76,7 @@ namespace wsrt {
         if( ret == -1 )
             return false;
       }
+      details::g_task_queues[0].data.init_node();
 
       details::g_thread_active[0].data = true;
 

@@ -3,16 +3,14 @@
 //========================================================================
 
 #include "common.h"
-
 namespace wsrt {
-
   template< typename ItemType >
   WSDeque< ItemType >::WSDeque()
   {
     DequeHead init_head;
     DequeTail init_tail;
 
-    init_head.node_ptr = &nodes[node_counter++];
+    init_head.node_ptr = NULL;
 
     //init_head.node_ptr->next_ptr = NULL;
     //init_head.node_ptr->prev_ptr = NULL;
@@ -26,12 +24,23 @@ namespace wsrt {
 
     m_head = init_head;
     m_tail = init_tail;
+    node_counter = 0;
   }
 
   template< typename ItemType >
   int WSDeque< ItemType >::get_ntasks()
   {
     return m_task_count;
+  }
+
+  template< typename ItemType >
+  void WSDeque< ItemType >::init_node()
+  {
+    if(m_head.node_ptr == NULL) {
+        m_head.node_ptr = &nodes;
+        m_tail.node_ptr = &nodes;
+    }
+    return;
   }
 
   template< typename ItemType >
@@ -59,6 +68,7 @@ namespace wsrt {
   template< typename ItemType >
   bool WSDeque< ItemType >::enqueue_tail( const ItemType& task )
   {
+    //__sync_fetch_and_add(&node_counter,((unsigned int)(m_head.node_ptr)));
     // Read current tail position
     DequeTail current_tail = m_tail;
     DequeTail new_tail = current_tail;
@@ -113,6 +123,7 @@ namespace wsrt {
     asm volatile("": : :"memory");
     // Get the task content and update the tail
     task = new_tail.node_ptr->task_array[new_tail.index];
+    //__sync_fetch_and_add(&node_counter,(unsigned int)(new_tail.node_ptr));
     m_tail = new_tail;
     // Read head info
     DequeHead current_head = m_head;
@@ -179,10 +190,10 @@ namespace wsrt {
     asm volatile("": : :"memory");
     // Read the task.
     task = current_head.node_ptr->task_array[current_head.index];
+    //__sync_fetch_and_add(&node_counter,((unsigned int)(current_head.node_ptr)));
 
     // Generate the new head after stealing.
     asm volatile("": : :"memory");
-    bool head_node_moved = false;
     if ( current_head.index < deque_node_size - 1 ) {
       new_head.index++;
     } else {

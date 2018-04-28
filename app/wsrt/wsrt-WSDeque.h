@@ -36,7 +36,7 @@ namespace wsrt {
   class WSDeque {
   public:
 
-    static const int deque_node_size = 300;
+    static const int deque_node_size = 32;
 
     struct DequeNode {
       ItemType    task_array[deque_node_size];
@@ -49,7 +49,7 @@ namespace wsrt {
     // queue contains a tag to prevent the ABA problem
 
     struct DequeHead {
-      DequeNode* node_ptr;
+      DequeNode *node_ptr;
       int        index;
       int        tag;
 
@@ -62,7 +62,7 @@ namespace wsrt {
     };
 
     struct DequeTail {
-      DequeNode* node_ptr;
+      DequeNode *node_ptr;
       int        index;
 
       bool operator==( const DequeTail& tail1 ) const
@@ -87,14 +87,16 @@ namespace wsrt {
 
     bool is_empty();
 
+    void init_node();
+
   private:
 
     bthread_Mutex  m_mutex;
     DequeHead      m_head;
     DequeTail      m_tail;
     int            m_task_count;
-    DequeNode      nodes[1];
-    int            node_counter = 0;
+    DequeNode      nodes;
+    int            node_counter;
 
   };
 
