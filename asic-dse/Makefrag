@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-fa-ibuffer-2-16B
+design_select = pymtl-procl0mdu
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -107,7 +107,7 @@ endif
 ifeq ($(design_select),pymtl-procl0mdu)
   design_name  = ProcL0Mdu
   clock_period = 0.5
-  verilog_src  = rtl-handoff/ProcL0Mdu.v
+  verilog_src  = ../pymtl/build/ProcL0Mdu.v
 endif
 #-------------------------------------------------------------------------
 # Synthesizable PLL

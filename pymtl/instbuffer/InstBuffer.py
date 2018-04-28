@@ -28,6 +28,8 @@ class InstBuffer( Model ):
     data_len     = addr_nbits / 8
     line_nbits   = line_nbytes * 8
 
+    zero_nbits   = line_nbits - addr_nbits
+
     # Host input bit
 
     s.host_off = InPort( 1 )
@@ -70,7 +72,7 @@ class InstBuffer( Model ):
         s.memreq.msg.opaque.value  = s.buffreq.msg.opaque
         s.memreq.msg.addr.value    = s.buffreq.msg.addr
         s.memreq.msg.len.value     = data_len
-        s.memreq.msg.data[0:data_nbits].value = s.buffreq.msg.data
+        s.memreq.msg.data.value    = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
 
         s.buffreq.rdy.value        = s.memreq.rdy
 
