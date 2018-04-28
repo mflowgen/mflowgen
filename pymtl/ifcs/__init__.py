@@ -4,3 +4,4 @@ from MemMsg       import MemMsg16B, MemReqMsg16B, MemRespMsg16B
 from ReqAckBundle import InReqAckBundle, OutReqAckBundle
 from MduMsg       import MduReqMsg, MduRespMsg
 from CtrlRegMsg   import CtrlRegReqMsg, CtrlRegRespMsg
+from BytesMemPortAdapter import BytesMemPortAdapter

@@ -13,6 +13,8 @@ from tinyrv2_encoding import TinyRV2Inst
 
 from XcelMsg import XcelReqMsg, XcelRespMsg
 
+from ifcs import MemReqMsg
+
 #-------------------------------------------------------------------------
 # Syntax Helpers
 #-------------------------------------------------------------------------
@@ -375,68 +377,57 @@ class TinyRV2Semantics (object):
   #-----------------------------------------------------------------------
 
   def execute_amoswap( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_SWAP,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amoadd( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data + s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_ADD,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amoxor( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data ^ s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_XOR,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amoor( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data | s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_OR,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amoand( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data & s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_AND,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amomin( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data if   read_data.int() < s.R[inst.rs2].int() \
-                                 else s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_MIN,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amominu( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = min( read_data, s.R[inst.rs2] )
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_MINU,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amomax( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = read_data if   read_data.int() > s.R[inst.rs2].int() \
-                                 else s.R[inst.rs2]
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_MAX,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   def execute_amomaxu( s, inst ):
-    addr = s.R[inst.rs1]
-    read_data = s.M[addr:addr+4]
-    s.R[inst.rd] = read_data
-    s.M[addr:addr+4] = max( read_data, s.R[inst.rs2] )
+    s.R[inst.rd] = s.M.execute_amo( amo_type = MemReqMsg.TYPE_AMO_MAXU,
+                                    addr     = s.R[inst.rs1],
+                                    newdata  = s.R[inst.rs2] )
     s.PC += 4
 
   # Fence

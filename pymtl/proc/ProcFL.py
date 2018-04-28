@@ -5,15 +5,15 @@
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 from pclib.fl   import InValRdyQueueAdapter, OutValRdyQueueAdapter
-from pclib.fl   import BytesMemPortAdapter
 
 from tinyrv2_encoding  import TinyRV2Inst
 from tinyrv2_semantics import TinyRV2Semantics
 
 from XcelMsg import XcelReqMsg, XcelRespMsg
 
-# BRGTC2 custom MemMsg modified for RISC-V 32
+# BRGTC2 custom MemMsg/BytesMemAdapter modified for RISC-V 32
 
+from ifcs import BytesMemPortAdapter
 from ifcs import MemReqMsg4B, MemRespMsg4B
 
 class ProcFL( Model ):

@@ -117,7 +117,7 @@ class TestHarness( Model ):
       # Instantiate processor and memory
 
       s.proc = ProcFL     ( trace_regs=trace_regs )
-      s.mem  = TestMemory ( MemMsg(8,32,32), 2 )
+      s.mem  = TestMemory ( MemMsg(8,32,32), 2, mem_nbytes=0x10000000 )
 
       # Processor <-> Proc/Mngr
 
@@ -141,7 +141,7 @@ class TestHarness( Model ):
       # Instantiate four processors and memory
 
       s.procs = [ ProcFL( trace_regs=trace_regs, num_cores=4 ) for i in range(4) ]
-      s.mem   = TestMemory ( MemMsg(8,32,32), 8 )
+      s.mem   = TestMemory ( MemMsg(8,32,32), 8, mem_nbytes=0x10000000 )
 
       # Processor 0 <-> Proc/Mngr
 
