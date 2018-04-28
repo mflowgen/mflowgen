@@ -9,7 +9,7 @@ from sram.SramSpHde28nmFuncPRTL import SramSpHde28nmFuncPRTL
 
 class SramWrapper28nmPRTL( Model ):
 
-  def __init__( s, num_bits = 32, num_words = 256, instance_name = '' ):
+  def __init__( s, num_bits = 32, num_words = 256, module_name = '' ):
 
     AW = clog2( num_words )      # address width
     nb = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
@@ -26,7 +26,7 @@ class SramWrapper28nmPRTL( Model ):
 
     # Instantiate ARM functional model
 
-    s.mem  = SramSpHde28nmFuncPRTL( num_bits, num_words, instance_name )
+    s.mem  = SramSpHde28nmFuncPRTL( num_bits, num_words, module_name )
 
     # Wires
     s.CENY      = Wire(  1 )

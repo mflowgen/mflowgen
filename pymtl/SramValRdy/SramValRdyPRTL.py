@@ -95,9 +95,9 @@ class SramValRdyPRTL( Model ):
 
     # SRAM
 
-    instance_name = '{}_{}_{}x{}_SP'.format( prefix, tech_node, num_bits, num_words )
+    module_name = '{}_{}_{}x{}_SP'.format( prefix, tech_node, num_bits, num_words )
 
-    s.sram = m = SramRTL( num_bits, num_words, tech_node, instance_name )
+    s.sram = m = SramRTL( num_bits, num_words, tech_node, module_name )
 
     s.connect_pairs(
       m.addr, s.sram_a_addr_M0,

@@ -19,7 +19,7 @@ class SramRTL( Model ):
 
   # Constructor
 
-  def __init__( s, num_bits = 32, num_words = 256, tech_node = 'generic', instance_name = '' ):
+  def __init__( s, num_bits = 32, num_words = 256, tech_node = 'generic', module_name = '' ):
 
     addr_width = clog2( num_words )      # address width
     nbytes     = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
@@ -57,7 +57,7 @@ class SramRTL( Model ):
     # Instantiate an SRAM
     #---------------------------------------------------------------------
 
-    s.sram = sram_class( num_bits, num_words, instance_name )
+    s.sram = sram_class( num_bits, num_words, module_name )
 
     #---------------------------------------------------------------------
     # Connect ports
