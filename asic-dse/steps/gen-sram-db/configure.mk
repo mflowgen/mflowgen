@@ -44,8 +44,6 @@ define commands.gen-sram-db
 	# Create Verilog SRAMs
 	mkdir -p $(handoff_dir.gen-sram-db)
 	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-db) make -f $(plugins_dir)/srams/Makefile db
-	# Prepare handoffs
-	touch $(handoff_dir.gen-sram-db)/example-output.txt
 endef
 
 #-------------------------------------------------------------------------
