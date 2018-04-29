@@ -100,12 +100,12 @@ class SramValRdyPRTL( Model ):
     s.sram = m = SramRTL( num_bits, num_words, tech_node, module_name )
 
     s.connect_pairs(
-      m.addr, s.sram_a_addr_M0,
-      m.wen,  s.sram_a_wen_M0,
-      m.mask, 0b11111111,
-      m.cen,  s.sram_a_en_M0,
-      m.in_,  s.sram_a_wdata_M0,
-      m.out,  s.sram_a_rdata_M1,
+      m.addr,  s.sram_a_addr_M0,
+      m.we,    s.sram_a_wen_M0,
+      m.wmask, 0b11111111,
+      m.ce,    s.sram_a_en_M0,
+      m.in_,   s.sram_a_wdata_M0,
+      m.out,   s.sram_a_rdata_M1,
     )
 
     # Pipeline registers

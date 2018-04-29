@@ -1,5 +1,5 @@
 #=========================================================================
-# Functional Model for Sram SP HDE 28nm
+# Functional Model for RF SP HDE 28nm
 #=========================================================================
 
 # OS and basics
@@ -9,7 +9,7 @@ import shutil
 #PyMTL import
 from pymtl import *
 
-class SramSpHde28nmFuncPRTL( Model ):
+class RfSpHde28nmFuncPRTL( Model ):
 
   def __init__( s, num_bits = 32, num_words = 256, module_name = '' ):
 
@@ -19,11 +19,11 @@ class SramSpHde28nmFuncPRTL( Model ):
 
     # SRAM Configuration
     sram_conf         = {}
-    sram_conf['type'] = 'sp'
+    sram_conf['type'] = 'rf_sp'
 
     # If module_name is empty, compose one
     if not module_name:
-      module_name = 'sram_{}_{}_{}'.format(sram_conf['type'],
+      module_name = 'sram_{}_{}x{}'.format(sram_conf['type'],
                                            num_bits         ,
                                            num_words        )
 
@@ -67,33 +67,19 @@ class SramSpHde28nmFuncPRTL( Model ):
     else:
       raise ValueError
 
-
     # port names set to match the ARM memory compiler
 
     # clock (in PyMTL simulation it uses implict .clk port when
     # translated to Verilog, actual clock ports should be CLK
-    s.ceny      = OutPort(  1 )
-    s.weny      = OutPort(  1 )
-    s.ay        = OutPort( AW )
     s.q         = OutPort( BW )
-    s.so        = OutPort(  3 )
     s.cen       = InPort (  1 )
     s.wen       = InPort ( BW )
     s.a         = InPort ( AW )
     s.d         = InPort ( BW )
     s.ema       = InPort (  3 )
     s.emaw      = InPort (  2 )
-    s.ten       = InPort (  1 )
-    s.tcen      = InPort (  1 )
-    s.twen      = InPort (  1 )
-    s.ta        = InPort ( AW )
-    s.td        = InPort ( BW )
     s.gwen      = InPort (  1 )
-    s.tgwen     = InPort (  1 )
     s.ret1n     = InPort (  1 )
-    s.si        = InPort (  2 )
-    s.se        = InPort (  1 )
-    s.dftrambyp = InPort (  1 )
 
     # memory array
 

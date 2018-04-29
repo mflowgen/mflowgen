@@ -16,12 +16,12 @@ class SramGenericPRTL( Model ):
 
     # BRG SRAM's golden interface
 
-    s.wen  = InPort ( 1 )          # write en
-    s.cen  = InPort ( 1 )          # whole SRAM en
-    s.addr = InPort ( addr_width ) # address
-    s.in_  = InPort ( num_bits )   # write data
-    s.out  = OutPort( num_bits )   # read data
-    s.mask = InPort ( nbytes )     # byte write en
+    s.we    = InPort ( 1 )          # write en
+    s.ce    = InPort ( 1 )          # whole SRAM en
+    s.addr  = InPort ( addr_width ) # address
+    s.in_   = InPort ( num_bits )   # write data
+    s.out   = OutPort( num_bits )   # read data
+    s.wmask = InPort ( nbytes )     # byte write en
 
     # memory array
 
@@ -33,7 +33,7 @@ class SramGenericPRTL( Model ):
 
     @s.posedge_clk
     def read_logic():
-      if s.cen and ( not s.wen ):
+      if s.ce and ( not s.we ):
         s.dout.next = s.ram[ s.addr ]
       else:
         s.dout.next = 0
@@ -43,7 +43,7 @@ class SramGenericPRTL( Model ):
     @s.posedge_clk
     def write_logic():
       for i in xrange( nbytes ):
-        if s.cen and s.wen and s.mask[i]:
+        if s.ce and s.we and s.wmask[i]:
           s.ram[s.addr][ i*8 : i*8+8 ].next = s.in_[ i*8 : i*8+8 ]
 
     @s.combinational
@@ -52,4 +52,4 @@ class SramGenericPRTL( Model ):
 
 
   def line_trace( s ):
-    return '({} {} sram[{}] {} {})'.format( s.in_, '->' if s.cen and s.wen else '  ', s.addr, '->' if s.cen and (not s.wen) else '  ', s.out )
+    return '({} {} sram[{}] {} {})'.format( s.in_, '->' if s.ce and s.we else '  ', s.addr, '->' if s.ce and (not s.we) else '  ', s.out )
