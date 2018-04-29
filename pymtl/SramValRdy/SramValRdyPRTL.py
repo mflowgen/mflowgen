@@ -152,9 +152,9 @@ class SramValRdyPRTL( Model ):
       m.deq.msg,        s.memresp.msg,
     )
 
-    # Input ready signal: input (memreq) is ready if the bypass queue is empty
+    # Input ready signal: input (memreq) port is ready when the memresp queue is ready
 
-    s.connect( s.memreq.rdy, s.memresp_queue.empty )
+    s.connect( s.memreq.rdy, s.memresp_queue_rdy )
 
   def line_trace( s ):
     return s.sram.line_trace()
