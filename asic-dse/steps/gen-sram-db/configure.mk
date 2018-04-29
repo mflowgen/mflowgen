@@ -6,7 +6,7 @@
 #-------------------------------------------------------------------------
 # Step Description
 #-------------------------------------------------------------------------
-# Generates DBs from the SRAM generator
+# Generates Verilog from the SRAM generator
 
 #-------------------------------------------------------------------------
 # ASCII art
@@ -16,7 +16,7 @@ define ascii.gen-sram-db
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                                                                               #'
-	@echo '# Generate SRAM db '
+	@echo '#                                Generate SRAM DB                               #'
 	@echo '#                                                                               #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
@@ -29,15 +29,22 @@ endef
 #abbr.gen-sram-db = ex
 
 #-------------------------------------------------------------------------
+# Stuff
+#-------------------------------------------------------------------------
+
+var.dir = ../../pymtl/build/srams
+
+#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
 define commands.gen-sram-db
-	echo "Hello world!"
-# Prepare handoffs
+	# Create Verilog SRAMs
 	mkdir -p $(handoff_dir.gen-sram-db)
+	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-db) make -f $(plugins_dir)/srams/Makefile db
+	# Prepare handoffs
 	touch $(handoff_dir.gen-sram-db)/example-output.txt
 endef
 
