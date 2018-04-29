@@ -53,3 +53,8 @@ class MduRespMsg( BitStructDefinition ):
 
   def __str__( s ):
     return "{}:{}".format( s.opaque, s.result )
+
+class MduMsg( object ):
+  def __init__( s, nbits, ntypes ):
+    s.req  = MduReqMsg ( nbits, ntypes )
+    s.resp = MduRespMsg( nbits )

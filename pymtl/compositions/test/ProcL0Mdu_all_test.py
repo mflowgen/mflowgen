@@ -90,6 +90,9 @@ class TestHarness( Model ):
     s.sink   = TestSink  [num_cores]( 32, [], sink_delay )
     s.model  = model
 
+    s.connect( s.model.L0_disable, 0 )
+    s.connect( s.model.host_en   , 0 )
+
     if test_verilog:
       s.model = TranslationTool( s.model )
 

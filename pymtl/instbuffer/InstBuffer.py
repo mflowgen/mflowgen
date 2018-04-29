@@ -32,7 +32,7 @@ class InstBuffer( Model ):
 
     # Host input bit
 
-    s.host_off = InPort( 1 )
+    s.L0_disable = InPort( 1 )
 
     # Proc side
 
@@ -49,7 +49,7 @@ class InstBuffer( Model ):
     @s.combinational
     def comb_proc_side():
 
-      if s.host_off: # host turns the l0 off, proc <-> mem
+      if s.L0_disable: # host turns the l0 off, proc <-> mem
 
         # Mute inner.buffreq
         s.inner.buffreq.val.value  = 0
@@ -110,6 +110,6 @@ class InstBuffer( Model ):
         s.memresp.rdy.value        = s.inner.memresp.rdy
 
   def line_trace( s ):
-    if s.host_off:  return "(--)"
+    if s.L0_disable:  return "(--)"
     return s.inner.line_trace()
 

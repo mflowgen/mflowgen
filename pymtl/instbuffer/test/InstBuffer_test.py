@@ -29,7 +29,7 @@ from instbuffer.InstBuffer import InstBuffer
 class TestHarness( Model ):
 
   def __init__( s, src_msgs, sink_msgs, stall_prob, latency,
-                src_delay, sink_delay, model, num_entries, line_nbytes, host_off,
+                src_delay, sink_delay, model, num_entries, line_nbytes, L0_disable,
                 dump_vcd, test_verilog=False ):
 
     # Messge type
@@ -42,7 +42,7 @@ class TestHarness( Model ):
     s.src   = TestSource   ( buff_msgs.req,  src_msgs,  src_delay  )
     s.model = model        ( num_entries, line_nbytes )
     s.mem   = TestMemory   ( mem_msgs, 1, stall_prob, latency )
-    s.sink  = TestCacheSink( buff_msgs.resp, sink_msgs, sink_delay, not host_off )
+    s.sink  = TestCacheSink( buff_msgs.resp, sink_msgs, sink_delay, not L0_disable )
 
     # Dump VCD
 
@@ -56,7 +56,7 @@ class TestHarness( Model ):
 
     # Connect
 
-    s.connect( s.model.host_off, host_off )
+    s.connect( s.model.L0_disable, L0_disable )
 
     s.connect( s.src.out,      s.model.buffreq  )
     s.connect( s.sink.in_,     s.model.buffresp )
