@@ -51,6 +51,7 @@ export dc_plugins_dir  = $(plugins_dir.dc-synthesis)
 export dc_logs_dir     = $(logs_dir.dc-synthesis)
 export dc_reports_dir  = $(reports_dir.dc-synthesis)
 export dc_results_dir  = $(results_dir.dc-synthesis)
+export dc_collect_dir  = $(collect_dir.dc-synthesis)
 
 # Verilog source (do not include test harness!)
 
