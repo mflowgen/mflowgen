@@ -82,6 +82,10 @@ class TestHarness( Model ):
   def __init__( s, model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
                 src_delay, sink_delay, mem_stall_prob, mem_latency ):
 
+    s.src_delay  = src_delay
+    s.sink_delay = sink_delay
+    s.mem_delay  = mem_latency
+
     num_memports = 2   # 1 dmem, 1 imem
 
     s.num_cores = num_cores
@@ -91,7 +95,7 @@ class TestHarness( Model ):
     s.model  = model
 
     s.connect( s.model.L0_disable, 0 )
-    s.connect( s.model.host_en   , 0 )
+    s.connect( s.model.mdu_host_en, 0 )
 
     if test_verilog:
       s.model = TranslationTool( s.model )
@@ -148,49 +152,60 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def load( self, mem_image ):
+    with open("proc_testcase_init.v", "w") as f:
 
-    # Iterate over the sections
+      f.write( "th_src_max_delay  = {};\n".format( self.src_delay ) )
+      f.write( "th_sink_max_delay = {};\n".format( self.sink_delay ) )
+      f.write( "th_mem_max_delay  = {};\n".format( self.mem_delay ) )
 
-    sections = mem_image.get_sections()
-    for section in sections:
+      # Iterate over the sections
 
-      # For .mngr2proc sections, copy section into mngr2proc src
+      sections = mem_image.get_sections()
+      for section in sections:
 
-      if section.name == ".mngr2proc":
-        for i in xrange(0,len(section.data),4):
-          bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
-          for i in xrange(self.num_cores):
-            self.src[i].src.msgs.append( Bits(32,bits) )
+        # For .mngr2proc sections, copy section into mngr2proc src
 
-      elif section.name.endswith("_2proc"):
-        idx = int( section.name[5:-6], 0 )
+        if section.name == ".mngr2proc":
+          for i in xrange(0,len(section.data),4):
+            bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
+            for j in xrange(self.num_cores):
+              self.src[j].src.msgs.append( Bits(32,bits) )
+              f.write( "load_src%d( 32'h%s );\n" % (j, Bits(32,bits)) );
 
-        for i in xrange(0,len(section.data),4):
-          bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
-          self.src[idx].src.msgs.append( Bits(32,bits) )
+        elif section.name.endswith("_2proc"):
+          idx = int( section.name[5:-6], 0 )
 
-      # For .proc2mngr sections, copy section into proc2mngr_ref src
+          for i in xrange(0,len(section.data),4):
+            bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
+            self.src[idx].src.msgs.append( Bits(32,bits) )
+            f.write( "load_src%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
 
-      elif section.name == ".proc2mngr":
-        for i in xrange(0,len(section.data),4):
-          bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
+        # For .proc2mngr sections, copy section into proc2mngr_ref src
 
-          for i in xrange(self.num_cores):
-            self.sink[i].sink.msgs.append( Bits(32,bits) )
+        elif section.name == ".proc2mngr":
+          for i in xrange(0,len(section.data),4):
+            bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
 
-      elif section.name.endswith("_2mngr"):
-        idx = int( section.name[5:-6], 0 )
+            for j in xrange(self.num_cores):
+              self.sink[j].sink.msgs.append( Bits(32,bits) )
+              f.write( "load_sink%d( 32'h%s );\n" % (j, Bits(32,bits)) );
 
-        for i in xrange(0,len(section.data),4):
-          bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
-          self.sink[idx].sink.msgs.append( Bits(32,bits) )
+        elif section.name.endswith("_2mngr"):
+          idx = int( section.name[5:-6], 0 )
 
-      # For all other sections, simply copy them into the memory
+          for i in xrange(0,len(section.data),4):
+            bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
+            self.sink[idx].sink.msgs.append( Bits(32,bits) )
+            f.write( "load_sink%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
 
-      else:
-        start_addr = section.addr
-        stop_addr  = section.addr + len(section.data)
-        self.mem.mem[start_addr:stop_addr] = section.data
+        # For all other sections, simply copy them into the memory
+
+        else:
+          start_addr = section.addr
+          stop_addr  = section.addr + len(section.data)
+          self.mem.mem[start_addr:stop_addr] = section.data
+          for j in xrange(start_addr, stop_addr):
+            f.write( "load_mem( %d, 8'h%s );\n" % (j, self.mem.mem[j]) );
 
   #-----------------------------------------------------------------------
   # cleanup

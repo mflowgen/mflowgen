@@ -19,16 +19,16 @@ class HostAdapter( Model ):
     req_type   = req.msg.dtype()
     resp_type  = resp.msg.dtype()
 
-    s.explicit_modulename = "Adapter_{}_{}".format( str(type(req_type).__name__),
-                                                    str(type(resp_type).__name__) )
+    s.explicit_modulename = "HostAdapter_{}_{}".format( str(type(req_type).__name__),
+                                                        str(type(resp_type).__name__) )
 
     s.hostreq  = InValRdyBundle( req_type )
     s.realreq  = InValRdyBundle( req_type )
-    s.req      = InValRdyBundle( req_type )
+    s.req      = OutValRdyBundle( req_type )
 
     s.hostresp = OutValRdyBundle( resp_type )
     s.realresp = OutValRdyBundle( resp_type )
-    s.resp     = OutValRdyBundle( resp_type )
+    s.resp     = InValRdyBundle( resp_type )
 
     # Chris Torng think it's weird to connect these inside
     # s.connect( s.req,  req )

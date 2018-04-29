@@ -33,8 +33,8 @@ class ProcL0Mdu( Model ):
     # Interface
     #---------------------------------------------------------------------
 
-    s.L0_disable = InPort( 1 )
-    s.host_en    = InPort( 1 )
+    s.L0_disable  = InPort( 1 )
+    s.mdu_host_en = InPort( 1 )
 
     s.imemifc = MemMsg( opaque_nbits, addr_nbits, cacheline_nbits )
     s.dmemifc = MemMsg( opaque_nbits, addr_nbits, data_nbits )
@@ -50,7 +50,7 @@ class ProcL0Mdu( Model ):
     s.dmemresp = InValRdyBundle ( s.dmemifc.resp )
 
     s.host_mdureq  = InValRdyBundle( s.mduifc.req )
-    s.host_mduresp = InValRdyBundle( s.mduifc.resp )
+    s.host_mduresp = OutValRdyBundle( s.mduifc.resp )
 
     # These ports are for statistics. Basically we want to provide the
     # simulator with some useful signals to let the simulator calculate
@@ -76,7 +76,7 @@ class ProcL0Mdu( Model ):
     # Shunning: these signals should really come from host
 
     s.connect( s.l0i.L0_disable, s.L0_disable )
-    s.connect( s.mdu_adapter.host_en, s.host_en )
+    s.connect( s.mdu_adapter.host_en, s.mdu_host_en )
 
     # core id & mngr
 
