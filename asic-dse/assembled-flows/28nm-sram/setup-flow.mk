@@ -9,6 +9,7 @@
 
 steps = \
   gen-sram-verilog \
+  gen-sram-lef \
   gen-sram-db \
   prep-rtl-hard \
   sim-rtl-hard \
@@ -26,11 +27,12 @@ steps = \
 
 dependencies.gen-sram-verilog    = seed
 dependencies.gen-sram-db         = seed
+dependencies.gen-sram-lef        = seed
 dependencies.prep-rtl-hard       = gen-sram-verilog
 dependencies.sim-rtl-hard        = prep-rtl-hard
 
 dependencies.dc-synthesis        = gen-sram-db
-dependencies.innovus-flowsetup   = dc-synthesis
+dependencies.innovus-flowsetup   = dc-synthesis gen-sram-lef gen-sram-db
 dependencies.innovus-init        = innovus-flowsetup
 dependencies.innovus-place       = innovus-flowsetup innovus-init
 dependencies.innovus-cts         = innovus-flowsetup innovus-place

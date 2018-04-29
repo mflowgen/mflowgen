@@ -42,10 +42,13 @@
 
 from pymtl             import *
 from pclib.ifcs        import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs        import MemReqMsg, MemRespMsg
 from pclib.rtl         import RegRst
 from pclib.rtl         import SingleElementBypassQueue, TwoElementBypassQueue
 from sram              import SramRTL
+
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs              import MemReqMsg, MemRespMsg
 
 class SramValRdyPRTL( Model ):
 

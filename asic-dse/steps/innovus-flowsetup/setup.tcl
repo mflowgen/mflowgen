@@ -79,13 +79,19 @@ source $adk_dir/stdcells.tcl
 set vars(library_sets)        libs_typical
 #set vars(libs_typical,si)     libs/stdcells.cdb
 
-set vars(libs_typical,timing) [join "$adk_dir/stdcells.lib
-                                     $adk_dir/iocells.lib"]
+set vars(libs_typical,timing) [join "
+                                $adk_dir/stdcells.lib
+                                $adk_dir/iocells.lib
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                              "]
 
-set vars(lef_files) [join "$adk_dir/rtk-tech.lef
-                           $adk_dir/iocells.lef
-                           $adk_dir/iocells-bondpads.lef
-                           $adk_dir/stdcells.lef" ]
+set vars(lef_files) [join "
+                      $adk_dir/rtk-tech.lef
+                      $adk_dir/iocells.lef
+                      $adk_dir/iocells-bondpads.lef
+                      $adk_dir/stdcells.lef
+                      [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lef]
+                    " ]
 
 # Difference between library_sets, rc_corners, and delay_corners?
 #
