@@ -56,10 +56,10 @@ $(OUTPUT_DIR):
 $(OUTPUT_DIR)/%.db: $(OUTPUT_DIR)/%.lib
 	# Fix library name
 	$(eval module_name=$(basename $(notdir $@)))
-	sed -ie 's/\(^library($(module_name)\)[[:graph:]]\+)/\1)/' $<
+	sed -i -e 's/\(^library($(module_name)\)[[:graph:]]\+)/\1)/' $<
 	lc_shell -x "read_lib $<; \
 	             write_lib -output $@ -format db $(module_name); \
-	             exit"
+	             exit" -no_log
 	[[ -f $@ ]]
 
 #-------------------------------------------------------------------------
@@ -149,7 +149,7 @@ db: $(MEMORIES_DB)
 lib: $(MEMORIES_LIB)
 
 #-------------------------------------------------------------------------
-# Default make target
+# Preserve intermediate files
 #-------------------------------------------------------------------------
 
 .PRECIOUS: $(MEMORIES_V) $(MEMORIES_LIB) $(MEMORIES_DB)
@@ -158,7 +158,7 @@ lib: $(MEMORIES_LIB)
 # Default make target
 #-------------------------------------------------------------------------
 
-.PHONY: all verilog dbs $(MEMORIES)
+.PHONY: all verilog db $(MEMORIES)
 
 all: $(MEMORIES_V)
 
