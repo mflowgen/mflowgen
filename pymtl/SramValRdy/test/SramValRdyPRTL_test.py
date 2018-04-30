@@ -75,7 +75,7 @@ def req( type_, opaque, addr, len, data, num_bits = 64 ):
   msg.data   = data
   return msg
 
-def resp( type_, opaque, len, data, num_bits ):
+def resp( type_, opaque, len, data, num_bits = 64 ):
   msg = MemRespMsg( 8, num_bits )
 
   if   type_ == 'rd': msg.type_ = MemRespMsg.TYPE_READ
@@ -136,7 +136,7 @@ def random_msgs( base_addr = 0x0 , num_msgs  = 64 ,
     ])
 
   for i in range(num_msgs):
-    idx = rgen.randint( 0, num_msgs )
+    idx = rgen.randint( 0, num_words - 1 )
 
     if rgen.randint( 0, 1 ):
 
@@ -162,7 +162,7 @@ def random_msgs( base_addr = 0x0 , num_msgs  = 64 ,
 #-------------------------------------------------------------------------
 
 def allN_msgs( num      = 0x0, base_addr = 0x0, num_msgs = 64,
-               num_bits = 256, num_words = 64                ):
+               num_bits = 64 , num_words = 64                ):
 
   rgen = random.Random()
   rgen.seed(0xa4e28cc2)
@@ -175,14 +175,14 @@ def allN_msgs( num      = 0x0, base_addr = 0x0, num_msgs = 64,
   num_msgs = min( num_msgs, num_words )
 
   # Force this to be 64 because there are 64 entries in the SRAM
-  for i in range( num_msgs ):
+  for i in range( num_words ):
     msgs.extend([
       req ( 'wr', i, base_addr + shft * i, 0, num, num_bits ),
       resp( 'wr', i, 0                   , 0,      num_bits ),
     ])
 
   for i in range(num_msgs):
-    idx = rgen.randint(0, num_msgs)
+    idx = rgen.randint(0, num_words - 1)
 
     if rgen.randint(0,1):
       correct_data = num
@@ -213,7 +213,7 @@ test_case_table = mk_test_case_table([
 ])
 
 @pytest.mark.parametrize( **test_case_table )
-def test_generic( test_params, dump_vcd, test_verilog ):
+def test_generic( test_params, dump_vcd, test_verilog, tech_node ):
 
   base_addr = 0x0
   num_msgs  = 64
@@ -226,7 +226,7 @@ def test_generic( test_params, dump_vcd, test_verilog ):
   # Instantiate testharness
   harness = TestHarness( msgs[::2], msgs[1::2],
                          test_params.src, test_params.sink,
-                         SramValRdyPRTL, dump_vcd, test_verilog )
+                         SramValRdyPRTL, dump_vcd, test_verilog, tech_node )
   # Run the test
   run_sim( harness, dump_vcd )
 
