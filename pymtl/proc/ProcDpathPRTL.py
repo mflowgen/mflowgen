@@ -137,7 +137,11 @@ class ProcDpathPRTL( Model ):
 
     @s.combinational
     def imem_req_F():
-      s.imemreq_msg.addr.value  = s.pc_sel_mux_F.out
+      s.imemreq_msg.type_.value  = MemReqMsg4B.TYPE_READ
+      s.imemreq_msg.len.value    = 0
+      s.imemreq_msg.addr.value   = s.pc_sel_mux_F.out
+      s.imemreq_msg.data.value   = 0
+      s.imemreq_msg.opaque.value = 0
 
     # PC register
 
@@ -269,7 +273,8 @@ class ProcDpathPRTL( Model ):
     s.connect_pairs(
       m.in0, s.pc_reg_D.out,
       m.in1, s.imm_gen_D.imm,
-      m.out, s.jal_target_D
+      m.out, s.jal_target_D,
+      m.cin, 0,
     )
 
     #---------------------------------------------------------------------

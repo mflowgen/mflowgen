@@ -205,7 +205,7 @@ class TestHarness( Model ):
           stop_addr  = section.addr + len(section.data)
           self.mem.mem[start_addr:stop_addr] = section.data
           for j in xrange(start_addr, stop_addr):
-            f.write( "load_mem( %d, 8'h%s );\n" % (j, self.mem.mem[j]) );
+            f.write( "load_mem( %d, 8'h%s );\n" % (j, Bits(8,self.mem.mem[j])) );
 
   #-----------------------------------------------------------------------
   # cleanup

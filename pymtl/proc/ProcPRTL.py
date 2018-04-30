@@ -19,6 +19,8 @@ from XcelMsg import XcelReqMsg, XcelRespMsg
 
 from ifcs import MemReqMsg4B, MemRespMsg4B, MduReqMsg, MduRespMsg
 
+# Shunning: Need to hook up all unused ports ...
+
 class ProcPRTL( Model ):
 
   def __init__( s, num_cores = 1 ):
@@ -199,6 +201,9 @@ class ProcPRTL( Model ):
       s.dpath.stats_en,          s.stats_en
 
     )
+
+    # Connect all unconnected ports
+    s.connect( s.dmemreq_queue.enq.msg.opaque, 0 )
 
     # Ctrl <-> Dpath
 
