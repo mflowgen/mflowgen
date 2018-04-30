@@ -52,16 +52,22 @@ from ifcs              import MemReqMsg, MemRespMsg
 
 class SramValRdyPRTL( Model ):
 
+  # Sizes
+
+  num_bits  = 256
+  num_words = 256
+
   def __init__( s, tech_node = 'generic', prefix = 'sram' ):
 
     # Explicit module name
 
     s.explicit_modulename = "SramValRdyPRTL"
 
-    # size is fixed as 64x64
+    # Parameter
 
-    num_bits  = 64
-    num_words = 64
+    num_bits  = s.__class__.num_bits
+    num_words = s.__class__.num_words
+    num_bytes = s.__class__.num_bits / 8
 
     # Interface
 
@@ -70,15 +76,15 @@ class SramValRdyPRTL( Model ):
     s.memreq  = InValRdyBundle ( MemReqMsg ( 8, 32, num_bits ) )
     s.memresp = OutValRdyBundle( MemRespMsg( 8,     num_bits ) )
 
-    addr_width = clog2( num_words )  # address width
-    addr_start = clog2(num_bits/8)
-    addr_end   = addr_start+addr_width+1
+    addr_width = clog2( num_words     )  # address width
+    addr_start = clog2( num_bits  / 8 )
+    addr_end   = addr_start + addr_width + 1
 
     #---------------------------------------------------------------------
     # MO stage
     #---------------------------------------------------------------------
 
-    s.memreq_go_M0     = Wire( 1 )
+    s.memreq_go_M0      = Wire( 1 )
 
     s.sram_a_addr_32_M0 = Wire( 32 )
     s.sram_a_addr_M0    = Wire( addr_width )
@@ -100,12 +106,17 @@ class SramValRdyPRTL( Model ):
 
     module_name = '{}_{}_{}x{}_SP'.format( prefix, tech_node, num_bits, num_words )
 
+    # Get all ones
+    s.wmask = Wire ( num_bytes )
+    for i in xrange(num_bytes):
+      s.connect(s.wmask[i], 1)
+
     s.sram = m = SramRTL( num_bits, num_words, tech_node, module_name )
 
     s.connect_pairs(
       m.addr,  s.sram_a_addr_M0,
       m.we,    s.sram_a_wen_M0,
-      m.wmask, 0b11111111,
+      m.wmask, s.wmask,
       m.ce,    s.sram_a_en_M0,
       m.in_,   s.sram_a_wdata_M0,
       m.out,   s.sram_a_rdata_M1,

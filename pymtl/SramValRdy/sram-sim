@@ -71,7 +71,6 @@ def parse_cmdline():
   p.add_argument( "--stats",          action="store_true" )
   p.add_argument( "--translate",      action="store_true" )
   p.add_argument( "--dump-vcd",       action="store_true" )
-  p.add_argument( "--tech_specific",  action="store_true" )
 
   p.add_argument( "--tech_node", default="generic",
                   choices=["generic","28nm"] )
@@ -87,18 +86,6 @@ def parse_cmdline():
 def main():
   opts = parse_cmdline()
 
-  # Create input datasets
-
-  nmsgs = 150
-  msgs = None
-
-  if   opts.input == "random":
-    msgs = random_msgs( base_addr=0x0, num_msgs=nmsgs )
-  elif opts.input == "allzero":
-    msgs = allN_msgs( num=0x0, base_addr=0x0, num_msgs=nmsgs )
-  elif opts.input == "allone":
-    msgs = allN_msgs( num=0xffffffffffffffff, base_addr=0x0, num_msgs=nmsgs )
-
   # Instantiate the model
 
   model_impl_dict = {
@@ -106,6 +93,24 @@ def main():
   }
 
   model = model_impl_dict[ opts.impl ]
+
+  # Create input datasets
+
+  nmsgs = 150
+  msgs = None
+
+  num_bits  = model.num_bits
+  num_words = model.num_words
+
+  if   opts.input == "random":
+    msgs = random_msgs( base_addr = 0x0     , num_msgs  = nmsgs     ,
+                        num_bits  = num_bits, num_words = num_words )
+  elif opts.input == "allzero":
+    msgs = allN_msgs( num      = 0x0     , base_addr = 0x0       , num_msgs=nmsgs ,
+                      num_bits = num_bits, num_words = num_words                  )
+  elif opts.input == "allone":
+    msgs = allN_msgs( num      = 0xffffffffffffffff, base_addr = 0x0      , num_msgs=nmsgs ,
+                      num_bits = num_bits          , num_words = num_words                 )
 
   # VCD dumping
 
