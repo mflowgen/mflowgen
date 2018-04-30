@@ -427,11 +427,12 @@ class BlockingCacheCtrlPRTL( Model ):
 
     # Control signal bit slices
 
-    CS_cachereq_rdy        = slice( 19, 20 )
-    CS_cacheresp_val       = slice( 18, 19 )
-    CS_memreq_val          = slice( 17, 18 )
-    CS_memresp_rdy         = slice( 16, 17 )
-    CS_cachereq_en         = slice( 15, 16 )
+    CS_cachereq_rdy        = slice( 20, 21 )
+    CS_cacheresp_val       = slice( 19, 20 )
+    CS_memreq_val          = slice( 18, 19 )
+    CS_memresp_rdy         = slice( 17, 18 )
+    CS_cachereq_en         = slice( 16, 17 )
+    CS_memresp_en          = slice( 15, 16 )
     CS_is_refill           = slice( 14, 15 )
     CS_read_data_reg_en    = slice( 13, 14 )
     CS_read_tag_reg_en     = slice( 12, 13 )
@@ -445,36 +446,36 @@ class BlockingCacheCtrlPRTL( Model ):
     CS_cacheresp_hit       = slice( 1,  2  )
     CS_skip_read_data_reg  = slice( 0,  1  )
 
-    s.cs = Wire( 20 )
+    s.cs = Wire( 21 )
 
     @s.combinational
     def comb_control_table():
       sr = s.state_reg
 
-      #                                                                    $    $    mem mem  $          read read mem  valid valid dirty dirty lru   way    $    skip
-      #                                                                    req  resp req resp req is     data tag  req  bit   write bit   write write record resp data
-      #                                                                    rdy  val  val rdy  en  refill en   en   type in    en    in    en    en    en     hit  reg
-      s.cs.value                                                 = concat( n,   n,   n,  n,   x,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      if   sr == s.STATE_IDLE:                        s.cs.value = concat( y,   n,   n,  n,   y,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_TAG_CHECK:                   s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    y,     n,   y    )
-      elif sr == s.STATE_WRITE_CACHE_RESP_HIT:        s.cs.value = concat( n,   y,   n,  n,   n,  r_x,   n,   n,   m_x, x,    n,    x,    n,    y,    n,     y,   n    )
-      elif sr == s.STATE_WRITE_DATA_ACCESS_HIT:       s.cs.value = concat( n,   n,   n,  n,   n,  r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     y,   n    )
-      elif sr == s.STATE_READ_DATA_ACCESS_MISS:       s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   n    )
-      elif sr == s.STATE_WRITE_DATA_ACCESS_MISS:      s.cs.value = concat( n,   y,   n,  n,   n,  r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_INIT_DATA_ACCESS:            s.cs.value = concat( n,   n,   n,  n,   n,  r_c,   n,   n,   m_x, y,    y,    n,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_AMO_READ_DATA_ACCESS_HIT:    s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
-      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_HIT:   s.cs.value = concat( n,   n,   n,  n,   n,  r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_AMO_READ_DATA_ACCESS_MISS:   s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
-      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_MISS:  s.cs.value = concat( n,   n,   n,  n,   n,  r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_REFILL_REQUEST:              s.cs.value = concat( n,   n,   y,  n,   n,  r_x,   n,   n,   m_r, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_REFILL_WAIT:                 s.cs.value = concat( n,   n,   n,  y,   n,  r_m,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_REFILL_UPDATE:               s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   n,   n,   m_x, y,    y,    n,    y,    n,    n,     n,   n    )
-      elif sr == s.STATE_EVICT_PREPARE:               s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   y,   y,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_EVICT_REQUEST:               s.cs.value = concat( n,   n,   y,  n,   n,  r_x,   n,   n,   m_e, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_EVICT_WAIT:                  s.cs.value = concat( n,   n,   n,  y,   n,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      elif sr == s.STATE_WAIT_HIT:                    s.cs.value = concat( n,   y,   n,  n,   n,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     y,   n    )
-      elif sr == s.STATE_WAIT_MISS:                   s.cs.value = concat( n,   y,   n,  n,   n,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
-      else :                                          s.cs.value = concat( n,   n,   n,  n,   n,  r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      #                                                                    $    $    mem mem  $    mem         read read mem  valid valid dirty dirty lru   way    $    skip
+      #                                                                    req  resp req resp req  resp is     data tag  req  bit   write bit   write write record resp data
+      #                                                                    rdy  val  val rdy  en   en   refill en   en   type in    en    in    en    en    en     hit  reg
+      s.cs.value                                                 = concat( n,   n,   n,  n,   x,   x,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      if   sr == s.STATE_IDLE:                        s.cs.value = concat( y,   n,   n,  n,   y,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_TAG_CHECK:                   s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    y,     n,   y    )
+      elif sr == s.STATE_WRITE_CACHE_RESP_HIT:        s.cs.value = concat( n,   y,   n,  n,   n,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    y,    n,     y,   n    )
+      elif sr == s.STATE_WRITE_DATA_ACCESS_HIT:       s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     y,   n    )
+      elif sr == s.STATE_READ_DATA_ACCESS_MISS:       s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   n    )
+      elif sr == s.STATE_WRITE_DATA_ACCESS_MISS:      s.cs.value = concat( n,   y,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
+      elif sr == s.STATE_INIT_DATA_ACCESS:            s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    n,    y,    y,    n,     n,   n    )
+      elif sr == s.STATE_AMO_READ_DATA_ACCESS_HIT:    s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
+      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_HIT:   s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
+      elif sr == s.STATE_AMO_READ_DATA_ACCESS_MISS:   s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
+      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_MISS:  s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
+      elif sr == s.STATE_REFILL_REQUEST:              s.cs.value = concat( n,   n,   y,  n,   n,   n,   r_x,   n,   n,   m_r, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_REFILL_WAIT:                 s.cs.value = concat( n,   n,   n,  y,   n,   y,   r_m,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_REFILL_UPDATE:               s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   n,   n,   m_x, y,    y,    n,    y,    n,    n,     n,   n    )
+      elif sr == s.STATE_EVICT_PREPARE:               s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   y,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_EVICT_REQUEST:               s.cs.value = concat( n,   n,   y,  n,   n,   n,   r_x,   n,   n,   m_e, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_EVICT_WAIT:                  s.cs.value = concat( n,   n,   n,  y,   n,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      elif sr == s.STATE_WAIT_HIT:                    s.cs.value = concat( n,   y,   n,  n,   n,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     y,   n    )
+      elif sr == s.STATE_WAIT_MISS:                   s.cs.value = concat( n,   y,   n,  n,   n,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
+      else :                                          s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
 
       # Unpack signals
 
@@ -483,6 +484,7 @@ class BlockingCacheCtrlPRTL( Model ):
       s.memreq_val.value          = s.cs[ CS_memreq_val          ]
       s.memresp_rdy.value         = s.cs[ CS_memresp_rdy         ]
       s.cachereq_en.value         = s.cs[ CS_cachereq_en         ]
+      s.memresp_en.value          = s.cs[ CS_memresp_en          ]
       s.is_refill.value           = s.cs[ CS_is_refill           ]
       s.read_data_reg_en.value    = s.cs[ CS_read_data_reg_en    ]
       s.read_tag_reg_en.value     = s.cs[ CS_read_tag_reg_en     ]

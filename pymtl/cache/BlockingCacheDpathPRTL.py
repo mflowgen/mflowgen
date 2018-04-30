@@ -65,6 +65,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.amo_maxu_sel       = InPort( 1 )
     s.amo_sel            = InPort( 4 )
     s.cachereq_en        = InPort( 1 )
+    s.memresp_en         = InPort( 1 )
     s.is_refill          = InPort( 1 )
     s.tag_array_0_wen    = InPort( 1 )
     s.tag_array_0_ren    = InPort( 1 )
@@ -128,6 +129,15 @@ class BlockingCacheDpathPRTL( Model ):
       m.en,  s.cachereq_en,
       m.in_, s.cachereq_msg.data,
       m.out, s.cachereq_data_reg_out,
+    )
+
+    # Register the unpacked data from memresp_msg
+
+    s.memresp_data_reg = m = RegEnRst( dtype = clw, reset_value = 0 )
+
+    s.connect_pairs(
+      m.en,  s.memresp_en,
+      m.in_, s.memresp_msg.data,
     )
 
     # Calculate AMO minimum
