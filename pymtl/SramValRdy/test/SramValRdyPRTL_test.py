@@ -15,6 +15,10 @@ from pclib.test    import TestSource, TestSink
 
 from SramValRdy.SramValRdyPRTL import SramValRdyPRTL
 
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs              import MemReqMsg, MemRespMsg
+
 #-------------------------------------------------------------------------
 # TestHarness
 #-------------------------------------------------------------------------
