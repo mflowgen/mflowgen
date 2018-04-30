@@ -23,7 +23,8 @@ MEM_COMPILER_SP=sram_sp_hde
 MEM_COMPILER_DP=sram_dp_uhde
 MEM_COMPILER_2P=sram_2p_uhde
 RF_COMPILER_2P=rf_2p_hsc
-RF_COMPILER_SP=rf_sp_hde
+RF_COMPILER_SP_HSE=rf_sp_hse
+RF_COMPILER_SP_HDE=rf_sp_hde
 
 ifeq (error, $(shell [ -d $(SPECS_DIR) ] || echo error))
   $(error Folder $(SPECS_DIR) does not exists)
@@ -96,9 +97,16 @@ $(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.rf_2p.spec | $(OUTPUT_DIR)
 	[[ -f $@ ]]
 
 # RF Two Ports
-$(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.rf_sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.rf_sp_hde.spec | $(OUTPUT_DIR)
 	rm -f $@
-	$(RF_COMPILER_SP) lef-fp -spec $<
+	$(RF_COMPILER_SP_HDE) lef-fp -spec $<
+	-mv -f $(basename $(notdir $@))*.lef $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HSE) lef-fp -spec $<
 	-mv -f $(basename $(notdir $@))*.lef $@
 	[[ -f $@ ]]
 
@@ -135,9 +143,16 @@ $(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.rf_2p.spec | $(OUTPUT_DIR)
 	[[ -f $@ ]]
 
 # RF Two Ports
-$(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.rf_sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.rf_sp_hde.spec | $(OUTPUT_DIR)
 	rm -f $@
-	$(RF_COMPILER_SP) liberty -spec $<
+	$(RF_COMPILER_SP_HDE) liberty -spec $<
+	-mv -f $(basename $(notdir $@))*.lib $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HSE) liberty -spec $<
 	-mv -f $(basename $(notdir $@))*.lib $@
 	[[ -f $@ ]]
 
@@ -174,9 +189,16 @@ $(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.rf_2p.spec | $(OUTPUT_DIR)
 	[[ -f $@ ]]
 
 # RF Two Ports
-$(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.rf_sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.rf_sp_hde.spec | $(OUTPUT_DIR)
 	rm -f $@
-	$(RF_COMPILER_SP) verilog -spec $<
+	$(RF_COMPILER_SP_HDE) verilog -spec $<
+	-mv -f $(basename $(notdir $@))*.v $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HSE) verilog -spec $<
 	-mv -f $(basename $(notdir $@))*.v $@
 	[[ -f $@ ]]
 
