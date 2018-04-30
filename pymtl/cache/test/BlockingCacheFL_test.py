@@ -49,7 +49,7 @@ class TestHarness( Model ):
 
   def __init__( s, src_msgs, sink_msgs, stall_prob, latency,
                 src_delay, sink_delay, CacheModel, check_test, dump_vcd,
-                tech_node = '', test_verilog = False ):
+                test_verilog = False, tech_node = '' ):
 
     # Messge type
 

@@ -58,7 +58,7 @@ def test_generic( test_params, dump_vcd, test_verilog, tech_node ):
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
                          BlockingCacheRTL, True, dump_vcd,
-                         tech_node, test_verilog )
+                         test_verilog, tech_node )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
@@ -79,7 +79,7 @@ def test_set_assoc( test_params, dump_vcd, test_verilog, tech_node ):
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
                          BlockingCacheRTL, True, dump_vcd,
-                         tech_node, test_verilog )
+                         test_verilog, tech_node )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
