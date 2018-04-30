@@ -16,7 +16,7 @@ from ifcs import MemReqMsg16B, MemRespMsg16B
 
 from pclib.rtl            import Mux, RegEnRst
 from pclib.rtl.arith      import EqComparator
-from sram.SramGenericPRTL import SramGenericPRTL
+from sram.SramRTL         import SramRTL
 
 size           = 8192             # Cache size in bytes
 p_opaque_nbits = 8
@@ -35,7 +35,7 @@ o              = p_opaque_nbits
 
 class BlockingCacheDpathPRTL( Model ):
 
-  def __init__( s, idx_shamt=0 ):
+  def __init__( s, idx_shamt = 0, tech_node = '' ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -290,67 +290,71 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_0_read_out = Wire( abw )
 
-    s.tag_array_0 = m = SramGenericPRTL(num_bits      =  32          ,
-                                        num_words     = 256          ,
-                                        instance_name = 'sram_32_256')
+    s.tag_array_0 = m = SramRTL(num_bits    =  32                  ,
+                                num_words   = 256                  ,
+                                tech_node   = tech_node            ,
+                                module_name = 'sram_28nm_32x256_SP')
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.tag_array_0_read_out,
-      m.wen,   s.tag_array_0_wen,
-      m.mask,  0b1111,
+      m.we,    s.tag_array_0_wen,
+      m.wmask, 0b1111,
       m.in_,   s.temp_cachereq_tag,
-      m.cen,   s.sram_tag_0_en
+      m.ce,    s.sram_tag_0_en
     )
 
     # Tag array 1
 
     s.tag_array_1_read_out = Wire( abw )
 
-    s.tag_array_1 = m = SramGenericPRTL(num_bits      =  32          ,
-                                        num_words     = 256          ,
-                                        instance_name = 'sram_32_256')
+    s.tag_array_1 = m = SramRTL(num_bits    =  32                  ,
+                                num_words   = 256                  ,
+                                tech_node   = tech_node            ,
+                                module_name = 'sram_28nm_32x256_SP')
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.tag_array_1_read_out,
-      m.wen,   s.tag_array_1_wen,
-      m.mask,  0b1111,
+      m.we,    s.tag_array_1_wen,
+      m.wmask, 0b1111,
       m.in_,   s.temp_cachereq_tag,
-      m.cen,   s.sram_tag_1_en
+      m.ce,    s.sram_tag_1_en
     )
 
     # Data array 0
 
     s.data_array_0_read_out = Wire( clw )
 
-    s.data_array_0 = m = SramGenericPRTL(num_bits      = 128           ,
-                                         num_words     = 256           ,
-                                         instance_name = 'sram_128_256')
+    s.data_array_0 = m = SramRTL(num_bits    = 128                   ,
+                                 num_words   = 256                   ,
+                                 tech_node   = tech_node             ,
+                                 module_name = 'sram_28nm_128x256_SP')
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.data_array_0_read_out,
-      m.wen,   s.data_array_0_wen,
-      m.mask,  s.data_array_wben,
+      m.we,    s.data_array_0_wen,
+      m.wmask, s.data_array_wben,
       m.in_,   s.refill_mux.out,
-      m.cen,   s.sram_data_0_en
+      m.ce,    s.sram_data_0_en
     )
 
     # Data array 1
 
     s.data_array_1_read_out = Wire( clw )
 
-    s.data_array_1 = m = SramGenericPRTL(num_bits      = 128           ,
-                                         num_words     = 256           ,
-                                         instance_name = 'sram_128_256')
+    s.data_array_1 = m = SramRTL(num_bits    = 128                   ,
+                                 num_words   = 256                   ,
+                                 tech_node   = tech_node             ,
+                                 module_name = 'sram_28nm_128x256_SP')
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.data_array_1_read_out,
-      m.wen,   s.data_array_1_wen,
-      m.mask,  s.data_array_wben,
+      m.we,    s.data_array_1_wen,
+      m.wmask, s.data_array_wben,
       m.in_,   s.refill_mux.out,
-      m.cen,   s.sram_data_1_en
+      m.ce,    s.sram_data_1_en
     )
 
     # Data read mux
