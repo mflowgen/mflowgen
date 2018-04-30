@@ -239,9 +239,16 @@ set vars(signoff,save_design,replace_tcl)         $vars(plug_dir)/save_design.tc
 set vars(abort) 0
 
 # Power nets
+#
+# - VDD VNW     : from stdcells
+# - VSS VPW     : from stdcells
+# - VDDPST POC  : from iocells
+# - VSSPST      : from iocells
+# - VDDCE VDDPE : from srams
+# - VSSE        : from srams
 
-set vars(power_nets)  "VDD VNW VDDPST POC"
-set vars(ground_nets) "VSS VPW VSSPST"
+set vars(power_nets)  "VDD VNW VDDPST POC VDDCE VDDPE"
+set vars(ground_nets) "VSS VPW VSSPST VSSE"
 
 # Tie cells
 #
