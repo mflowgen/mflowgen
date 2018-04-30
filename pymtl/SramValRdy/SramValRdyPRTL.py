@@ -148,13 +148,10 @@ class SramValRdyPRTL( Model ):
 
     # Bypass queues
 
-    s.memresp_queue_rdy = Wire( 1 )
-
     s.memresp_queue = m = TwoElementBypassQueue( MemRespMsg( 8, num_bits ) )
 
     s.connect_pairs(
       m.enq.val,        s.memreq_val_reg.out,
-      m.enq.rdy,        s.memresp_queue_rdy,
       m.enq.msg.type_,  s.memreq_msg_reg.out.type_,
       m.enq.msg.opaque, s.memreq_msg_reg.out.opaque,
       m.enq.msg.len,    s.memreq_msg_reg.out.len,
@@ -166,9 +163,9 @@ class SramValRdyPRTL( Model ):
       m.deq.msg,        s.memresp.msg,
     )
 
-    # Input ready signal: input (memreq) port is ready when the memresp queue is ready
+    # Input ready signal: input is ready for more requests if we have two entries
 
-    s.connect( s.memreq.rdy, s.memresp_queue_rdy )
+    s.connect( s.memreq.rdy, s.memresp_queue.empty )
 
   def line_trace( s ):
     return s.sram.line_trace()
