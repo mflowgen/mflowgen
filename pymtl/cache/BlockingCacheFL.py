@@ -15,7 +15,7 @@ from ifcs import MemReqMsg, MemRespMsg
 
 class BlockingCacheFL( Model ):
 
-  def __init__( s, size = 256, nbanks = 0, tech_node = '' ):
+  def __init__( s, size = 256, nbanks = 0 ):
 
     #---------------------------------------------------------------------
     # Interface

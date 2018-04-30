@@ -49,7 +49,7 @@ from cache.BlockingCacheRTL import BlockingCacheRTL
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table_generic )
-def test_generic( test_params, dump_vcd, test_verilog, tech_node ):
+def test_generic( test_params, dump_vcd, test_verilog ):
   msgs = test_params.msg_func( 0 )
   if test_params.mem_data_func != None:
     mem = test_params.mem_data_func( 0 )
@@ -58,7 +58,7 @@ def test_generic( test_params, dump_vcd, test_verilog, tech_node ):
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
                          BlockingCacheRTL, True, dump_vcd,
-                         test_verilog, tech_node )
+                         test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )
@@ -70,7 +70,7 @@ def test_generic( test_params, dump_vcd, test_verilog, tech_node ):
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table_set_assoc )
-def test_set_assoc( test_params, dump_vcd, test_verilog, tech_node ):
+def test_set_assoc( test_params, dump_vcd, test_verilog ):
   msgs = test_params.msg_func( 0 )
   if test_params.mem_data_func != None:
     mem  = test_params.mem_data_func( 0 )
@@ -79,7 +79,7 @@ def test_set_assoc( test_params, dump_vcd, test_verilog, tech_node ):
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,
                          BlockingCacheRTL, True, dump_vcd,
-                         test_verilog, tech_node )
+                         test_verilog )
   # Load memory before the test
   if test_params.mem_data_func != None:
     harness.load( mem[::2], mem[1::2] )

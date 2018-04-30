@@ -27,7 +27,6 @@
 #  --trace             Display line-trace
 #  --translate         Translate and test Verilog implementation
 #  --mem-lat           Set memory latency (in cycles), default=20
-#  --tech_node         Technology node to target, default=generic
 #
 # The cache memory multiplier simulator. Choose an implementation and an
 # access pattern to execute. Use --stats to display statistics about the
@@ -92,7 +91,6 @@ def parse_cmdline():
   p.add_argument(       "--trace",     action="store_true"                                          )
   p.add_argument(       "--translate", action="store_true"                                          )
   p.add_argument(       "--mem-lat",   type=int,                                  default=20        )
-  p.add_argument(       "--tech_node", choices=["generic", "28nm"],               default="generic" )
 
   opts = p.parse_args()
   if opts.help: p.error()
@@ -238,10 +236,6 @@ def main():
 
   [ src_msgs, sink_msgs, mem_data ] = pattern_dict[ opts.pattern ]()
 
-  # Get the tech_node
-
-  tech_node = opts.tech_node
-
   # Verilog Translation
 
   translate_verilog = opts.translate
@@ -256,7 +250,7 @@ def main():
 
   model = TestHarness( src_msgs, sink_msgs, 0.0, opts.mem_lat,
                        0, 0, impl_dict[ opts.impl ], False,
-                       dump_vcd, translate_verilog, tech_node )
+                       dump_vcd, translate_verilog )
   model.load( mem_data[::2], mem_data[1::2] )
   model.elaborate()
   model.vcd_file = dump_vcd

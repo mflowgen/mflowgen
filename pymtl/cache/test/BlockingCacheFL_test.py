@@ -49,7 +49,7 @@ class TestHarness( Model ):
 
   def __init__( s, src_msgs, sink_msgs, stall_prob, latency,
                 src_delay, sink_delay, CacheModel, check_test, dump_vcd,
-                test_verilog = False, tech_node = '' ):
+                test_verilog = False ):
 
     # Messge type
 
@@ -59,9 +59,13 @@ class TestHarness( Model ):
     # Instantiate models
 
     s.src   = TestSource   ( cache_msgs.req,  src_msgs,  src_delay  )
-    s.cache = CacheModel   ( tech_node = tech_node )
+    s.cache = CacheModel   ( )
     s.mem   = TestMemory   ( mem_msgs, 1, stall_prob, latency )
     s.sink  = TestCacheSink( cache_msgs.resp, sink_msgs, sink_delay, check_test )
+
+    # Fix module name
+
+    s.cache.explicit_modulename = s.cache.__class__.__name__
 
     # Dump VCD
 
@@ -865,7 +869,7 @@ test_case_table_generic = mk_test_case_table([
 ])
 
 @pytest.mark.parametrize( **test_case_table_generic )
-def test_generic( test_params, dump_vcd, tech_node ):
+def test_generic( test_params, dump_vcd ):
   msgs = test_params.msg_func( 0 )
   if test_params.mem_data_func != None:
     mem = test_params.mem_data_func( 0 )
@@ -900,7 +904,7 @@ test_case_table_set_assoc = mk_test_case_table([
 ])
 
 @pytest.mark.parametrize( **test_case_table_set_assoc )
-def test_set_assoc( test_params, dump_vcd, tech_node ):
+def test_set_assoc( test_params, dump_vcd ):
   msgs = test_params.msg_func( 0 )
   if test_params.mem_data_func != None:
     mem  = test_params.mem_data_func( 0 )
@@ -935,7 +939,7 @@ test_case_table_dir_mapped = mk_test_case_table([
 ])
 
 @pytest.mark.parametrize( **test_case_table_dir_mapped )
-def test_dir_mapped( test_params, dump_vcd, tech_node ):
+def test_dir_mapped( test_params, dump_vcd ):
   msgs = test_params.msg_func( 0 )
   if test_params.mem_data_func != None:
     mem  = test_params.mem_data_func( 0 )

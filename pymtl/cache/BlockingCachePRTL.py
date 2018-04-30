@@ -33,7 +33,7 @@ from BlockingCacheDpathPRTL import BlockingCacheDpathPRTL
 
 class BlockingCachePRTL( Model ):
 
-  def __init__( s, num_banks = 0, tech_node = '' ):
+  def __init__( s, num_banks = 0 ):
 
     if num_banks <= 0:
       idx_shamt = 0
@@ -50,8 +50,8 @@ class BlockingCachePRTL( Model ):
     s.memreq    = OutValRdyBundle( MemReqMsg16B  )
     s.memresp   = InValRdyBundle ( MemRespMsg16B )
 
-    s.ctrl      = BlockingCacheCtrlPRTL ( idx_shamt            )
-    s.dpath     = BlockingCacheDpathPRTL( idx_shamt, tech_node )
+    s.ctrl      = BlockingCacheCtrlPRTL ( idx_shamt )
+    s.dpath     = BlockingCacheDpathPRTL( idx_shamt )
 
     # Bypass Queue for buffering response
 

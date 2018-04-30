@@ -35,7 +35,7 @@ o              = p_opaque_nbits
 
 class BlockingCacheDpathPRTL( Model ):
 
-  def __init__( s, idx_shamt = 0, tech_node = '' ):
+  def __init__( s, idx_shamt = 0 ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -292,7 +292,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_0 = m = SramRTL(num_bits    =  32                  ,
                                 num_words   = 256                  ,
-                                tech_node   = tech_node            ,
+                                tech_node   = '28nm'               ,
                                 module_name = 'sram_28nm_32x256_SP')
 
     s.connect_pairs(
@@ -310,7 +310,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_1 = m = SramRTL(num_bits    =  32                  ,
                                 num_words   = 256                  ,
-                                tech_node   = tech_node            ,
+                                tech_node   = '28nm'               ,
                                 module_name = 'sram_28nm_32x256_SP')
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
@@ -327,7 +327,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.data_array_0 = m = SramRTL(num_bits    = 128                   ,
                                  num_words   = 256                   ,
-                                 tech_node   = tech_node             ,
+                                 tech_node   = '28nm'                ,
                                  module_name = 'sram_28nm_128x256_SP')
 
     s.connect_pairs(
@@ -345,7 +345,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.data_array_1 = m = SramRTL(num_bits    = 128                   ,
                                  num_words   = 256                   ,
-                                 tech_node   = tech_node             ,
+                                 tech_node   = '28nm'                ,
                                  module_name = 'sram_28nm_128x256_SP')
 
     s.connect_pairs(
