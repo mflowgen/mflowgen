@@ -16,7 +16,9 @@ class SramWrapper28nmPRTL( Model ):
     nb = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
     BW = num_bits
 
+    #------------------------------
     # BRG SRAM's golden interface
+    #------------------------------
 
     s.we    = InPort (  1 )   # write en
     s.ce    = InPort (  1 )   # whole SRAM en
@@ -25,14 +27,69 @@ class SramWrapper28nmPRTL( Model ):
     s.out   = OutPort( BW )   # read data
     s.wmask = InPort ( nb )   # byte write en
 
-    # Instantiate ARM functional model
+    #------------------------------
+    # Handle physical banking
+    #------------------------------
 
-    if num_words >= 32 and num_words <= 512:
-      s.mem   = RfSpHde28nmFuncPRTL( num_bits, num_words, module_name )
-      s.type_ = 'rf_sp_hde'
+    banking_hor    = 1
+    banking_ver    = 1
+
+    bank_num_bits  = num_bits
+    bank_num_words = num_words
+
+    while (bank_num_bits > 128):
+      banking_hor    *= 2
+      assert( num_bits % banking_hor == 0)
+      bank_num_bits   = num_bits / banking_hor
+
+    while (bank_num_words > 4096):
+      banking_ver    *= 2
+      assert( num_words % banking_ver == 0)
+      bank_num_words  = num_words / banking_ver
+
+    #------------------------------
+    # Choosing appropriate model
+    #------------------------------
+
+    if   num_words >= 32 and num_words <= 512:
+      sram_model = RfSpHde28nmFuncPRTL
+      sram_type  = 'rf_sp_hde'
+
     elif num_words >= 1024:
-      s.mem   = SramSpHde28nmFuncPRTL( num_bits, num_words, module_name )
-      s.type_ = 'sram_sp_hde'
+      sram_model = SramSpHde28nmFuncPRTL
+      sram_type  = 'sram_sp_hde'
+
+    else:
+      raise ValueError
+
+    #------------------------------
+    # Generate automatic naming
+    #------------------------------
+    if (banking_hor > 1 or banking_ver > 1) or \
+       (module_name == ''):
+
+      # Force automatic module name generation if banking is to be
+      # enforced or if module_name was not specified by parent module
+      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_bits  ,
+                                                 bank_num_words )
+
+    #------------------------------
+    # Instantiating Memories
+    #------------------------------
+
+    # We only support Horizantal banking for now
+    assert(banking_ver == 1)
+
+    s.mem = []
+    for v in xrange(banking_ver):
+      s.mem.append([])
+      for h in xrange(banking_hor):
+        s.mem[v].append( sram_model( bank_num_bits  ,
+                                     bank_num_words ,
+                                     module_name    ) )
+
+    # Needed for different ports
+    s.type_ = sram_type
 
     # Wires
     s.ceny      = Wire(  1 )
@@ -60,27 +117,38 @@ class SramWrapper28nmPRTL( Model ):
 
     # Common connections
 
-    # Connect
-    s.connect_pairs (
+    # Connect all physical banks
+    for v in xrange(banking_ver):
+      for h in xrange(banking_hor):
 
-      # Outputs
-      s    .q         , s.mem.q         ,
+        # Specify bank
+        bank = s.mem[v][h]
 
-      # Inputs
-      s.mem.cen       , s    .cen       ,
-      s.mem.wen       , s    .wen       ,
-      s.mem.a         , s    .a         ,
-      s.mem.d         , s    .d         ,
-      s.mem.gwen      , s    .gwen      ,
+        # Boundries
+        l  = (h + 0) * bank_num_bits
+        h  = (h + 1) * bank_num_bits
 
-      # Special Constants
-      s.mem.ema       , 3               ,
-      s.mem.emaw      , 1               ,
+        # Connect
+        s.connect_pairs (
 
-      # Test Constants
-      s.mem.ret1n     , 0               ,
+          # Outputs
+          s    .q   [l:h] ,  bank.q         ,
 
-    )
+          # Inputs
+           bank.cen       , s    .cen       ,
+           bank.wen       , s    .wen [l:h] ,
+           bank.a         , s    .a         ,
+           bank.d         , s    .d   [l:h] ,
+           bank.gwen      , s    .gwen      ,
+
+          # Special Constants
+           bank.ema       , 3               ,
+           bank.emaw      , 1               ,
+
+          # Test Constants
+           bank.ret1n     , 0               ,
+
+        )
 
     # Only SRAMs
 
