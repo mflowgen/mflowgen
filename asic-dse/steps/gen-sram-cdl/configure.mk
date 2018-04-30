@@ -6,17 +6,17 @@
 #-------------------------------------------------------------------------
 # Step Description
 #-------------------------------------------------------------------------
-# Generates Verilog from the SRAM generator
+# Generates CDL from the SRAM generator
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.gen-sram-verilog
+define ascii.gen-sram-cdl
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                                                                               #'
-	@echo '# Generate SRAM Verilog '
+	@echo '#                                Generate SRAM cdl                              #'
 	@echo '#                                                                               #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
@@ -26,10 +26,10 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-#abbr.gen-sram-verilog = ex
+#abbr.gen-sram-cdl = ex
 
 #-------------------------------------------------------------------------
-# Vars
+# Stuff
 #-------------------------------------------------------------------------
 
 var.dir = ../../pymtl/build/srams
@@ -40,9 +40,9 @@ var.dir = ../../pymtl/build/srams
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-define commands.gen-sram-verilog
-	mkdir -p $(handoff_dir.gen-sram-verilog)
-	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-verilog) make -f $(plugins_dir)/srams/Makefile verilog
+define commands.gen-sram-cdl
+	mkdir -p $(handoff_dir.gen-sram-cdl)
+	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-cdl) make -f $(plugins_dir)/srams/Makefile cdl
 endef
 
 #-------------------------------------------------------------------------
@@ -53,10 +53,10 @@ endef
 
 # Clean
 
-clean-gen-sram-verilog:
-	rm -rf ./$(VPATH)/gen-sram-verilog
-	rm -rf ./$(collect_dir.gen-sram-verilog)
-	rm -rf ./$(handoff_dir.gen-sram-verilog)
+clean-gen-sram-cdl:
+	rm -rf ./$(VPATH)/gen-sram-cdl
+	rm -rf ./$(collect_dir.gen-sram-cdl)
+	rm -rf ./$(handoff_dir.gen-sram-cdl)
 
-clean-ex: clean-gen-sram-verilog
+clean-ex: clean-gen-sram-cdl
 

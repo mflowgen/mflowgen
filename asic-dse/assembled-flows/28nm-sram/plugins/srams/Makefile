@@ -42,6 +42,8 @@ MEMORIES_V=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .v, $(MEMORIES)))
 MEMORIES_DB=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .db, $(MEMORIES)))
 MEMORIES_LIB=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .lib, $(MEMORIES)))
 MEMORIES_LEF=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .lef, $(MEMORIES)))
+MEMORIES_GDS=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .gds, $(MEMORIES)))
+MEMORIES_CDL=$(addprefix $(OUTPUT_DIR)/, $(addsuffix .cdl, $(MEMORIES)))
 
 #-------------------------------------------------------------------------
 # Create output directory if is doesn't exist
@@ -51,7 +53,99 @@ $(OUTPUT_DIR):
 	mkdir -p $(OUTPUT_DIR)
 
 #-------------------------------------------------------------------------
-# Create SRAMs LIB model
+# Create SRAMs CDL model
+#-------------------------------------------------------------------------
+
+# Single Ported
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_SP) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+# Two Ports
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.2p.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_2P) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+# Double Ported
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.dp.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_DP) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.rf_2p.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_2P) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.rf_sp_hde.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HDE) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HSE) lvs -spec $<
+	-mv -f $(basename $(notdir $@))*.cdl $@
+	[[ -f $@ ]]
+
+#-------------------------------------------------------------------------
+# Create SRAMs GDS model
+#-------------------------------------------------------------------------
+
+# Single Ported
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_SP) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+# Two Ports
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.2p.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_2P) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+# Double Ported
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.dp.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(MEM_COMPILER_DP) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.rf_2p.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_2P) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.rf_sp_hde.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HDE) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+# RF Two Ports
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
+	rm -f $@
+	$(RF_COMPILER_SP_HSE) gds2 -spec $<
+	-mv -f $(basename $(notdir $@))*.gds2 $@
+	[[ -f $@ ]]
+
+#-------------------------------------------------------------------------
+# Create SRAMs DB model
 #-------------------------------------------------------------------------
 
 # Single Ported
@@ -210,12 +304,14 @@ verilog: $(MEMORIES_V)
 db: $(MEMORIES_DB)
 lib: $(MEMORIES_LIB)
 lef: $(MEMORIES_LEF)
+gds: $(MEMORIES_GDS)
+cdl: $(MEMORIES_CDL)
 
 #-------------------------------------------------------------------------
 # Preserve intermediate files
 #-------------------------------------------------------------------------
 
-.PRECIOUS: $(MEMORIES_V) $(MEMORIES_LEF) $(MEMORIES_LIB) $(MEMORIES_DB)
+.PRECIOUS: $(MEMORIES_V) $(MEMORIES_LEF) $(MEMORIES_LIB) $(MEMORIES_DB) $(MEMORIES_GDS) $(MEMORIES_CDL)
 
 #-------------------------------------------------------------------------
 # Default make target

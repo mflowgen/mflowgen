@@ -33,14 +33,14 @@ editPin -layer $ports_layer -pin $pins_right_half -side RIGHT -spreadType SIDE
 
 set sram_inset [expr $r_pitch * 4]
 
-placeInstance sram/sram/mem \
+placeInstance sram/sram/mem_000_000 \
               [expr $core_margin_l + $sram_inset] \
               [expr $core_margin_b + $sram_inset] \
               My
 
 # Cut the stdcell rows around the SRAM
 
-selectInst sram/sram/mem
+selectInst sram/sram/mem_000_000
 cutRow -selected -halo $sram_margin
 deselectInst *
 

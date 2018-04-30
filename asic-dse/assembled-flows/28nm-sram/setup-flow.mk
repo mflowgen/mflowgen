@@ -10,6 +10,8 @@
 steps = \
   gen-sram-verilog \
   gen-sram-lef \
+  gen-sram-gds \
+  gen-sram-cdl \
   gen-sram-db \
   prep-rtl-hard \
   sim-rtl-hard \
@@ -28,6 +30,8 @@ steps = \
 dependencies.gen-sram-verilog    = seed
 dependencies.gen-sram-db         = seed
 dependencies.gen-sram-lef        = seed
+dependencies.gen-sram-gds        = seed
+dependencies.gen-sram-cdl        = seed
 dependencies.prep-rtl-hard       = gen-sram-verilog
 dependencies.sim-rtl-hard        = prep-rtl-hard
 

@@ -160,6 +160,23 @@ addRing -nets {VDD VSS} -type core_rings -follow core   \
 #
 #     (identical notes as the single-port user guide)
 #
+# ARM external power-gating SRAM notes from that user guide:
+#
+#     ARM® 28nm TSMC CLN28HPC External Power Gating
+#     Revision: r0p0
+#
+#     The top supply metal in ARM memory compilers is M4. To meet instance
+#     IR drop requirements, M5 straps at least 0.120μm wide for VDDPE,
+#     VSSE, and VDDCE must be located over the instance, perpendicular
+#     to the instance M4 supply strap direction, and within 5μm of the
+#     instance edge. In addition, a pattern of VDDPE, VSSE, and VDDCE
+#     M5 straps, each at least 0.120μm wide, must be repeated across
+#     the instance at 10μm intervals. Each intersection of instance
+#     supply M4 and overlapping, perpendicular supply strap M5 must be
+#     maximally contacted.
+#
+# These all sound pretty similar.
+#
 # Parameters:
 #
 # - M5_str_width            : ARM recommended 8X thickness for M8 compared
@@ -174,7 +191,7 @@ addRing -nets {VDD VSS} -type core_rings -follow core   \
 # - M5_str_interset_pitch   : Pitch between same-signal stripes
 
 set M5_str_width            0.9
-set M5_str_pitch            [expr 6 * $M3_str_pitch]
+set M5_str_pitch            [expr 5 * $M3_str_pitch]
 set M5_str_intraset_spacing [expr $M5_str_pitch - $M5_str_width]
 set M5_str_interset_pitch   [expr 2*$M5_str_pitch]
 
