@@ -104,10 +104,8 @@ class DirectMappedInstBuffer( Model ):
 
     if   state == s.ctrl.STATE_IDLE:           state_str = "(I )"
     elif state == s.ctrl.STATE_TAG_CHECK:      state_str = "(TC)"
-    elif state == s.ctrl.STATE_MISS_ACCESS:    state_str = "(RD)"
     elif state == s.ctrl.STATE_REFILL_REQUEST: state_str = "(RR)"
     elif state == s.ctrl.STATE_REFILL_WAIT:    state_str = "(RW)"
-    elif state == s.ctrl.STATE_REFILL_UPDATE:  state_str = "(RU)"
     elif state == s.ctrl.STATE_WAIT_HIT:       state_str = "(W )"
     elif state == s.ctrl.STATE_WAIT_MISS:      state_str = "(W )"
     else :                                     state_str = "(? )"

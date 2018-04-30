@@ -125,14 +125,14 @@ class FullyAssocInstBufferDpath( Model ):
     def comb_buffresp_msg_pack():
       s.buffresp_msg.type_.value = MemRespMsg.TYPE_READ
       s.buffresp_msg.test.value  = concat( Bits( 1, 0 ), s.buffresp_hit )
-      s.buffresp_msg.len.value   = Bits( 2, 0 )
+      s.buffresp_msg.len.value   = 0
       s.buffresp_msg.data.value  = s.read_word_sel_mux.out
 
     @s.combinational
     def comb_memreq_msg_pack():
       s.memreq_msg.type_.value  = MemReqMsg.TYPE_READ
-      s.memreq_msg.opaque.value = Bits ( opaque_nbits, 0 )
+      s.memreq_msg.opaque.value = 0
       # No need to select/register the tag from tag array since there is no eviction!
       s.memreq_msg.addr.value   = concat(s.buffreq_addr_reg.out[line_bw:addr_nbits], Bits(line_bw, 0))
-      s.memreq_msg.len.value    = Bits ( 4, 0 )
+      s.memreq_msg.len.value    = 0
 

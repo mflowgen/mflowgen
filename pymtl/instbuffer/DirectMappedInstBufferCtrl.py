@@ -40,12 +40,10 @@ class DirectMappedInstBufferCtrl( Model ):
 
     s.STATE_IDLE           = Bits( 3, 0 )
     s.STATE_TAG_CHECK      = Bits( 3, 1 )
-    s.STATE_MISS_ACCESS    = Bits( 3, 2 )
-    s.STATE_WAIT_HIT       = Bits( 3, 3 )
-    s.STATE_WAIT_MISS      = Bits( 3, 4 )
-    s.STATE_REFILL_REQUEST = Bits( 3, 5 )
-    s.STATE_REFILL_WAIT    = Bits( 3, 6 )
-    s.STATE_REFILL_UPDATE  = Bits( 3, 7 )
+    s.STATE_REFILL_REQUEST = Bits( 3, 2 )
+    s.STATE_REFILL_WAIT    = Bits( 3, 3 )
+    s.STATE_WAIT_HIT       = Bits( 3, 4 )
+    s.STATE_WAIT_MISS      = Bits( 3, 5 )
 
     #----------------------------------------------------------------------
     # State
@@ -98,13 +96,7 @@ class DirectMappedInstBufferCtrl( Model ):
         if s.memreq_rdy: s.state_next.value = s.STATE_REFILL_WAIT
 
       elif s.state_reg == s.STATE_REFILL_WAIT:
-        if s.memresp_val: s.state_next.value = s.STATE_REFILL_UPDATE
-
-      elif s.state_reg == s.STATE_REFILL_UPDATE:
-        s.state_next.value = s.STATE_MISS_ACCESS
-
-      elif s.state_reg == s.STATE_MISS_ACCESS:
-        s.state_next.value = s.STATE_WAIT_MISS
+        if s.memresp_val: s.state_next.value = s.STATE_WAIT_MISS
 
       elif s.state_reg == s.STATE_WAIT_HIT:
         if s.out_go: s.state_next.value = s.STATE_IDLE
@@ -145,10 +137,8 @@ class DirectMappedInstBufferCtrl( Model ):
       s.cs.value                                    = concat( n,  n,   n,  n,   x,  n,   n  )
       if   sr == s.STATE_IDLE:           s.cs.value = concat( y,  n,   n,  n,   y,  n,   n  )
       elif sr == s.STATE_TAG_CHECK:      s.cs.value = concat( n,  n,   n,  n,   n,  n,   n  )
-      elif sr == s.STATE_MISS_ACCESS:    s.cs.value = concat( n,  n,   n,  n,   n,  n,   n  )
       elif sr == s.STATE_REFILL_REQUEST: s.cs.value = concat( n,  n,   y,  n,   n,  n,   n  )
-      elif sr == s.STATE_REFILL_WAIT:    s.cs.value = concat( n,  n,   n,  y,   n,  n,   n  )
-      elif sr == s.STATE_REFILL_UPDATE:  s.cs.value = concat( n,  n,   n,  n,   n,  n,   y  )
+      elif sr == s.STATE_REFILL_WAIT:    s.cs.value = concat( n,  n,   n,  y,   n,  n,   y  )
       elif sr == s.STATE_WAIT_HIT:       s.cs.value = concat( n,  y,   n,  n,   n,  y,   n  )
       elif sr == s.STATE_WAIT_MISS:      s.cs.value = concat( n,  y,   n,  n,   n,  n,   n  )
       else:                              s.cs.value = concat( n,  n,   n,  n,   n,  n,   n  )
@@ -172,3 +162,6 @@ class DirectMappedInstBufferCtrl( Model ):
         # if can send response, immediately take new buffreq
         s.buffreq_rdy.value  = s.buffresp_rdy
         s.buffreq_en.value   = s.buffresp_rdy
+
+      if (s.state_reg == s.STATE_REFILL_WAIT) & ~s.memresp_val:
+        s.arrays_wen.value = 0
