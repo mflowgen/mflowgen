@@ -1,5 +1,5 @@
 #=========================================================================
-# Functional Model for RF SP HDE 28nm
+# Functional Model for RF SP HSE 28nm
 #=========================================================================
 
 # OS and basics
@@ -9,7 +9,7 @@ import shutil
 #PyMTL import
 from pymtl import *
 
-class RfSpHde28nmFuncPRTL( Model ):
+class RfSpHse28nmFuncPRTL( Model ):
 
   def __init__( s, num_bits = 32, num_words = 256, module_name = '' ):
 
@@ -19,7 +19,7 @@ class RfSpHde28nmFuncPRTL( Model ):
 
     # SRAM Configuration
     sram_conf         = {}
-    sram_conf['type'] = 'rf_sp_hde'
+    sram_conf['type'] = 'rf_sp_hse'
 
     # If module_name is empty, compose one
     if not module_name:
@@ -78,6 +78,7 @@ class RfSpHde28nmFuncPRTL( Model ):
     s.d         = InPort ( BW )
     s.ema       = InPort (  3 )
     s.emaw      = InPort (  2 )
+    s.emas      = InPort (  1 )
     s.gwen      = InPort (  1 )
     s.ret1n     = InPort (  1 )
 

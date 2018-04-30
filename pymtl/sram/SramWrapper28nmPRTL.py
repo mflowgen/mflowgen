@@ -7,6 +7,7 @@ from pymtl import *
 # SRAMs Functional model
 from sram.SramSpHde28nmFuncPRTL import SramSpHde28nmFuncPRTL
 from sram.  RfSpHde28nmFuncPRTL import   RfSpHde28nmFuncPRTL
+from sram.  RfSpHse28nmFuncPRTL import   RfSpHse28nmFuncPRTL
 
 class SramWrapper28nmPRTL( Model ):
 
@@ -52,12 +53,15 @@ class SramWrapper28nmPRTL( Model ):
     #------------------------------
 
     if   num_words >= 32 and num_words <= 512:
-      sram_model = RfSpHde28nmFuncPRTL
-      sram_type  = 'rf_sp_hde'
+      #hawajkm: switching to rf_sp_hse as rf_sp_hde fails LVS
+      #sram_model = RfSpHde28nmFuncPRTL
+      #sram_type  = 'rf_sp_hde'
+      sram_model = RfSpHse28nmFuncPRTL
+      sram_type  = 'rf_sp_hse'
 
     elif num_words >= 1024:
       sram_model = SramSpHde28nmFuncPRTL
-      sram_type  = 'sram_sp_hde'
+      sram_type  = 'sram_sp_hse'
 
     else:
       raise ValueError
@@ -103,6 +107,7 @@ class SramWrapper28nmPRTL( Model ):
     s.d         = Wire( BW )
     s.ema       = Wire(  3 )
     s.emaw      = Wire(  2 )
+    s.emas      = Wire(  1 )
     s.ten       = Wire(  1 )
     s.tcen      = Wire(  1 )
     s.twen      = Wire(  1 )
@@ -150,6 +155,9 @@ class SramWrapper28nmPRTL( Model ):
 
         )
 
+        if hasattr(bank, 'emas'):
+          s.connect(bank.emas, 1)
+
     # Only SRAMs
 
     if s.type_ == 'sram_sp_hde':
@@ -157,10 +165,10 @@ class SramWrapper28nmPRTL( Model ):
       s.connect_pairs (
 
         # Outputs
-        s    .ceny      , s.mem.CENY      ,
-        s    .weny      , s.mem.WENY      ,
-        s    .ay        , s.mem.AY        ,
-        s    .so        , s.mem.SO        ,
+        s    .ceny      , s.mem.ceny      ,
+        s    .weny      , s.mem.weny      ,
+        s    .ay        , s.mem.ay        ,
+        s    .so        , s.mem.so        ,
 
         # Test Constants
         s.mem.ten       , 1               ,
