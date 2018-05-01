@@ -27,7 +27,8 @@ idw            = clog2(nblocks)-1  # Short name for index width
 idw_off        = idw+4
 
 class BlockingCacheCtrlPRTL( Model ):
-  def __init__( s, idx_shamt = 0 ):
+  def __init__( s, idx_shamt = 0, CacheReqType  = MemReqMsg4B  ,
+                                  CacheRespType = MemRespMsg4B ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -78,7 +79,7 @@ class BlockingCacheCtrlPRTL( Model ):
     s.data_array_wben    = OutPort( clw/8 )
     s.read_data_reg_en   = OutPort( 1 )
     s.read_tag_reg_en    = OutPort( 1 )
-    s.read_byte_sel      = OutPort( clog2(clw/dbw) )
+    s.read_word_sel      = OutPort( clog2(clw/dbw) )
     s.memreq_type        = OutPort( 4 )
     s.cacheresp_type     = OutPort( 4 )
     s.cacheresp_hit      = OutPort( 1 )
@@ -86,7 +87,7 @@ class BlockingCacheCtrlPRTL( Model ):
     # status signals (dpath->ctrl)
 
     s.cachereq_data_reg_out = InPort ( dbw )
-    s.read_byte_sel_mux_out = InPort ( dbw )
+    s.read_word_sel_mux_out = InPort ( dbw )
     s.cachereq_type         = InPort ( 4 )
     s.cachereq_addr         = InPort ( abw )
     s.tag_match_0           = InPort ( 1 )
@@ -176,10 +177,10 @@ class BlockingCacheCtrlPRTL( Model ):
     @s.combinational
     def comb_amo_min():
       s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out ) \
-                         - concat( s.read_byte_sel_mux_out[dbw-1], s.read_byte_sel_mux_out )
+                         - concat( s.read_word_sel_mux_out[dbw-1], s.read_word_sel_mux_out )
 
       s.amo_min_sel.value  = s.tmp_min[dbw]
-      s.amo_minu_sel.value = s.cachereq_data_reg_out < s.read_byte_sel_mux_out
+      s.amo_minu_sel.value = s.cachereq_data_reg_out < s.read_word_sel_mux_out
 
     # Choose amo max
 
@@ -592,8 +593,8 @@ class BlockingCacheCtrlPRTL( Model ):
     # Choose byte to read from cacheline based on what the offset was
 
     @s.combinational
-    def comb_read_byte_sel():
-      s.read_byte_sel.value = s.cachereq_offset
+    def comb_read_word_sel():
+      s.read_word_sel.value = s.cachereq_offset
 
     @s.combinational
     def comb_enable_writing():
