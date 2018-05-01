@@ -56,11 +56,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
 
     # control signals (ctrl->dpath)
 
-    s.amo_min_sel        = OutPort( 1 )
-    s.amo_minu_sel       = OutPort( 1 )
-    s.amo_max_sel        = OutPort( 1 )
-    s.amo_maxu_sel       = OutPort( 1 )
-    s.amo_sel            = OutPort( 4 )
     s.cachereq_en        = OutPort( 1 )
     s.memresp_en         = OutPort( 1 )
     s.is_refill          = OutPort( 1 )
@@ -122,10 +117,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
     s.STATE_EVICT_PREPARE              = Bits( 5, 11 )
     s.STATE_EVICT_REQUEST              = Bits( 5, 12 )
     s.STATE_EVICT_WAIT                 = Bits( 5, 13 )
-    s.STATE_AMO_READ_DATA_ACCESS_HIT   = Bits( 5, 14 )
-    s.STATE_AMO_WRITE_DATA_ACCESS_HIT  = Bits( 5, 15 )
-    s.STATE_AMO_READ_DATA_ACCESS_MISS  = Bits( 5, 16 )
-    s.STATE_AMO_WRITE_DATA_ACCESS_MISS = Bits( 5, 17 )
     s.STATE_INIT_DATA_ACCESS           = Bits( 5, 18 )
 
     #----------------------------------------------------------------------
@@ -151,10 +142,8 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
     s.is_read   = Wire( 1 )
     s.is_write  = Wire( 1 )
     s.is_init   = Wire( 1 )
-    s.is_amo    = Wire( 1 )
     s.read_hit  = Wire( 1 )
     s.write_hit = Wire( 1 )
-    s.amo_hit   = Wire( 1 )
     s.miss_0    = Wire( 1 )
     s.miss_1    = Wire( 1 )
     s.refill    = Wire( 1 )
@@ -170,51 +159,14 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       s.is_read.value   = s.cachereq_type == MemReqMsg.TYPE_READ
       s.is_write.value  = s.cachereq_type == MemReqMsg.TYPE_WRITE
       s.is_init.value   = s.cachereq_type == MemReqMsg.TYPE_WRITE_INIT
-      s.is_amo.value    = s.amo_sel != Bits( 4, 0 )
       s.read_hit.value  = s.is_read & s.hit
       s.write_hit.value = s.is_write & s.hit
-      s.amo_hit.value   = s.is_amo & s.hit
       s.miss_0.value    = ~s.hit_0
       s.miss_1.value    = ~s.hit_1
       s.refill.value    = (s.miss_0 & ~s.is_dirty_0 & ~s.lru_way) | \
                           (s.miss_1 & ~s.is_dirty_1 &  s.lru_way)
       s.evict.value     = (s.miss_0 &  s.is_dirty_0 & ~s.lru_way) | \
                           (s.miss_1 &  s.is_dirty_1 &  s.lru_way)
-
-    # Choose amo min
-
-    s.tmp_min = Wire ( dbw+1 )
-
-    @s.combinational
-    def comb_amo_min():
-      s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out[0:dbw] ) \
-                         - concat( s.read_word_sel_mux_out[dbw-1], s.read_word_sel_mux_out[0:dbw] )
-
-      s.amo_min_sel.value  = s.tmp_min[dbw]
-      s.amo_minu_sel.value = s.cachereq_data_reg_out[0:dbw] < s.read_word_sel_mux_out
-
-    # Choose amo max
-
-    @s.combinational
-    def comb_amo_max():
-      s.amo_max_sel.value  = ~s.amo_min_sel
-      s.amo_maxu_sel.value = ~s.amo_minu_sel
-
-    # Determine amo type
-
-    @s.combinational
-    def comb_amo_type():
-      cachereq_type = s.cachereq_type
-      if   cachereq_type == MemReqMsg.TYPE_AMO_ADD  : s.amo_sel.value = Bits( 4, 1 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_AND  : s.amo_sel.value = Bits( 4, 2 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_OR   : s.amo_sel.value = Bits( 4, 3 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_SWAP : s.amo_sel.value = Bits( 4, 4 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MIN  : s.amo_sel.value = Bits( 4, 5 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MINU : s.amo_sel.value = Bits( 4, 6 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MAX  : s.amo_sel.value = Bits( 4, 7 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MAXU : s.amo_sel.value = Bits( 4, 8 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_XOR  : s.amo_sel.value = Bits( 4, 9 )
-      else                                          : s.amo_sel.value = Bits( 4, 0 )
 
     s.state_reg  = Wire( 5 )
     s.state_next = Wire( 5 )
@@ -232,7 +184,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
         elif ( s.read_hit  & ~s.cacheresp_rdy )                   : s.state_next.value = s.STATE_WAIT_HIT
         elif ( s.write_hit &  s.cacheresp_rdy )                   : s.state_next.value = s.STATE_WRITE_DATA_ACCESS_HIT
         elif ( s.write_hit & ~s.cacheresp_rdy )                   : s.state_next.value = s.STATE_WRITE_CACHE_RESP_HIT
-        elif ( s.amo_hit      )                                   : s.state_next.value = s.STATE_AMO_READ_DATA_ACCESS_HIT
         elif ( s.refill       )                                   : s.state_next.value = s.STATE_REFILL_REQUEST
         elif ( s.evict        )                                   : s.state_next.value = s.STATE_EVICT_PREPARE
 
@@ -253,18 +204,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       elif s.state_reg == s.STATE_INIT_DATA_ACCESS:
         s.state_next.value = s.STATE_WAIT_MISS
 
-      elif s.state_reg == s.STATE_AMO_READ_DATA_ACCESS_HIT:
-        s.state_next.value = s.STATE_AMO_WRITE_DATA_ACCESS_HIT
-
-      elif s.state_reg == s.STATE_AMO_WRITE_DATA_ACCESS_HIT:
-        s.state_next.value = s.STATE_WAIT_HIT
-
-      elif s.state_reg == s.STATE_AMO_READ_DATA_ACCESS_MISS:
-        s.state_next.value = s.STATE_AMO_WRITE_DATA_ACCESS_MISS
-
-      elif s.state_reg == s.STATE_AMO_WRITE_DATA_ACCESS_MISS:
-        s.state_next.value = s.STATE_WAIT_MISS
-
       elif s.state_reg == s.STATE_REFILL_REQUEST:
         if   ( s.memreq_rdy   ): s.state_next.value = s.STATE_REFILL_WAIT
         elif ( ~s.memreq_rdy  ): s.state_next.value = s.STATE_REFILL_REQUEST
@@ -276,7 +215,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       elif s.state_reg == s.STATE_REFILL_UPDATE:
         if   ( s.is_read      ): s.state_next.value = s.STATE_READ_DATA_ACCESS_MISS
         elif ( s.is_write     ): s.state_next.value = s.STATE_WRITE_DATA_ACCESS_MISS
-        elif ( s.is_amo       ): s.state_next.value = s.STATE_AMO_READ_DATA_ACCESS_MISS
 
       elif s.state_reg == s.STATE_EVICT_PREPARE:
         s.state_next.value = s.STATE_EVICT_REQUEST
@@ -475,10 +413,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       elif sr == s.STATE_READ_DATA_ACCESS_MISS:       s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   n    )
       elif sr == s.STATE_WRITE_DATA_ACCESS_MISS:      s.cs.value = concat( n,   y,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
       elif sr == s.STATE_INIT_DATA_ACCESS:            s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    n,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_AMO_READ_DATA_ACCESS_HIT:    s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
-      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_HIT:   s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
-      elif sr == s.STATE_AMO_READ_DATA_ACCESS_MISS:   s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   y,   n,   m_x, x,    n,    x,    n,    y,    n,     n,   y    )
-      elif sr == s.STATE_AMO_WRITE_DATA_ACCESS_MISS:  s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_c,   n,   n,   m_x, y,    y,    y,    y,    y,    n,     n,   n    )
       elif sr == s.STATE_REFILL_REQUEST:              s.cs.value = concat( n,   n,   y,  n,   n,   n,   r_x,   n,   n,   m_r, x,    n,    x,    n,    n,    n,     n,   n    )
       elif sr == s.STATE_REFILL_WAIT:                 s.cs.value = concat( n,   n,   n,  y,   n,   y,   r_m,   n,   n,   m_x, x,    n,    x,    n,    n,    n,     n,   n    )
       elif sr == s.STATE_REFILL_UPDATE:               s.cs.value = concat( n,   n,   n,  n,   n,   n,   r_x,   n,   n,   m_x, y,    y,    n,    y,    n,    n,     n,   n    )
@@ -550,10 +484,6 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       elif sn == s.STATE_READ_DATA_ACCESS_MISS:       s.ns.value = concat( n,    n,    n,    y,   )
       elif sn == s.STATE_WRITE_DATA_ACCESS_MISS:      s.ns.value = concat( y,    n,    y,    n,   )
       elif sn == s.STATE_INIT_DATA_ACCESS:            s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_AMO_READ_DATA_ACCESS_HIT:    s.ns.value = concat( n,    n,    n,    y,   )
-      elif sn == s.STATE_AMO_WRITE_DATA_ACCESS_HIT:   s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_AMO_READ_DATA_ACCESS_MISS:   s.ns.value = concat( n,    n,    n,    y,   )
-      elif sn == s.STATE_AMO_WRITE_DATA_ACCESS_MISS:  s.ns.value = concat( y,    n,    y,    n,   )
       elif sn == s.STATE_REFILL_REQUEST:              s.ns.value = concat( n,    n,    n,    n,   )
       elif sn == s.STATE_REFILL_WAIT:                 s.ns.value = concat( n,    n,    n,    n,   )
       elif sn == s.STATE_REFILL_UPDATE:               s.ns.value = concat( y,    n,    y,    n,   )
