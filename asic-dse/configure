@@ -70,3 +70,13 @@ if [[ x$1 == x--28nm-sram* ]]; then
   ln -sf ../assembled-flows/28nm-sram/Makefrag
 fi
 
+#-------------------------------------------------------------------------
+# 28nm-cache
+#-------------------------------------------------------------------------
+# This flow has its own Makefrag
+
+if [[ x$1 == x--28nm-cache* ]]; then
+  ln -sf ../assembled-flows/28nm-cache/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-cache/Makefrag
+fi
+
