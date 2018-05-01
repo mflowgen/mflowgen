@@ -47,7 +47,7 @@ from ifcs       import CtrlRegReqMsg, CtrlRegRespMsg
 
 class CtrlReg( Model ):
 
-  def __init__( s ):
+  def __init__( s, num_cores ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -60,12 +60,12 @@ class CtrlReg( Model ):
 
     # Ports from processor to CtrlReg
 
-    s.commit_inst = InPort( 1 )
+    s.commit_inst = InPort( num_cores )
     s.stats_en    = InPort( 1 )
 
     # Ports from CtrlReg to processor
 
-    s.go          = OutPort( 1 )
+    s.go          = OutPort( num_cores )
 
     # Misc ports
 
@@ -168,9 +168,10 @@ class CtrlReg( Model ):
     s.cr_instcounter_en = Wire( 1 )
     s.cr_instcounter_in = Wire( 32 )
 
+    # Shunning: currently we only count core 0's commit_inst
     @s.combinational
     def comb_cr_instcounter_logic():
-      s.cr_instcounter_en.value = s.commit_inst & s.stats_en
+      s.cr_instcounter_en.value = s.commit_inst[0] & s.stats_en
       s.cr_instcounter_in.value = s.ctrlregs[cr_instcounter].out + 1
 
     s.connect_pairs(
@@ -199,7 +200,10 @@ class CtrlReg( Model ):
 
     # go bit (1 bit)
 
-    s.connect( s.ctrlregs[cr_go].out[0], s.go )
+    # Shunning: currently we set the go bit of all cores at the same time
+
+    for i in xrange(num_cores):
+      s.connect( s.ctrlregs[cr_go].out[0], s.go[i] )
 
     # debug bit (1 bit)
 
@@ -231,4 +235,3 @@ class CtrlReg( Model ):
 
   def line_trace( s ):
     return '({})'.format(s.in_q.deq)
-

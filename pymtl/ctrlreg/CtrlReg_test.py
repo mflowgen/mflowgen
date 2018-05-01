@@ -27,7 +27,7 @@ class TestHarness( Model ):
     # Instantiate models
 
     s.src  = TestSource( CtrlRegReqMsg(),  src_msgs,  src_delay  )
-    s.dut  = CtrlReg()
+    s.dut  = CtrlReg( num_cores=1 )
     s.sink = TestSink  ( CtrlRegRespMsg(), sink_msgs, sink_delay )
 
     # Dump VCD
