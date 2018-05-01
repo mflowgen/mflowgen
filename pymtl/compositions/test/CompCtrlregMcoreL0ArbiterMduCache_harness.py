@@ -12,15 +12,13 @@ from pclib.test import TestSource, TestSink
 
 from proc.tinyrv2_encoding import assemble
 
-from ifcs import CtrlRegReqMsg, CtrlRegRespMsg
-
 # BRGTC2 custom TestMemory modified for RISC-V 32
 
 from test import TestMemory
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs import MemMsg, MduMsg
+from ifcs import MemMsg, MduMsg, CtrlRegMsg,CtrlRegReqMsg, CtrlRegRespMsg
 
 #=========================================================================
 # TestHarness
@@ -73,6 +71,9 @@ class TestHarness( Model ):
     # - 1 x actual dmem req/resp
 
     # Interface types
+    mopaque_nbits = 8
+    addr_nbits    = 32
+    word_nbits    = 32
 
     s.ctrlregifc     = CtrlRegMsg()
     s.proc_cache_ifc = MemMsg( mopaque_nbits, addr_nbits, word_nbits )
@@ -108,6 +109,11 @@ class TestHarness( Model ):
 
     s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
                         num_memports, mem_stall_prob, mem_latency )
+
+    # Ctrlreg
+
+    s.connect( s.model.ctrlregreq,  s.ctrlregsrc.out   )
+    s.connect( s.model.ctrlregresp, s.ctrlregsink.in_  )
 
     # Composition <-> Memory
 
@@ -227,21 +233,23 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def done( s ):
-    return reduce( lambda x,y : x and y,
-                  [x.done for x in s.src]+[x.done for x in s.sink] )
+    return s.ctrlregsrc.done and s.ctrlregsink.done and \
+          reduce( lambda x,y : x and y, [x.done for x in s.src]+[x.done for x in s.sink] ) and \
+          s.host_mdu_src.done and s.host_mdu_sink.done and \
+          s.host_icache_src.done and s.host_icache_sink.done and \
+          s.host_dcache_src.done and s.host_dcache_sink.done
 
   #-----------------------------------------------------------------------
   # line_trace
   #-----------------------------------------------------------------------
 
   def line_trace( s ):
-    src_trace  = "|".join( [x.line_trace() for x in s.src]  )
-    sink_trace = "|".join( [x.line_trace() for x in s.sink] )
-    return src_trace + " >" + \
-           ("- " if s.model.stats_en else "  ") + \
-           s.model.line_trace() + "|" + \
-           s.mem.line_trace()  + " > " + \
-           sink_trace
+    return s.ctrlregsrc.line_trace()  + " > " + \
+           s.model.ctrlreg.line_trace() + " > " + \
+           s.ctrlregsink.line_trace() + \
+           "|".join( [x.line_trace() for x in s.src]  ) + \
+           s.model.line_trace() + \
+           "|".join( [x.line_trace() for x in s.sink] )
 
 #=========================================================================
 # run_test

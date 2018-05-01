@@ -9,16 +9,18 @@ from pclib.ifcs              import InValRdyBundle, OutValRdyBundle
 
 from ifcs                    import CtrlRegMsg, MemMsg, MduMsg
 
-from proc.ProcPRTL           import ProcPRTL
-from proc.NullXcelRTL        import NullXcelRTL
+from ctrlreg.CtrlReg                      import CtrlReg
+from proc.ProcPRTL                        import ProcPRTL
+from proc.NullXcelRTL                     import NullXcelRTL
+from mdu.IntMulDivUnit                    import IntMulDivUnit
+from instbuffer.InstBuffer                import InstBuffer
 
 from cache.BlockingCachePRTL              import BlockingCachePRTL
 from cache_wa.BlockingCacheWideAccessPRTL import BlockingCacheWideAccessPRTL
 
-from mdu.IntMulDivUnit       import IntMulDivUnit
-
 from networks.Funnel         import Funnel
 from networks.Router         import Router
+from adapters.HostAdapter    import HostAdapter
 
 class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
@@ -102,7 +104,7 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
     # Control Register
 
-    s.ctrlreg = CtrlReg()
+    s.ctrlreg = CtrlReg( num_cores )
 
     # Processors
 
@@ -248,9 +250,10 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     # line trace.
     # Feel free to revamp it based on your need.
 
-    trace = s.icache.line_trace()
+    trace = "I$" + s.icache.line_trace()
     trace += ' [ ' + s.mdu.line_trace()      + ' ] '
     for i in xrange(len(s.proc)):
       trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() + ' ] '
-    return trace + s.dcache.line_trace()
+    trace += "D$" + s.dcache.line_trace()
+    return trace
 
