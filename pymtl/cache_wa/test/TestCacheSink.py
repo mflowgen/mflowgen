@@ -46,6 +46,10 @@ class TestSimpleCacheSink( Model ):
 
       if in_go:
         # if memresp is a write, ignore the data
+        if s.in_.msg.data != s.msgs[s.idx].data:
+          print(s.in_.msg.data, s.msgs[s.idx].data)
+        if s.in_.msg.opaque != s.msgs[s.idx].opaque:
+          print(s.in_.msg.opaque, s.msgs[s.idx].opaque)
         if   s.in_.msg.type_ == MemRespMsg.TYPE_WRITE:
           assert   s.in_.msg.opaque == s.msgs[s.idx].opaque
         elif s.in_.msg.type_ == MemRespMsg.TYPE_WRITE_INIT:
