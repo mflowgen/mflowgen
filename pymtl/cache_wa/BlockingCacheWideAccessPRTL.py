@@ -58,7 +58,7 @@ class BlockingCacheWideAccessPRTL( Model ):
 
     # Bypass Queue for buffering response
 
-    s.resp_bypass = SingleElementBypassQueue( MemRespMsg4B )
+    s.resp_bypass = SingleElementBypassQueue( MemRespMsg16B )
 
     # Control
 
@@ -149,7 +149,7 @@ class BlockingCacheWideAccessPRTL( Model ):
     elif state == s.ctrl.STATE_WAIT_MISS:                   state_str = "(W )"
     else :                                                  state_str = "(? )"
 
-    return '---' + state_str
+    return state_str
 
     #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 

@@ -904,54 +904,54 @@ test_case_table_set_assoc = mk_test_case_table([
 
 ])
 
-@pytest.mark.parametrize( **test_case_table_set_assoc )
-def test_set_assoc( test_params, dump_vcd ):
-  msgs = test_params.msg_func( 0 )
-  if test_params.mem_data_func != None:
-    mem  = test_params.mem_data_func( 0 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         BlockingCacheWideAccessFL, False, dump_vcd )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
-
-#-------------------------------------------------------------------------
-# Test table for direct-mapped cache (baseline design)
-#-------------------------------------------------------------------------
-
-test_case_table_dir_mapped = mk_test_case_table([
-  (                                  "msg_func              mem_data_func          stall lat src sink"),
-  [ "read_hit_dmap",                  read_hit_dmap,        None,                  0.0,  0,  0,  0    ],
-
-  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  # LAB TASK: Add test cases to this table
-  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
-
-  [ "dir_maped_test_long0",           dir_mapped_long0_msg, dir_mapped_long0_mem,  0.0,  0,  0,  0    ],
-  [ "dir_maped_test_long0_lat4_3x14", dir_mapped_long0_msg, dir_mapped_long0_mem,  0.5,  4,  3,  14   ],
-
-  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
-
-])
-
-@pytest.mark.parametrize( **test_case_table_dir_mapped )
-def test_dir_mapped( test_params, dump_vcd ):
-  msgs = test_params.msg_func( 0 )
-  if test_params.mem_data_func != None:
-    mem  = test_params.mem_data_func( 0 )
-  # Instantiate testharness
-  harness = TestHarness( msgs[::2], msgs[1::2],
-                         test_params.stall, test_params.lat,
-                         test_params.src, test_params.sink,
-                         BlockingCacheWideAccessFL, False, dump_vcd )
-  # Load memory before the test
-  if test_params.mem_data_func != None:
-    harness.load( mem[::2], mem[1::2] )
-  # Run the test
-  run_sim( harness, dump_vcd )
-
+#@pytest.mark.parametrize( **test_case_table_set_assoc )
+#def test_set_assoc( test_params, dump_vcd ):
+#  msgs = test_params.msg_func( 0 )
+#  if test_params.mem_data_func != None:
+#    mem  = test_params.mem_data_func( 0 )
+#  # Instantiate testharness
+#  harness = TestHarness( msgs[::2], msgs[1::2],
+#                         test_params.stall, test_params.lat,
+#                         test_params.src, test_params.sink,
+#                         BlockingCacheWideAccessFL, False, dump_vcd )
+#  # Load memory before the test
+#  if test_params.mem_data_func != None:
+#    harness.load( mem[::2], mem[1::2] )
+#  # Run the test
+#  run_sim( harness, dump_vcd )
+#
+##-------------------------------------------------------------------------
+## Test table for direct-mapped cache (baseline design)
+##-------------------------------------------------------------------------
+#
+#test_case_table_dir_mapped = mk_test_case_table([
+#  (                                  "msg_func              mem_data_func          stall lat src sink"),
+#  [ "read_hit_dmap",                  read_hit_dmap,        None,                  0.0,  0,  0,  0    ],
+#
+#  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+#  # LAB TASK: Add test cases to this table
+#  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
+#
+#  [ "dir_maped_test_long0",           dir_mapped_long0_msg, dir_mapped_long0_mem,  0.0,  0,  0,  0    ],
+#  [ "dir_maped_test_long0_lat4_3x14", dir_mapped_long0_msg, dir_mapped_long0_mem,  0.5,  4,  3,  14   ],
+#
+#  #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+#
+#])
+#
+#@pytest.mark.parametrize( **test_case_table_dir_mapped )
+#def test_dir_mapped( test_params, dump_vcd ):
+#  msgs = test_params.msg_func( 0 )
+#  if test_params.mem_data_func != None:
+#    mem  = test_params.mem_data_func( 0 )
+#  # Instantiate testharness
+#  harness = TestHarness( msgs[::2], msgs[1::2],
+#                         test_params.stall, test_params.lat,
+#                         test_params.src, test_params.sink,
+#                         BlockingCacheWideAccessFL, False, dump_vcd )
+#  # Load memory before the test
+#  if test_params.mem_data_func != None:
+#    harness.load( mem[::2], mem[1::2] )
+#  # Run the test
+#  run_sim( harness, dump_vcd )
+#

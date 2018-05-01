@@ -98,17 +98,22 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_data_reg_out = OutPort( tmp.data  )
-    s.cachereq_len_reg_out  = OutPort( tmp.len   )
-    s.read_word_sel_mux_out = OutPort( tmp.data  )
-    s.cachereq_type         = OutPort( tmp.type_ )
-    s.cachereq_addr         = OutPort( tmp.addr  )
-    s.tag_match_0           = OutPort(     1     )
-    s.tag_match_1           = OutPort(     1     )
+    type_bw = tmp.type_.nbits
+    addr_bw = tmp.addr.nbits
+    opaq_bw = tmp.opaque.nbits
+    data_bw = tmp.data.nbits
+    len_bw = tmp.len.nbits
+
+    s.cachereq_data_reg_out = OutPort( data_bw )
+    s.cachereq_len_reg_out  = OutPort( len_bw  )
+    s.read_word_sel_mux_out = OutPort( dbw     )
+    s.cachereq_type         = OutPort( type_bw )
+    s.cachereq_addr         = OutPort( addr_bw )
+    s.tag_match_0           = OutPort(     1   )
+    s.tag_match_1           = OutPort(     1   )
 
     # Register the unpacked cachereq_msg
 
-    type_bw = tmp.type_.nbits
     s.cachereq_type_reg = m = RegEnRst( dtype = type_bw, reset_value = 0 )
 
     s.connect_pairs(
@@ -117,7 +122,6 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       m.out, s.cachereq_type
     )
 
-    addr_bw = tmp.addr.nbits
     s.cachereq_addr_reg = m = RegEnRst( dtype = addr_bw, reset_value = 0 )
 
     s.connect_pairs(
@@ -126,7 +130,6 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       m.out, s.cachereq_addr
     )
 
-    opaq_bw = tmp.opaque.nbits
     s.cachereq_opaque_reg = m = RegEnRst( dtype = opaq_bw, reset_value = 0 )
 
     s.connect_pairs(
@@ -135,7 +138,6 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       m.out, s.cacheresp_msg.opaque,
     )
 
-    data_bw = tmp.data.nbits
     s.cachereq_data_reg = m = RegEnRst( dtype = tmp.data, reset_value = 0 )
 
     s.connect_pairs(
@@ -144,7 +146,6 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       m.out, s.cachereq_data_reg_out,
     )
 
-    len_bw = tmp.len.nbits
     s.cachereq_len_reg = m = RegEnRst( dtype = len_bw, reset_value = 0 )
 
     s.connect_pairs(
@@ -168,7 +169,7 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     s.connect_pairs(
       m.in_[0],  s.read_word_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[1],  s.cachereq_data_reg_out[0:dbw],
       m.sel,     s.amo_min_sel,
     )
 
@@ -178,7 +179,7 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     s.connect_pairs(
       m.in_[0],  s.read_word_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[1],  s.cachereq_data_reg_out[0:dbw],
       m.sel,     s.amo_minu_sel,
     )
 
@@ -188,7 +189,7 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     s.connect_pairs(
       m.in_[0],  s.read_word_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[1],  s.cachereq_data_reg_out[0:dbw],
       m.sel,     s.amo_max_sel,
     )
 
@@ -198,7 +199,7 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     s.connect_pairs(
       m.in_[0],  s.read_word_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[1],  s.cachereq_data_reg_out[0:dbw],
       m.sel,     s.amo_maxu_sel,
     )
 
@@ -219,18 +220,18 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
 
     @s.combinational
     def comb_connect_wires():
-      s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg_out + s.read_word_sel_mux_out
-      s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg_out & s.read_word_sel_mux_out
-      s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg_out | s.read_word_sel_mux_out
-      s.cachereq_data_reg_out_swap.value  = s.cachereq_data_reg_out
+      s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg_out[0:dbw] + s.read_word_sel_mux_out
+      s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg_out[0:dbw] & s.read_word_sel_mux_out
+      s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg_out[0:dbw] | s.read_word_sel_mux_out
+      s.cachereq_data_reg_out_swap.value  = s.cachereq_data_reg_out[0:dbw]
       s.cachereq_data_reg_out_min.value   = s.amo_min_mux.out
       s.cachereq_data_reg_out_minu.value  = s.amo_minu_mux.out
       s.cachereq_data_reg_out_max.value   = s.amo_max_mux.out
       s.cachereq_data_reg_out_maxu.value  = s.amo_maxu_mux.out
-      s.cachereq_data_reg_out_xor.value   = s.cachereq_data_reg_out ^ s.read_word_sel_mux_out
+      s.cachereq_data_reg_out_xor.value   = s.cachereq_data_reg_out[0:dbw] ^ s.read_word_sel_mux_out
 
     s.connect_pairs(
-      m.in_[0],  s.cachereq_data_reg_out,
+      m.in_[0],  s.cachereq_data_reg_out[0:dbw],
       m.in_[1],  s.cachereq_data_reg_out_add,
       m.in_[2],  s.cachereq_data_reg_out_and,
       m.in_[3],  s.cachereq_data_reg_out_or,
@@ -486,11 +487,11 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
     def gen_masks():
 
       # Align data
-      s.shft_amnt  .value = s.cachereq_addr_reg_out[clog2(clw/8)] << 3
+      s.shft_amnt  .value = s.cachereq_addr[clog2(clw/8)] << 3
       s.output_data.value = s.read_data
       s.output_data.value = s.output_data >> s.shft_amnt
       s.omask      .value = ~Bits( data_bw, 0 )
-      s.omask      .value = s.omask << s.cachereq_len_reg_out
+      s.omask      .value = (s.omask << s.cachereq_len_reg_out)
       s.output_data.value = s.output_data & s.omask
 
     @s.combinational

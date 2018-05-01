@@ -86,10 +86,21 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_data_reg_out = InPort ( dbw )
-    s.read_word_sel_mux_out = InPort ( dbw )
-    s.cachereq_type         = InPort ( 4 )
-    s.cachereq_addr         = InPort ( abw )
+    # Actually get all datatypes and length from types
+    tmp   = CacheReqType()
+
+    # status signals (dpath->ctrl)
+
+    type_bw = tmp.type_.nbits
+    addr_bw = tmp.addr.nbits
+    opaq_bw = tmp.opaque.nbits
+    data_bw = tmp.data.nbits
+    len_bw = tmp.len.nbits
+
+    s.cachereq_data_reg_out = InPort ( data_bw )
+    s.read_word_sel_mux_out = InPort ( dbw     )
+    s.cachereq_type         = InPort ( type_bw )
+    s.cachereq_addr         = InPort ( addr_bw )
     s.tag_match_0           = InPort ( 1 )
     s.tag_match_1           = InPort ( 1 )
 
@@ -176,11 +187,11 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
 
     @s.combinational
     def comb_amo_min():
-      s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out ) \
-                         - concat( s.read_word_sel_mux_out[dbw-1], s.read_word_sel_mux_out )
+      s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out[0:dbw] ) \
+                         - concat( s.read_word_sel_mux_out[dbw-1], s.read_word_sel_mux_out[0:dbw] )
 
       s.amo_min_sel.value  = s.tmp_min[dbw]
-      s.amo_minu_sel.value = s.cachereq_data_reg_out < s.read_word_sel_mux_out
+      s.amo_minu_sel.value = s.cachereq_data_reg_out[0:dbw] < s.read_word_sel_mux_out
 
     # Choose amo max
 
