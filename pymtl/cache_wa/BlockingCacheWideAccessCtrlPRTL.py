@@ -24,6 +24,8 @@ clw            = 128             # Short name for cacheline bitwidth
 nblocks        = size*8/clw      # Number of blocks in the cache
 o              = p_opaque_nbits
 idw            = clog2(nblocks)-1  # Short name for index width
+num_bytes      = clw / 8
+num_bytes_bw   = clog2(num_bytes)
 idw_off        = idw+4
 
 class BlockingCacheWideAccessCtrlPRTL( Model ):
@@ -74,7 +76,7 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
     s.data_array_wben    = OutPort( clw/8 )
     s.read_data_reg_en   = OutPort( 1 )
     s.read_tag_reg_en    = OutPort( 1 )
-    s.read_word_sel      = OutPort( clog2(clw/dbw) )
+    s.read_byte_sel      = OutPort( clog2(clw/8) )
     s.memreq_type        = OutPort( 4 )
     s.cacheresp_type     = OutPort( 4 )
     s.cacheresp_hit      = OutPort( 1 )
@@ -93,6 +95,7 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
     len_bw = tmp.len.nbits
 
     s.cachereq_data_reg_out = InPort ( data_bw )
+    s.cachereq_len_reg_out  = InPort ( len_bw  )
     s.read_word_sel_mux_out = InPort ( dbw     )
     s.cachereq_type         = InPort ( type_bw )
     s.cachereq_addr         = InPort ( addr_bw )
@@ -474,25 +477,25 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       # set enable for tag_array and data_array one cycle early (dependant on next_state)
       sn = s.state_next
       s.ns.value = concat( n,   n,    n,  n )
-      #                                                                   tag   tag   data  data
-      #                                                                   array array array array
-      #                                                                   wen   ren   wen   ren
-      if   sn == s.STATE_IDLE:                        s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_TAG_CHECK:                   s.ns.value = concat( n,    y,    n,    y,   )
-      elif sn == s.STATE_WRITE_CACHE_RESP_HIT:        s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_WRITE_DATA_ACCESS_HIT:       s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_READ_DATA_ACCESS_MISS:       s.ns.value = concat( n,    n,    n,    y,   )
-      elif sn == s.STATE_WRITE_DATA_ACCESS_MISS:      s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_INIT_DATA_ACCESS:            s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_REFILL_REQUEST:              s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_REFILL_WAIT:                 s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_REFILL_UPDATE:               s.ns.value = concat( y,    n,    y,    n,   )
-      elif sn == s.STATE_EVICT_PREPARE:               s.ns.value = concat( n,    y,    n,    y,   )
-      elif sn == s.STATE_EVICT_REQUEST:               s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_EVICT_WAIT:                  s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_WAIT_HIT:                    s.ns.value = concat( n,    n,    n,    n,   )
-      elif sn == s.STATE_WAIT_MISS:                   s.ns.value = concat( n,    n,    n,    n,   )
-      else :                                          s.ns.value = concat( n,    n,    n,    n,   )
+      #                                                              tag   tag   data  data
+      #                                                              array array array array
+      #                                                              wen   ren   wen   ren
+      if   sn == s.STATE_IDLE:                   s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_TAG_CHECK:              s.ns.value = concat( n,    y,    n,    y,   )
+      elif sn == s.STATE_WRITE_CACHE_RESP_HIT:   s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_WRITE_DATA_ACCESS_HIT:  s.ns.value = concat( y,    n,    y,    n,   )
+      elif sn == s.STATE_READ_DATA_ACCESS_MISS:  s.ns.value = concat( n,    n,    n,    y,   )
+      elif sn == s.STATE_WRITE_DATA_ACCESS_MISS: s.ns.value = concat( y,    n,    y,    n,   )
+      elif sn == s.STATE_INIT_DATA_ACCESS:       s.ns.value = concat( y,    n,    y,    n,   )
+      elif sn == s.STATE_REFILL_REQUEST:         s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_REFILL_WAIT:            s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_REFILL_UPDATE:          s.ns.value = concat( y,    n,    y,    n,   )
+      elif sn == s.STATE_EVICT_PREPARE:          s.ns.value = concat( n,    y,    n,    y,   )
+      elif sn == s.STATE_EVICT_REQUEST:          s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_EVICT_WAIT:             s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_WAIT_HIT:               s.ns.value = concat( n,    n,    n,    n,   )
+      elif sn == s.STATE_WAIT_MISS:              s.ns.value = concat( n,    n,    n,    n,   )
+      else :                                     s.ns.value = concat( n,    n,    n,    n,   )
 
       # Unpack signals
 
@@ -518,24 +521,25 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
     # This is in control because we want to facilitate more complex patterns
     #   when we want to start supporting subword accesses
 
-    s.cachereq_offset  = Wire (  2 )
+    s.cachereq_offset  = Wire ( clog2(clw / 8) )
     s.wben_decoder_out = Wire ( 16 )
 
     @s.combinational
     def comb_cachereq_offset():
-      s.cachereq_offset.value = s.cachereq_addr[2:4]
+      s.cachereq_offset.value = s.cachereq_addr[0:num_bytes_bw]
 
-    s.wben_decoder = m = DecodeWbenRTL( 2 )
+    s.wben_decoder = m = DecodeWbenRTL( num_bytes )
     s.connect_pairs(
-      m.in_,  s.cachereq_offset,
-      m.out,  s.wben_decoder_out,
+      m.idx,  s.cachereq_offset    ,
+      m.len,  s.cachereq_len_reg_out,
+      m.out,  s.wben_decoder_out   ,
     )
 
     # Choose byte to read from cacheline based on what the offset was
 
     @s.combinational
     def comb_read_word_sel():
-      s.read_word_sel.value = s.cachereq_offset
+      s.read_byte_sel.value = s.cachereq_offset
 
     @s.combinational
     def comb_enable_writing():
@@ -543,8 +547,8 @@ class BlockingCacheWideAccessCtrlPRTL( Model ):
       # Logic to enable writing of the entire cacheline in case of refill
       # and just one word for writes and init
 
-      if ( s.is_refill ) : s.data_array_wben.value = Bits( 16, 0xffff )
-      else               : s.data_array_wben.value = s.wben_decoder_out
+      if   ( s.is_refill ) : s.data_array_wben.value = Bits( 16, 0xffff )
+      else                 : s.data_array_wben.value = s.wben_decoder_out
 
       # Managing the cache response type based on cache request type
 

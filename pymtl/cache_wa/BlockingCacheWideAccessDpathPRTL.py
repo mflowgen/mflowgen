@@ -79,7 +79,7 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
     s.data_array_wben    = InPort( clw/8 )
     s.read_data_reg_en   = InPort( 1 )
     s.read_tag_reg_en    = InPort( 1 )
-    s.read_word_sel      = InPort( clog2(clw/dbw) )
+    s.read_byte_sel      = InPort( clog2(clw/8) )
     s.memreq_type        = InPort( 4 )
     s.cacheresp_type     = InPort( 4 )
     s.cacheresp_hit      = InPort( 1 )
@@ -162,12 +162,20 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       s.cachereq_tag.value = s.cachereq_addr_reg.out[4:abw]
       s.cachereq_idx.value = s.cachereq_addr_reg.out[4:idw_off]
 
+    # Shift incoming words incase of unaligned access
+    # hawajkm: I am assuming that we don't access the cache unaligned if wide-access
+    s.aligned_cache_data = Wire( data_bw )
+
+    @s.combinational
+    def comb_gen_align_cl():
+      s.aligned_cache_data.value = s.cachereq_data_reg_out << (s.read_byte_sel * 8)
+
     # Refill mux
 
     s.refill_mux = m = Mux( dtype = clw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.cachereq_data_reg_out,
+      m.in_[0],  s.aligned_cache_data,
       m.in_[1],  s.memresp_msg.data,
       m.sel,     s.is_refill,
     )
@@ -367,40 +375,29 @@ class BlockingCacheWideAccessDpathPRTL( Model ):
       m.out,      s.read_data,
     )
 
-    # Select word for cache response
-
-    s.read_word_sel_mux = m = Mux( dtype = dbw, nports = 4 )
-
-    s.connect_pairs(
-      m.in_[0],  s.read_data[0:       dbw],
-      m.in_[1],  s.read_data[1*dbw: 2*dbw],
-      m.in_[2],  s.read_data[2*dbw: 3*dbw],
-      m.in_[3],  s.read_data[3*dbw: 4*dbw],
-      m.sel,     s.read_word_sel,
-      m.out,     s.read_word_sel_mux_out,
-    )
-
-    s.omask       = Wire( data_bw )
-    s.output_data = Wire( data_bw )
-    s.shft_amnt   = Wire( clog2(clw / 8) )
+    s.omask        = Wire( data_bw        )
+    s.output_data  = Wire( data_bw        )
+    s.shft_amnt    = Wire( clog2(clw) + 1 )
+    s.adjusted_len = Wire( len_bw     + 1 )
 
     @s.combinational
     def gen_masks():
 
-      # Align data
-      s.shft_amnt  .value = s.cachereq_addr[clog2(clw/8)] << 3
-      s.output_data.value = s.read_data
-      s.output_data.value = s.output_data >> s.shft_amnt
+      # Get specific word
+      s.output_data .value = s.read_data
+      s.adjusted_len.value = (clw / 8) if s.cachereq_len_reg_out == 0 else s.cachereq_len_reg_out
+
+      # Mask unneeded bits
+      s.shft_amnt  .value = (s.adjusted_len * 8)
       s.omask      .value = ~Bits( data_bw, 0 )
-      s.omask      .value = (s.omask << s.cachereq_len_reg_out)
-      s.output_data.value = s.output_data & s.omask
+      s.omask      .value = (s.omask << s.shft_amnt)
+      s.output_data.value = s.output_data >> (s.read_byte_sel * 8)
+      s.output_data.value = s.output_data & ~s.omask
 
     @s.combinational
     def comb_addr_refill():
-      if   s.cacheresp_type == MemReqMsg.TYPE_READ       : s.cacheresp_msg.data.value = s.output_data
-      elif s.cacheresp_type == MemReqMsg.TYPE_WRITE      : s.cacheresp_msg.data.value = 0
-      elif s.cacheresp_type == MemReqMsg.TYPE_WRITE_INIT : s.cacheresp_msg.data.value = 0
-      else                                               : assert(False)
+      if   s.cacheresp_type == MemReqMsg.TYPE_READ: s.cacheresp_msg.data.value = s.output_data
+      else                                        : s.cacheresp_msg.data.value = 0
 
     # Taking slices of the cache request address
     #     byte offset: 2 bits wide

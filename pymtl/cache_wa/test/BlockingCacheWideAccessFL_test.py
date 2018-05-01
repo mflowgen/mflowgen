@@ -119,7 +119,7 @@ def req( type_, opaque, addr, len, data ):
   elif type_ == 'xr' : msg.type_ = MemReqMsg.TYPE_AMO_XOR
 
   # Address is assumed to be word aligned
-  msg.addr   = addr << 2
+  msg.addr   = addr
   msg.opaque = opaque
   msg.len    = len
   msg.data   = data
@@ -255,8 +255,8 @@ def write_hit_1word_clean( base_addr ):
 def read_miss_1word_msg( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
-    req( 'rd', 0x00, 0x00000000, 0, 0          ), resp('rd', 0x00, 0, 0, 0xdeadbeef ), # read word  0x00000000
-    req( 'rd', 0x01, 0x00000004, 0, 0          ), resp('rd', 0x01, 1, 0, 0x00c0ffee ), # read word  0x00000004
+    req( 'rd', 0x00, 0x00000000, 0, 0          ), resp('rd', 0x00, 0, 0, 0x00c0ffeedeadbeef ), # read word  0x00000000
+    req( 'rd', 0x01, 0x00000004, 4, 0          ), resp('rd', 0x01, 1, 4,         0x00c0ffee ), # read word  0x00000004
   ]
 
 # Data to be loaded into memory before running the test
@@ -275,21 +275,21 @@ def read_miss_1word_mem( base_addr ):
 def read_hit_1word_dirty( base_addr ):
   return [
     #    type  opq  addr      len data                type  opq  test len data
-    req( 'in', 0x0, base_addr, 0, 0xdeadbeef ), resp( 'in', 0x0, 0, 0, 0          ),
-    req( 'wr', 0x1, base_addr, 0, 0xbabababa ), resp( 'wr', 0x1, 1, 0, 0          ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1, 0, 0xbabababa ),
+    req( 'in', 0x0, base_addr, 4, 0xdeadbeef ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'wr', 0x1, base_addr, 4, 0xbabababa ), resp( 'wr', 0x1, 1,   4,  0          ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0xbabababa ),
   ]
 
 def read_hit_1line_clean( base_addr ):
   return [
-    req( 'in', 0x0, base_addr,    0, 0xdeadbeef ), resp( 'in', 0x0, 0, 0, 0          ),
-    req( 'in', 0x1, base_addr+4,  0, 0xcafecafe ), resp( 'in', 0x1, 0, 0, 0          ),
-    req( 'in', 0x2, base_addr+8,  0, 0xfafafafa ), resp( 'in', 0x2, 0, 0, 0          ),
-    req( 'in', 0x3, base_addr+12, 0, 0xbabababa ), resp( 'in', 0x3, 0, 0, 0          ),
-    req( 'rd', 0x4, base_addr,    0, 0          ), resp( 'rd', 0x4, 1, 0, 0xdeadbeef ),
-    req( 'rd', 0x5, base_addr+4,  0, 0          ), resp( 'rd', 0x5, 1, 0, 0xcafecafe ),
-    req( 'rd', 0x6, base_addr+8,  0, 0          ), resp( 'rd', 0x6, 1, 0, 0xfafafafa ),
-    req( 'rd', 0x7, base_addr+12, 0, 0          ), resp( 'rd', 0x7, 1, 0, 0xbabababa ),
+    req( 'in', 0x0, base_addr,    4, 0xdeadbeef ), resp( 'in', 0x0, 0, 4, 0          ),
+    req( 'in', 0x1, base_addr+4,  4, 0xcafecafe ), resp( 'in', 0x1, 0, 4, 0          ),
+    req( 'in', 0x2, base_addr+8,  4, 0xfafafafa ), resp( 'in', 0x2, 0, 4, 0          ),
+    req( 'in', 0x3, base_addr+12, 4, 0xbabababa ), resp( 'in', 0x3, 0, 4, 0          ),
+    req( 'rd', 0x4, base_addr,    4, 0          ), resp( 'rd', 0x4, 1, 4, 0xdeadbeef ),
+    req( 'rd', 0x5, base_addr+4,  4, 0          ), resp( 'rd', 0x5, 1, 4, 0xcafecafe ),
+    req( 'rd', 0x6, base_addr+8,  4, 0          ), resp( 'rd', 0x6, 1, 4, 0xfafafafa ),
+    req( 'rd', 0x7, base_addr+12, 4, 0          ), resp( 'rd', 0x7, 1, 4, 0xbabababa ),
   ]
 
 #-------------------------------------------------------------------------
@@ -299,10 +299,10 @@ def read_hit_1line_clean( base_addr ):
 def write_hit_1word_dirty( base_addr ):
   return [
     #    type  opq   addr      len data               type  opq   test len data
-    req( 'in', 0x00, base_addr, 0, 0x0a0b0c0d ), resp('in', 0x00, 0,   0,  0          ), # write word  0x00000000
-    req( 'wr', 0x01, base_addr, 0, 0xbeefbeeb ), resp('wr', 0x01, 1,   0,  0          ), # write word  0x00000000
-    req( 'wr', 0x02, base_addr, 0, 0xc0ffeebb ), resp('wr', 0x02, 1,   0,  0          ), # write word  0x00000000
-    req( 'rd', 0x03, base_addr, 0, 0          ), resp('rd', 0x03, 1,   0,  0xc0ffeebb ), # read  word  0x00000000
+    req( 'in', 0x00, base_addr, 4, 0x0a0b0c0d ), resp('in', 0x00, 0,   4,  0          ), # write word  0x00000000
+    req( 'wr', 0x01, base_addr, 4, 0xbeefbeeb ), resp('wr', 0x01, 1,   4,  0          ), # write word  0x00000000
+    req( 'wr', 0x02, base_addr, 4, 0xc0ffeebb ), resp('wr', 0x02, 1,   4,  0          ), # write word  0x00000000
+    req( 'rd', 0x03, base_addr, 4, 0          ), resp('rd', 0x03, 1,   4,  0xc0ffeebb ), # read  word  0x00000000
   ]
 
 #----------------------------------------------------------------------
@@ -313,9 +313,9 @@ def write_hit_1word_dirty( base_addr ):
 def amo_hit_1word_clean( base_addr ):
   return [
     #    type  opq  addr      len data                type  opq  test len data
-    req( 'in', 0x0, base_addr, 0, 0xdeadbeef ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'ad', 0x1, base_addr, 0, 0x00000001 ), resp( 'ad', 0x1, 1,   0,  0xdeadbeef ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1,   0,  0xdeadbef0 ),
+    req( 'in', 0x0, base_addr, 4, 0xdeadbeef ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'ad', 0x1, base_addr, 4, 0x00000001 ), resp( 'ad', 0x1, 1,   4,  0xdeadbeef ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0xdeadbef0 ),
   ]
 
 #-------------------------------------------------------------------------
@@ -325,10 +325,10 @@ def amo_hit_1word_clean( base_addr ):
 def amo_miss_1word_msg( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
-    req( 'ad', 0x00, 0x00000000, 0, 0x00000001 ), resp('ad', 0x00, 0, 0, 0xdeadbeef ), # amo  word  0x00000000
-    req( 'ad', 0x01, 0x00000004, 0, 0x00000001 ), resp('ad', 0x01, 1, 0, 0x00c0ffee ), # amo  word  0x00000004
-    req( 'rd', 0x02, 0x00000000, 0, 0          ), resp('rd', 0x02, 1, 0, 0xdeadbef0 ), # read word  0x00000000
-    req( 'rd', 0x03, 0x00000004, 0, 0          ), resp('rd', 0x03, 1, 0, 0x00c0ffef ), # read word  0x00000004
+    req( 'ad', 0x00, 0x00000000, 4, 0x00000001 ), resp('ad', 0x00, 0, 4, 0xdeadbeef ), # amo  word  0x00000000
+    req( 'ad', 0x01, 0x00000004, 4, 0x00000001 ), resp('ad', 0x01, 1, 4, 0x00c0ffee ), # amo  word  0x00000004
+    req( 'rd', 0x02, 0x00000000, 4, 0          ), resp('rd', 0x02, 1, 4, 0xdeadbef0 ), # read word  0x00000000
+    req( 'rd', 0x03, 0x00000004, 4, 0          ), resp('rd', 0x03, 1, 4, 0x00c0ffef ), # read word  0x00000004
   ]
 
 # Data to be loaded into memory before running the test
@@ -351,157 +351,157 @@ def amo_hit_more_clean( base_addr ):
 
     # AMO add 1 repeatedly
 
-    req( 'in', 0x0, base_addr, 0, 0xdeadbeef ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'ad', 0x1, base_addr, 0, 0x00000001 ), resp( 'ad', 0x1, 1,   0,  0xdeadbeef ),
-    req( 'ad', 0x2, base_addr, 0, 0x00000001 ), resp( 'ad', 0x2, 1,   0,  0xdeadbef0 ),
-    req( 'ad', 0x3, base_addr, 0, 0x00000001 ), resp( 'ad', 0x3, 1,   0,  0xdeadbef1 ),
-    req( 'ad', 0x4, base_addr, 0, 0x00000001 ), resp( 'ad', 0x4, 1,   0,  0xdeadbef2 ),
-    req( 'ad', 0x5, base_addr, 0, 0x00000001 ), resp( 'ad', 0x5, 1,   0,  0xdeadbef3 ),
-    req( 'ad', 0x6, base_addr, 0, 0x00000001 ), resp( 'ad', 0x6, 1,   0,  0xdeadbef4 ),
-    req( 'ad', 0x7, base_addr, 0, 0x00000001 ), resp( 'ad', 0x7, 1,   0,  0xdeadbef5 ),
-    req( 'ad', 0x8, base_addr, 0, 0x00000001 ), resp( 'ad', 0x8, 1,   0,  0xdeadbef6 ),
+    req( 'in', 0x0, base_addr, 4, 0xdeadbeef ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'ad', 0x1, base_addr, 4, 0x00000001 ), resp( 'ad', 0x1, 1,   4,  0xdeadbeef ),
+    req( 'ad', 0x2, base_addr, 4, 0x00000001 ), resp( 'ad', 0x2, 1,   4,  0xdeadbef0 ),
+    req( 'ad', 0x3, base_addr, 4, 0x00000001 ), resp( 'ad', 0x3, 1,   4,  0xdeadbef1 ),
+    req( 'ad', 0x4, base_addr, 4, 0x00000001 ), resp( 'ad', 0x4, 1,   4,  0xdeadbef2 ),
+    req( 'ad', 0x5, base_addr, 4, 0x00000001 ), resp( 'ad', 0x5, 1,   4,  0xdeadbef3 ),
+    req( 'ad', 0x6, base_addr, 4, 0x00000001 ), resp( 'ad', 0x6, 1,   4,  0xdeadbef4 ),
+    req( 'ad', 0x7, base_addr, 4, 0x00000001 ), resp( 'ad', 0x7, 1,   4,  0xdeadbef5 ),
+    req( 'ad', 0x8, base_addr, 4, 0x00000001 ), resp( 'ad', 0x8, 1,   4,  0xdeadbef6 ),
 
     # AMO and with shifting 0
 
-    req( 'in', 0x0, base_addr, 0, 0xffffffff ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'an', 0x1, base_addr, 0, 0xfffffff0 ), resp( 'an', 0x1, 1,   0,  0xffffffff ),
-    req( 'an', 0x2, base_addr, 0, 0xffffff0f ), resp( 'an', 0x2, 1,   0,  0xfffffff0 ),
-    req( 'an', 0x3, base_addr, 0, 0xfffff0ff ), resp( 'an', 0x3, 1,   0,  0xffffff00 ),
-    req( 'an', 0x4, base_addr, 0, 0xffff0fff ), resp( 'an', 0x4, 1,   0,  0xfffff000 ),
-    req( 'an', 0x5, base_addr, 0, 0xfff0ffff ), resp( 'an', 0x5, 1,   0,  0xffff0000 ),
-    req( 'an', 0x6, base_addr, 0, 0xff0fffff ), resp( 'an', 0x6, 1,   0,  0xfff00000 ),
-    req( 'an', 0x7, base_addr, 0, 0xf0ffffff ), resp( 'an', 0x7, 1,   0,  0xff000000 ),
-    req( 'an', 0x8, base_addr, 0, 0x0fffffff ), resp( 'an', 0x8, 1,   0,  0xf0000000 ),
+    req( 'in', 0x0, base_addr, 4, 0xffffffff ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'an', 0x1, base_addr, 4, 0xfffffff0 ), resp( 'an', 0x1, 1,   4,  0xffffffff ),
+    req( 'an', 0x2, base_addr, 4, 0xffffff0f ), resp( 'an', 0x2, 1,   4,  0xfffffff0 ),
+    req( 'an', 0x3, base_addr, 4, 0xfffff0ff ), resp( 'an', 0x3, 1,   4,  0xffffff00 ),
+    req( 'an', 0x4, base_addr, 4, 0xffff0fff ), resp( 'an', 0x4, 1,   4,  0xfffff000 ),
+    req( 'an', 0x5, base_addr, 4, 0xfff0ffff ), resp( 'an', 0x5, 1,   4,  0xffff0000 ),
+    req( 'an', 0x6, base_addr, 4, 0xff0fffff ), resp( 'an', 0x6, 1,   4,  0xfff00000 ),
+    req( 'an', 0x7, base_addr, 4, 0xf0ffffff ), resp( 'an', 0x7, 1,   4,  0xff000000 ),
+    req( 'an', 0x8, base_addr, 4, 0x0fffffff ), resp( 'an', 0x8, 1,   4,  0xf0000000 ),
 
     # AMO or with shifting f
 
-    req( 'in', 0x0, base_addr, 0, 0x00000000 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'or', 0x1, base_addr, 0, 0x0000000f ), resp( 'or', 0x1, 1,   0,  0x00000000 ),
-    req( 'or', 0x2, base_addr, 0, 0x000000f0 ), resp( 'or', 0x2, 1,   0,  0x0000000f ),
-    req( 'or', 0x3, base_addr, 0, 0x00000f00 ), resp( 'or', 0x3, 1,   0,  0x000000ff ),
-    req( 'or', 0x4, base_addr, 0, 0x0000f000 ), resp( 'or', 0x4, 1,   0,  0x00000fff ),
-    req( 'or', 0x5, base_addr, 0, 0x000f0000 ), resp( 'or', 0x5, 1,   0,  0x0000ffff ),
-    req( 'or', 0x6, base_addr, 0, 0x00f00000 ), resp( 'or', 0x6, 1,   0,  0x000fffff ),
-    req( 'or', 0x7, base_addr, 0, 0x0f000000 ), resp( 'or', 0x7, 1,   0,  0x00ffffff ),
-    req( 'or', 0x8, base_addr, 0, 0xf0000000 ), resp( 'or', 0x8, 1,   0,  0x0fffffff ),
+    req( 'in', 0x0, base_addr, 4, 0x00000000 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'or', 0x1, base_addr, 4, 0x0000000f ), resp( 'or', 0x1, 1,   4,  0x00000000 ),
+    req( 'or', 0x2, base_addr, 4, 0x000000f0 ), resp( 'or', 0x2, 1,   4,  0x0000000f ),
+    req( 'or', 0x3, base_addr, 4, 0x00000f00 ), resp( 'or', 0x3, 1,   4,  0x000000ff ),
+    req( 'or', 0x4, base_addr, 4, 0x0000f000 ), resp( 'or', 0x4, 1,   4,  0x00000fff ),
+    req( 'or', 0x5, base_addr, 4, 0x000f0000 ), resp( 'or', 0x5, 1,   4,  0x0000ffff ),
+    req( 'or', 0x6, base_addr, 4, 0x00f00000 ), resp( 'or', 0x6, 1,   4,  0x000fffff ),
+    req( 'or', 0x7, base_addr, 4, 0x0f000000 ), resp( 'or', 0x7, 1,   4,  0x00ffffff ),
+    req( 'or', 0x8, base_addr, 4, 0xf0000000 ), resp( 'or', 0x8, 1,   4,  0x0fffffff ),
 
     # AMO swap ping-pong
 
-    req( 'in', 0x0, base_addr, 0, 0xcafebabe ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'sp', 0x1, base_addr, 0, 0xffffffff ), resp( 'sp', 0x1, 1,   0,  0xcafebabe ),
-    req( 'sp', 0x2, base_addr, 0, 0xcafebabe ), resp( 'sp', 0x2, 1,   0,  0xffffffff ),
-    req( 'sp', 0x3, base_addr, 0, 0xffffffff ), resp( 'sp', 0x3, 1,   0,  0xcafebabe ),
-    req( 'sp', 0x4, base_addr, 0, 0xcafebabe ), resp( 'sp', 0x4, 1,   0,  0xffffffff ),
-    req( 'sp', 0x5, base_addr, 0, 0xffffffff ), resp( 'sp', 0x5, 1,   0,  0xcafebabe ),
-    req( 'sp', 0x6, base_addr, 0, 0xcafebabe ), resp( 'sp', 0x6, 1,   0,  0xffffffff ),
-    req( 'sp', 0x7, base_addr, 0, 0xffffffff ), resp( 'sp', 0x7, 1,   0,  0xcafebabe ),
-    req( 'sp', 0x8, base_addr, 0, 0xcafebabe ), resp( 'sp', 0x8, 1,   0,  0xffffffff ),
+    req( 'in', 0x0, base_addr, 4, 0xcafebabe ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'sp', 0x1, base_addr, 4, 0xffffffff ), resp( 'sp', 0x1, 1,   4,  0xcafebabe ),
+    req( 'sp', 0x2, base_addr, 4, 0xcafebabe ), resp( 'sp', 0x2, 1,   4,  0xffffffff ),
+    req( 'sp', 0x3, base_addr, 4, 0xffffffff ), resp( 'sp', 0x3, 1,   4,  0xcafebabe ),
+    req( 'sp', 0x4, base_addr, 4, 0xcafebabe ), resp( 'sp', 0x4, 1,   4,  0xffffffff ),
+    req( 'sp', 0x5, base_addr, 4, 0xffffffff ), resp( 'sp', 0x5, 1,   4,  0xcafebabe ),
+    req( 'sp', 0x6, base_addr, 4, 0xcafebabe ), resp( 'sp', 0x6, 1,   4,  0xffffffff ),
+    req( 'sp', 0x7, base_addr, 4, 0xffffffff ), resp( 'sp', 0x7, 1,   4,  0xcafebabe ),
+    req( 'sp', 0x8, base_addr, 4, 0xcafebabe ), resp( 'sp', 0x8, 1,   4,  0xffffffff ),
 
-    req( 'in', 0x0, base_addr, 0, 0x99999999 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'sp', 0x1, base_addr, 0, 0x88888888 ), resp( 'sp', 0x1, 1,   0,  0x99999999 ),
-    req( 'sp', 0x2, base_addr, 0, 0x77777777 ), resp( 'sp', 0x2, 1,   0,  0x88888888 ),
-    req( 'sp', 0x3, base_addr, 0, 0x66666666 ), resp( 'sp', 0x3, 1,   0,  0x77777777 ),
-    req( 'sp', 0x4, base_addr, 0, 0x55555555 ), resp( 'sp', 0x4, 1,   0,  0x66666666 ),
-    req( 'sp', 0x5, base_addr, 0, 0x44444444 ), resp( 'sp', 0x5, 1,   0,  0x55555555 ),
-    req( 'sp', 0x6, base_addr, 0, 0x33333333 ), resp( 'sp', 0x6, 1,   0,  0x44444444 ),
-    req( 'sp', 0x7, base_addr, 0, 0x22222222 ), resp( 'sp', 0x7, 1,   0,  0x33333333 ),
-    req( 'sp', 0x8, base_addr, 0, 0x11111111 ), resp( 'sp', 0x8, 1,   0,  0x22222222 ),
+    req( 'in', 0x0, base_addr, 4, 0x99999999 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'sp', 0x1, base_addr, 4, 0x88888888 ), resp( 'sp', 0x1, 1,   4,  0x99999999 ),
+    req( 'sp', 0x2, base_addr, 4, 0x77777777 ), resp( 'sp', 0x2, 1,   4,  0x88888888 ),
+    req( 'sp', 0x3, base_addr, 4, 0x66666666 ), resp( 'sp', 0x3, 1,   4,  0x77777777 ),
+    req( 'sp', 0x4, base_addr, 4, 0x55555555 ), resp( 'sp', 0x4, 1,   4,  0x66666666 ),
+    req( 'sp', 0x5, base_addr, 4, 0x44444444 ), resp( 'sp', 0x5, 1,   4,  0x55555555 ),
+    req( 'sp', 0x6, base_addr, 4, 0x33333333 ), resp( 'sp', 0x6, 1,   4,  0x44444444 ),
+    req( 'sp', 0x7, base_addr, 4, 0x22222222 ), resp( 'sp', 0x7, 1,   4,  0x33333333 ),
+    req( 'sp', 0x8, base_addr, 4, 0x11111111 ), resp( 'sp', 0x8, 1,   4,  0x22222222 ),
 
     # AMO min
 
-    req( 'in', 0x0, base_addr, 0, 0x55555555 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mn', 0x1, base_addr, 0, 0x77777777 ), resp( 'mn', 0x1, 1,   0,  0x55555555 ),
-    req( 'mn', 0x2, base_addr, 0, 0x66666666 ), resp( 'mn', 0x2, 1,   0,  0x55555555 ),
-    req( 'mn', 0x3, base_addr, 0, 0x55555555 ), resp( 'mn', 0x3, 1,   0,  0x55555555 ),
-    req( 'mn', 0x4, base_addr, 0, 0x44444444 ), resp( 'mn', 0x4, 1,   0,  0x55555555 ),
-    req( 'mn', 0x5, base_addr, 0, 0x33333333 ), resp( 'mn', 0x5, 1,   0,  0x44444444 ),
-    req( 'mn', 0x6, base_addr, 0, 0x22222222 ), resp( 'mn', 0x6, 1,   0,  0x33333333 ),
-    req( 'mn', 0x7, base_addr, 0, 0x11111111 ), resp( 'mn', 0x7, 1,   0,  0x22222222 ),
+    req( 'in', 0x0, base_addr, 4, 0x55555555 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mn', 0x1, base_addr, 4, 0x77777777 ), resp( 'mn', 0x1, 1,   4,  0x55555555 ),
+    req( 'mn', 0x2, base_addr, 4, 0x66666666 ), resp( 'mn', 0x2, 1,   4,  0x55555555 ),
+    req( 'mn', 0x3, base_addr, 4, 0x55555555 ), resp( 'mn', 0x3, 1,   4,  0x55555555 ),
+    req( 'mn', 0x4, base_addr, 4, 0x44444444 ), resp( 'mn', 0x4, 1,   4,  0x55555555 ),
+    req( 'mn', 0x5, base_addr, 4, 0x33333333 ), resp( 'mn', 0x5, 1,   4,  0x44444444 ),
+    req( 'mn', 0x6, base_addr, 4, 0x22222222 ), resp( 'mn', 0x6, 1,   4,  0x33333333 ),
+    req( 'mn', 0x7, base_addr, 4, 0x11111111 ), resp( 'mn', 0x7, 1,   4,  0x22222222 ),
 
     # AMO min signedness tests
 
-    req( 'in', 0x0, base_addr, 0, 0xffffffff ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mn', 0x1, base_addr, 0, 0x00000002 ), resp( 'mn', 0x1, 1,   0,  0xffffffff ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1,   0,  0xffffffff ),
+    req( 'in', 0x0, base_addr, 4, 0xffffffff ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mn', 0x1, base_addr, 4, 0x00000002 ), resp( 'mn', 0x1, 1,   4,  0xffffffff ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0xffffffff ),
 
-    req( 'in', 0x0, base_addr, 0, 0x00000002 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mn', 0x1, base_addr, 0, 0xffffffff ), resp( 'mn', 0x1, 1,   0,  0x00000002 ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1,   0,  0xffffffff ),
+    req( 'in', 0x0, base_addr, 4, 0x00000002 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mn', 0x1, base_addr, 4, 0xffffffff ), resp( 'mn', 0x1, 1,   4,  0x00000002 ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0xffffffff ),
 
     # AMO minu
 
-    req( 'in',  0x0, base_addr, 0, 0x55555555 ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mnu', 0x1, base_addr, 0, 0x77777777 ), resp( 'mnu', 0x1, 1,   0,  0x55555555 ),
-    req( 'mnu', 0x2, base_addr, 0, 0x66666666 ), resp( 'mnu', 0x2, 1,   0,  0x55555555 ),
-    req( 'mnu', 0x3, base_addr, 0, 0x55555555 ), resp( 'mnu', 0x3, 1,   0,  0x55555555 ),
-    req( 'mnu', 0x4, base_addr, 0, 0x44444444 ), resp( 'mnu', 0x4, 1,   0,  0x55555555 ),
-    req( 'mnu', 0x5, base_addr, 0, 0x33333333 ), resp( 'mnu', 0x5, 1,   0,  0x44444444 ),
-    req( 'mnu', 0x6, base_addr, 0, 0x22222222 ), resp( 'mnu', 0x6, 1,   0,  0x33333333 ),
-    req( 'mnu', 0x7, base_addr, 0, 0x11111111 ), resp( 'mnu', 0x7, 1,   0,  0x22222222 ),
+    req( 'in',  0x0, base_addr, 4, 0x55555555 ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mnu', 0x1, base_addr, 4, 0x77777777 ), resp( 'mnu', 0x1, 1,   4,  0x55555555 ),
+    req( 'mnu', 0x2, base_addr, 4, 0x66666666 ), resp( 'mnu', 0x2, 1,   4,  0x55555555 ),
+    req( 'mnu', 0x3, base_addr, 4, 0x55555555 ), resp( 'mnu', 0x3, 1,   4,  0x55555555 ),
+    req( 'mnu', 0x4, base_addr, 4, 0x44444444 ), resp( 'mnu', 0x4, 1,   4,  0x55555555 ),
+    req( 'mnu', 0x5, base_addr, 4, 0x33333333 ), resp( 'mnu', 0x5, 1,   4,  0x44444444 ),
+    req( 'mnu', 0x6, base_addr, 4, 0x22222222 ), resp( 'mnu', 0x6, 1,   4,  0x33333333 ),
+    req( 'mnu', 0x7, base_addr, 4, 0x11111111 ), resp( 'mnu', 0x7, 1,   4,  0x22222222 ),
 
     # AMO minu signedness tests
 
-    req( 'in',  0x0, base_addr, 0, 0xffffffff ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mnu', 0x1, base_addr, 0, 0x00000002 ), resp( 'mnu', 0x1, 1,   0,  0xffffffff ),
-    req( 'rd',  0x2, base_addr, 0, 0          ), resp( 'rd',  0x2, 1,   0,  0x00000002 ),
+    req( 'in',  0x0, base_addr, 4, 0xffffffff ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mnu', 0x1, base_addr, 4, 0x00000002 ), resp( 'mnu', 0x1, 1,   4,  0xffffffff ),
+    req( 'rd',  0x2, base_addr, 4, 0          ), resp( 'rd',  0x2, 1,   4,  0x00000002 ),
 
-    req( 'in',  0x0, base_addr, 0, 0x00000002 ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mnu', 0x1, base_addr, 0, 0xffffffff ), resp( 'mnu', 0x1, 1,   0,  0x00000002 ),
-    req( 'rd',  0x2, base_addr, 0, 0          ), resp( 'rd',  0x2, 1,   0,  0x00000002 ),
+    req( 'in',  0x0, base_addr, 4, 0x00000002 ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mnu', 0x1, base_addr, 4, 0xffffffff ), resp( 'mnu', 0x1, 1,   4,  0x00000002 ),
+    req( 'rd',  0x2, base_addr, 4, 0          ), resp( 'rd',  0x2, 1,   4,  0x00000002 ),
 
     # AMO max
 
-    req( 'in', 0x0, base_addr, 0, 0x55555555 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mx', 0x1, base_addr, 0, 0x22222222 ), resp( 'mx', 0x1, 1,   0,  0x55555555 ),
-    req( 'mx', 0x2, base_addr, 0, 0x33333333 ), resp( 'mx', 0x2, 1,   0,  0x55555555 ),
-    req( 'mx', 0x3, base_addr, 0, 0x44444444 ), resp( 'mx', 0x3, 1,   0,  0x55555555 ),
-    req( 'mx', 0x4, base_addr, 0, 0x55555555 ), resp( 'mx', 0x4, 1,   0,  0x55555555 ),
-    req( 'mx', 0x5, base_addr, 0, 0x66666666 ), resp( 'mx', 0x5, 1,   0,  0x55555555 ),
-    req( 'mx', 0x6, base_addr, 0, 0x77777777 ), resp( 'mx', 0x6, 1,   0,  0x66666666 ),
-    req( 'mx', 0x7, base_addr, 0, 0x88888888 ), resp( 'mx', 0x7, 1,   0,  0x77777777 ),
+    req( 'in', 0x0, base_addr, 4, 0x55555555 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mx', 0x1, base_addr, 4, 0x22222222 ), resp( 'mx', 0x1, 1,   4,  0x55555555 ),
+    req( 'mx', 0x2, base_addr, 4, 0x33333333 ), resp( 'mx', 0x2, 1,   4,  0x55555555 ),
+    req( 'mx', 0x3, base_addr, 4, 0x44444444 ), resp( 'mx', 0x3, 1,   4,  0x55555555 ),
+    req( 'mx', 0x4, base_addr, 4, 0x55555555 ), resp( 'mx', 0x4, 1,   4,  0x55555555 ),
+    req( 'mx', 0x5, base_addr, 4, 0x66666666 ), resp( 'mx', 0x5, 1,   4,  0x55555555 ),
+    req( 'mx', 0x6, base_addr, 4, 0x77777777 ), resp( 'mx', 0x6, 1,   4,  0x66666666 ),
+    req( 'mx', 0x7, base_addr, 4, 0x88888888 ), resp( 'mx', 0x7, 1,   4,  0x77777777 ),
 
     # AMO max signedness tests
 
-    req( 'in', 0x0, base_addr, 0, 0xffffffff ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mx', 0x1, base_addr, 0, 0x00000002 ), resp( 'mx', 0x1, 1,   0,  0xffffffff ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1,   0,  0x00000002 ),
+    req( 'in', 0x0, base_addr, 4, 0xffffffff ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mx', 0x1, base_addr, 4, 0x00000002 ), resp( 'mx', 0x1, 1,   4,  0xffffffff ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0x00000002 ),
 
-    req( 'in', 0x0, base_addr, 0, 0x00000002 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'mx', 0x1, base_addr, 0, 0xffffffff ), resp( 'mx', 0x1, 1,   0,  0x00000002 ),
-    req( 'rd', 0x2, base_addr, 0, 0          ), resp( 'rd', 0x2, 1,   0,  0x00000002 ),
+    req( 'in', 0x0, base_addr, 4, 0x00000002 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'mx', 0x1, base_addr, 4, 0xffffffff ), resp( 'mx', 0x1, 1,   4,  0x00000002 ),
+    req( 'rd', 0x2, base_addr, 4, 0          ), resp( 'rd', 0x2, 1,   4,  0x00000002 ),
 
     # AMO maxu
 
-    req( 'in',  0x0, base_addr, 0, 0x55555555 ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mxu', 0x1, base_addr, 0, 0x22222222 ), resp( 'mxu', 0x1, 1,   0,  0x55555555 ),
-    req( 'mxu', 0x2, base_addr, 0, 0x33333333 ), resp( 'mxu', 0x2, 1,   0,  0x55555555 ),
-    req( 'mxu', 0x3, base_addr, 0, 0x44444444 ), resp( 'mxu', 0x3, 1,   0,  0x55555555 ),
-    req( 'mxu', 0x4, base_addr, 0, 0x55555555 ), resp( 'mxu', 0x4, 1,   0,  0x55555555 ),
-    req( 'mxu', 0x5, base_addr, 0, 0x66666666 ), resp( 'mxu', 0x5, 1,   0,  0x55555555 ),
-    req( 'mxu', 0x6, base_addr, 0, 0x77777777 ), resp( 'mxu', 0x6, 1,   0,  0x66666666 ),
-    req( 'mxu', 0x7, base_addr, 0, 0x88888888 ), resp( 'mxu', 0x7, 1,   0,  0x77777777 ),
+    req( 'in',  0x0, base_addr, 4, 0x55555555 ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mxu', 0x1, base_addr, 4, 0x22222222 ), resp( 'mxu', 0x1, 1,   4,  0x55555555 ),
+    req( 'mxu', 0x2, base_addr, 4, 0x33333333 ), resp( 'mxu', 0x2, 1,   4,  0x55555555 ),
+    req( 'mxu', 0x3, base_addr, 4, 0x44444444 ), resp( 'mxu', 0x3, 1,   4,  0x55555555 ),
+    req( 'mxu', 0x4, base_addr, 4, 0x55555555 ), resp( 'mxu', 0x4, 1,   4,  0x55555555 ),
+    req( 'mxu', 0x5, base_addr, 4, 0x66666666 ), resp( 'mxu', 0x5, 1,   4,  0x55555555 ),
+    req( 'mxu', 0x6, base_addr, 4, 0x77777777 ), resp( 'mxu', 0x6, 1,   4,  0x66666666 ),
+    req( 'mxu', 0x7, base_addr, 4, 0x88888888 ), resp( 'mxu', 0x7, 1,   4,  0x77777777 ),
 
     # AMO maxu signedness tests
 
-    req( 'in',  0x0, base_addr, 0, 0xffffffff ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mxu', 0x1, base_addr, 0, 0x00000002 ), resp( 'mxu', 0x1, 1,   0,  0xffffffff ),
-    req( 'rd',  0x2, base_addr, 0, 0          ), resp( 'rd',  0x2, 1,   0,  0xffffffff ),
+    req( 'in',  0x0, base_addr, 4, 0xffffffff ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mxu', 0x1, base_addr, 4, 0x00000002 ), resp( 'mxu', 0x1, 1,   4,  0xffffffff ),
+    req( 'rd',  0x2, base_addr, 4, 0          ), resp( 'rd',  0x2, 1,   4,  0xffffffff ),
 
-    req( 'in',  0x0, base_addr, 0, 0x00000002 ), resp( 'in',  0x0, 0,   0,  0          ),
-    req( 'mxu', 0x1, base_addr, 0, 0xffffffff ), resp( 'mxu', 0x1, 1,   0,  0x00000002 ),
-    req( 'rd',  0x2, base_addr, 0, 0          ), resp( 'rd',  0x2, 1,   0,  0xffffffff ),
+    req( 'in',  0x0, base_addr, 4, 0x00000002 ), resp( 'in',  0x0, 0,   4,  0          ),
+    req( 'mxu', 0x1, base_addr, 4, 0xffffffff ), resp( 'mxu', 0x1, 1,   4,  0x00000002 ),
+    req( 'rd',  0x2, base_addr, 4, 0          ), resp( 'rd',  0x2, 1,   4,  0xffffffff ),
 
     # AMO xor with shifting f
 
-    req( 'in', 0x0, base_addr, 0, 0xffff0000 ), resp( 'in', 0x0, 0,   0,  0          ),
-    req( 'xr', 0x1, base_addr, 0, 0x0000000f ), resp( 'xr', 0x1, 1,   0,  0xffff0000 ),
-    req( 'xr', 0x2, base_addr, 0, 0x000000f0 ), resp( 'xr', 0x2, 1,   0,  0xffff000f ),
-    req( 'xr', 0x3, base_addr, 0, 0x00000f00 ), resp( 'xr', 0x3, 1,   0,  0xffff00ff ),
-    req( 'xr', 0x4, base_addr, 0, 0x0000f000 ), resp( 'xr', 0x4, 1,   0,  0xffff0fff ),
-    req( 'xr', 0x5, base_addr, 0, 0x000f0000 ), resp( 'xr', 0x5, 1,   0,  0xffffffff ),
-    req( 'xr', 0x6, base_addr, 0, 0x00f00000 ), resp( 'xr', 0x6, 1,   0,  0xfff0ffff ),
-    req( 'xr', 0x7, base_addr, 0, 0x0f000000 ), resp( 'xr', 0x7, 1,   0,  0xff00ffff ),
-    req( 'xr', 0x8, base_addr, 0, 0xf0000000 ), resp( 'xr', 0x8, 1,   0,  0xf000ffff ),
+    req( 'in', 0x0, base_addr, 4, 0xffff0000 ), resp( 'in', 0x0, 0,   4,  0          ),
+    req( 'xr', 0x1, base_addr, 4, 0x0000000f ), resp( 'xr', 0x1, 1,   4,  0xffff0000 ),
+    req( 'xr', 0x2, base_addr, 4, 0x000000f0 ), resp( 'xr', 0x2, 1,   4,  0xffff000f ),
+    req( 'xr', 0x3, base_addr, 4, 0x00000f00 ), resp( 'xr', 0x3, 1,   4,  0xffff00ff ),
+    req( 'xr', 0x4, base_addr, 4, 0x0000f000 ), resp( 'xr', 0x4, 1,   4,  0xffff0fff ),
+    req( 'xr', 0x5, base_addr, 4, 0x000f0000 ), resp( 'xr', 0x5, 1,   4,  0xffffffff ),
+    req( 'xr', 0x6, base_addr, 4, 0x00f00000 ), resp( 'xr', 0x6, 1,   4,  0xfff0ffff ),
+    req( 'xr', 0x7, base_addr, 4, 0x0f000000 ), resp( 'xr', 0x7, 1,   4,  0xff00ffff ),
+    req( 'xr', 0x8, base_addr, 4, 0xf0000000 ), resp( 'xr', 0x8, 1,   4,  0xf000ffff ),
   ]
 
 #-------------------------------------------------------------------------
@@ -589,7 +589,7 @@ def random_msgs( base_addr ):
 
   for i in range(20):
     msgs.extend([
-      req( 'wr', i, base_addr+4*i, 0, vmem[i] ), resp( 'wr', i, 2, 0, 0 ),
+      req( 'wr', i, base_addr+4*i, 4, vmem[i] ), resp( 'wr', i, 2, 4, 0 ),
     ])
 
   for i in range(20):
@@ -599,7 +599,7 @@ def random_msgs( base_addr ):
 
       correct_data = vmem[idx]
       msgs.extend([
-        req( 'rd', i, base_addr+4*idx, 0, 0 ), resp( 'rd', i, 2, 0, correct_data ),
+        req( 'rd', i, base_addr+4*idx, 4, 0 ), resp( 'rd', i, 2, 4, correct_data ),
       ])
 
     else:
@@ -607,7 +607,7 @@ def random_msgs( base_addr ):
       new_data = rgen.randint(0,0xffffffff)
       vmem[idx] = new_data
       msgs.extend([
-        req( 'wr', i, base_addr+4*idx, 0, new_data ), resp( 'wr', i, 2, 0, 0 ),
+        req( 'wr', i, base_addr+4*idx, 4, new_data ), resp( 'wr', i, 2, 4, 0 ),
       ])
 
   return msgs
@@ -620,8 +620,8 @@ def stream_msgs( base_addr ):
   msgs = []
   for i in range(20):
     msgs.extend([
-      req( 'wr', i, base_addr+4*i, 0, i ), resp( 'wr', i, 2, 0, 0 ),
-      req( 'rd', i, base_addr+4*i, 0, 0 ), resp( 'rd', i, 2, 0, i ),
+      req( 'wr', i, base_addr+4*i, 4, i ), resp( 'wr', i, 2, 4, 0 ),
+      req( 'rd', i, base_addr+4*i, 4, 0 ), resp( 'rd', i, 2, 4, i ),
     ])
 
   return msgs
@@ -633,11 +633,11 @@ def stream_msgs( base_addr ):
 def write_miss_1word_msg( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
-    req( 'rd', 0x00, 0x00000000, 0, 0          ), resp('rd', 0x00, 0, 0, 0x0e5ca18d ), # read  word 0x00000000
-    req( 'rd', 0x01, 0x00000000, 0, 0          ), resp('rd', 0x01, 1, 0, 0x0e5ca18d ), # read  word 0x00000000
-    req( 'rd', 0x02, 0x00000004, 0, 0          ), resp('rd', 0x02, 1, 0, 0x00ba11ad ), # read  word 0x00000004
-    req( 'wr', 0x03, 0x00000100, 0, 0x00e1de57 ), resp('wr', 0x03, 0, 0, 0          ), # write word 0x00000100
-    req( 'rd', 0x04, 0x00000100, 0, 0          ), resp('rd', 0x04, 1, 0, 0x00e1de57 ), # read  word 0x00000100
+    req( 'rd', 0x00, 0x00000000, 4, 0          ), resp('rd', 0x00, 0, 4, 0x0e5ca18d ), # read  word 0x00000000
+    req( 'rd', 0x01, 0x00000000, 4, 0          ), resp('rd', 0x01, 1, 4, 0x0e5ca18d ), # read  word 0x00000000
+    req( 'rd', 0x02, 0x00000004, 4, 0          ), resp('rd', 0x02, 1, 4, 0x00ba11ad ), # read  word 0x00000004
+    req( 'wr', 0x03, 0x00000100, 4, 0x00e1de57 ), resp('wr', 0x03, 0, 4, 0          ), # write word 0x00000100
+    req( 'rd', 0x04, 0x00000100, 4, 0          ), resp('rd', 0x04, 1, 4, 0x00e1de57 ), # read  word 0x00000100
   ]
 
 # Data to be loaded into memory before running the test
@@ -656,47 +656,47 @@ def write_miss_1word_mem( base_addr ):
 def evict_msg( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
-    req( 'wr', 0x00, 0x00000000, 0, 0x0a0b0c0d ), resp('wr', 0x00, 0, 0, 0          ), # write word  0x00000000
-    req( 'wr', 0x01, 0x00000004, 0, 0x0e0f0102 ), resp('wr', 0x01, 1, 0, 0          ), # write word  0x00000004
-    req( 'rd', 0x02, 0x00000000, 0, 0          ), resp('rd', 0x02, 1, 0, 0x0a0b0c0d ), # read  word  0x00000000
-    req( 'rd', 0x03, 0x00000004, 0, 0          ), resp('rd', 0x03, 1, 0, 0x0e0f0102 ), # read  word  0x00000004
+    req( 'wr', 0x00, 0x00000000, 4, 0x0a0b0c0d ), resp('wr', 0x00, 0, 4, 0          ), # write word  0x00000000
+    req( 'wr', 0x01, 0x00000004, 4, 0x0e0f0102 ), resp('wr', 0x01, 1, 4, 0          ), # write word  0x00000004
+    req( 'rd', 0x02, 0x00000000, 4, 0          ), resp('rd', 0x02, 1, 4, 0x0a0b0c0d ), # read  word  0x00000000
+    req( 'rd', 0x03, 0x00000004, 4, 0          ), resp('rd', 0x03, 1, 4, 0x0e0f0102 ), # read  word  0x00000004
 
     # try forcing some conflict misses to force evictions
 
-    req( 'wr', 0x04, 0x00004000, 0, 0xcafecafe ), resp('wr', 0x04, 0, 0, 0x0        ), # write word  0x00004000
-    req( 'wr', 0x05, 0x00004004, 0, 0xebabefac ), resp('wr', 0x05, 1, 0, 0x0        ), # write word  0x00004004
-    req( 'rd', 0x06, 0x00004000, 0, 0          ), resp('rd', 0x06, 1, 0, 0xcafecafe ), # read  word  0x00004000
-    req( 'rd', 0x07, 0x00004004, 0, 0          ), resp('rd', 0x07, 1, 0, 0xebabefac ), # read  word  0x00004004
+    req( 'wr', 0x04, 0x00004000, 4, 0xcafecafe ), resp('wr', 0x04, 0, 4, 0x0        ), # write word  0x00004000
+    req( 'wr', 0x05, 0x00004004, 4, 0xebabefac ), resp('wr', 0x05, 1, 4, 0x0        ), # write word  0x00004004
+    req( 'rd', 0x06, 0x00004000, 4, 0          ), resp('rd', 0x06, 1, 4, 0xcafecafe ), # read  word  0x00004000
+    req( 'rd', 0x07, 0x00004004, 4, 0          ), resp('rd', 0x07, 1, 4, 0xebabefac ), # read  word  0x00004004
 
-    req( 'wr', 0x00, 0x00008000, 0, 0xaaaeeaed ), resp('wr', 0x00, 0, 0, 0x0        ), # write word  0x00008000
-    req( 'wr', 0x01, 0x00008004, 0, 0x0e0f0102 ), resp('wr', 0x01, 1, 0, 0x0        ), # write word  0x00008004
-    req( 'rd', 0x03, 0x00008004, 0, 0          ), resp('rd', 0x03, 1, 0, 0x0e0f0102 ), # read  word  0x00008004
-    req( 'rd', 0x02, 0x00008000, 0, 0          ), resp('rd', 0x02, 1, 0, 0xaaaeeaed ), # read  word  0x00008000
+    req( 'wr', 0x00, 0x00008000, 4, 0xaaaeeaed ), resp('wr', 0x00, 0, 4, 0x0        ), # write word  0x00008000
+    req( 'wr', 0x01, 0x00008004, 4, 0x0e0f0102 ), resp('wr', 0x01, 1, 4, 0x0        ), # write word  0x00008004
+    req( 'rd', 0x03, 0x00008004, 4, 0          ), resp('rd', 0x03, 1, 4, 0x0e0f0102 ), # read  word  0x00008004
+    req( 'rd', 0x02, 0x00008000, 4, 0          ), resp('rd', 0x02, 1, 4, 0xaaaeeaed ), # read  word  0x00008000
 
-    req( 'wr', 0x04, 0x0000c000, 0, 0xcacafefe ), resp('wr', 0x04, 0, 0, 0x0        ), # write word  0x0000c000
-    req( 'wr', 0x05, 0x0000c004, 0, 0xbeefbeef ), resp('wr', 0x05, 1, 0, 0x0        ), # write word  0x0000c004
-    req( 'rd', 0x06, 0x0000c000, 0, 0          ), resp('rd', 0x06, 1, 0, 0xcacafefe ), # read  word  0x0000c000
-    req( 'rd', 0x07, 0x0000c004, 0, 0          ), resp('rd', 0x07, 1, 0, 0xbeefbeef ), # read  word  0x0000c004
+    req( 'wr', 0x04, 0x0000c000, 4, 0xcacafefe ), resp('wr', 0x04, 0, 4, 0x0        ), # write word  0x0000c000
+    req( 'wr', 0x05, 0x0000c004, 4, 0xbeefbeef ), resp('wr', 0x05, 1, 4, 0x0        ), # write word  0x0000c004
+    req( 'rd', 0x06, 0x0000c000, 4, 0          ), resp('rd', 0x06, 1, 4, 0xcacafefe ), # read  word  0x0000c000
+    req( 'rd', 0x07, 0x0000c004, 4, 0          ), resp('rd', 0x07, 1, 4, 0xbeefbeef ), # read  word  0x0000c004
 
-    req( 'wr', 0xf5, 0x0000c004, 0, 0xdeadbeef ), resp('wr', 0xf5, 1, 0, 0x0        ), # write word  0x0000c004
-    req( 'wr', 0xd5, 0x0000d004, 0, 0xbeefbeef ), resp('wr', 0xd5, 0, 0, 0x0        ), # write word  0x0000d004
-    req( 'wr', 0xe5, 0x0000e004, 0, 0xbeefbeef ), resp('wr', 0xe5, 0, 0, 0x0        ), # write word  0x0000e004
-    req( 'wr', 0xc5, 0x0000f004, 0, 0xbeefbeef ), resp('wr', 0xc5, 0, 0, 0x0        ), # write word  0x0000f004
+    req( 'wr', 0xf5, 0x0000c004, 4, 0xdeadbeef ), resp('wr', 0xf5, 1, 4, 0x0        ), # write word  0x0000c004
+    req( 'wr', 0xd5, 0x0000d004, 4, 0xbeefbeef ), resp('wr', 0xd5, 0, 4, 0x0        ), # write word  0x0000d004
+    req( 'wr', 0xe5, 0x0000e004, 4, 0xbeefbeef ), resp('wr', 0xe5, 0, 4, 0x0        ), # write word  0x0000e004
+    req( 'wr', 0xc5, 0x0000f004, 4, 0xbeefbeef ), resp('wr', 0xc5, 0, 4, 0x0        ), # write word  0x0000f004
 
     # now refill those same cache lines to make sure we wrote to the
     # memory earlier and make sure we can read from memory
 
-    req( 'rd', 0x06, 0x00004000, 0, 0          ), resp('rd', 0x06, 0, 0, 0xcafecafe ), # read  word  0x00004000
-    req( 'rd', 0x07, 0x00004004, 0, 0          ), resp('rd', 0x07, 1, 0, 0xebabefac ), # read  word  0x00004004
-    req( 'rd', 0x02, 0x00000000, 0, 0          ), resp('rd', 0x02, 0, 0, 0x0a0b0c0d ), # read  word  0x00000000
-    req( 'rd', 0x03, 0x00000004, 0, 0          ), resp('rd', 0x03, 1, 0, 0x0e0f0102 ), # read  word  0x00000004
-    req( 'rd', 0x03, 0x00008004, 0, 0          ), resp('rd', 0x03, 0, 0, 0x0e0f0102 ), # read  word  0x00008004
-    req( 'rd', 0x02, 0x00008000, 0, 0          ), resp('rd', 0x02, 1, 0, 0xaaaeeaed ), # read  word  0x00008000
-    req( 'rd', 0x06, 0x0000c000, 0, 0          ), resp('rd', 0x06, 0, 0, 0xcacafefe ), # read  word  0x0000c000
-    req( 'rd', 0x07, 0x0000c004, 0, 0          ), resp('rd', 0x07, 1, 0, 0xdeadbeef ), # read  word  0x0000c004
-    req( 'rd', 0x07, 0x0000d004, 0, 0          ), resp('rd', 0x07, 0, 0, 0xbeefbeef ), # read  word  0x0000d004
-    req( 'rd', 0x08, 0x0000e004, 0, 0          ), resp('rd', 0x08, 0, 0, 0xbeefbeef ), # read  word  0x0000e004
-    req( 'rd', 0x09, 0x0000f004, 0, 0          ), resp('rd', 0x09, 0, 0, 0xbeefbeef ), # read  word  0x0000f004
+    req( 'rd', 0x06, 0x00004000, 4, 0          ), resp('rd', 0x06, 0, 4, 0xcafecafe ), # read  word  0x00004000
+    req( 'rd', 0x07, 0x00004004, 4, 0          ), resp('rd', 0x07, 1, 4, 0xebabefac ), # read  word  0x00004004
+    req( 'rd', 0x02, 0x00000000, 4, 0          ), resp('rd', 0x02, 0, 4, 0x0a0b0c0d ), # read  word  0x00000000
+    req( 'rd', 0x03, 0x00000004, 4, 0          ), resp('rd', 0x03, 1, 4, 0x0e0f0102 ), # read  word  0x00000004
+    req( 'rd', 0x03, 0x00008004, 4, 0          ), resp('rd', 0x03, 0, 4, 0x0e0f0102 ), # read  word  0x00008004
+    req( 'rd', 0x02, 0x00008000, 4, 0          ), resp('rd', 0x02, 1, 4, 0xaaaeeaed ), # read  word  0x00008000
+    req( 'rd', 0x06, 0x0000c000, 4, 0          ), resp('rd', 0x06, 0, 4, 0xcacafefe ), # read  word  0x0000c000
+    req( 'rd', 0x07, 0x0000c004, 4, 0          ), resp('rd', 0x07, 1, 4, 0xdeadbeef ), # read  word  0x0000c004
+    req( 'rd', 0x07, 0x0000d004, 4, 0          ), resp('rd', 0x07, 0, 4, 0xbeefbeef ), # read  word  0x0000d004
+    req( 'rd', 0x08, 0x0000e004, 4, 0          ), resp('rd', 0x08, 0, 4, 0xbeefbeef ), # read  word  0x0000e004
+    req( 'rd', 0x09, 0x0000f004, 4, 0          ), resp('rd', 0x09, 0, 4, 0xbeefbeef ), # read  word  0x0000f004
   ]
 
 #-------------------------------------------------------------------------
@@ -709,50 +709,50 @@ def set_assoc_msg0( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
     # Write to cacheline 0 way 0
-    req( 'wr', 0x00, 0x00000000, 0, 0xffffff00), resp( 'wr', 0x00, 0, 0, 0          ),
-    req( 'wr', 0x01, 0x00000004, 0, 0xffffff01), resp( 'wr', 0x01, 1, 0, 0          ),
-    req( 'wr', 0x02, 0x00000008, 0, 0xffffff02), resp( 'wr', 0x02, 1, 0, 0          ),
-    req( 'wr', 0x03, 0x0000000c, 0, 0xffffff03), resp( 'wr', 0x03, 1, 0, 0          ), # LRU:1
+    req( 'wr', 0x00, 0x00000000, 4, 0xffffff00), resp( 'wr', 0x00, 0, 4, 0          ),
+    req( 'wr', 0x01, 0x00000004, 4, 0xffffff01), resp( 'wr', 0x01, 1, 4, 0          ),
+    req( 'wr', 0x02, 0x00000008, 4, 0xffffff02), resp( 'wr', 0x02, 1, 4, 0          ),
+    req( 'wr', 0x03, 0x0000000c, 4, 0xffffff03), resp( 'wr', 0x03, 1, 4, 0          ), # LRU:1
     # Write to cacheline 0 way 1
-    req( 'wr', 0x04, 0x00001000, 0, 0xffffff04), resp( 'wr', 0x04, 0, 0, 0          ),
-    req( 'wr', 0x05, 0x00001004, 0, 0xffffff05), resp( 'wr', 0x05, 1, 0, 0          ),
-    req( 'wr', 0x06, 0x00001008, 0, 0xffffff06), resp( 'wr', 0x06, 1, 0, 0          ),
-    req( 'wr', 0x07, 0x0000100c, 0, 0xffffff07), resp( 'wr', 0x07, 1, 0, 0          ), # LRU:0
+    req( 'wr', 0x04, 0x00001000, 4, 0xffffff04), resp( 'wr', 0x04, 0, 4, 0          ),
+    req( 'wr', 0x05, 0x00001004, 4, 0xffffff05), resp( 'wr', 0x05, 1, 4, 0          ),
+    req( 'wr', 0x06, 0x00001008, 4, 0xffffff06), resp( 'wr', 0x06, 1, 4, 0          ),
+    req( 'wr', 0x07, 0x0000100c, 4, 0xffffff07), resp( 'wr', 0x07, 1, 4, 0          ), # LRU:0
     # Evict way 0
-    req( 'rd', 0x08, 0x00002000, 0, 0         ), resp( 'rd', 0x08, 0, 0, 0x00facade ), # LRU:1
+    req( 'rd', 0x08, 0x00002000, 4, 0         ), resp( 'rd', 0x08, 0, 4, 0x00facade ), # LRU:1
     # Read again from same cacheline to see if cache hit properly
-    req( 'rd', 0x09, 0x00002004, 0, 0         ), resp( 'rd', 0x09, 1, 0, 0x05ca1ded ), # LRU:1
+    req( 'rd', 0x09, 0x00002004, 4, 0         ), resp( 'rd', 0x09, 1, 4, 0x05ca1ded ), # LRU:1
     # Read from cacheline 0 way 1 to see if cache hits properly,
-    req( 'rd', 0x0a, 0x00001004, 0, 0         ), resp( 'rd', 0x0a, 1, 0, 0xffffff05 ), # LRU:0
+    req( 'rd', 0x0a, 0x00001004, 4, 0         ), resp( 'rd', 0x0a, 1, 4, 0xffffff05 ), # LRU:0
     # Write to cacheline 0 way 1 to see if cache hits properly
-    req( 'wr', 0x0b, 0x0000100c, 0, 0xffffff09), resp( 'wr', 0x0b, 1, 0, 0          ), # LRU:0
+    req( 'wr', 0x0b, 0x0000100c, 4, 0xffffff09), resp( 'wr', 0x0b, 1, 4, 0          ), # LRU:0
     # Read that back
-    req( 'rd', 0x0c, 0x0000100c, 0, 0         ), resp( 'rd', 0x0c, 1, 0, 0xffffff09 ), # LRU:0
+    req( 'rd', 0x0c, 0x0000100c, 4, 0         ), resp( 'rd', 0x0c, 1, 4, 0xffffff09 ), # LRU:0
     # Evict way 0 again
-    req( 'rd', 0x0d, 0x00000000, 0, 0         ), resp( 'rd', 0x0d, 0, 0, 0xffffff00 ), # LRU:1
+    req( 'rd', 0x0d, 0x00000000, 4, 0         ), resp( 'rd', 0x0d, 0, 4, 0xffffff00 ), # LRU:1
     # Testing cacheline 7 now
     # Write to cacheline 7 way 0
-    req( 'wr', 0x10, 0x00000070, 0, 0xffffff00), resp( 'wr', 0x10, 0, 0, 0          ),
-    req( 'wr', 0x11, 0x00000074, 0, 0xffffff01), resp( 'wr', 0x11, 1, 0, 0          ),
-    req( 'wr', 0x12, 0x00000078, 0, 0xffffff02), resp( 'wr', 0x12, 1, 0, 0          ),
-    req( 'wr', 0x13, 0x0000007c, 0, 0xffffff03), resp( 'wr', 0x13, 1, 0, 0          ), # LRU:1
+    req( 'wr', 0x10, 0x00000070, 4, 0xffffff00), resp( 'wr', 0x10, 0, 4, 0          ),
+    req( 'wr', 0x11, 0x00000074, 4, 0xffffff01), resp( 'wr', 0x11, 1, 4, 0          ),
+    req( 'wr', 0x12, 0x00000078, 4, 0xffffff02), resp( 'wr', 0x12, 1, 4, 0          ),
+    req( 'wr', 0x13, 0x0000007c, 4, 0xffffff03), resp( 'wr', 0x13, 1, 4, 0          ), # LRU:1
     # Write to cacheline 7 way 1
-    req( 'wr', 0x14, 0x00001070, 0, 0xffffff04), resp( 'wr', 0x14, 0, 0, 0          ),
-    req( 'wr', 0x15, 0x00001074, 0, 0xffffff05), resp( 'wr', 0x15, 1, 0, 0          ),
-    req( 'wr', 0x16, 0x00001078, 0, 0xffffff06), resp( 'wr', 0x16, 1, 0, 0          ),
-    req( 'wr', 0x17, 0x0000107c, 0, 0xffffff07), resp( 'wr', 0x17, 1, 0, 0          ), # LRU:0
+    req( 'wr', 0x14, 0x00001070, 4, 0xffffff04), resp( 'wr', 0x14, 0, 4, 0          ),
+    req( 'wr', 0x15, 0x00001074, 4, 0xffffff05), resp( 'wr', 0x15, 1, 4, 0          ),
+    req( 'wr', 0x16, 0x00001078, 4, 0xffffff06), resp( 'wr', 0x16, 1, 4, 0          ),
+    req( 'wr', 0x17, 0x0000107c, 4, 0xffffff07), resp( 'wr', 0x17, 1, 4, 0          ), # LRU:0
     # Evict way 0
-    req( 'rd', 0x18, 0x00002070, 0, 0         ), resp( 'rd', 0x18, 0, 0, 0x70facade ), # LRU:1
+    req( 'rd', 0x18, 0x00002070, 4, 0         ), resp( 'rd', 0x18, 0, 4, 0x70facade ), # LRU:1
     # Read again from same cacheline to see if cache hits properly
-    req( 'rd', 0x19, 0x00002074, 0, 0         ), resp( 'rd', 0x19, 1, 0, 0x75ca1ded ), # LRU:1
+    req( 'rd', 0x19, 0x00002074, 4, 0         ), resp( 'rd', 0x19, 1, 4, 0x75ca1ded ), # LRU:1
     # Read from cacheline 7 way 1 to see if cache hits properly
-    req( 'rd', 0x1a, 0x00001074, 0, 0         ), resp( 'rd', 0x1a, 1, 0, 0xffffff05 ), # LRU:0
+    req( 'rd', 0x1a, 0x00001074, 4, 0         ), resp( 'rd', 0x1a, 1, 4, 0xffffff05 ), # LRU:0
     # Write to cacheline 7 way 1 to see if cache hits properly
-    req( 'wr', 0x1b, 0x0000107c, 0, 0xffffff09), resp( 'wr', 0x1b, 1, 0, 0          ), # LRU:0
+    req( 'wr', 0x1b, 0x0000107c, 4, 0xffffff09), resp( 'wr', 0x1b, 1, 4, 0          ), # LRU:0
     # Read that back
-    req( 'rd', 0x1c, 0x0000107c, 0, 0         ), resp( 'rd', 0x1c, 1, 0, 0xffffff09 ), # LRU:0
+    req( 'rd', 0x1c, 0x0000107c, 4, 0         ), resp( 'rd', 0x1c, 1, 4, 0xffffff09 ), # LRU:0
     # Evict way 0 again
-    req( 'rd', 0x1d, 0x00000070, 0, 0         ), resp( 'rd', 0x1d, 0, 0, 0xffffff00 ), # LRU:1
+    req( 'rd', 0x1d, 0x00000070, 4, 0         ), resp( 'rd', 0x1d, 0, 4, 0xffffff00 ), # LRU:1
   ]
 
 def set_assoc_mem0( base_addr ):
@@ -774,50 +774,50 @@ def dir_mapped_long0_msg( base_addr ):
   return [
     #    type  opq   addr      len  data               type  opq test len  data
     # Write to cacheline 0
-    req( 'wr', 0x00, 0x00000000, 0, 0xffffff00), resp( 'wr', 0x00, 0, 0, 0          ),
-    req( 'wr', 0x01, 0x00000004, 0, 0xffffff01), resp( 'wr', 0x01, 1, 0, 0          ),
-    req( 'wr', 0x02, 0x00000008, 0, 0xffffff02), resp( 'wr', 0x02, 1, 0, 0          ),
-    req( 'wr', 0x03, 0x0000000c, 0, 0xffffff03), resp( 'wr', 0x03, 1, 0, 0          ),
+    req( 'wr', 0x00, 0x00000000, 4, 0xffffff00), resp( 'wr', 0x00, 0, 4, 0          ),
+    req( 'wr', 0x01, 0x00000004, 4, 0xffffff01), resp( 'wr', 0x01, 1, 4, 0          ),
+    req( 'wr', 0x02, 0x00000008, 4, 0xffffff02), resp( 'wr', 0x02, 1, 4, 0          ),
+    req( 'wr', 0x03, 0x0000000c, 4, 0xffffff03), resp( 'wr', 0x03, 1, 4, 0          ),
     # Write to cacheline 0
-    req( 'wr', 0x04, 0x00001000, 0, 0xffffff04), resp( 'wr', 0x04, 0, 0, 0          ),
-    req( 'wr', 0x05, 0x00001004, 0, 0xffffff05), resp( 'wr', 0x05, 1, 0, 0          ),
-    req( 'wr', 0x06, 0x00001008, 0, 0xffffff06), resp( 'wr', 0x06, 1, 0, 0          ),
-    req( 'wr', 0x07, 0x0000100c, 0, 0xffffff07), resp( 'wr', 0x07, 1, 0, 0          ),
+    req( 'wr', 0x04, 0x00001000, 4, 0xffffff04), resp( 'wr', 0x04, 0, 4, 0          ),
+    req( 'wr', 0x05, 0x00001004, 4, 0xffffff05), resp( 'wr', 0x05, 1, 4, 0          ),
+    req( 'wr', 0x06, 0x00001008, 4, 0xffffff06), resp( 'wr', 0x06, 1, 4, 0          ),
+    req( 'wr', 0x07, 0x0000100c, 4, 0xffffff07), resp( 'wr', 0x07, 1, 4, 0          ),
     # Evict cache 0
-    req( 'rd', 0x08, 0x00002000, 0, 0         ), resp( 'rd', 0x08, 0, 0, 0x00facade ),
+    req( 'rd', 0x08, 0x00002000, 4, 0         ), resp( 'rd', 0x08, 0, 4, 0x00facade ),
     # Read again from same cacheline
-    req( 'rd', 0x09, 0x00002004, 0, 0         ), resp( 'rd', 0x09, 1, 0, 0x05ca1ded ),
+    req( 'rd', 0x09, 0x00002004, 4, 0         ), resp( 'rd', 0x09, 1, 4, 0x05ca1ded ),
     # Read from cacheline 0
-    req( 'rd', 0x0a, 0x00001004, 0, 0         ), resp( 'rd', 0x0a, 0, 0, 0xffffff05 ),
+    req( 'rd', 0x0a, 0x00001004, 4, 0         ), resp( 'rd', 0x0a, 0, 4, 0xffffff05 ),
     # Write to cacheline 0
-    req( 'wr', 0x0b, 0x0000100c, 0, 0xffffff09), resp( 'wr', 0x0b, 1, 0, 0          ),
+    req( 'wr', 0x0b, 0x0000100c, 4, 0xffffff09), resp( 'wr', 0x0b, 1, 4, 0          ),
     # Read that back
-    req( 'rd', 0x0c, 0x0000100c, 0, 0         ), resp( 'rd', 0x0c, 1, 0, 0xffffff09 ),
+    req( 'rd', 0x0c, 0x0000100c, 4, 0         ), resp( 'rd', 0x0c, 1, 4, 0xffffff09 ),
     # Evict cache 0 again
-    req( 'rd', 0x0d, 0x00000000, 0, 0         ), resp( 'rd', 0x0d, 0, 0, 0xffffff00 ),
+    req( 'rd', 0x0d, 0x00000000, 4, 0         ), resp( 'rd', 0x0d, 0, 4, 0xffffff00 ),
     # Testing cacheline 7 now
     # Write to cacheline 7
-    req( 'wr', 0x10, 0x00000070, 0, 0xffffff00), resp( 'wr', 0x10, 0, 0, 0          ),
-    req( 'wr', 0x11, 0x00000074, 0, 0xffffff01), resp( 'wr', 0x11, 1, 0, 0          ),
-    req( 'wr', 0x12, 0x00000078, 0, 0xffffff02), resp( 'wr', 0x12, 1, 0, 0          ),
-    req( 'wr', 0x13, 0x0000007c, 0, 0xffffff03), resp( 'wr', 0x13, 1, 0, 0          ),
+    req( 'wr', 0x10, 0x00000070, 4, 0xffffff00), resp( 'wr', 0x10, 0, 4, 0          ),
+    req( 'wr', 0x11, 0x00000074, 4, 0xffffff01), resp( 'wr', 0x11, 1, 4, 0          ),
+    req( 'wr', 0x12, 0x00000078, 4, 0xffffff02), resp( 'wr', 0x12, 1, 4, 0          ),
+    req( 'wr', 0x13, 0x0000007c, 4, 0xffffff03), resp( 'wr', 0x13, 1, 4, 0          ),
     # Write to cacheline 7
-    req( 'wr', 0x14, 0x00001070, 0, 0xffffff04), resp( 'wr', 0x14, 0, 0, 0          ),
-    req( 'wr', 0x15, 0x00001074, 0, 0xffffff05), resp( 'wr', 0x15, 1, 0, 0          ),
-    req( 'wr', 0x16, 0x00001078, 0, 0xffffff06), resp( 'wr', 0x16, 1, 0, 0          ),
-    req( 'wr', 0x17, 0x0000107c, 0, 0xffffff07), resp( 'wr', 0x17, 1, 0, 0          ),
+    req( 'wr', 0x14, 0x00001070, 4, 0xffffff04), resp( 'wr', 0x14, 0, 4, 0          ),
+    req( 'wr', 0x15, 0x00001074, 4, 0xffffff05), resp( 'wr', 0x15, 1, 4, 0          ),
+    req( 'wr', 0x16, 0x00001078, 4, 0xffffff06), resp( 'wr', 0x16, 1, 4, 0          ),
+    req( 'wr', 0x17, 0x0000107c, 4, 0xffffff07), resp( 'wr', 0x17, 1, 4, 0          ),
     # Evict cacheline 7
-    req( 'rd', 0x18, 0x00002070, 0, 0         ), resp( 'rd', 0x18, 0, 0, 0x70facade ),
+    req( 'rd', 0x18, 0x00002070, 4, 0         ), resp( 'rd', 0x18, 0, 4, 0x70facade ),
     # Read again from same cacheline
-    req( 'rd', 0x19, 0x00002074, 0, 0         ), resp( 'rd', 0x19, 1, 0, 0x75ca1ded ),
+    req( 'rd', 0x19, 0x00002074, 4, 0         ), resp( 'rd', 0x19, 1, 4, 0x75ca1ded ),
     # Read from cacheline 7
-    req( 'rd', 0x1a, 0x00001074, 0, 0         ), resp( 'rd', 0x1a, 0, 0, 0xffffff05 ),
+    req( 'rd', 0x1a, 0x00001074, 4, 0         ), resp( 'rd', 0x1a, 0, 4, 0xffffff05 ),
     # Write to cacheline 7 way 1 to see if cache hits properly
-    req( 'wr', 0x1b, 0x0000107c, 0, 0xffffff09), resp( 'wr', 0x1b, 1, 0, 0          ),
+    req( 'wr', 0x1b, 0x0000107c, 4, 0xffffff09), resp( 'wr', 0x1b, 1, 4, 0          ),
     # Read that back
-    req( 'rd', 0x1c, 0x0000107c, 0, 0         ), resp( 'rd', 0x1c, 1, 0, 0xffffff09 ),
+    req( 'rd', 0x1c, 0x0000107c, 4, 0         ), resp( 'rd', 0x1c, 1, 4, 0xffffff09 ),
     # Evict cacheline 0 again
-    req( 'rd', 0x1d, 0x00000070, 0, 0         ), resp( 'rd', 0x1d, 0, 0, 0xffffff00 ),
+    req( 'rd', 0x1d, 0x00000070, 4, 0         ), resp( 'rd', 0x1d, 0, 4, 0xffffff00 ),
   ]
 
 def dir_mapped_long0_mem( base_addr ):
@@ -847,10 +847,10 @@ test_case_table_generic = mk_test_case_table([
 #  [ "read_hit_1line_clean",  read_hit_1line_clean,  None,                 0.0,  0,  0,  0    ],
   [ "write_hit_1word_clean", write_hit_1word_clean, None,                 0.0,  0,  0,  0    ],
   [ "write_hit_1word_dirty", write_hit_1word_dirty, None,                 0.0,  0,  0,  0    ],
-  [ "amo_hit_1word_clean",   amo_hit_1word_clean,   None,                 0.0,  0,  0,  0    ],
-  [ "amo_miss_1word",        amo_miss_1word_msg,    amo_miss_1word_mem,   0.0,  0,  0,  0    ],
-  [ "amo_hit_more_clean",    amo_hit_more_clean,    None,                 0.0,  0,  0,  0    ],
-  [ "amo_miss_more",         amo_miss_more_msg,     amo_miss_more_mem,    0.0,  0,  0,  0    ],
+#  [ "amo_hit_1word_clean",   amo_hit_1word_clean,   None,                 0.0,  0,  0,  0    ],
+#  [ "amo_miss_1word",        amo_miss_1word_msg,    amo_miss_1word_mem,   0.0,  0,  0,  0    ],
+#  [ "amo_hit_more_clean",    amo_hit_more_clean,    None,                 0.0,  0,  0,  0    ],
+#  [ "amo_miss_more",         amo_miss_more_msg,     amo_miss_more_mem,    0.0,  0,  0,  0    ],
   [ "random",                random_msgs,           None,                 0.0,  0,  0,  0    ],
   [ "random_stall0.5_lat0",  random_msgs,           None,                 0.5,  0,  0,  0    ],
   [ "random_stall0.0_lat4",  random_msgs,           None,                 0.0,  4,  0,  0    ],

@@ -141,7 +141,7 @@ class BlockingCacheWideAccessPRTL( Model ):
     elif state == s.ctrl.STATE_EVICT_PREPARE:               state_str = "(EP)"
     elif state == s.ctrl.STATE_EVICT_REQUEST:               state_str = "(ER)"
     elif state == s.ctrl.STATE_EVICT_WAIT:                  state_str = "(EW)"
-    elif state == s.ctrl.STATE_WAIT_HIT:                    state_str = "(W )"; assert(s.data_array_wen)
+    elif state == s.ctrl.STATE_WAIT_HIT:                    state_str = "(W )"
     elif state == s.ctrl.STATE_WAIT_MISS:                   state_str = "(W )"
     else :                                                  state_str = "(? )"
 
