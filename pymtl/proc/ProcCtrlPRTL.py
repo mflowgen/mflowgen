@@ -13,11 +13,17 @@ from ifcs import MemReqMsg
 
 class ProcCtrlPRTL( Model ):
 
-  def __init__( s ):
+  def __init__( s, reset_freeze = False ):
 
     #---------------------------------------------------------------------
     # Interface
     #---------------------------------------------------------------------
+
+    # control register ports
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    if reset_freeze:
+      s.go             = InPort( 1 )
 
     # imem ports
 
@@ -223,6 +229,19 @@ class ProcCtrlPRTL( Model ):
 
     s.next_val_F = Wire( 1 )
 
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    s.pre_stall_F = Wire( 1 )
+
+    if reset_freeze:
+      @s.combinational
+      def comb_freeze_F():
+          s.stall_F.value = s.pre_stall_F | ~s.go
+    else:
+      @s.combinational
+      def comb_freeze_F():
+          s.stall_F.value = s.pre_stall_F
+
     @s.combinational
     def comb_F():
       # ostall due to imemresp
@@ -231,9 +250,10 @@ class ProcCtrlPRTL( Model ):
 
       # stall and squash in F stage
 
-      s.stall_F.value       = s.val_F & ( s.ostall_F  | s.ostall_D |
+      s.pre_stall_F.value   = s.val_F & ( s.ostall_F  | s.ostall_D |
                                           s.ostall_X  | s.ostall_M |
                                           s.ostall_W                 )
+
       s.squash_F.value      = s.val_F & ( s.osquash_D | s.osquash_X  )
 
       # imem req is special, it actually be sent out _before_ the F

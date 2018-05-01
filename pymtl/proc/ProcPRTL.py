@@ -23,7 +23,7 @@ from ifcs import MemReqMsg4B, MemRespMsg4B, MduReqMsg, MduRespMsg
 
 class ProcPRTL( Model ):
 
-  def __init__( s, num_cores = 1 ):
+  def __init__( s, num_cores = 1, reset_freeze = False ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -59,6 +59,12 @@ class ProcPRTL( Model ):
     s.xcelreq   = OutValRdyBundle( XcelReqMsg()    )
     s.xcelresp  = InValRdyBundle ( XcelRespMsg()    )
 
+    # Control Register Interface
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    if reset_freeze:
+      s.go = InPort( 1 )
+
     # val_W port used for counting commited insts.
 
     s.commit_inst = OutPort( 1 )
@@ -71,7 +77,7 @@ class ProcPRTL( Model ):
     # Structural composition
     #---------------------------------------------------------------------
 
-    s.ctrl  = ProcCtrlPRTL()
+    s.ctrl  = ProcCtrlPRTL( reset_freeze )
     s.dpath = ProcDpathPRTL( num_cores )
 
     # Connect parameters
@@ -108,6 +114,11 @@ class ProcPRTL( Model ):
     )
 
     # Control
+
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    if reset_freeze:
+      s.connect( s.ctrl.go, s.go )
 
     s.connect_pairs(
 
