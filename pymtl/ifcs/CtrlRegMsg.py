@@ -73,3 +73,12 @@ class CtrlRegRespMsg( BitStructDefinition ):
     elif s.type_ == CtrlRegRespMsg.TYPE_WRITE:
       return "wr:{}".format( '        ' )
 
+#-------------------------------------------------------------------------
+# Common Messages
+#-------------------------------------------------------------------------
+
+class CtrlRegMsg( object ):
+  def __init__( s ):
+    s.req  = CtrlRegReqMsg ()
+    s.resp = CtrlRegRespMsg()
+
