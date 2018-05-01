@@ -1,5 +1,5 @@
 #=========================================================================
-# CompHostCtrlregMcoreL0ArbiterMduCache.py
+# CompCtrlregMcoreL0ArbiterMduCache.py
 #=========================================================================
 
 from pymtl                   import *
@@ -7,10 +7,14 @@ from pclib.ifcs              import InValRdyBundle, OutValRdyBundle
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs                    import MemMsg, MduMsg
+from ifcs                    import CtrlRegMsg, MemMsg, MduMsg
 
 from proc.ProcPRTL           import ProcPRTL
-from cache.BlockingCachePRTL import BlockingCachePRTL
+from proc.NullXcelRTL        import NullXcelRTL
+
+from cache.BlockingCachePRTL              import BlockingCachePRTL
+from cache_wa.BlockingCacheWideAccessPRTL import BlockingCacheWideAccessPRTL
+
 from mdu.IntMulDivUnit       import IntMulDivUnit
 
 from networks.Funnel         import Funnel
@@ -43,31 +47,30 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     # - 1 x actual imem req/resp
     # - 1 x actual dmem req/resp
 
-    s.ctrlregreq  = InValRdyBundle ( s.ctrlregifc.req )
-    s.ctrlregresp = OutValRdyBundle( s.ctrlregifc.resp )
+    s.ctrlregreq      = InValRdyBundle ( s.ctrlregifc.req  )
+    s.ctrlregresp     = OutValRdyBundle( s.ctrlregifc.resp )
 
-    s.mngr2proc = InValRdyBundle [num_cores]( 32 )
-    s.proc2mngr = OutValRdyBundle[num_cores]( 32 )
+    s.mngr2proc       = InValRdyBundle [num_cores]( 32 )
+    s.proc2mngr       = OutValRdyBundle[num_cores]( 32 )
 
-    s.imemreq  = OutValRdyBundle( s.cache_mem_ifc.req )
-    s.imemresp = InValRdyBundle ( s.cache_mem_ifc.resp )
+    s.imemreq         = OutValRdyBundle( s.cache_mem_ifc.req  )
+    s.imemresp        = InValRdyBundle ( s.cache_mem_ifc.resp )
 
-    s.dmemreq  = OutValRdyBundle( s.cache_mem_ifc.req )
-    s.dmemresp = InValRdyBundle ( s.cache_mem_ifc.resp )
+    s.dmemreq         = OutValRdyBundle( s.cache_mem_ifc.req  )
+    s.dmemresp        = InValRdyBundle ( s.cache_mem_ifc.resp )
 
-    s.host_mdureq  = InValRdyBundle( s.proc_mdu_ifc.req )
-    s.host_mduresp = OutValRdyBundle( s.proc_mdu_ifc.resp )
+    s.host_mdureq     = InValRdyBundle ( s.proc_mdu_ifc.req  )
+    s.host_mduresp    = OutValRdyBundle( s.proc_mdu_ifc.resp )
 
-    s.host_icachereq  = InValRdyBundle ( s.proc_cache_ifc.req )
-    s.host_icacheresp = OutValRdyBundle( s.proc_cache_ifc.resp )
+    s.host_icachereq  = InValRdyBundle ( s.cache_mem_ifc.req  ) # We have L0i!!!
+    s.host_icacheresp = OutValRdyBundle( s.cache_mem_ifc.resp )
 
-    s.host_dcachereq  = InValRdyBundle ( s.proc_cache_ifc.req )
+    s.host_dcachereq  = InValRdyBundle ( s.proc_cache_ifc.req  )
     s.host_dcacheresp = OutValRdyBundle( s.proc_cache_ifc.resp )
 
     # These ports are for the ctrl register
 
     s.debug = OutPort( 1 )
-    # s.commit_inst = OutPort( num_cores )
 
     #---------------------------------------------------------------------
     # Components
@@ -75,7 +78,7 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
     # Shared L1I
 
-    s.icache         = BlockingCachePRTL( 0 )
+    s.icache         = BlockingCacheWideAccessPRTL( 0 )
     s.icache_adapter = HostAdapter( req=s.icache.cachereq, resp=s.icache.cacheresp )
 
     s.net_icachereq  = Funnel( num_cores, s.cache_mem_ifc.req  )  # N L0is - to - 1 cache
@@ -103,8 +106,9 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
     # Processors
 
-    s.proc = ProcPRTL  [num_cores]( num_cores, reset_freeze = True )
-    s.l0i  = InstBuffer[num_cores]( 2, cacheline_nbits/8 )
+    s.proc = ProcPRTL   [num_cores]( num_cores, reset_freeze = True )
+    s.l0i  = InstBuffer [num_cores]( 2, cacheline_nbits/8 )
+    s.xcel = NullXcelRTL[num_cores]()
 
     #---------------------------------------------------------------------
     # Connections
@@ -126,6 +130,9 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
         s.proc[i].mngr2proc,   s.mngr2proc[i],
         s.proc[i].proc2mngr,   s.proc2mngr[i],
+        
+        s.proc[i].xcelreq,     s.xcel[i].xcelreq,
+        s.proc[i].xcelresp,    s.xcel[i].xcelresp,
       )
 
     # core #0's stats_en is brought up to the top level
@@ -220,6 +227,15 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
       s.mdu_adapter.resp, s.mdu.resp,
     )
 
+    # Turn off host_en signals in the adapters
+
+    s.connect( s.mdu_adapter.host_en, 0 )
+    s.connect( s.icache_adapter.host_en, 0 )
+    s.connect( s.dcache_adapter.host_en, 0 )
+
+    for i in xrange( num_cores ):
+      s.connect( s.l0i[i].L0_disable, 0 )
+
   #-----------------------------------------------------------------------
   # Line tracing
   #-----------------------------------------------------------------------
@@ -235,6 +251,6 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     trace = s.icache.line_trace()
     trace += ' [ ' + s.mdu.line_trace()      + ' ] '
     for i in xrange(len(s.proc)):
-      trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() ' ] '
+      trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() + ' ] '
     return trace + s.dcache.line_trace()
 
