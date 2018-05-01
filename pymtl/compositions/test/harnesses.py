@@ -253,8 +253,8 @@ def run_test( model, gen_test, num_cores, cacheline_nbits=128,
 
   # Instantiate and elaborate the model
 
-  model = TestHarness( model, dump_vcd, test_verilog, num_cores,
-                       src_delay, sink_delay, mem_stall_prob, mem_latency, cacheline_nbits )
+  model = TestHarness( model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
+                       src_delay, sink_delay, mem_stall_prob, mem_latency )
 
   model.vcd_file = dump_vcd
   model.elaborate()

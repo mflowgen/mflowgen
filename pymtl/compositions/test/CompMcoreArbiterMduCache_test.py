@@ -17,11 +17,12 @@ from compositions.CompMcoreArbiterMduCache import CompMcoreArbiterMduCache
 def run_test( test, dump_vcd, test_verilog,
               src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
 
-  num_cores = 4
+  num_cores       = 4
+  cacheline_nbits = 128
 
   from harnesses import run_test as run
 
-  run( CompMcoreArbiterMduCache( num_cores ), test, num_cores,
+  run( CompMcoreArbiterMduCache( num_cores ), test, num_cores, cacheline_nbits,
        dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob, mem_latency )
 
 #-------------------------------------------------------------------------
