@@ -80,3 +80,14 @@ if [[ x$1 == x--28nm-cache* ]]; then
   ln -sf ../assembled-flows/28nm-cache/Makefrag
 fi
 
+#-------------------------------------------------------------------------
+# 28nm-brgtc2-tapein1
+#-------------------------------------------------------------------------
+# This flow has its own Makefrag
+
+if [[ x$1 == x--28nm-brgtc2-tapein1* ]]; then
+  ln -sf ../assembled-flows/28nm-brgtc2-tapein1/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-brgtc2-tapein1/Makefrag
+fi
+
+
