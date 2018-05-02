@@ -105,7 +105,9 @@ class TestHarness( Model ):
       s.model.vcd_file = dump_vcd
 
     if test_verilog:
-      s.model = TranslationTool( s.model, enable_blackbox = True )
+      cls_name = s.model.__class__.__name__
+      if ( cls_name != 'SwShim' ) and ( not hasattr( s.model, 'dut' ) ):
+        s.model = TranslationTool( s.model, enable_blackbox = True )
 
     s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
                         num_memports, mem_stall_prob, mem_latency )

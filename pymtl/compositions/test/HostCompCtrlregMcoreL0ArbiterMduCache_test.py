@@ -25,7 +25,8 @@ def run_test( test, dump_vcd, test_verilog,
 
   dut             = CompCtrlregMcoreL0ArbiterMduCache()
   hwshim_and_dut  = HostCompCtrlregMcoreL0ArbiterMduCache( asynch_bitwidth )
-  swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth )
+  swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth,
+                                 dump_vcd, test_verilog )
 
   # Set explicit name
   swshim.explicit_modulename = swshim.__class__.__name__
