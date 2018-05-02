@@ -9,6 +9,7 @@
 #include "wsrt-Runtime.h"
 #include "wsrt-TaskGroup.h"
 #include "wsrt-WorkStealing.h"
+#include "wsrt-Macros.h"
 
 #endif /* WSRT_H */
 
