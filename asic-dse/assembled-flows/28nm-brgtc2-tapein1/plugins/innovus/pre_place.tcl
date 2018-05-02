@@ -47,7 +47,7 @@ set label_poc_lly    [expr $io_corner_bl_llx + 108.78]
 add_gui_text -label VSSPST -pt $label_vsspst_llx $label_vsspst_lly -layer CUSTOM_BRG_LVS_M5 -height 5
 add_gui_text -label VDDPST -pt $label_vddpst_llx $label_vddpst_lly -layer CUSTOM_BRG_LVS_M5 -height 5
 add_gui_text -label VSS    -pt $label_vss_llx    $label_vss_lly    -layer CUSTOM_BRG_LVS_M5 -height 5
-add_gui_text -label VDD    -pt $label_vdd_llx    $label_vdd_lly    -layer CUSTOM_BRG_LVS_M5 -height 5
+add_gui_text -label VDD    -pt $label_vdd_llx    $label_vdd_lly    -layer CUSTOM_BRG_LVS_M3 -height 5
 add_gui_text -label POC    -pt $label_poc_llx    $label_poc_lly    -layer CUSTOM_BRG_LVS_M3 -height 5
 
 # PG Pins used by SRAMs
