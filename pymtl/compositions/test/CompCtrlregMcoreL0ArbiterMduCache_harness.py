@@ -105,7 +105,7 @@ class TestHarness( Model ):
       s.model.vcd_file = dump_vcd
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, enable_blackbox = True )
 
     s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
                         num_memports, mem_stall_prob, mem_latency )
@@ -253,6 +253,7 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def line_trace( s ):
+    #s.model.ctrlreg.line_trace() + " > " + \
     return s.ctrlregsrc.line_trace()  + " > " + \
            s.ctrlregsink.line_trace() + \
            "|".join( [x.line_trace() for x in s.src]  ) + \
