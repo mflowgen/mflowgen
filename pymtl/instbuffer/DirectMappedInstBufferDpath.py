@@ -104,6 +104,7 @@ class DirectMappedInstBufferDpath( Model ):
 
     @s.combinational
     def comb_valid_write():
+      s.valid_array.in_.value = s.valid_array.out  # hawajkm: avoid latches :)
       s.valid_array.in_[ s.buffreq_idx ].value = 1 # effectively a huge demux
 
     s.connect_pairs(
