@@ -250,6 +250,18 @@ module top;
   end
   endtask
 
+  logic [799:0] test_name;
+
+  `include "ProcL0Mdu_all_tests.v"
+
+  initial begin
+    if ( !$value$plusargs( "test=%s", test_name ) ) begin
+      $display( "" );
+      $display( "    [BRG] ERROR: No test specified" );
+      $display( "" );
+      $finish(1);
+    end
+  end
   //----------------------------------------------------------------------
   // Drive the simulation
   //----------------------------------------------------------------------
@@ -259,7 +271,7 @@ module top;
   integer total_cycles = 0;
 
   initial begin
-    $vcdpluson;
+    // $vcdpluson;
     #1;  th_clear = 1'b1;
     #20; th_clear = 1'b0;
     #1;  th_reset = 1'b1;
@@ -269,9 +281,11 @@ module top;
     th_src0_idx = 0;
     th_sink0_idx = 0;
 
-    `include "proc_testcase_init.v"
+    // call the dispatch function in the generated all_tests.v
 
-    while ( !th_done && total_cycles < 50 ) begin
+    procl0mdu_testcase_dispatch( test_name );
+
+    while ( !th_done && total_cycles < 5000 ) begin
       $display("%d:",total_cycles);
       $display("  L0i valid    : %b", th.dut.l0i.inner.dpath.valid_array.out);
       $display("  L0i tag check: %x %x %d", th.dut.l0i.inner.dpath.tag_compare.in0,
@@ -283,7 +297,7 @@ module top;
       // $display("proc.imemreq_val %x",th.dut.proc.imemreq_val);
       // $display("proc.imemreq_msg %x",th.dut.proc.imemreq_msg);
       // $display("proc.imemreq_rdy %x",th.dut.proc.imemreq_rdy);
-      $display("  L0i state_reg  %d",th.dut.l0i.inner.ctrl.state_reg);
+      // $display("  L0i state_reg  %d",th.dut.l0i.inner.ctrl.state_reg);
       // $display("%x",th.dut.l0i.inner.dpath.buffreq_addr_reg.out);
 
       // $display("%x",th.dut.proc2mngr_rdy);
@@ -299,12 +313,12 @@ module top;
       // $display("%x + %x + %x = %x", th.dut.proc.dpath.pc_plus_imm_D.in0, th.dut.proc.dpath.pc_plus_imm_D.in1,
       // th.dut.proc.dpath.pc_plus_imm_D.cin, th.dut.proc.dpath.pc_plus_imm_D.out);
     end
-    $vcdplusoff;
+    // $vcdplusoff;
     // Check that the simulation actually finished
 
     if ( !th_done ) begin
       $display( "" );
-      $display( " ERROR: Test did not finish in 50 cycles." );
+      $display( "    [BRG] ERROR: Test did not finish in 5000 cycles." );
       $display( "" );
       $finish(1);
     end
@@ -312,7 +326,7 @@ module top;
     
     if ( th_done ) begin
       $display( "" );
-      $display( " Passed test in %d cycles ", total_cycles );
+      $display( "    [BRG] Passed test in %d cycles ", total_cycles );
       $display( "" );
       $finish(0);
     end
