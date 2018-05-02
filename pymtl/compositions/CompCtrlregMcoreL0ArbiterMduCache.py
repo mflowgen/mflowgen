@@ -52,8 +52,18 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     s.ctrlregreq      = InValRdyBundle ( s.ctrlregifc.req  )
     s.ctrlregresp     = OutValRdyBundle( s.ctrlregifc.resp )
 
-    s.mngr2proc       = InValRdyBundle [num_cores]( 32 )
-    s.proc2mngr       = OutValRdyBundle[num_cores]( 32 )
+    # These ports should be an array of port bundles, but the host
+    # interface uses reflection and breaks with an array. So we are
+    # flattening these out here.
+
+    s.mngr2proc_0    = InValRdyBundle ( 32 )
+    s.proc2mngr_0    = OutValRdyBundle( 32 )
+    s.mngr2proc_1    = InValRdyBundle ( 32 )
+    s.proc2mngr_1    = OutValRdyBundle( 32 )
+    s.mngr2proc_2    = InValRdyBundle ( 32 )
+    s.proc2mngr_2    = OutValRdyBundle( 32 )
+    s.mngr2proc_3    = InValRdyBundle ( 32 )
+    s.proc2mngr_3    = OutValRdyBundle( 32 )
 
     s.imemreq         = OutValRdyBundle( s.cache_mem_ifc.req  )
     s.imemresp        = InValRdyBundle ( s.cache_mem_ifc.resp )
@@ -130,12 +140,23 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
         s.proc[i].go,          s.ctrlreg.go[i],
         s.proc[i].commit_inst, s.ctrlreg.commit_inst[i],
 
-        s.proc[i].mngr2proc,   s.mngr2proc[i],
-        s.proc[i].proc2mngr,   s.proc2mngr[i],
-        
+#        s.proc[i].mngr2proc,   s.mngr2proc[i],
+#        s.proc[i].proc2mngr,   s.proc2mngr[i],
+
         s.proc[i].xcelreq,     s.xcel[i].xcelreq,
         s.proc[i].xcelresp,    s.xcel[i].xcelresp,
       )
+
+    s.connect_pairs(
+      s.proc[0].mngr2proc,   s.mngr2proc_0,
+      s.proc[0].proc2mngr,   s.proc2mngr_0,
+      s.proc[1].mngr2proc,   s.mngr2proc_1,
+      s.proc[1].proc2mngr,   s.proc2mngr_1,
+      s.proc[2].mngr2proc,   s.mngr2proc_2,
+      s.proc[2].proc2mngr,   s.proc2mngr_2,
+      s.proc[3].mngr2proc,   s.mngr2proc_3,
+      s.proc[3].proc2mngr,   s.proc2mngr_3,
+    )
 
     # core #0's stats_en is brought up to the top level
 

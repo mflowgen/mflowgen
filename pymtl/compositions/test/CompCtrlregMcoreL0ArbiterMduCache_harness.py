@@ -124,9 +124,18 @@ class TestHarness( Model ):
 
     # Processor <-> Proc/Mngr
 
-    for i in xrange(num_cores):
-      s.connect( s.model.mngr2proc[i], s.src[i].out  )
-      s.connect( s.model.proc2mngr[i], s.sink[i].in_ )
+#    for i in xrange(num_cores):
+#      s.connect( s.model.mngr2proc[i], s.src[i].out  )
+#      s.connect( s.model.proc2mngr[i], s.sink[i].in_ )
+
+    s.connect( s.model.mngr2proc_0, s.src [0].out  )
+    s.connect( s.model.proc2mngr_0, s.sink[0].in_ )
+    s.connect( s.model.mngr2proc_1, s.src [1].out  )
+    s.connect( s.model.proc2mngr_1, s.sink[1].in_ )
+    s.connect( s.model.mngr2proc_2, s.src [2].out  )
+    s.connect( s.model.proc2mngr_2, s.sink[2].in_ )
+    s.connect( s.model.mngr2proc_3, s.src [3].out  )
+    s.connect( s.model.proc2mngr_3, s.sink[3].in_ )
 
     s.connect_pairs(
       s.model.host_mdureq,  s.host_mdu_src.out,
