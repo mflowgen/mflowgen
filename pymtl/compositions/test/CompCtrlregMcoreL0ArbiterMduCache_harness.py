@@ -105,7 +105,7 @@ class TestHarness( Model ):
       s.model.vcd_file = dump_vcd
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, enable_blackbox = True )
 
     s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
                         num_memports, mem_stall_prob, mem_latency )
@@ -124,9 +124,18 @@ class TestHarness( Model ):
 
     # Processor <-> Proc/Mngr
 
-    for i in xrange(num_cores):
-      s.connect( s.model.mngr2proc[i], s.src[i].out  )
-      s.connect( s.model.proc2mngr[i], s.sink[i].in_ )
+#    for i in xrange(num_cores):
+#      s.connect( s.model.mngr2proc[i], s.src[i].out  )
+#      s.connect( s.model.proc2mngr[i], s.sink[i].in_ )
+
+    s.connect( s.model.mngr2proc_0, s.src [0].out  )
+    s.connect( s.model.proc2mngr_0, s.sink[0].in_ )
+    s.connect( s.model.mngr2proc_1, s.src [1].out  )
+    s.connect( s.model.proc2mngr_1, s.sink[1].in_ )
+    s.connect( s.model.mngr2proc_2, s.src [2].out  )
+    s.connect( s.model.proc2mngr_2, s.sink[2].in_ )
+    s.connect( s.model.mngr2proc_3, s.src [3].out  )
+    s.connect( s.model.proc2mngr_3, s.sink[3].in_ )
 
     s.connect_pairs(
       s.model.host_mdureq,  s.host_mdu_src.out,
@@ -244,6 +253,7 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def line_trace( s ):
+    #s.model.ctrlreg.line_trace() + " > " + \
     return s.ctrlregsrc.line_trace()  + " > " + \
            s.ctrlregsink.line_trace() + \
            "|".join( [x.line_trace() for x in s.src]  ) + \
@@ -256,7 +266,7 @@ class TestHarness( Model ):
 
 def run_test( model, gen_test, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
-              mem_stall_prob=0, mem_latency=0, max_cycles=20000 ):
+              mem_stall_prob=0, mem_latency=0, max_cycles=200000 ):
 
   # Instantiate and elaborate the model
 

@@ -58,6 +58,7 @@ class IntMulVarLatCalcShamt( Model ):
       elif s.in_[5] == 1: s.out.value = 5
       elif s.in_[6] == 1: s.out.value = 6
       elif s.in_[7] == 1: s.out.value = 7
+      else:               s.out.value = 0
 
   # Line tracing
 
