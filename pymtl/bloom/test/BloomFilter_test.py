@@ -101,9 +101,9 @@ direct_out_msgs = [ Bits( 1, 1 ),
                     Bits( 1, 0 ),]
 
 test_case_table = mk_test_case_table([
-  (           "in_msgs        out_msgs         num_bits_exponent num_hash_funs src_delay sink_delay"),
-  [ "direct", direct_in_msgs, direct_out_msgs, 8,                3,            0,        0          ],
-  [ "direct", direct_in_msgs, direct_out_msgs, 8,                3,            7,        3          ],
+  (                "in_msgs        out_msgs         num_bits_exponent num_hash_funs src_delay sink_delay"),
+  [ "direct",       direct_in_msgs, direct_out_msgs, 8,                3,            0,        0          ],
+  [ "direct_delay", direct_in_msgs, direct_out_msgs, 8,                3,            7,        3          ],
 ])
 
 @pytest.mark.parametrize( **test_case_table )

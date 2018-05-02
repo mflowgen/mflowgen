@@ -48,9 +48,9 @@ class HashFunction( Model ):
 
       for i in range( 1, nbits ):
         if (const_hash_key >> i) & 1:
-          s.addition.value += (s.in_ << i)[ : nbits ]
-      s.out.value = s.addition[ nbits - num_bits_exponent : nbits ]
+          s.addition.value += s.in_ << i
 
+      s.out.value = s.addition[ nbits - num_bits_exponent : nbits ]
 
 class BloomFilterParallel( Model ):
 
@@ -109,37 +109,41 @@ class BloomFilterParallel( Model ):
       elif s.state.out == s.STATE_CHECK and s.check_out.rdy:
         s.state.in_.value = s.STATE_IDLE
 
-    # Bits insert/check logic.
-    # XXX: hacky!!! Due to a PyMTL bug, we need to have a state that
-    # toggles and fires the combinational block.
-    s.foo = Reg( 1 )
+    # Shunning: Need to hook up bits_in and bits_out to bits.in_ and .out
+    # to let pymtl properly handles sensitivity 
+
+    s.bits_in  = Wire( 2 ** num_bits_exponent )
+    s.bits_out = Wire( 2 ** num_bits_exponent )
+
+    s.connect( s.bits_in,  s.bits.in_ )
+    s.connect( s.bits_out, s.bits.out )
 
     @s.combinational
     def comb_bits():
-      s.in_.rdy.value = 0
+      s.in_.rdy.value       = 0
       s.check_out.val.value = 0
-      s.foo.in_.value = not s.foo.out
+      s.check_out.msg.value = 0
+      s.bits_in.value       = s.bits_out
 
       if s.state.out == s.STATE_IDLE:
         s.in_.rdy.value = 1
 
       elif s.state.out == s.STATE_CLEAR:
         s.in_.rdy.value = 1
-        s.bits.in_.value = Bits( 2 ** num_bits_exponent, 0 )
+        s.bits_in.value = 0
 
       elif s.state.out == s.STATE_INSERT:
         s.in_.rdy.value = 1
-        s.bits.in_.value = s.bits.out
 
-        for i in range( len( s.hash_funs ) ):
-          s.bits.in_[ s.hash_funs[i].out ].value |= 1
+        for i in range( num_hash_funs ):
+          s.bits_in[ s.hash_funs[i].out ].value |= 1
 
       elif s.state.out == s.STATE_CHECK:
         s.check_out.val.value = 1
         s.check_out.msg.value = 1
 
-        for hash_fun in s.hash_funs:
-          s.check_out.msg.value &= s.bits.out[ hash_fun.out ]
+        for i in range( num_hash_funs ):
+          s.check_out.msg.value = s.check_out.msg & s.bits_out[ s.hash_funs[i].out ]
 
   def line_trace( s ):
     return "{} ({}) {}".format( s.state.out,
