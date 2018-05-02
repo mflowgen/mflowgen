@@ -148,7 +148,8 @@ runtimes:
 	@(tot_secs=0; \
     $(foreach step, $(steps), \
       end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
-      start=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      start=$(shell [[ -e $(timestamps_dir)/$(step).end ]] && \
+                    date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
       step_secs=$$(( $$end - $$start )); \
       tot_secs=$$(($$tot_secs + $$step_secs)); \
       h=$$(( $$step_secs / 3600      )); \
