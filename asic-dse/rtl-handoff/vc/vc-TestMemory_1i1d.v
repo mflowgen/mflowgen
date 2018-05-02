@@ -100,7 +100,7 @@ module vc_TestMemory_1i1d
   integer i0, i1;
 
   logic [p_i_nbits-1:0] iread0;
-  always @(*) begin
+  always @(imemreq0_val or imemreq0_msg or imemreq0_msg_len_modified_M) begin
     iread0 = {p_i_nbits{1'bx}};
     if (imemreq0_val)
       for (i0=0; i0<imemreq0_msg_len_modified_M; i0=i0+1)
@@ -114,7 +114,7 @@ module vc_TestMemory_1i1d
   assign imemresp0_msg_M[`RESP_DATA(p_i_nbits)]   = iread0;
 
   logic [p_d_nbits-1:0] dread0;
-  always @(*) begin
+  always @(dmemreq0_val or dmemreq0_msg or dmemreq0_msg_len_modified_M) begin
     dread0 = {p_d_nbits{1'bx}};
     if (dmemreq0_val)
       for (i1=0; i1<dmemreq0_msg_len_modified_M; i1=i1+1)

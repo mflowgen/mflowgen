@@ -40,8 +40,6 @@ while read p; do # execute test one by one
   else
     echo "  else if (name == \"$p\") " $q"();" >> temp_dispatch.v
   fi
-
-  echo $flag
   
 done < ${CURRENT_FOLDER}/list-test-case.txt
 

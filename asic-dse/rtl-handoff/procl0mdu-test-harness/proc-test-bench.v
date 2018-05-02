@@ -309,7 +309,7 @@ module top;
       // th.dut.proc.dpath.pc_sel_mux_F.sel);
       #10;
       total_cycles = total_cycles + 1;
-      // th.display_trace();
+      th.display_trace();
       // $display("%x + %x + %x = %x", th.dut.proc.dpath.pc_plus_imm_D.in0, th.dut.proc.dpath.pc_plus_imm_D.in1,
       // th.dut.proc.dpath.pc_plus_imm_D.cin, th.dut.proc.dpath.pc_plus_imm_D.out);
     end
