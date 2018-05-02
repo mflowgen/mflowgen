@@ -319,6 +319,7 @@ class IntDivRem4Ctrl( Model ):
 
       s.buffers_en.value = 0
       s.is_div.value     = 0
+      s.is_signed.value  = 0
 
       if   curr_state == s.STATE_IDLE:
         s.req_rdy.value     = 1
