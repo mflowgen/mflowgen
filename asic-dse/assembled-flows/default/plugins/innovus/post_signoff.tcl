@@ -59,3 +59,7 @@ write_lef_abstract -specifyTopLayer $vars(max_route_layer) \
 
 defOut $vars(results_dir)/$vars(design).def.gz
 
+# Report area
+
+report_area -verbose > $vars(reports_dir)/$vars(step).area.rpt
+
