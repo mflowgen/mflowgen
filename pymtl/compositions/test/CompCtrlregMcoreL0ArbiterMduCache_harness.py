@@ -245,7 +245,6 @@ class TestHarness( Model ):
 
   def line_trace( s ):
     return s.ctrlregsrc.line_trace()  + " > " + \
-           s.model.ctrlreg.line_trace() + " > " + \
            s.ctrlregsink.line_trace() + \
            "|".join( [x.line_trace() for x in s.src]  ) + \
            s.model.line_trace() + \
