@@ -106,14 +106,14 @@ module SwShim_0x32a7578b0a6f3a5a
 
   HostGcdUnit dut
   (
-    .out_ack ( dut$out_ack ),
-    .in__msg ( dut$in__msg ),
-    .in__req ( dut$in__req ),
-    .clk     ( dut$clk ),
-    .reset   ( dut$reset ),
-    .out_msg ( dut$out_msg ),
-    .out_req ( dut$out_req ),
-    .in__ack ( dut$in__ack )
+    .out_ack_io ( dut$out_ack ),
+    .in__msg_io ( dut$in__msg ),
+    .in__req_io ( dut$in__req ),
+    .clk_io     ( dut$clk ),
+    .reset_io   ( dut$reset ),
+    .out_msg_io ( dut$out_msg ),
+    .out_req_io ( dut$out_req ),
+    .in__ack_io ( dut$in__ack )
   );
 
   // in_split temporaries
