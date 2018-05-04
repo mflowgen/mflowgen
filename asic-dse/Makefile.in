@@ -147,15 +147,22 @@ runtimes:
 	@echo "--------------------------------------------------------------------------"
 	@(tot_secs=0; \
     $(foreach step, $(steps), \
-      end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
-      start=$(shell [[ -e $(timestamps_dir)/$(step).end ]] && \
-                    date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      start_e=$(shell [[ -e $(timestamps_dir)/$(step).start ]] && echo "y"); \
+      end_e=$(shell [[ -e $(timestamps_dir)/$(step).end ]] && echo "y"); \
+      end_1=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
+      start_1=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      end_2=$$(if [[ -n "$$start_e" ]]; then echo $$end_1; else echo 0; fi); \
+      start_2=$$start_1; \
+      flag=; \
+      flag=$$([[ "$$end_2" -lt "$$start_2" ]] && echo "*"); \
+      end=$$(if [[ -n "$$flag" ]]; then date +%s; else echo $$end_2; fi); \
+      start=$$start_2; \
       step_secs=$$(( $$end - $$start )); \
       tot_secs=$$(($$tot_secs + $$step_secs)); \
       h=$$(( $$step_secs / 3600      )); \
       m=$$(( $$step_secs % 3600 / 60 )); \
       s=$$(( $$step_secs % 60        )); \
-      printf '%-20s -- %2d hr %2d min %2d sec\n' $(step) $$h $$m $$s | \
+      printf '%-20s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
         sed "s/ 0 hr/     /; s/ 0 min/      /";) \
     echo "--------------------------------------------------------------------------"; \
     h=$$(( $$tot_secs / 3600      )); \
