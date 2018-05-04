@@ -148,7 +148,7 @@ module SwShim_0x32a7578b0a6f3a5a
   wire   [   0:0] in_valRdyToReqAck$out_req;
   wire   [   0:0] in_valRdyToReqAck$in__rdy;
 
-  ValRdyToReqAck_0x3871167c1fef1233 in_valRdyToReqAck
+  ValRdyToReqAck_0x3871167c1fef1233_swshim in_valRdyToReqAck
   (
     .out_ack ( in_valRdyToReqAck$out_ack ),
     .in__msg ( in_valRdyToReqAck$in__msg ),
@@ -170,7 +170,7 @@ module SwShim_0x32a7578b0a6f3a5a
   wire   [   0:0] in_reqAckToValRdy$out_val;
   wire   [   0:0] in_reqAckToValRdy$in__ack;
 
-  ReqAckToValRdy_0x1b4e41cb91c5205 in_reqAckToValRdy
+  ReqAckToValRdy_0x1b4e41cb91c5205_swshim in_reqAckToValRdy
   (
     .out_rdy ( in_reqAckToValRdy$out_rdy ),
     .in__msg ( in_reqAckToValRdy$in__msg ),
@@ -234,6 +234,388 @@ endmodule // SwShim_0x32a7578b0a6f3a5a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// ValRdyToReqAck_0x3871167c1fef1233
+//-----------------------------------------------------------------------------
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdyToReqAck_0x3871167c1fef1233_swshim
+(
+  input  wire [   0:0] clk,
+  input  wire [   7:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  input  wire [   0:0] out_ack,
+  output reg  [   7:0] out_msg,
+  output reg  [   0:0] out_req,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [   0:0] synch_ack;
+  wire   [   0:0] synch_1_out;
+  wire   [   7:0] reg_out;
+
+
+  // register declarations
+  reg    [   0:0] reg_en;
+  reg    [   1:0] state;
+
+  // localparam declarations
+  localparam STATE_HOLD = 1;
+  localparam STATE_RECV = 0;
+  localparam STATE_SEND = 2;
+  localparam STATE_WAIT = 3;
+
+  // synch_1 temporaries
+  wire   [   0:0] synch_1$reset;
+  wire   [   0:0] synch_1$in_;
+  wire   [   0:0] synch_1$clk;
+  wire   [   0:0] synch_1$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_1
+  (
+    .reset ( synch_1$reset ),
+    .in_   ( synch_1$in_ ),
+    .clk   ( synch_1$clk ),
+    .out   ( synch_1$out )
+  );
+
+  // synch_2 temporaries
+  wire   [   0:0] synch_2$reset;
+  wire   [   0:0] synch_2$in_;
+  wire   [   0:0] synch_2$clk;
+  wire   [   0:0] synch_2$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_2
+  (
+    .reset ( synch_2$reset ),
+    .in_   ( synch_2$in_ ),
+    .clk   ( synch_2$clk ),
+    .out   ( synch_2$out )
+  );
+
+  // reg_in temporaries
+  wire   [   0:0] reg_in$reset;
+  wire   [   7:0] reg_in$in_;
+  wire   [   0:0] reg_in$clk;
+  wire   [   0:0] reg_in$en;
+  wire   [   7:0] reg_in$out;
+
+  RegEn_0x45f1552f10c5f05d_swshim reg_in
+  (
+    .reset ( reg_in$reset ),
+    .in_   ( reg_in$in_ ),
+    .clk   ( reg_in$clk ),
+    .en    ( reg_in$en ),
+    .out   ( reg_in$out )
+  );
+
+  // signal connections
+  assign reg_in$clk    = clk;
+  assign reg_in$en     = reg_en;
+  assign reg_in$in_    = in__msg;
+  assign reg_in$reset  = reset;
+  assign reg_out       = reg_in$out;
+  assign synch_1$clk   = clk;
+  assign synch_1$in_   = out_ack;
+  assign synch_1$reset = reset;
+  assign synch_1_out   = synch_1$out;
+  assign synch_2$clk   = clk;
+  assign synch_2$in_   = synch_1_out;
+  assign synch_2$reset = reset;
+  assign synch_ack     = synch_2$out;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def sequential_logic():
+  //       if( s.reset ):
+  //         s.state.next = s.STATE_RECV
+  //       elif( s.state == s.STATE_RECV ):
+  //         if( s.in_.val ) : s.state.next = s.STATE_HOLD
+  //       elif( s.state == s.STATE_HOLD ):
+  //         s.state.next = s.STATE_SEND
+  //       elif( s.state == s.STATE_SEND ):
+  //         if( s.synch_ack ) : s.state.next = s.STATE_WAIT
+  //       elif( s.state == s.STATE_WAIT ):
+  //         if( ~s.synch_ack ) : s.state.next = s.STATE_RECV
+
+  // logic for sequential_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      state <= STATE_RECV;
+    end
+    else begin
+      if ((state == STATE_RECV)) begin
+        if (in__val) begin
+          state <= STATE_HOLD;
+        end
+        else begin
+        end
+      end
+      else begin
+        if ((state == STATE_HOLD)) begin
+          state <= STATE_SEND;
+        end
+        else begin
+          if ((state == STATE_SEND)) begin
+            if (synch_ack) begin
+              state <= STATE_WAIT;
+            end
+            else begin
+            end
+          end
+          else begin
+            if ((state == STATE_WAIT)) begin
+              if (~synch_ack) begin
+                state <= STATE_RECV;
+              end
+              else begin
+              end
+            end
+            else begin
+            end
+          end
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def combinational_logic():
+  //       s.in_.rdy.value = ( s.state == s.STATE_RECV )
+  //       s.reg_en.value  = s.in_.val & s.in_.rdy
+  //       s.out.msg.value = s.reg_out
+  //       s.out.req.value = ( s.state == s.STATE_SEND )
+
+  // logic for combinational_logic()
+  always @ (*) begin
+    in__rdy = (state == STATE_RECV);
+    reg_en = (in__val&in__rdy);
+    out_msg = reg_out;
+    out_req = (state == STATE_SEND);
+  end
+
+
+endmodule // ValRdyToReqAck_0x3871167c1fef1233
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x45f1552f10c5f05d
+//-----------------------------------------------------------------------------
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x45f1552f10c5f05d_swshim
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [   7:0] in_,
+  output reg  [   7:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x45f1552f10c5f05d
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// ReqAckToValRdy_0x1b4e41cb91c5205
+//-----------------------------------------------------------------------------
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ReqAckToValRdy_0x1b4e41cb91c5205_swshim
+(
+  input  wire [   0:0] clk,
+  output reg  [   0:0] in__ack,
+  input  wire [   7:0] in__msg,
+  input  wire [   0:0] in__req,
+  output reg  [   7:0] out_msg,
+  input  wire [   0:0] out_rdy,
+  output reg  [   0:0] out_val,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [   0:0] synch_1_out;
+  wire   [   0:0] in_req;
+  wire   [   7:0] reg_out;
+
+
+  // register declarations
+  reg    [   0:0] reg_en;
+  reg    [   1:0] state;
+
+  // localparam declarations
+  localparam STATE_HOLD = 1;
+  localparam STATE_RECV = 0;
+  localparam STATE_SEND = 2;
+  localparam STATE_WAIT = 3;
+
+  // synch_1 temporaries
+  wire   [   0:0] synch_1$reset;
+  wire   [   0:0] synch_1$in_;
+  wire   [   0:0] synch_1$clk;
+  wire   [   0:0] synch_1$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_1
+  (
+    .reset ( synch_1$reset ),
+    .in_   ( synch_1$in_ ),
+    .clk   ( synch_1$clk ),
+    .out   ( synch_1$out )
+  );
+
+  // synch_2 temporaries
+  wire   [   0:0] synch_2$reset;
+  wire   [   0:0] synch_2$in_;
+  wire   [   0:0] synch_2$clk;
+  wire   [   0:0] synch_2$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_2
+  (
+    .reset ( synch_2$reset ),
+    .in_   ( synch_2$in_ ),
+    .clk   ( synch_2$clk ),
+    .out   ( synch_2$out )
+  );
+
+  // reg_in temporaries
+  wire   [   0:0] reg_in$reset;
+  wire   [   7:0] reg_in$in_;
+  wire   [   0:0] reg_in$clk;
+  wire   [   0:0] reg_in$en;
+  wire   [   7:0] reg_in$out;
+
+  RegEn_0x45f1552f10c5f05d_swshim reg_in
+  (
+    .reset ( reg_in$reset ),
+    .in_   ( reg_in$in_ ),
+    .clk   ( reg_in$clk ),
+    .en    ( reg_in$en ),
+    .out   ( reg_in$out )
+  );
+
+  // signal connections
+  assign in_req        = synch_2$out;
+  assign reg_in$clk    = clk;
+  assign reg_in$en     = reg_en;
+  assign reg_in$in_    = in__msg;
+  assign reg_in$reset  = reset;
+  assign reg_out       = reg_in$out;
+  assign synch_1$clk   = clk;
+  assign synch_1$in_   = in__req;
+  assign synch_1$reset = reset;
+  assign synch_1_out   = synch_1$out;
+  assign synch_2$clk   = clk;
+  assign synch_2$in_   = synch_1_out;
+  assign synch_2$reset = reset;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def sequential_logic():
+  //       if( s.reset ):
+  //         s.state.next = s.STATE_RECV
+  //       elif( s.state == s.STATE_RECV ):
+  //         if( s.in_req ) : s.state.next = s.STATE_WAIT
+  //       elif( s.state == s.STATE_WAIT ):
+  //         if( ~s.in_req ) : s.state.next = s.STATE_SEND
+  //       elif( s.state == s.STATE_SEND ):
+  //         if( s.out.rdy ) : s.state.next = s.STATE_HOLD
+  //       elif( s.state == s.STATE_HOLD ):
+  //         s.state.next = s.STATE_RECV
+
+  // logic for sequential_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      state <= STATE_RECV;
+    end
+    else begin
+      if ((state == STATE_RECV)) begin
+        if (in_req) begin
+          state <= STATE_WAIT;
+        end
+        else begin
+        end
+      end
+      else begin
+        if ((state == STATE_WAIT)) begin
+          if (~in_req) begin
+            state <= STATE_SEND;
+          end
+          else begin
+          end
+        end
+        else begin
+          if ((state == STATE_SEND)) begin
+            if (out_rdy) begin
+              state <= STATE_HOLD;
+            end
+            else begin
+            end
+          end
+          else begin
+            if ((state == STATE_HOLD)) begin
+              state <= STATE_RECV;
+            end
+            else begin
+            end
+          end
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def combinational_logic():
+  //       s.in_.ack.value = ( s.state == s.STATE_WAIT )
+  //       s.reg_en.value  = s.in_req and ( s.state == s.STATE_RECV )
+  //       s.out.msg.value = s.reg_out
+  //       s.out.val.value = ( s.state == s.STATE_SEND )
+
+  // logic for combinational_logic()
+  always @ (*) begin
+    in__ack = (state == STATE_WAIT);
+    reg_en = (in_req&&(state == STATE_RECV));
+    out_msg = reg_out;
+    out_val = (state == STATE_SEND);
+  end
+
+
+endmodule // ReqAckToValRdy_0x1b4e41cb91c5205
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // ValRdyDeserializer_0x3fa12697d0f7bbd5
 //-----------------------------------------------------------------------------
 // dtype_in: 8
@@ -276,7 +658,7 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
   wire   [   0:0] reg_$en;
   wire   [  23:0] reg_$out;
 
-  RegEn_0x32a57bb87cf40013 reg_
+  RegEn_0x32a57bb87cf40013_swshim reg_
   (
     .reset ( reg_$reset ),
     .in_   ( reg_$in_ ),
@@ -358,6 +740,44 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
 
 
 endmodule // ValRdyDeserializer_0x3fa12697d0f7bbd5
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x32a57bb87cf40013
+//-----------------------------------------------------------------------------
+// dtype: 24
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x32a57bb87cf40013_swshim
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  23:0] in_,
+  output reg  [  23:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x32a57bb87cf40013
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -573,7 +993,7 @@ module ValRdySerializer_0x2da4074966e2f2fa
   wire   [   0:0] reg_$en;
   wire   [  39:0] reg_$out;
 
-  RegEn_0x3297a3f612d222c3 reg_
+  RegEn_0x3297a3f612d222c3_swshim reg_
   (
     .reset ( reg_$reset ),
     .in_   ( reg_$in_ ),
@@ -675,6 +1095,44 @@ module ValRdySerializer_0x2da4074966e2f2fa
 
 
 endmodule // ValRdySerializer_0x2da4074966e2f2fa
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x3297a3f612d222c3
+//-----------------------------------------------------------------------------
+// dtype: 40
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x3297a3f612d222c3_swshim
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  39:0] in_,
+  output reg  [  39:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x3297a3f612d222c3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------

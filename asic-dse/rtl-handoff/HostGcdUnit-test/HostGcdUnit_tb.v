@@ -143,7 +143,7 @@ module top;
   integer total_cycles = 0;
 
   initial begin
-    // $vcdpluson;
+    $vcdpluson;
     #2;  th_reset = 1'b1;
     #20; th_reset = 1'b0;
     #8;
@@ -155,17 +155,17 @@ module top;
 
     HostGcdUnit_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 100000 ) begin
+    while ( !th_done && total_cycles < 2000 ) begin
       #10;
       total_cycles = total_cycles + 1;
       th.display_trace();
     end
-    // $vcdplusoff;
+    $vcdplusoff;
     // Check that the simulation actually finished
 
     if ( !th_done ) begin
       $display( "" );
-      $display( "    [BRG] ERROR: Test did not finish in 5000 cycles." );
+      $display( "    [BRG] ERROR: Test did not finish in 2000 cycles." );
       $display( "" );
       $finish(1);
     end

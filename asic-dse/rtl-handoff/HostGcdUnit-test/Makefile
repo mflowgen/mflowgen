@@ -21,19 +21,22 @@ test-rtl: HostGcdUnit_tb.v $(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/HostGcdUnit.v
 
 # initreg for GL
 
-test-gl: HostGcdUnit_tb.v swshim.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v HostGcdUnit_all_tests.v
+test-gl: HostGcdUnit_tb.v HostGcdUnit_SwShim.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v HostGcdUnit_all_tests.v
 	vcs -full64 -sverilog +v2k +noportcoerce +vc -notice -V \
   -hsopt=gates +rad \
+  -debug_pp \
+  +vcs+initreg+random \
   -line \
 	-timescale=1ns/1ps -diag timescale \
   +ntb_random_seed_automatic \
 	+define+INITIALIZE_MEMORY \
   +notimingcheck \
   +define+ARM_UD_MODEL \
+  +define+ARM_EN_X_SQUASH \
 	+libext+.v+.vlib+.vh \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/vc \
-	swshim.v \
+	HostGcdUnit_SwShim.v \
 	HostGcdUnit_tb.v \
 	$(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v \
 	$(adk_dir)/iocells.v \

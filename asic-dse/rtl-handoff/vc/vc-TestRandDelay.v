@@ -175,7 +175,7 @@ module vc_TestRandDelay
   // Directly connect output msg bits to input msg bits, only when out_val
   // is high
 
-  assign out_msg = out_val ? in_msg : 'hx;
+  assign out_msg = out_val ? in_msg : $urandom;
 
 endmodule
 
