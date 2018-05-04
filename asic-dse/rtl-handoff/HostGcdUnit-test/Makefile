@@ -5,7 +5,7 @@ ALLOY_ASIC_ROOT=/work/global/sj634/cornell-brg/alloy-asic
 
 # Four-state for RTL
 
-test-rtl: HostGcdUnit_tb.v swshim.v $(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/HostGcdUnit.v HostGcdUnit_all_tests.v
+test-rtl: HostGcdUnit_tb.v $(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/HostGcdUnit.v HostGcdUnit_all_tests.v
 	vcs -full64 -sverilog +v2k +noportcoerce +vc -notice -V \
 	+libext+.v+.vlib+.vh \
 	-timescale=1ns/1ps -diag timescale \
@@ -21,10 +21,9 @@ test-rtl: HostGcdUnit_tb.v swshim.v $(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/Host
 
 # initreg for GL
 
-test-gl: proc-test-bench.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.v HostGcdUnit_all_tests.v
+test-gl: HostGcdUnit_tb.v swshim.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v HostGcdUnit_all_tests.v
 	vcs -full64 -sverilog +v2k +noportcoerce +vc -notice -V \
   -hsopt=gates +rad \
-  +vcs+initreg+random \
   -line \
 	-timescale=1ns/1ps -diag timescale \
   +ntb_random_seed_automatic \
@@ -32,9 +31,12 @@ test-gl: proc-test-bench.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/Hos
   +notimingcheck \
   +define+ARM_UD_MODEL \
 	+libext+.v+.vlib+.vh \
+	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff \
+	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/vc \
 	swshim.v \
-	proc-test-bench.v \
+	HostGcdUnit_tb.v \
 	$(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v \
+	$(adk_dir)/iocells.v \
 	$(adk_dir)/stdcells.v \
 	-o test-gl
 
