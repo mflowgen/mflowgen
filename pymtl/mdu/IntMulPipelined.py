@@ -91,9 +91,10 @@ class IntMulPipelined( Model ):
     # Let's calculate regs_resp_msg[0].in_ based on reg_req_msg.out
 
     s.typ = Wire( clog2(ntypes) )
-    s.opa = Wire( nbits*2 )
-    s.opb = Wire( nbits   )
+    s.opa = Wire( nbits )
+    s.opb = Wire( nbits )
     s.connect( s.reg_req_msg.out.type_, s.typ )
+    s.connect( s.reg_req_msg.out.op_a,  s.opa )
     s.connect( s.reg_req_msg.out.op_b,  s.opb )
 
     s.resp_result = Wire( nbits )
@@ -101,12 +102,14 @@ class IntMulPipelined( Model ):
 
     # Sign-extend opa under MULH/MULHSU
 
+    s.ext_opa = Wire( nbitsx2 )
+
     @s.combinational
     def comb_opa():
       if s.typ == MduReqMsg.TYPE_MULHSU or s.typ == MduReqMsg.TYPE_MULH:
-        s.opa.value = sext( s.reg_req_msg.out.op_a, nbitsx2 )
+        s.ext_opa.value = sext( s.opa, nbitsx2 )
       else:
-        s.opa.value = zext( s.reg_req_msg.out.op_a, nbitsx2 )
+        s.ext_opa.value = zext( s.opa, nbitsx2 )
 
     # If B is negative, I add (~A+1) to high 32 bit of A, just because
     # A*sext64(B) will be A*0xffffffffB = A*(0xffffffff00000000) + A*B
@@ -118,14 +121,14 @@ class IntMulPipelined( Model ):
     @s.combinational
     def comb_a_mulh_negate():
       s.a_mulh_negate[0:nbits].value = 0
-      s.a_mulh_negate[nbits:].value  = ~s.reg_req_msg.out.op_a + 1
+      s.a_mulh_negate[nbits:].value  = ~s.opa + 1
 
     @s.combinational
     def comb_multiply():
       if s.typ == MduReqMsg.TYPE_MULH and s.opb[nbits-1]:
-        s.mul_result.value = s.opa * s.opb + s.a_mulh_negate
+        s.mul_result.value = s.ext_opa * s.opb + s.a_mulh_negate
       else:
-        s.mul_result.value = s.opa * s.opb
+        s.mul_result.value = s.ext_opa * s.opb
 
     @s.combinational
     def comb_select_hilo():
