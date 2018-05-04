@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-procl0mdu
+design_select = pymtl-imul-pipelined-4stage
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -57,6 +57,30 @@ endif
 #-------------------------------------------------------------------------
 # PyMTL MulDivUnit
 #-------------------------------------------------------------------------
+
+ifeq ($(design_select),pymtl-imul-pipelined-2stage)
+  design_name  = IntMulPipelined_2Stage
+  clock_period = 1.0
+  verilog_src  = ../pymtl/build/IntMulPipelined_2Stage.v
+endif
+
+ifeq ($(design_select),pymtl-imul-pipelined-4stage)
+  design_name  = IntMulPipelined_4Stage
+  clock_period = 1.0
+  verilog_src  = ../pymtl/build/IntMulPipelined_4Stage.v
+endif
+
+ifeq ($(design_select),pymtl-imul-pipelined-8stage)
+  design_name  = IntMulPipelined_8Stage
+  clock_period = 1.0
+  verilog_src  = ../pymtl/build/IntMulPipelined_8Stage.v
+endif
+
+ifeq ($(design_select),pymtl-imul-pipelined-16stage)
+  design_name  = IntMulPipelined_16Stage
+  clock_period = 1.0
+  verilog_src  = ../pymtl/build/IntMulPipelined_16Stage.v
+endif
 
 ifeq ($(design_select),pymtl-mdu)
   design_name  = IntMulDivUnit
@@ -106,7 +130,7 @@ endif
 
 ifeq ($(design_select),pymtl-procl0mdu)
   design_name  = ProcL0Mdu
-  clock_period = 0.5
+  clock_period = 0.8
   verilog_src  = ../pymtl/build/ProcL0Mdu.v
 endif
 #-------------------------------------------------------------------------
