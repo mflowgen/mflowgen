@@ -165,12 +165,12 @@ test_case_table = mk_test_case_table([
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table )
-def test( test_params, dump_vcd ):
+def test( test_params, dump_vcd, test_verilog ):
   dut         = ValRdySplit
   nports      = test_params.msgs[ 0  ]
   nbits       = test_params.msgs[ 1  ]
   msgs        = test_params.msgs[ 3: ]
   src_delay   = test_params.src_delay
   sink_delays = test_params.sink_delays
-  th = TestHarness( dut, nports, nbits, msgs, src_delay, sink_delays, False )
+  th = TestHarness( dut, nports, nbits, msgs, src_delay, sink_delays, dump_vcd, test_verilog )
   run_sim( th )

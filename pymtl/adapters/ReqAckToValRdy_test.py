@@ -83,8 +83,8 @@ test_case_table = mk_test_case_table([
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table )
-def test( test_params, dump_vcd ):
+def test( test_params, dump_vcd, test_verilog ):
   th = TestHarness( ReqAckToValRdy, test_params.dtype,
                     test_params.msgs, test_params.src_delay, test_params.sink_delay,
-                    False )
+                    dump_vcd, test_verilog )
   run_sim( th )
