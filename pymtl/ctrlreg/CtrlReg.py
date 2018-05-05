@@ -183,9 +183,8 @@ class CtrlReg( Model ):
     @s.combinational
     def comb_cr_instcounter_logic():
       for core_idx in xrange(num_cores):
-        reg_idx = cr_instcounter + core_idx
-        s.ctrlregs[reg_idx].en .value = s.commit_inst[core_idx] & s.stats_en
-        s.ctrlregs[reg_idx].in_.value = s.ctrlregs[reg_idx].out + 1
+        s.ctrlregs[cr_instcounter + core_idx].en .value = s.commit_inst[core_idx] & s.stats_en
+        s.ctrlregs[cr_instcounter + core_idx].in_.value = s.ctrlregs[cr_instcounter + core_idx].out + 1
 
     # Control Register: Cycle counter
 
@@ -195,9 +194,8 @@ class CtrlReg( Model ):
     @s.combinational
     def comb_cr_cyclecounter_logic():
       for core_idx in xrange(num_cores):
-        reg_idx = cr_cyclecounter + core_idx
-        s.ctrlregs[reg_idx].en .value = s.stats_en
-        s.ctrlregs[reg_idx].in_.value = s.ctrlregs[reg_idx].out + 1
+        s.ctrlregs[cr_instcounter + core_idx].en .value = s.stats_en
+        s.ctrlregs[cr_instcounter + core_idx].in_.value = s.ctrlregs[cr_instcounter + core_idx].out + 1
 
     #---------------------------------------------------------------------
     # Connections to Output Ports
