@@ -1,13 +1,15 @@
 //-----------------------------------------------------------------------------
-// SwShim_0x32a7578b0a6f3a5a
+// HostGcdUnit_SwShim
 //-----------------------------------------------------------------------------
-// dut: <examples.gcd.GcdUnitRTL.GcdUnitRTL object at 0x7f5cc9ac3c10>
-// dut_asynch: <HostGcdUnit.HostGcdUnit object at 0x7f5cc9ac36d0>
+// dut: <examples.gcd.GcdUnitRTL.GcdUnitRTL object at 0x7fa8bc7210d0>
+// dut_asynch: <HostGcdUnit.HostGcdUnit object at 0x7fa8bc725190>
 // asynch_bitwidth: 8
+// translate: False
+// dump_vcd: None
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SwShim_0x32a7578b0a6f3a5a
+module HostGcdUnit_SwShim
 (
   input  wire [   0:0] clk,
   input  wire [  31:0] req_msg,
@@ -230,7 +232,7 @@ module SwShim_0x32a7578b0a6f3a5a
 
 
 
-endmodule // SwShim_0x32a7578b0a6f3a5a
+endmodule // HostGcdUnit_SwShim
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -427,9 +429,6 @@ module ValRdyMerge_0x3f4cbc08d2b2c84c
   reg    [   0:0] in_rdy;
   reg    [   0:0] reqs;
 
-  // localparam declarations
-  localparam p_nports = 1;
-
   // mux temporaries
   wire   [   0:0] mux$reset;
   wire   [  31:0] mux$in_$000;
@@ -462,24 +461,14 @@ module ValRdyMerge_0x3f4cbc08d2b2c84c
   //
   // @s.combinational
   // def combinational_logic():
-  //       if p_nports > 1 :
-  //         s.reqs.value         = s.in_val & sext( s.out.rdy, p_nports )
-  //         s.in_rdy.value       = s.grants & sext( s.out.rdy, p_nports )
-  //       else :
-  //         s.reqs.value         = 1
-  //         s.in_rdy.value       = s.out.rdy
-  //       s.out.val.value      = reduce_or( s.reqs & s.in_val )
+  //         s.reqs.value    = 1
+  //         s.in_rdy.value  = s.out.rdy
+  //         s.out.val.value = reduce_or( s.reqs & s.in_val )
 
   // logic for combinational_logic()
   always @ (*) begin
-    if ((p_nports > 1)) begin
-      reqs = (in_val&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
-      in_rdy = (grants&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
-    end
-    else begin
-      reqs = 1;
-      in_rdy = out_rdy;
-    end
+    reqs = 1;
+    in_rdy = out_rdy;
     out_val = (|(reqs&in_val));
   end
 
@@ -934,9 +923,6 @@ module HostGcdUnit
   `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] )
   `OUTPUT_PAD_V(    out_req_iocell,  out_req_io[0],  out_req[0] )
 
-  //----------------------------------------------------------------------
-  // Regular stuff
-  //----------------------------------------------------------------------
 
   // wire declarations
   wire   [   0:0] dut_out_val$000;
@@ -1536,13 +1522,12 @@ module ValRdyToReqAck_0x3871167c1fef1233
 
   // wire declarations
   wire   [   0:0] synch_ack;
-  wire   [   0:0] synch_1_out;
   wire   [   7:0] reg_out;
 
 
   // register declarations
   reg    [   0:0] reg_en;
-  reg    [   1:0] state;
+  reg    [   1:0] state$in_;
 
   // localparam declarations
   localparam STATE_HOLD = 1;
@@ -1562,6 +1547,19 @@ module ValRdyToReqAck_0x3871167c1fef1233
     .in_   ( synch_1$in_ ),
     .clk   ( synch_1$clk ),
     .out   ( synch_1$out )
+  );
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   1:0] state$out;
+
+  RegRst_0x9f365fdf6c8998a state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
   );
 
   // synch_2 temporaries
@@ -1600,66 +1598,69 @@ module ValRdyToReqAck_0x3871167c1fef1233
   assign reg_in$in_    = in__msg;
   assign reg_in$reset  = reset;
   assign reg_out       = reg_in$out;
+  assign state$clk     = clk;
+  assign state$reset   = reset;
   assign synch_1$clk   = clk;
   assign synch_1$in_   = out_ack;
   assign synch_1$reset = reset;
-  assign synch_1_out   = synch_1$out;
   assign synch_2$clk   = clk;
-  assign synch_2$in_   = synch_1_out;
+  assign synch_2$in_   = synch_1$out;
   assign synch_2$reset = reset;
   assign synch_ack     = synch_2$out;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.state.next = s.STATE_RECV
-  //       elif( s.state == s.STATE_RECV ):
-  //         if( s.in_.val ) : s.state.next = s.STATE_HOLD
-  //       elif( s.state == s.STATE_HOLD ):
-  //         s.state.next = s.STATE_SEND
-  //       elif( s.state == s.STATE_SEND ):
-  //         if( s.synch_ack ) : s.state.next = s.STATE_WAIT
-  //       elif( s.state == s.STATE_WAIT ):
-  //         if( ~s.synch_ack ) : s.state.next = s.STATE_RECV
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_.val:
+  //           s.state.in_.value = s.STATE_HOLD
+  //
+  //       elif s.state.out == s.STATE_HOLD:
+  //         s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.synch_ack:
+  //           s.state.in_.value = s.STATE_WAIT
+  //
+  //       elif s.state.out == s.STATE_WAIT:
+  //         if ~s.synch_ack:
+  //           s.state.in_.value = s.STATE_RECV
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      state <= STATE_RECV;
-    end
-    else begin
-      if ((state == STATE_RECV)) begin
-        if (in__val) begin
-          state <= STATE_HOLD;
-        end
-        else begin
-        end
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if (in__val) begin
+        state$in_ = STATE_HOLD;
       end
       else begin
-        if ((state == STATE_HOLD)) begin
-          state <= STATE_SEND;
+      end
+    end
+    else begin
+      if ((state$out == STATE_HOLD)) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+        if ((state$out == STATE_SEND)) begin
+          if (synch_ack) begin
+            state$in_ = STATE_WAIT;
+          end
+          else begin
+          end
         end
         else begin
-          if ((state == STATE_SEND)) begin
-            if (synch_ack) begin
-              state <= STATE_WAIT;
+          if ((state$out == STATE_WAIT)) begin
+            if (~synch_ack) begin
+              state$in_ = STATE_RECV;
             end
             else begin
             end
           end
           else begin
-            if ((state == STATE_WAIT)) begin
-              if (~synch_ack) begin
-                state <= STATE_RECV;
-              end
-              else begin
-              end
-            end
-            else begin
-            end
           end
         end
       end
@@ -1669,18 +1670,18 @@ module ValRdyToReqAck_0x3871167c1fef1233
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.in_.rdy.value = ( s.state == s.STATE_RECV )
+  // def state_output():
+  //       s.in_.rdy.value = ( s.state.out == s.STATE_RECV )
   //       s.reg_en.value  = s.in_.val & s.in_.rdy
   //       s.out.msg.value = s.reg_out
-  //       s.out.req.value = ( s.state == s.STATE_SEND )
+  //       s.out.req.value = ( s.state.out == s.STATE_SEND )
 
-  // logic for combinational_logic()
+  // logic for state_output()
   always @ (*) begin
-    in__rdy = (state == STATE_RECV);
+    in__rdy = (state$out == STATE_RECV);
     reg_en = (in__val&in__rdy);
     out_msg = reg_out;
-    out_req = (state == STATE_SEND);
+    out_req = (state$out == STATE_SEND);
   end
 
 
@@ -1729,6 +1730,50 @@ module RegRst_0x2ce052f8c32c5c39
 
 
 endmodule // RegRst_0x2ce052f8c32c5c39
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegRst_0x9f365fdf6c8998a
+//-----------------------------------------------------------------------------
+// dtype: 2
+// reset_value: 0
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegRst_0x9f365fdf6c8998a
+(
+  input  wire [   0:0] clk,
+  input  wire [   1:0] in_,
+  output reg  [   1:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       else:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      out <= in_;
+    end
+  end
+
+
+endmodule // RegRst_0x9f365fdf6c8998a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -2246,9 +2291,6 @@ module ValRdyMerge_0x11d24dc292334c5c
   reg    [   0:0] in_rdy;
   reg    [   0:0] reqs;
 
-  // localparam declarations
-  localparam p_nports = 1;
-
   // mux temporaries
   wire   [   0:0] mux$reset;
   wire   [  15:0] mux$in_$000;
@@ -2281,24 +2323,14 @@ module ValRdyMerge_0x11d24dc292334c5c
   //
   // @s.combinational
   // def combinational_logic():
-  //       if p_nports > 1 :
-  //         s.reqs.value         = s.in_val & sext( s.out.rdy, p_nports )
-  //         s.in_rdy.value       = s.grants & sext( s.out.rdy, p_nports )
-  //       else :
-  //         s.reqs.value         = 1
-  //         s.in_rdy.value       = s.out.rdy
-  //       s.out.val.value      = reduce_or( s.reqs & s.in_val )
+  //         s.reqs.value    = 1
+  //         s.in_rdy.value  = s.out.rdy
+  //         s.out.val.value = reduce_or( s.reqs & s.in_val )
 
   // logic for combinational_logic()
   always @ (*) begin
-    if ((p_nports > 1)) begin
-      reqs = (in_val&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
-      in_rdy = (grants&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
-    end
-    else begin
-      reqs = 1;
-      in_rdy = out_rdy;
-    end
+    reqs = 1;
+    in_rdy = out_rdy;
     out_val = (|(reqs&in_val));
   end
 
@@ -2668,50 +2700,6 @@ module GcdUnitCtrlRTL_0x29124399ca008c5e
 
 
 endmodule // GcdUnitCtrlRTL_0x29124399ca008c5e
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegRst_0x9f365fdf6c8998a
-//-----------------------------------------------------------------------------
-// dtype: 2
-// reset_value: 0
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegRst_0x9f365fdf6c8998a
-(
-  input  wire [   0:0] clk,
-  input  wire [   1:0] in_,
-  output reg  [   1:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       else:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      out <= in_;
-    end
-  end
-
-
-endmodule // RegRst_0x9f365fdf6c8998a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -3150,9 +3138,6 @@ module ValRdySplit_0x4a3a9b62fa78933c
   // register declarations
   reg    [   0:0] out_val;
 
-  // localparam declarations
-  localparam p_nports = 1;
-
   // demux temporaries
   wire   [   0:0] demux$reset;
   wire   [  31:0] demux$in_;
@@ -3184,20 +3169,12 @@ module ValRdySplit_0x4a3a9b62fa78933c
   //
   // @s.combinational
   // def combinational_logic():
-  //       if p_nports > 1 :
-  //         s.out_val.value      = sext( s.in_.val, p_nports ) & s.channel
-  //       else :
-  //         s.out_val.value      = s.in_.val & s.channel
-  //       s.in_.rdy.value      = reduce_or( s.channel & s.out_rdy )
+  //         s.out_val.value = s.in_.val & s.channel
+  //         s.in_.rdy.value = reduce_or( s.channel & s.out_rdy )
 
   // logic for combinational_logic()
   always @ (*) begin
-    if ((p_nports > 1)) begin
-      out_val = ({ { p_nports-1 { in__val[0] } }, in__val[0:0] }&channel);
-    end
-    else begin
-      out_val = (in__val&channel);
-    end
+    out_val = (in__val&channel);
     in__rdy = (|(channel&out_rdy));
   end
 
@@ -3272,14 +3249,13 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
 );
 
   // wire declarations
-  wire   [   0:0] synch_1_out;
   wire   [   0:0] in_req;
   wire   [   7:0] reg_out;
 
 
   // register declarations
   reg    [   0:0] reg_en;
-  reg    [   1:0] state;
+  reg    [   1:0] state$in_;
 
   // localparam declarations
   localparam STATE_HOLD = 1;
@@ -3299,6 +3275,19 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
     .in_   ( synch_1$in_ ),
     .clk   ( synch_1$clk ),
     .out   ( synch_1$out )
+  );
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   1:0] state$out;
+
+  RegRst_0x9f365fdf6c8998a state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
   );
 
   // synch_2 temporaries
@@ -3338,65 +3327,68 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
   assign reg_in$in_    = in__msg;
   assign reg_in$reset  = reset;
   assign reg_out       = reg_in$out;
+  assign state$clk     = clk;
+  assign state$reset   = reset;
   assign synch_1$clk   = clk;
   assign synch_1$in_   = in__req;
   assign synch_1$reset = reset;
-  assign synch_1_out   = synch_1$out;
   assign synch_2$clk   = clk;
-  assign synch_2$in_   = synch_1_out;
+  assign synch_2$in_   = synch_1$out;
   assign synch_2$reset = reset;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.state.next = s.STATE_RECV
-  //       elif( s.state == s.STATE_RECV ):
-  //         if( s.in_req ) : s.state.next = s.STATE_WAIT
-  //       elif( s.state == s.STATE_WAIT ):
-  //         if( ~s.in_req ) : s.state.next = s.STATE_SEND
-  //       elif( s.state == s.STATE_SEND ):
-  //         if( s.out.rdy ) : s.state.next = s.STATE_HOLD
-  //       elif( s.state == s.STATE_HOLD ):
-  //         s.state.next = s.STATE_RECV
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_req:
+  //           s.state.in_.value = s.STATE_WAIT
+  //
+  //       elif s.state.out == s.STATE_WAIT:
+  //         if ~s.in_req:
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy:
+  //           s.state.in_.value = s.STATE_HOLD
+  //
+  //       elif s.state.out == s.STATE_HOLD:
+  //         s.state.in_.value = s.STATE_RECV
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      state <= STATE_RECV;
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if (in_req) begin
+        state$in_ = STATE_WAIT;
+      end
+      else begin
+      end
     end
     else begin
-      if ((state == STATE_RECV)) begin
-        if (in_req) begin
-          state <= STATE_WAIT;
+      if ((state$out == STATE_WAIT)) begin
+        if (~in_req) begin
+          state$in_ = STATE_SEND;
         end
         else begin
         end
       end
       else begin
-        if ((state == STATE_WAIT)) begin
-          if (~in_req) begin
-            state <= STATE_SEND;
+        if ((state$out == STATE_SEND)) begin
+          if (out_rdy) begin
+            state$in_ = STATE_HOLD;
           end
           else begin
           end
         end
         else begin
-          if ((state == STATE_SEND)) begin
-            if (out_rdy) begin
-              state <= STATE_HOLD;
-            end
-            else begin
-            end
+          if ((state$out == STATE_HOLD)) begin
+            state$in_ = STATE_RECV;
           end
           else begin
-            if ((state == STATE_HOLD)) begin
-              state <= STATE_RECV;
-            end
-            else begin
-            end
           end
         end
       end
@@ -3406,18 +3398,18 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.in_.ack.value = ( s.state == s.STATE_WAIT )
-  //       s.reg_en.value  = s.in_req and ( s.state == s.STATE_RECV )
+  // def state_output():
+  //       s.in_.ack.value = ( s.state.out == s.STATE_WAIT )
+  //       s.reg_en.value  = s.in_req & ( s.state.out == s.STATE_RECV )
   //       s.out.msg.value = s.reg_out
-  //       s.out.val.value = ( s.state == s.STATE_SEND )
+  //       s.out.val.value = ( s.state.out == s.STATE_SEND )
 
-  // logic for combinational_logic()
+  // logic for state_output()
   always @ (*) begin
-    in__ack = (state == STATE_WAIT);
-    reg_en = (in_req&&(state == STATE_RECV));
+    in__ack = (state$out == STATE_WAIT);
+    reg_en = (in_req&(state$out == STATE_RECV));
     out_msg = reg_out;
-    out_val = (state == STATE_SEND);
+    out_val = (state$out == STATE_SEND);
   end
 
 
@@ -3452,9 +3444,6 @@ module ValRdySplit_0x589cfa5f6fe757d4
   // register declarations
   reg    [   0:0] out_val;
 
-  // localparam declarations
-  localparam p_nports = 1;
-
   // demux temporaries
   wire   [   0:0] demux$reset;
   wire   [  15:0] demux$in_;
@@ -3486,20 +3475,12 @@ module ValRdySplit_0x589cfa5f6fe757d4
   //
   // @s.combinational
   // def combinational_logic():
-  //       if p_nports > 1 :
-  //         s.out_val.value      = sext( s.in_.val, p_nports ) & s.channel
-  //       else :
-  //         s.out_val.value      = s.in_.val & s.channel
-  //       s.in_.rdy.value      = reduce_or( s.channel & s.out_rdy )
+  //         s.out_val.value = s.in_.val & s.channel
+  //         s.in_.rdy.value = reduce_or( s.channel & s.out_rdy )
 
   // logic for combinational_logic()
   always @ (*) begin
-    if ((p_nports > 1)) begin
-      out_val = ({ { p_nports-1 { in__val[0] } }, in__val[0:0] }&channel);
-    end
-    else begin
-      out_val = (in__val&channel);
-    end
+    out_val = (in__val&channel);
     in__rdy = (|(channel&out_rdy));
   end
 

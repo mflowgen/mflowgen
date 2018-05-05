@@ -11,12 +11,14 @@ test-rtl: HostGcdUnit_tb.v $(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/HostGcdUnit.v
 	-timescale=1ns/1ps -diag timescale \
 	+lint=all,noVCDE,noTFIPC,noIWU,noOUDPE \
 	+rad \
+  -debug_pp \
 	+notimingcheck +nospecify \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/vc \
 	$(adk_dir)/iocells.v \
 	HostGcdUnit_tb.v \
 	$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/HostGcdUnit.v \
+	-top top \
 	-o test-rtl
 
 # initreg for GL
@@ -32,7 +34,6 @@ test-gl: HostGcdUnit_tb.v HostGcdUnit_SwShim.v $(ALLOY_ASIC_ROOT)/asic-dse/build
 	+define+INITIALIZE_MEMORY \
   +notimingcheck \
   +define+ARM_UD_MODEL \
-  +define+ARM_EN_X_SQUASH \
 	+libext+.v+.vlib+.vh \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff \
 	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/vc \
@@ -41,7 +42,32 @@ test-gl: HostGcdUnit_tb.v HostGcdUnit_SwShim.v $(ALLOY_ASIC_ROOT)/asic-dse/build
 	$(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v \
 	$(adk_dir)/iocells.v \
 	$(adk_dir)/stdcells.v \
-	-o test-gl
+	-top top \
+	-o test-gl | tee compile-gl.log
+
+test-gl-sdf: HostGcdUnit_tb.v HostGcdUnit_SwShim.v $(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v HostGcdUnit_all_tests.v
+	vcs -full64 -sverilog +v2k +noportcoerce +vc -notice -V \
+  -hsopt=gates +rad \
+  -debug_pp \
+  +vcs+initreg+random \
+  -line \
+	-timescale=1ns/1ps -diag timescale \
+  +ntb_random_seed_automatic \
+	+define+INITIALIZE_MEMORY \
+  +sdfverbose \
+  +overlap +multisource_int_delays \
+  +neg_tchk -negdelay \
+  +define+ARM_NEG_MODEL \
+	+libext+.v+.vlib+.vh \
+	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff \
+	+incdir+$(ALLOY_ASIC_ROOT)/asic-dse/rtl-handoff/vc \
+	HostGcdUnit_SwShim.v \
+	HostGcdUnit_tb.v \
+	$(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.vcs.v \
+	-sdf max:HostGcdUnit:$(ALLOY_ASIC_ROOT)/asic-dse/build/results/innovus/HostGcdUnit.sdf \
+	$(adk_dir)/iocells.v \
+	$(adk_dir)/stdcells.v \
+	-o test-gl-sdf | tee compile-gl-sdf.log
 
 HostGcdUnit_all_tests.v: gen-all-tests.sh
 	./gen-all-tests.sh

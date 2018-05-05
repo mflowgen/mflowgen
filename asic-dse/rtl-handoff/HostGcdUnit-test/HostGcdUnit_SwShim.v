@@ -7,7 +7,7 @@
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SwShim_0x32a7578b0a6f3a5a
+module HostGcdUnit_SwShim
 (
   input  wire [   0:0] clk,
   input  wire [  31:0] req_msg,

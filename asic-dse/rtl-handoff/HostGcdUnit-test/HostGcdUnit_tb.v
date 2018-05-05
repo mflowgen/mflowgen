@@ -18,7 +18,7 @@ module TestHarness
   logic        resp_val;
   logic        resp_rdy;
 
-  SwShim_0x32a7578b0a6f3a5a swshim
+  HostGcdUnit_SwShim swshim
   (
     .clk       (clk),
     .reset     (reset),
