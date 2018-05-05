@@ -45,7 +45,7 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.mdu = TranslationTool( s.mdu )
+      s.mdu = TranslationTool( s.mdu, verilator_xinit=test_verilog )
 
     # Connect
 

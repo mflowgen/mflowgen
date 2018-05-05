@@ -54,7 +54,7 @@ class TestHarness( Model ):
     # Translation
 
     if test_verilog:
-      s.dut = TranslationTool( s.dut )
+      s.dut = TranslationTool( s.dut, verilator_xinit=test_verilog )
 
     # Connect test sources and sinks
 

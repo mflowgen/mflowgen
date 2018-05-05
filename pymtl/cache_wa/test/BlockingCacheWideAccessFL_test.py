@@ -75,7 +75,7 @@ class TestHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.cache = TranslationTool( s.cache, enable_blackbox=True )
+      s.cache = TranslationTool( s.cache, enable_blackbox=True, verilator_xinit=test_verilog )
 
     # Connect
 

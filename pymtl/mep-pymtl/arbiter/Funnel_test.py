@@ -19,7 +19,7 @@ def test_basic_2x1( dump_vcd, test_verilog ):
     model.vcd_file = dump_vcd
 
   if test_verilog:
-    model = TranslationTool( model )
+    model = TranslationTool( model, verilator_xinit=test_verilog )
 
   model.elaborate()
 

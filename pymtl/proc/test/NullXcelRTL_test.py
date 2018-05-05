@@ -42,7 +42,7 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.xcel = TranslationTool( s.xcel )
+      s.xcel = TranslationTool( s.xcel, verilator_xinit=test_verilog )
 
     # Connect
 

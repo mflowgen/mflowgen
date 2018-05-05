@@ -27,7 +27,7 @@ class TestHarness( Model ):
     # Translation
 
     if test_verilog:
-      s.bloom = TranslationTool( s.bloom )
+      s.bloom = TranslationTool( s.bloom, verilator_xinit=test_verilog )
 
     # Connect
 
