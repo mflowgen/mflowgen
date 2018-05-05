@@ -5,6 +5,8 @@
 # List the steps to use
 
 steps = \
+  sim-rtl-build \
+  sim-rtl \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -16,6 +18,9 @@ steps = \
   innovus-signoff
 
 # Step dependency graph
+
+dependencies.sim-rtl-build       = seed
+dependencies.sim-rtl             = sim-rtl-build
 
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
