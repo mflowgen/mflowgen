@@ -1,7 +1,7 @@
 
 include ../../Makefrag
 
-ALLOY_ASIC_ROOT=/work/global/sj634/cornell-brg/alloy-asic
+ALLOY_ASIC_ROOT=< Your alloy-asic folder >
 
 # Four-state for RTL
 
@@ -70,7 +70,7 @@ test-gl-sdf: HostGcdUnit_tb.v HostGcdUnit_SwShim.v $(ALLOY_ASIC_ROOT)/asic-dse/b
 	-o test-gl-sdf | tee compile-gl-sdf.log
 
 HostGcdUnit_all_tests.v: gen-all-tests.sh
-	./gen-all-tests.sh
+	ALLOY_ASIC_ROOT=$(ALLOY_ASIC_ROOT) ./gen-all-tests.sh
 
 clean:
 	rm -rf csrc ucli.key test-* test-*.daidir *.vpd DVEfiles *.diag.* HostGcdUnit_all_tests.v

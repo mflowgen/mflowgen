@@ -3,7 +3,6 @@
 DESIGN_NAME=HostGcdUnit
 
 CURRENT_FOLDER=$(pwd)
-ALLOY_ASIC_ROOT=/work/global/sj634/cornell-brg/alloy-asic
 
 rm -f ${DESIGN_NAME}_all_tests.v
 touch ${DESIGN_NAME}_all_tests.v
