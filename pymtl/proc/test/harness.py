@@ -77,8 +77,8 @@ class TestHarness (Model):
     # Verilog translation
 
     if test_verilog:
-      s.proc = TranslationTool( s.proc )
-      s.mdu  = TranslationTool( s.mdu  )
+      s.proc = TranslationTool( s.proc, verilator_xinit=test_verilog, verilator_xinit=test_verilog )
+      s.mdu  = TranslationTool( s.mdu , verilator_xinit=test_verilog, verilator_xinit=test_verilog )
 
     # Processor <-> Proc/Mngr
 
