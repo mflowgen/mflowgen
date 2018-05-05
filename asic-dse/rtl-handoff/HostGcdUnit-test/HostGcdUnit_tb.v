@@ -6,7 +6,6 @@ module TestHarness
   input  logic        clk,
   input  logic        reset,
   input  logic [31:0] src_max_delay,
-  input  logic [31:0] mem_max_delay,
   input  logic [31:0] sink_max_delay,
   output logic        done
 );
@@ -89,12 +88,11 @@ module top;
   logic [31:0] th_src0_idx;
   logic [31:0] th_sink0_idx;
 
-  TestHarness#(1<<28) th // 256MB
+  TestHarness th // 256MB
   (
     .clk            (clk),
     .reset          (th_reset),
     .src_max_delay  (th_src_max_delay),
-    .mem_max_delay  (th_mem_max_delay),
     .sink_max_delay (th_sink_max_delay),
     .done           (th_done)
   );

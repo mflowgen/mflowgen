@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
 // HostGcdUnit_SwShim
 //-----------------------------------------------------------------------------
-// dut: <examples.gcd.GcdUnitRTL.GcdUnitRTL object at 0x7fa8bc7210d0>
-// dut_asynch: <HostGcdUnit.HostGcdUnit object at 0x7fa8bc725190>
+// dut: <examples.gcd.GcdUnitRTL.GcdUnitRTL object at 0x7f109a755dd0>
+// dut_asynch: <HostGcdUnit.HostGcdUnit object at 0x7f109a7711d0>
 // asynch_bitwidth: 8
 // translate: False
 // dump_vcd: None
@@ -256,20 +256,32 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
 );
 
   // wire declarations
-  wire   [   0:0] count;
   wire   [  23:0] reg_out;
   wire   [  23:0] reg_in;
 
 
   // register declarations
-  reg    [   1:0] counter;
+  reg    [   1:0] counter$in_;
   reg    [   0:0] reg_en;
-  reg    [   2:0] state;
+  reg    [   0:0] state$in_;
 
   // localparam declarations
   localparam STATE_RECV = 0;
   localparam STATE_SEND = 1;
   localparam p_nmsgs = 3;
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
 
   // reg_ temporaries
   wire   [   0:0] reg_$reset;
@@ -287,7 +299,22 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
     .out   ( reg_$out )
   );
 
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   1:0] counter$out;
+
+  RegRst_0x9f365fdf6c8998a counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
   // signal connections
+  assign counter$clk     = clk;
+  assign counter$reset   = reset;
   assign out_msg         = reg_out[16:0];
   assign reg_$clk        = clk;
   assign reg_$en         = reg_en;
@@ -295,50 +322,43 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
   assign reg_$in_[23:16] = in__msg;
   assign reg_$reset      = reset;
   assign reg_out         = reg_$out;
+  assign state$clk       = clk;
+  assign state$reset     = reset;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.state  .next = s.STATE_RECV
-  //         s.counter.next = 0x0
-  //       elif( s.state == s.STATE_RECV and s.in_.val and s.in_.rdy ):
-  //         if ( s.counter == p_nmsgs-1 ):
-  //           s.state  .next = s.STATE_SEND
-  //           s.counter.next = 0x0
-  //         else                         :
-  //           s.state  .next = s.STATE_RECV
-  //           s.counter.next = s.counter + 1
-  //       elif( s.state == s.STATE_SEND and s.out.val and s.out.rdy ):
-  //         s.state  .next = s.STATE_RECV
-  //         s.counter.next = 0x0
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy:
+  //           s.state.in_.value = s.STATE_RECV
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      state <= STATE_RECV;
-      counter <= 0;
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+      end
     end
     else begin
-      if (((state == STATE_RECV)&&in__val&&in__rdy)) begin
-        if ((counter == (p_nmsgs-1))) begin
-          state <= STATE_SEND;
-          counter <= 0;
+      if ((state$out == STATE_SEND)) begin
+        if (out_rdy) begin
+          state$in_ = STATE_RECV;
         end
         else begin
-          state <= STATE_RECV;
-          counter <= (counter+1);
         end
       end
       else begin
-        if (((state == STATE_SEND)&&out_val&&out_rdy)) begin
-          state <= STATE_RECV;
-          counter <= 0;
-        end
-        else begin
-        end
       end
     end
   end
@@ -346,20 +366,103 @@ module ValRdyDeserializer_0x3fa12697d0f7bbd5
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.in_.rdy.value = s.state == s.STATE_RECV
-  //       s.out.val.value = s.state == s.STATE_SEND
-  //       s.reg_en.value  = s.in_.val & ( s.state == s.STATE_RECV )
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_RECV:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = s.in_.val
+  //
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.in_.val
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //         if ~s.out.rdy:
+  //           s.counter.in_.value = s.counter.out
 
-  // logic for combinational_logic()
+  // logic for state_outputs()
   always @ (*) begin
-    in__rdy = (state == STATE_RECV);
-    out_val = (state == STATE_SEND);
-    reg_en = (in__val&(state == STATE_RECV));
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_RECV)) begin
+      in__rdy = 1;
+      reg_en = in__val;
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        counter$in_ = 0;
+      end
+      else begin
+        counter$in_ = (counter$out+in__val);
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if (~out_rdy) begin
+          counter$in_ = counter$out;
+        end
+        else begin
+        end
+      end
+      else begin
+      end
+    end
   end
 
 
 endmodule // ValRdyDeserializer_0x3fa12697d0f7bbd5
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegRst_0x2ce052f8c32c5c39
+//-----------------------------------------------------------------------------
+// dtype: 1
+// reset_value: 0
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegRst_0x2ce052f8c32c5c39
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] in_,
+  output reg  [   0:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       else:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      out <= in_;
+    end
+  end
+
+
+endmodule // RegRst_0x2ce052f8c32c5c39
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -398,6 +501,50 @@ module RegEn_0x32a57bb87cf40013
 
 
 endmodule // RegEn_0x32a57bb87cf40013
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegRst_0x9f365fdf6c8998a
+//-----------------------------------------------------------------------------
+// dtype: 2
+// reset_value: 0
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegRst_0x9f365fdf6c8998a
+(
+  input  wire [   0:0] clk,
+  input  wire [   1:0] in_,
+  output reg  [   1:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       else:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      out <= in_;
+    end
+  end
+
+
+endmodule // RegRst_0x9f365fdf6c8998a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -562,11 +709,13 @@ module ValRdySerializer_0x2da4074966e2f2fa
 
 
   // register declarations
-  reg    [   0:0] count;
-  reg    [   2:0] counter;
-  reg    [   0:0] load;
+  reg    [   2:0] counter$in_;
+  reg    [   0:0] reg_en;
+  reg    [   0:0] state$in_;
 
   // localparam declarations
+  localparam STATE_IDLE = 0;
+  localparam STATE_SEND = 1;
   localparam p_nmsgs = 5;
 
   // mux temporaries
@@ -593,6 +742,19 @@ module ValRdySerializer_0x2da4074966e2f2fa
     .out     ( mux$out )
   );
 
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
+
   // reg_ temporaries
   wire   [   0:0] reg_$reset;
   wire   [  39:0] reg_$in_;
@@ -609,7 +771,22 @@ module ValRdySerializer_0x2da4074966e2f2fa
     .out   ( reg_$out )
   );
 
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   2:0] counter$out;
+
+  Reg_0x5f9f3b87a8883894 counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
   // signal connections
+  assign counter$clk   = clk;
+  assign counter$reset = reset;
   assign mux$clk       = clk;
   assign mux$in_$000   = reg_out[7:0];
   assign mux$in_$001   = reg_out[15:8];
@@ -617,74 +794,52 @@ module ValRdySerializer_0x2da4074966e2f2fa
   assign mux$in_$003   = reg_out[31:24];
   assign mux$in_$004   = reg_out[39:32];
   assign mux$reset     = reset;
-  assign mux$sel       = counter;
+  assign mux$sel       = counter$out;
   assign out_msg       = mux$out;
   assign reg_$clk      = clk;
-  assign reg_$en       = load;
+  assign reg_$en       = reg_en;
   assign reg_$in_      = reg_in;
   assign reg_$reset    = reset;
   assign reg_in[32:0]  = in__msg;
   assign reg_in[39:33] = 7'd0;
   assign reg_out       = reg_$out;
+  assign state$clk     = clk;
+  assign state$reset   = reset;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.in_.rdy.next = 1;
-  //         s.count  .next = 0;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 0;
-  //       elif( s.load ):
-  //         s.in_.rdy.next = 0;
-  //         s.count  .next = 1;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 1;
-  //       elif( s.out.rdy & (s.counter == p_nmsgs-1) ):
-  //         s.in_.rdy.next = 1;
-  //         s.count  .next = 0;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 0;
-  //       elif( s.out.rdy & s.count ):
-  //         s.in_.rdy.next = 0;
-  //         s.count  .next = 1;
-  //         s.counter.next = s.counter + 0x1;
-  //         s.out.val.next = 1;
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_IDLE:
+  //         if s.in_.val:
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_IDLE
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      in__rdy <= 1;
-      count <= 0;
-      counter <= 0;
-      out_val <= 0;
-    end
-    else begin
-      if (load) begin
-        in__rdy <= 0;
-        count <= 1;
-        counter <= 0;
-        out_val <= 1;
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_IDLE)) begin
+      if (in__val) begin
+        state$in_ = STATE_SEND;
       end
       else begin
-        if ((out_rdy&(counter == (p_nmsgs-1)))) begin
-          in__rdy <= 1;
-          count <= 0;
-          counter <= 0;
-          out_val <= 0;
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          state$in_ = STATE_IDLE;
         end
         else begin
-          if ((out_rdy&count)) begin
-            in__rdy <= 0;
-            count <= 1;
-            counter <= (counter+1);
-            out_val <= 1;
-          end
-          else begin
-          end
         end
+      end
+      else begin
       end
     end
   end
@@ -692,12 +847,48 @@ module ValRdySerializer_0x2da4074966e2f2fa
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.load.value = s.in_.val & s.in_.rdy
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_IDLE:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = 1
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.out.rdy
 
-  // logic for combinational_logic()
+  // logic for state_outputs()
   always @ (*) begin
-    load = (in__val&in__rdy);
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_IDLE)) begin
+      in__rdy = 1;
+      reg_en = 1;
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          counter$in_ = 0;
+        end
+        else begin
+          counter$in_ = (counter$out+out_rdy);
+        end
+      end
+      else begin
+      end
+    end
   end
 
 
@@ -789,6 +980,38 @@ module RegEn_0x3297a3f612d222c3
 
 
 endmodule // RegEn_0x3297a3f612d222c3
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Reg_0x5f9f3b87a8883894
+//-----------------------------------------------------------------------------
+// dtype: 3
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Reg_0x5f9f3b87a8883894
+(
+  input  wire [   0:0] clk,
+  input  wire [   2:0] in_,
+  output reg  [   2:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    out <= in_;
+  end
+
+
+endmodule // Reg_0x5f9f3b87a8883894
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -922,7 +1145,6 @@ module HostGcdUnit
   `OUTPUT_PAD_V(  out_msg_6_iocell,  out_msg_io[6],  out_msg[6] )
   `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] )
   `OUTPUT_PAD_V(    out_req_iocell,  out_req_io[0],  out_req[0] )
-
 
   // wire declarations
   wire   [   0:0] dut_out_val$000;
@@ -1193,11 +1415,13 @@ module ValRdySerializer_0x44f3cbdd11620196
 
 
   // register declarations
-  reg    [   0:0] count;
-  reg    [   1:0] counter;
-  reg    [   0:0] load;
+  reg    [   1:0] counter$in_;
+  reg    [   0:0] reg_en;
+  reg    [   0:0] state$in_;
 
   // localparam declarations
+  localparam STATE_IDLE = 0;
+  localparam STATE_SEND = 1;
   localparam p_nmsgs = 3;
 
   // mux temporaries
@@ -1220,6 +1444,19 @@ module ValRdySerializer_0x44f3cbdd11620196
     .out     ( mux$out )
   );
 
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
+
   // reg_ temporaries
   wire   [   0:0] reg_$reset;
   wire   [  23:0] reg_$in_;
@@ -1236,80 +1473,73 @@ module ValRdySerializer_0x44f3cbdd11620196
     .out   ( reg_$out )
   );
 
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   1:0] counter$out;
+
+  Reg_0x48d78f4c988f45f3 counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
   // signal connections
+  assign counter$clk   = clk;
+  assign counter$reset = reset;
   assign mux$clk       = clk;
   assign mux$in_$000   = reg_out[7:0];
   assign mux$in_$001   = reg_out[15:8];
   assign mux$in_$002   = reg_out[23:16];
   assign mux$reset     = reset;
-  assign mux$sel       = counter;
+  assign mux$sel       = counter$out;
   assign out_msg       = mux$out;
   assign reg_$clk      = clk;
-  assign reg_$en       = load;
+  assign reg_$en       = reg_en;
   assign reg_$in_      = reg_in;
   assign reg_$reset    = reset;
   assign reg_in[16:0]  = in__msg;
   assign reg_in[23:17] = 7'd0;
   assign reg_out       = reg_$out;
+  assign state$clk     = clk;
+  assign state$reset   = reset;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.in_.rdy.next = 1;
-  //         s.count  .next = 0;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 0;
-  //       elif( s.load ):
-  //         s.in_.rdy.next = 0;
-  //         s.count  .next = 1;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 1;
-  //       elif( s.out.rdy & (s.counter == p_nmsgs-1) ):
-  //         s.in_.rdy.next = 1;
-  //         s.count  .next = 0;
-  //         s.counter.next = 0x0;
-  //         s.out.val.next = 0;
-  //       elif( s.out.rdy & s.count ):
-  //         s.in_.rdy.next = 0;
-  //         s.count  .next = 1;
-  //         s.counter.next = s.counter + 0x1;
-  //         s.out.val.next = 1;
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_IDLE:
+  //         if s.in_.val:
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_IDLE
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      in__rdy <= 1;
-      count <= 0;
-      counter <= 0;
-      out_val <= 0;
-    end
-    else begin
-      if (load) begin
-        in__rdy <= 0;
-        count <= 1;
-        counter <= 0;
-        out_val <= 1;
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_IDLE)) begin
+      if (in__val) begin
+        state$in_ = STATE_SEND;
       end
       else begin
-        if ((out_rdy&(counter == (p_nmsgs-1)))) begin
-          in__rdy <= 1;
-          count <= 0;
-          counter <= 0;
-          out_val <= 0;
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          state$in_ = STATE_IDLE;
         end
         else begin
-          if ((out_rdy&count)) begin
-            in__rdy <= 0;
-            count <= 1;
-            counter <= (counter+1);
-            out_val <= 1;
-          end
-          else begin
-          end
         end
+      end
+      else begin
       end
     end
   end
@@ -1317,12 +1547,48 @@ module ValRdySerializer_0x44f3cbdd11620196
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.load.value = s.in_.val & s.in_.rdy
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_IDLE:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = 1
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.out.rdy
 
-  // logic for combinational_logic()
+  // logic for state_outputs()
   always @ (*) begin
-    load = (in__val&in__rdy);
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_IDLE)) begin
+      in__rdy = 1;
+      reg_en = 1;
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          counter$in_ = 0;
+        end
+        else begin
+          counter$in_ = (counter$out+out_rdy);
+        end
+      end
+      else begin
+      end
+    end
   end
 
 
@@ -1375,6 +1641,38 @@ endmodule // Mux_0x341febeacc223741
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// Reg_0x48d78f4c988f45f3
+//-----------------------------------------------------------------------------
+// dtype: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Reg_0x48d78f4c988f45f3
+(
+  input  wire [   0:0] clk,
+  input  wire [   1:0] in_,
+  output reg  [   1:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    out <= in_;
+  end
+
+
+endmodule // Reg_0x48d78f4c988f45f3
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // ValRdyDeserializer_0x1c18cc10687cb97b
 //-----------------------------------------------------------------------------
 // dtype_in: 8
@@ -1395,20 +1693,32 @@ module ValRdyDeserializer_0x1c18cc10687cb97b
 );
 
   // wire declarations
-  wire   [   0:0] count;
   wire   [  39:0] reg_out;
   wire   [  39:0] reg_in;
 
 
   // register declarations
-  reg    [   2:0] counter;
+  reg    [   2:0] counter$in_;
   reg    [   0:0] reg_en;
-  reg    [   2:0] state;
+  reg    [   0:0] state$in_;
 
   // localparam declarations
   localparam STATE_RECV = 0;
   localparam STATE_SEND = 1;
   localparam p_nmsgs = 5;
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
 
   // reg_ temporaries
   wire   [   0:0] reg_$reset;
@@ -1426,7 +1736,22 @@ module ValRdyDeserializer_0x1c18cc10687cb97b
     .out   ( reg_$out )
   );
 
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   2:0] counter$out;
+
+  RegRst_0x1099485158c4776f counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
   // signal connections
+  assign counter$clk     = clk;
+  assign counter$reset   = reset;
   assign out_msg         = reg_out[32:0];
   assign reg_$clk        = clk;
   assign reg_$en         = reg_en;
@@ -1434,50 +1759,43 @@ module ValRdyDeserializer_0x1c18cc10687cb97b
   assign reg_$in_[39:32] = in__msg;
   assign reg_$reset      = reset;
   assign reg_out         = reg_$out;
+  assign state$clk       = clk;
+  assign state$reset     = reset;
 
 
   // PYMTL SOURCE:
   //
-  // @s.posedge_clk
-  // def sequential_logic():
-  //       if( s.reset ):
-  //         s.state  .next = s.STATE_RECV
-  //         s.counter.next = 0x0
-  //       elif( s.state == s.STATE_RECV and s.in_.val and s.in_.rdy ):
-  //         if ( s.counter == p_nmsgs-1 ):
-  //           s.state  .next = s.STATE_SEND
-  //           s.counter.next = 0x0
-  //         else                         :
-  //           s.state  .next = s.STATE_RECV
-  //           s.counter.next = s.counter + 1
-  //       elif( s.state == s.STATE_SEND and s.out.val and s.out.rdy ):
-  //         s.state  .next = s.STATE_RECV
-  //         s.counter.next = 0x0
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy:
+  //           s.state.in_.value = s.STATE_RECV
 
-  // logic for sequential_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      state <= STATE_RECV;
-      counter <= 0;
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+      end
     end
     else begin
-      if (((state == STATE_RECV)&&in__val&&in__rdy)) begin
-        if ((counter == (p_nmsgs-1))) begin
-          state <= STATE_SEND;
-          counter <= 0;
+      if ((state$out == STATE_SEND)) begin
+        if (out_rdy) begin
+          state$in_ = STATE_RECV;
         end
         else begin
-          state <= STATE_RECV;
-          counter <= (counter+1);
         end
       end
       else begin
-        if (((state == STATE_SEND)&&out_val&&out_rdy)) begin
-          state <= STATE_RECV;
-          counter <= 0;
-        end
-        else begin
-        end
       end
     end
   end
@@ -1485,20 +1803,103 @@ module ValRdyDeserializer_0x1c18cc10687cb97b
   // PYMTL SOURCE:
   //
   // @s.combinational
-  // def combinational_logic():
-  //       s.in_.rdy.value = s.state == s.STATE_RECV
-  //       s.out.val.value = s.state == s.STATE_SEND
-  //       s.reg_en.value  = s.in_.val & ( s.state == s.STATE_RECV )
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_RECV:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = s.in_.val
+  //
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.in_.val
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //         if ~s.out.rdy:
+  //           s.counter.in_.value = s.counter.out
 
-  // logic for combinational_logic()
+  // logic for state_outputs()
   always @ (*) begin
-    in__rdy = (state == STATE_RECV);
-    out_val = (state == STATE_SEND);
-    reg_en = (in__val&(state == STATE_RECV));
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_RECV)) begin
+      in__rdy = 1;
+      reg_en = in__val;
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        counter$in_ = 0;
+      end
+      else begin
+        counter$in_ = (counter$out+in__val);
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if (~out_rdy) begin
+          counter$in_ = counter$out;
+        end
+        else begin
+        end
+      end
+      else begin
+      end
+    end
   end
 
 
 endmodule // ValRdyDeserializer_0x1c18cc10687cb97b
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegRst_0x1099485158c4776f
+//-----------------------------------------------------------------------------
+// dtype: 3
+// reset_value: 0
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegRst_0x1099485158c4776f
+(
+  input  wire [   0:0] clk,
+  input  wire [   2:0] in_,
+  output reg  [   2:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       else:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      out <= in_;
+    end
+  end
+
+
+endmodule // RegRst_0x1099485158c4776f
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -1686,94 +2087,6 @@ module ValRdyToReqAck_0x3871167c1fef1233
 
 
 endmodule // ValRdyToReqAck_0x3871167c1fef1233
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegRst_0x2ce052f8c32c5c39
-//-----------------------------------------------------------------------------
-// dtype: 1
-// reset_value: 0
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegRst_0x2ce052f8c32c5c39
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] in_,
-  output reg  [   0:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       else:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      out <= in_;
-    end
-  end
-
-
-endmodule // RegRst_0x2ce052f8c32c5c39
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegRst_0x9f365fdf6c8998a
-//-----------------------------------------------------------------------------
-// dtype: 2
-// reset_value: 0
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegRst_0x9f365fdf6c8998a
-(
-  input  wire [   0:0] clk,
-  input  wire [   1:0] in_,
-  output reg  [   1:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       else:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      out <= in_;
-    end
-  end
-
-
-endmodule // RegRst_0x9f365fdf6c8998a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
