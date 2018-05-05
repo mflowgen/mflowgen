@@ -137,7 +137,7 @@ class TestHarness( Model ):
     s.model  = model
 
     if test_verilog:
-      s.model = TranslationTool( s.model, verilator_xinit=test_verilog, verilator_xinit=test_verilog )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     s.mem    = TestMemory( MemMsg(8,32,cacheline_nbits), num_memports,
                            mem_stall_prob, mem_latency )
