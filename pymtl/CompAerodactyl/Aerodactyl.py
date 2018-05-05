@@ -253,9 +253,9 @@ class Aerodactyl( Model ):
 
     # Turn off host_en signals in the adapters
 
-    s.connect( s.mdu_adapter.host_en, 0 )
-    s.connect( s.icache_adapter.host_en, 0 )
-    s.connect( s.dcache_adapter.host_en, 0 )
+    s.connect( s.mdu_adapter   .host_en, s.ctrlreg.host_en[0] )
+    s.connect( s.icache_adapter.host_en, s.ctrlreg.host_en[1] )
+    s.connect( s.dcache_adapter.host_en, s.ctrlreg.host_en[2] )
 
     for i in xrange( num_cores ):
       s.connect( s.l0i[i].L0_disable, 0 )

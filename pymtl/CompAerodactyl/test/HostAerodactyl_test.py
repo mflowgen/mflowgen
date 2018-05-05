@@ -4,19 +4,19 @@
 
 import pytest
 
-from pymtl                             import *
-from pclib.test                        import run_sim
-from fpga                              import SwShim
+from pymtl                         import *
+from pclib.test                    import run_sim
+from fpga                          import SwShim
 
-from CompAerodactyl.Aerodactyl         import Aerodactyl
-from CompAerodactyl.HostAerodactyl     import HostAerodactyl
+from CompAerodactyl.Aerodactyl     import Aerodactyl
+from CompAerodactyl.HostAerodactyl import HostAerodactyl
 
 # Reuse tests from non-host version
 
-from CompAerodactyl.harnesses          import asm_test
+from harnesses                     import asm_test
 
-from CompAerodactyl.Aerodactyl_harness import TestHarness
-from CompAerodactyl.Aerodactyl_harness import run_test as run
+from Aerodactyl_harness            import TestHarness
+from Aerodactyl_harness            import run_test as run
 
 def run_test( test, dump_vcd, test_verilog,
               src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
