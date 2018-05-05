@@ -74,8 +74,10 @@ basic_msgs = [
 #-------------------------------------------------------------------------
 
 test_case_table = mk_test_case_table([
-  (            "dtype msgs        src_delay sink_delay"),
-  [ "basic" ,   32,   basic_msgs, 1,        0          ],
+  (               "dtype msgs        src_delay sink_delay"),
+  [ "basic" ,      32,   basic_msgs, 0,        0          ],
+  [ "basicx" ,     32,   basic_msgs, 1,        0          ],
+  [ "basic_3x14" , 32,   basic_msgs, 3,        14         ],
 ])
 
 #-------------------------------------------------------------------------

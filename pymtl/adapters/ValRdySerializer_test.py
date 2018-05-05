@@ -89,12 +89,22 @@ basic_msgs = [
 #-------------------------------------------------------------------------
 
 test_case_table = mk_test_case_table([
-  (            "dtype_in  dtype_out msgs             src_delay sink_delay"),
-  [ "32-to-1" , 32,       1,        basic_msgs[0:1], 1,        0          ],
-  [ "32-to-8" , 32,       8,        basic_msgs,      0,        0          ],
-  [ "32-to-10", 32,       10,       basic_msgs,      0,        2          ],
-  [ "32-to-60", 32,       60,       basic_msgs,      1,        0          ],
-  [ "32-to-64", 32,       64,       basic_msgs,      0,        4          ],
+  (                 "dtype_in  dtype_out msgs             src_delay sink_delay"),
+  [ "32-to-1" ,      32,       1,        basic_msgs[0:1], 0,        0          ],
+  [ "32-to-8" ,      32,       8,        basic_msgs,      0,        0          ],
+  [ "32-to-10",      32,       10,       basic_msgs,      0,        0          ],
+  [ "32-to-60",      32,       60,       basic_msgs,      0,        0          ],
+  [ "32-to-64",      32,       64,       basic_msgs,      0,        0          ],
+  [ "32-to-1x",      32,       1,        basic_msgs[0:1], 1,        0          ],
+  [ "32-to-8x" ,     32,       8,        basic_msgs,      1,        0          ],
+  [ "32-to-10x",     32,       10,       basic_msgs,      0,        2          ],
+  [ "32-to-60x",     32,       60,       basic_msgs,      1,        0          ],
+  [ "32-to-64x",     32,       64,       basic_msgs,      0,        4          ],
+  [ "32-to-1_3x14",  32,       1,        basic_msgs[0:1], 3,        14         ],
+  [ "32-to-8_3x14" , 32,       8,        basic_msgs,      3,        14         ],
+  [ "32-to-10_3x14", 32,       10,       basic_msgs,      3,        14         ],
+  [ "32-to-60_3x14", 32,       60,       basic_msgs,      3,        14         ],
+  [ "32-to-64_3x14", 32,       64,       basic_msgs,      3,        14         ],
 ])
 
 #-------------------------------------------------------------------------
