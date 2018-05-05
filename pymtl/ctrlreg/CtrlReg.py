@@ -117,8 +117,8 @@ class CtrlReg( Model ):
     cr_go           = 0                           # Go bit
     cr_debug        = 1                           # Debug bit
     cr_instcounter  = 2                           # Base for instruction counter
-    cr_cyclecounter = cr_instcounter  + num_cores # Cycle counter
-    cr_host_en      = cr_cyclecounter + num_cores # Cycle counter
+    cr_cyclecounter = cr_instcounter  + num_cores # Base for Cycle counter
+    cr_host_en      = cr_cyclecounter + num_cores # Base for Host Enable counter
 
     # Instantiate registers (16 registers)
 
@@ -216,8 +216,21 @@ class CtrlReg( Model ):
 
     # Host_en
 
+    s.cr_hosten_en = Wire[valrdy_ifcs]( 1 )
+    s.cr_hosten_in = Wire[valrdy_ifcs]( 32 )
+
+    @s.combinational
+    def comb_cr_hosten_logic():
+      for i in xrange(valrdy_ifcs):
+        s.cr_hosten_en[i].value = s.rf_wen & ( s.rf_waddr == (cr_host_en+i) )
+        s.cr_hosten_in[i].value = s.rf_wdata
+
     for i in xrange(valrdy_ifcs):
-      s.connect( s.ctrlregs[cr_host_en + i].out[0], s.host_en[i] )
+      s.connect_pairs(
+        s.ctrlregs[cr_host_en + i].en,     s.cr_hosten_en[i],
+        s.ctrlregs[cr_host_en + i].in_,    s.cr_hosten_in[i],
+        s.ctrlregs[cr_host_en + i].out[0], s.host_en[i],
+      )
 
     #---------------------------------------------------------------------
     # Output Queue
