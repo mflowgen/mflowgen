@@ -82,8 +82,8 @@ class TestHarness (Model):
     # Verilog translation
 
     if test_verilog:
-      s.dut = TranslationTool( s.dut, verilator_xinit=test_verilog, verilator_xinit=test_verilog )
-      s.mdu  = TranslationTool( s.mdu , verilator_xinit=test_verilog, verilator_xinit=test_verilog )
+      s.dut = TranslationTool( s.dut, verilator_xinit=test_verilog )
+      s.mdu = TranslationTool( s.mdu, verilator_xinit=test_verilog )
 
     # CtrlReg
 
