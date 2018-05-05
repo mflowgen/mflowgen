@@ -9,8 +9,7 @@ import struct
 from pymtl import *
 
 from pclib.test import TestSource, TestSink
-
-from proc.tinyrv2_encoding import assemble
+from proc.SparseMemoryImage import SparseMemoryImage
 
 # BRGTC2 custom TestMemory modified for RISC-V 32
 
@@ -95,9 +94,12 @@ class TestHarness( Model ):
     s.host_dcache_src  = TestSource( s.proc_cache_ifc.req , [], src_delay  )
     s.host_dcache_sink = TestSink  ( s.proc_cache_ifc.resp, [], sink_delay )
 
+    s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
+                        num_memports, mem_stall_prob, mem_latency )
+
     # model
 
-    s.model       = model
+    s.model = model
 
     # Dump VCD
 
@@ -108,9 +110,6 @@ class TestHarness( Model ):
       cls_name = s.model.__class__.__name__
       if ( cls_name != 'SwShim' ) and ( not hasattr( s.model, 'dut' ) ):
         s.model = TranslationTool( s.model, enable_blackbox = True, verilator_xinit=test_verilog )
-
-    s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
-                        num_memports, mem_stall_prob, mem_latency )
 
     # Ctrlreg
 
@@ -153,6 +152,7 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
   # load_ctrlreg
   #-----------------------------------------------------------------------
+  # This function loads messages into s.ctrlregsrc/s.ctrlregsink
 
   def load_ctrlreg( self ):
 
@@ -184,10 +184,11 @@ class TestHarness( Model ):
     self.ctrlregsink.sink.msgs = msgs[1::2]
 
   #-----------------------------------------------------------------------
-  # load
+  # load_asm
   #-----------------------------------------------------------------------
+  # This function loads messages into s.src0-3, s.sink0-3 and memory data
 
-  def load( self, mem_image ):
+  def load_asm( self, mem_image ):
 
     # Iterate over the sections
 
@@ -233,6 +234,33 @@ class TestHarness( Model ):
         self.mem.mem[start_addr:stop_addr] = section.data
 
   #-----------------------------------------------------------------------
+  # load_mdu
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_mdu_src/s.host_mdu_sink
+
+  def load_mdu( self, msgs ):
+    self.host_mdu_src.src.msgs   = msgs[::2]
+    self.host_mdu_sink.sink.msgs = msgs[1::2]
+
+  #-----------------------------------------------------------------------
+  # load_icache
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_icache_src/s.host_icache_sink
+
+  def load_icache( self, msgs ):
+    self.host_icache_src.src.msgs   = msgs[::2]
+    self.host_icache_sink.sink.msgs = msgs[1::2]
+
+  #-----------------------------------------------------------------------
+  # load_dcache
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_dcache_src/s.host_dcache_sink
+
+  def load_dcache( self, msgs ):
+    self.host_dcache_src.src.msgs   = msgs[::2]
+    self.host_dcache_sink.sink.msgs = msgs[1::2]
+
+  #-----------------------------------------------------------------------
   # cleanup
   #-----------------------------------------------------------------------
 
@@ -266,9 +294,12 @@ class TestHarness( Model ):
 # run_test
 #=========================================================================
 
-def run_test( model, gen_test, num_cores, cacheline_nbits=128,
+def run_test( model, msgs, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
               mem_stall_prob=0, mem_latency=0, max_cycles=200000 ):
+
+  assert isinstance( msgs, list )
+  assert len(msgs) == 5
 
   # Instantiate and elaborate the model
 
@@ -278,17 +309,28 @@ def run_test( model, gen_test, num_cores, cacheline_nbits=128,
   model.vcd_file = dump_vcd
   model.elaborate()
 
-  # Assemble the test program
+  # five messages
 
-  mem_image = assemble( gen_test() )
+  assert isinstance( msgs[0], bool ) # ctrlreg
+  assert isinstance( msgs[1], SparseMemoryImage ) or msgs[1] is None # asm test
+  assert isinstance( msgs[2], list ) # mdu
+  assert isinstance( msgs[3], list ) # icache
+  assert isinstance( msgs[4], list ) # dcache
 
-  # Load the program into the model
+  if msgs[0] == True:
+    model.load_ctrlreg()
 
-  model.load( mem_image )
+  if msgs[1]:
+    model.load_asm( msgs[1] )
 
-  # Load the CtrlReg messages into the model
+  if msgs[2]:
+    model.load_mdu( msgs[2] )
 
-  model.load_ctrlreg()
+  if msgs[3]:
+    model.load_icache( msgs[3] )
+
+  if msgs[4]:
+    model.load_dcache( msgs[4] )
 
   # Create a simulator using the simulation tool
 
