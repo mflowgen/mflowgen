@@ -7,6 +7,7 @@ CURRENT_FOLDER=$(pwd)
 rm -f ${DESIGN_NAME}_all_tests.v
 touch ${DESIGN_NAME}_all_tests.v
 
+mkdir -p ${ALLOY_ASIC_ROOT}/pymtl/build
 cd ${ALLOY_ASIC_ROOT}/pymtl/build
 
 rm -f temp_dispatch.v
