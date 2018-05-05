@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
 
   err = maxerror(C1, C2, n);
 
-  wprintf(L"err = %d\n",err);
+  brg_wprintf(L"err = %d\n",err);
   test_pass();
 
   return 0;

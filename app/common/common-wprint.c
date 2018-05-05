@@ -11,7 +11,7 @@
 #include "common-wprint.h"
 #include <stdarg.h>
 
-void wprintf( const wchar_t* fmt... )
+void brg_wprintf( const wchar_t* fmt... )
 {
   va_list args;
   va_start(args, fmt);
@@ -22,20 +22,20 @@ void wprintf( const wchar_t* fmt... )
       flag = 1;
     }
     else if ( flag && (*fmt == 'd') ) {
-      wprint( va_arg(args, int) );
+      brg_wprint( va_arg(args, int) );
       flag = 0;
     }
     else if ( flag && (*fmt == 'C') ) {
       // note automatic conversion to integral type
-      wprint( static_cast<wchar_t>(va_arg(args, int)) );
+      brg_wprint( static_cast<wchar_t>(va_arg(args, int)) );
       flag = 0;
     }
     else if ( flag && (*fmt == 'S') ) {
-      wprint( va_arg(args, wchar_t*) );
+      brg_wprint( va_arg(args, wchar_t*) );
       flag = 0;
     }
     else {
-      wprint( *fmt );
+      brg_wprint( *fmt );
     }
     ++fmt;
   }
