@@ -18,6 +18,8 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
+descriptions.innovus-postroute = "Detailed routing"
+
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------

@@ -18,6 +18,8 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
+descriptions.innovus-signoff = "Signoff"
+
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------

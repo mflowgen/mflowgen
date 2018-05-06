@@ -10,6 +10,8 @@
 # Innovus-related variables (e.g., directories, exec commands) used
 # throughout the Innovus flow.
 
+descriptions.innovus-flowsetup = "Run the Innovus Foundation Flow"
+
 #-------------------------------------------------------------------------
 # Alias -- short name for this step
 #-------------------------------------------------------------------------

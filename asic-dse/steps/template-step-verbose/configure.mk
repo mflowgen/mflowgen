@@ -44,7 +44,7 @@
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.template-step-verbose= \
+descriptions.template-step-verbose = \
 	"This is an example step that shows how to configure a new step"
 
 #-------------------------------------------------------------------------

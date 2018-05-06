@@ -17,6 +17,8 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
+descriptions.innovus-route = "Global routing"
+
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
