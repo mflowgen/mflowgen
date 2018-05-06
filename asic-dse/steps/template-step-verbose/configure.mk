@@ -84,6 +84,15 @@ endef
 abbr.template-step-verbose = ex
 
 #-------------------------------------------------------------------------
+# Extra dependencies
+#-------------------------------------------------------------------------
+# The build system takes care of any step dependencies, but you can draw
+# up any additional custom dependencies for this step here (e.g., extra
+# files not visible to the build sytem).
+
+#extra_dependencies.template-step-verbose = none
+
+#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
@@ -118,5 +127,5 @@ clean-template-step-verbose:
 	rm -rf ./$(collect_dir.template-step-verbose)
 	rm -rf ./$(handoff_dir.template-step-verbose)
 
-clean-ex: clean-template-step-verbose
+#clean-ex: clean-template-step-verbose
 

@@ -50,11 +50,11 @@ export relative_base_dir := ..
 # searches up the directory hierarchy until it finds the marker file. Then
 # it labels that directory as the absolute base directory.
 
-export base_dir_marker   := .TOP
-export absolute_base_dir := $(shell \
-  x=$${PWD};                        \
-  while [ "$$x" != "/" ]; do        \
-    x=$$(dirname "$$x");            \
+export base_dir_marker := .TOP
+export base_dir        := $(shell \
+  x=$${PWD};                      \
+  while [ "$$x" != "/" ]; do      \
+    x=$$(dirname "$$x");          \
     find "$$x" -maxdepth 1 -name $(base_dir_marker) | xargs -I {} dirname {}; \
   done;)
 
@@ -225,10 +225,20 @@ junk += $(handoffs_dir) $(timestamps_dir)
 #
 # Additional features
 #
-# - ascii.myflowstep: (optional) This hook can be defined in the step
-#                                configure.mk to print a pretty
-#                                banner before executing the step,
-#                                which is visible as text flies by.
+# - ascii.$(1)
+#     - (optional)
+#     - This hook can be defined in the step configure.mk to print a
+#     pretty banner before executing the step, which is visible as text
+#     flies by.
+#
+# - abbr.$(1)
+#     - (optional)
+#     - This hook can be used to create a short alias target for the step
+#
+# - extra_dependencies.$(1)
+#     - (optional)
+#     - The step configure can define this variable to draw any additional
+#     custom dependencies for this step.
 
 define step_template
 
@@ -250,7 +260,7 @@ include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 
 # Primary command target for this step
 
-$(1): $$(dependencies.$(1))
+$(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
 # Collect handoffs from the dependencies
 	@rm -rf ./$$(collect_dir.$(1))
 	@mkdir -p $$(collect_dir.$(1))

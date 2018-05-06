@@ -35,6 +35,12 @@ endef
 #abbr.template-step = template
 
 #-------------------------------------------------------------------------
+# Extra dependencies
+#-------------------------------------------------------------------------
+
+#extra_dependencies.template-step = none
+
+#-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
 # These are the commands run when executing this step. These commands are
@@ -60,5 +66,5 @@ clean-template-step:
 	rm -rf ./$(collect_dir.template-step)
 	rm -rf ./$(handoff_dir.template-step)
 
-clean-ex: clean-template-step
+#clean-ex: clean-template-step
 
