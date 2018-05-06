@@ -158,11 +158,6 @@ class CtrlReg( Model ):
       s.cr_go_en.value = s.rf_wen & ( s.rf_waddr == cr_go )
       s.cr_go_in.value = s.rf_wdata
 
-    s.connect_pairs(
-      s.ctrlregs[cr_go].en,  s.cr_go_en,
-      s.ctrlregs[cr_go].in_, s.cr_go_in,
-    )
-
     # Control Register: Debug
 
     s.cr_debug_en = Wire( 1 )
@@ -178,57 +173,105 @@ class CtrlReg( Model ):
       s.ctrlregs[cr_debug].in_, s.cr_debug_in,
     )
 
-    # Control Registers: Instruction Counts
+    # Control Registers: Instruction counters
+
+    s.instcounters_en  = Wire             ( num_cores )
+    s.instcounters_in  = Wire[ num_cores ](    32     )
+    s.instcounters_out = Wire[ num_cores ](    32     )
 
     @s.combinational
     def comb_cr_instcounter_logic():
       for core_idx in xrange(num_cores):
-        s.ctrlregs[cr_instcounter + core_idx].en .value = s.commit_inst[core_idx] & s.stats_en
-        s.ctrlregs[cr_instcounter + core_idx].in_.value = s.ctrlregs[cr_instcounter + core_idx].out + 1
+        s.instcounters_en[core_idx].value = s.commit_inst[core_idx] & s.stats_en
+        s.instcounters_in[core_idx].value = s.instcounters_out[core_idx] + 1
 
-    # Control Register: Cycle counter
+    #for reg_idx in xrange(cr_instcounter, cr_instcounter + num_cores):
+    for reg_idx in xrange(2, 2 + 4):
+      core_idx = reg_idx - cr_instcounter
+      s.connect_pairs(
+        s.ctrlregs        [reg_idx ].in_, s.instcounters_in[core_idx]    ,
+        s.ctrlregs        [reg_idx ].en , s.instcounters_en[core_idx]    ,
+        s.instcounters_out[core_idx]    , s.ctrlregs       [reg_idx ].out,
+      )
 
-    s.cr_cyclecounter_en = Wire( 1 )
-    s.cr_cyclecounter_in = Wire( 32 )
+    # Control Register: Cycle counters
+
+    s.cyclecounters_en  = Wire             ( num_cores )
+    s.cyclecounters_in  = Wire[ num_cores ](    32     )
+    s.cyclecounters_out = Wire[ num_cores ](    32     )
 
     @s.combinational
     def comb_cr_cyclecounter_logic():
       for core_idx in xrange(num_cores):
-        s.ctrlregs[cr_instcounter + core_idx].en .value = s.stats_en
-        s.ctrlregs[cr_instcounter + core_idx].in_.value = s.ctrlregs[cr_instcounter + core_idx].out + 1
-
-    #---------------------------------------------------------------------
-    # Connections to Output Ports
-    #---------------------------------------------------------------------
-    # These wires directly connect the registers to their output ports
-
-    # go bit (1 bit)
-    # Shunning: currently we set the go bit of all cores at the same time
-
-    for i in xrange(num_cores):
-      s.connect( s.ctrlregs[cr_go].out[0], s.go[i] )
-
-    # debug bit (1 bit)
-
-    s.connect( s.ctrlregs[cr_debug].out[0], s.debug )
+        s.cyclecounters_en[core_idx].value = s.stats_en
+        s.cyclecounters_in[core_idx].value = s.cyclecounters_out[core_idx] + 1
 
     # Host_en
 
-    s.cr_hosten_en = Wire[valrdy_ifcs]( 1 )
-    s.cr_hosten_in = Wire[valrdy_ifcs]( 32 )
+    s.wire_host_en      = Wire( valrdy_ifcs )
 
     @s.combinational
     def comb_cr_hosten_logic():
-      for i in xrange(valrdy_ifcs):
-        s.cr_hosten_en[i].value = s.rf_wen & ( s.rf_waddr == (cr_host_en+i) )
-        s.cr_hosten_in[i].value = s.rf_wdata
+      for idx in xrange(valrdy_ifcs):
+        s.wire_host_en[idx].value = s.rf_wen & ( s.rf_waddr == ( idx + cr_host_en ) )
 
-    for i in xrange(valrdy_ifcs):
-      s.connect_pairs(
-        s.ctrlregs[cr_host_en + i].en,     s.cr_hosten_en[i],
-        s.ctrlregs[cr_host_en + i].in_,    s.cr_hosten_in[i],
-        s.ctrlregs[cr_host_en + i].out[0], s.host_en[i],
-      )
+    # Connect write value
+
+    # Instacounters
+    cr_instcounter_l  = cr_instcounter
+    cr_instcounter_h  = cr_instcounter  + num_cores
+
+    cr_cyclecounter_l = cr_cyclecounter
+    cr_cyclecounter_h = cr_cyclecounter + num_cores
+
+    cr_host_en_l      = cr_host_en
+    cr_host_en_h      = cr_host_en + valrdy_ifcs
+
+    for ridx in xrange( num_ctrlregs ):
+
+      if   ridx == cr_go:
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_go_in,
+          s.ctrlregs[ridx].en , s.cr_go_en,
+        )
+
+        # Go bit is a special case
+        # Shunning: currently we set the go bit of all cores at the same time
+        for i in xrange(num_cores):
+          s.connect_pairs(
+            s.go[i], s.ctrlregs[cr_go].out[0],
+          )
+
+      elif ridx == cr_debug:
+        # debug bit (1 bit)
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_debug_in             ,
+          s.ctrlregs[ridx].en , s.cr_debug_en             ,
+          s.debug             , s.ctrlregs   [ridx].out[0],
+        )
+
+      elif ridx >= cr_instcounter_l and ridx < cr_instcounter_h:
+        cidx = ridx - cr_instcounter
+        s.connect_pairs(
+          s.ctrlregs        [ridx].in_, s.instcounters_in[cidx]    ,
+          s.ctrlregs        [ridx].en , s.instcounters_en[cidx]    ,
+          s.instcounters_out[cidx]    , s.ctrlregs       [ridx].out,
+        )
+
+      elif ridx >= cr_cyclecounter_l and ridx < cr_cyclecounter_h:
+        cidx = ridx - cr_cyclecounter
+        s.connect_pairs(
+          s.ctrlregs         [ridx].in_, s.cyclecounters_in[cidx]    ,
+          s.ctrlregs         [ridx].en , s.cyclecounters_en[cidx]    ,
+          s.cyclecounters_out[cidx]    , s.ctrlregs        [ridx].out,
+        )
+
+      elif ridx >= cr_host_en_l and ridx < cr_host_en_h:
+        cidx = ridx - cr_host_en
+        s.connect_pairs(
+          s.ctrlregs         [ridx].in_, s.rf_wdata          ,
+          s.ctrlregs         [ridx].en , s.wire_host_en[cidx],
+        )
 
     #---------------------------------------------------------------------
     # Output Queue
