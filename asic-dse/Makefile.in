@@ -114,9 +114,9 @@ list:
 	@echo "Available steps targets"
 	@echo "--------------------------------------------------------------------------"
 	@echo
-	@printf                          "%s %-20s   %s\n" ' ' "(Long Name)" "(Short Name)"
-	@echo
-	@$(foreach step, $(steps),printf "%s %-20s : %s\n" '-'  $(step)     $(abbr.$(step));)
+	@printf                          "%s %-20s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
+	@echo                            "  ------------------------------------------------------------------------"
+	@$(foreach step, $(steps),printf "%s %-20s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
 	@echo
 	@echo "Other useful targets"
 	@echo

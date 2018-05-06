@@ -4,56 +4,59 @@
 # This file will be included inside the Makefile in the build directory
 
 #-------------------------------------------------------------------------
-# Step Description -- example-step
+# Overview
 #-------------------------------------------------------------------------
-# This is an example step showing how to configure a new asic flow step.
-#
 # Note that the minimum contents for a step is just this:
 #
-#     commands.example-step = echo "Here is my example step"
+#     commands.template-step-verbose = echo "Here is my example step"
 #
 # More than one command can be specified by using a define:
 #
-#     define commands.example-step
-#       echo "Running example-step"
-#       echo "Done with example-step"
+#     define commands.template-step-verbose
+#       echo "Running template-step-verbose"
+#       echo "Done with template-step-verbose"
 #     endef
 #
 # Variables that interface with the build system are suffixed with the
-# name of the step (e.g., "commands.example-step").
+# name of the step (e.g., "commands.template-step-verbose").
 #
-#     IMPORTANT NOTE: The name of the step _MUST_ match the name of the
-#     directory (which contains the configure.mk fragment)!
-#         .
-#         └── steps
-#             └── example-step     <- because this is "example-step",
-#                 └── configure.mk <- the step name in the configure
-#                                     script must also be "example-step"
+#     asic-dse
+#     └── steps
+#         └── template-step-verbose  <- name of the step
+#             └── configure.mk
 #
-# The build system provides many useful variables that you can use:
+# Given the name of the step, the build system provides many useful
+# variables that you can use:
 #
-# - flow_dir.example-step
-# - plugins_dir.example-step
+# - flow_dir.template-step-verbose
+# - plugins_dir.template-step-verbose
 #
-# - logs_dir.example-step
-# - reports_dir.example-step
-# - results_dir.example-step
+# - logs_dir.template-step-verbose
+# - reports_dir.template-step-verbose
+# - results_dir.template-step-verbose
 #
-# - collect_dir.example-step
-# - handoff_dir.example-step
+# - collect_dir.template-step-verbose
+# - handoff_dir.template-step-verbose
 #
 # Your step can use all of these variables or not use any of them.
+
+#-------------------------------------------------------------------------
+# Step Description
+#-------------------------------------------------------------------------
+
+descriptions.template-step-verbose= \
+	"This is an example step that shows how to configure a new step"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 # The build system has a feature to enable printing a banner before the
-# step is executed if the variable "ascii.example-step" is defined.
+# step is executed if the variable "ascii.template-step-verbose" is defined.
 #
 # Here is an example ascii banner that is in the style of the ones used
 # for Cadence Innovus steps:
 
-define ascii.example-step
+define ascii.template-step-verbose
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                ______   ____   ____    _____            _____                 #'
@@ -72,13 +75,13 @@ endef
 #-------------------------------------------------------------------------
 # The build system uses the name of the step for the make target:
 #
-#     % make example-step
+#     % make template-step-verbose
 #
 # If this is too long, you can make a short name here. The build system
 # will create the alias for you and also track it for support (e.g.,
 # the alias showing up when running "make list").
 
-abbr.example-step = ex
+abbr.template-step-verbose = ex
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -95,11 +98,11 @@ abbr.example-step = ex
 # the build system takes care of moving / linking these handed-off files
 # to the collect directory of the next step.
 
-define commands.example-step
+define commands.template-step-verbose
 	echo "Hello world!"
 # Prepare handoffs
-	mkdir -p $(handoff_dir.example-step)
-	touch $(handoff_dir.example-step)/example-output.txt
+	mkdir -p $(handoff_dir.template-step-verbose)
+	touch $(handoff_dir.template-step-verbose)/example-output.txt
 endef
 
 #-------------------------------------------------------------------------
@@ -110,10 +113,10 @@ endef
 
 # Clean
 
-clean-example-step:
-	rm -rf ./$(VPATH)/example-step
-	rm -rf ./$(collect_dir.example-step)
-	rm -rf ./$(handoff_dir.example-step)
+clean-template-step-verbose:
+	rm -rf ./$(VPATH)/template-step-verbose
+	rm -rf ./$(collect_dir.template-step-verbose)
+	rm -rf ./$(handoff_dir.template-step-verbose)
 
-clean-ex: clean-example-step
+clean-ex: clean-template-step-verbose
 

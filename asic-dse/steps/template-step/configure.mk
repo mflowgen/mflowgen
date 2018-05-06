@@ -6,12 +6,9 @@
 #-------------------------------------------------------------------------
 # Step Description
 #-------------------------------------------------------------------------
-# Describe what this step does..
-#
-# Required previous steps:
-#
-# - (Required step 1) -- (Reason why)
-# - (Required step 2) -- (Reason why)
+
+descriptions.template-step = \
+	"This is an example step that shows how to configure a new step"
 
 #-------------------------------------------------------------------------
 # ASCII art
