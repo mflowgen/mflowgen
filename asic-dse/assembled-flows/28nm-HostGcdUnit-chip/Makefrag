@@ -36,9 +36,15 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = HostGcdUnit
-clock_period = 1.0
-verilog_src  = rtl-handoff/HostGcdUnit.v
+design_name      = HostGcdUnit
+clock_period     = 1.0
+verilog_src      = rtl-handoff/HostGcdUnit.v
+
+# For simulation
+
+test_harness_v   = rtl-handoff/HostGcdUnit-test/HostGcdUnit_tb.v
+pymtl_src_dir    = ../pymtl/HostGcdUnit
+test_harness_top = top
 
 #-------------------------------------------------------------------------
 # Export
