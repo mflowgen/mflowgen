@@ -18,8 +18,7 @@
 # Verilog snippet that is `included in the test harness and that contains
 # all of the test cases.
 
-descriptions.vcs-rtl-build = \
-	"Build the RTL simulator"
+descriptions.vcs-rtl-build = "Build the RTL simulator"
 
 #-------------------------------------------------------------------------
 # ASCII art

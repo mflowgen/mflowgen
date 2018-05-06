@@ -42,7 +42,11 @@ endef
 
 # The simulator is available from the build step
 
-vcs_rtl_simv = $(collect_dir.vcs-rtl)/simv
+# Unfortunately, the test case targets run before the build system has
+# constructed the collect dir, so we temporarily magically reach into the
+# correct handoff dir.
+
+vcs_rtl_simv = ./$(handoff_dir.vcs-rtl-build)/simv
 
 #-------------------------------------------------------------------------
 # Generate simulation targets
