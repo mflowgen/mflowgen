@@ -75,7 +75,8 @@ export logs_dir       = logs
 export reports_dir    = reports
 export results_dir    = results
 
-export handoffs_dir   = handoffs
+export collect_dir    = collect
+export handoff_dir    = handoff
 export timestamps_dir = timestamps
 
 #-------------------------------------------------------------------------
@@ -182,7 +183,7 @@ seed:
 # Generate all asic flow directories
 	@mkdir -p $(VPATH) $(flow_dir) $(plugins_dir)
 	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
-	@mkdir -p $(handoffs_dir) $(timestamps_dir)
+	@mkdir -p $(collect_dir) $(handoff_dir) $(timestamps_dir)
 # Seed links to the master steps into the flow directory
 	@(cd $(flow_dir); \
     $(foreach x, $(steps), \
@@ -195,7 +196,7 @@ seed:
 
 junk += $(flow_dir) $(plugins_dir)
 junk += $(logs_dir) $(reports_dir) $(results_dir)
-junk += $(handoffs_dir) $(timestamps_dir)
+junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
@@ -251,8 +252,8 @@ logs_dir.$(1)    = $(logs_dir)/$(1)
 reports_dir.$(1) = $(reports_dir)/$(1)
 results_dir.$(1) = $(results_dir)/$(1)
 
-collect_dir.$(1) = $(handoffs_dir)/$(1)-collect
-handoff_dir.$(1) = $(handoffs_dir)/$(1)-handoff
+collect_dir.$(1) = $(collect_dir)/$(1)
+handoff_dir.$(1) = $(handoff_dir)/$(1)
 
 # Include the step makefile fragment
 

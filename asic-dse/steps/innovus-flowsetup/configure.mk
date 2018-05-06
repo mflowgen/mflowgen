@@ -29,7 +29,7 @@ export innovus_plugins_dir  = $(plugins_dir)/innovus
 export innovus_logs_dir     = $(logs_dir)/innovus
 export innovus_reports_dir  = $(reports_dir)/innovus
 export innovus_results_dir  = $(results_dir)/innovus
-export innovus_handoffs_dir = $(handoffs_dir)/innovus
+export innovus_handoffs_dir = $(handoff_dir)/innovus
 
 # INNOVUS GUI
 #
