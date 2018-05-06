@@ -78,7 +78,7 @@ $$(logs_dir.vcs-rtl)/run-$(1)-$(2).log:
 
 # Create alias target to help run an individual test
 
-VCS-RTL.$(1).$(2): $$(logs_dir.vcs-rtl)/run-$(1)-$(2).log
+VCS_RTL.$(1).$(2): $$(logs_dir.vcs-rtl)/run-$(1)-$(2).log
 
 # Gather all tests for this category
 
