@@ -3,6 +3,8 @@
 #=========================================================================
 # This multiplier is designed to work with RV32M's mul/mulh/mulhsu/mulhu
 
+# TODO add a bypass queue at response side to cut the long rdy path
+
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 from pclib.rtl  import RegEn, RegEnRst

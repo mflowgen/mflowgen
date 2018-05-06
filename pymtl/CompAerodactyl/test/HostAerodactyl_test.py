@@ -13,8 +13,7 @@ from CompAerodactyl.HostAerodactyl import HostAerodactyl
 
 # Reuse tests from non-host version
 
-from harnesses                     import asm_test
-
+from Aerodactyl_harness            import asm_test
 from Aerodactyl_harness            import TestHarness
 from Aerodactyl_harness            import run_test as run
 

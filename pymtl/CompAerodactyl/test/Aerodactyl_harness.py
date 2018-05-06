@@ -8,9 +8,8 @@ import struct
 
 from pymtl import *
 
-from pclib.test import TestSource, TestSink
-
-from proc.tinyrv2_encoding import assemble
+from pclib.test import TestSource, TestSink, TestNetSink
+from proc.SparseMemoryImage import SparseMemoryImage
 
 # BRGTC2 custom TestMemory modified for RISC-V 32
 
@@ -86,8 +85,8 @@ class TestHarness( Model ):
     s.src         = TestSource[num_cores]( 32, [], src_delay  )
     s.sink        = TestSink  [num_cores]( 32, [], sink_delay )
 
-    s.host_mdu_src     = TestSource( s.proc_mdu_ifc.req , [], src_delay  )
-    s.host_mdu_sink    = TestSink  ( s.proc_mdu_ifc.resp, [], sink_delay )
+    s.host_mdu_src     = TestSource ( s.proc_mdu_ifc.req , [], src_delay  )
+    s.host_mdu_sink    = TestNetSink( s.proc_mdu_ifc.resp, [], sink_delay )
 
     s.host_icache_src  = TestSource( s.cache_mem_ifc.req , [], src_delay  )
     s.host_icache_sink = TestSink  ( s.cache_mem_ifc.resp, [], sink_delay )
@@ -95,9 +94,12 @@ class TestHarness( Model ):
     s.host_dcache_src  = TestSource( s.proc_cache_ifc.req , [], src_delay  )
     s.host_dcache_sink = TestSink  ( s.proc_cache_ifc.resp, [], sink_delay )
 
+    s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
+                        num_memports, mem_stall_prob, mem_latency )
+
     # model
 
-    s.model       = model
+    s.model = model
 
     # Dump VCD
 
@@ -108,9 +110,6 @@ class TestHarness( Model ):
       cls_name = s.model.__class__.__name__
       if ( cls_name != 'SwShim' ) and ( not hasattr( s.model, 'dut' ) ):
         s.model = TranslationTool( s.model, enable_blackbox = True, verilator_xinit=test_verilog )
-
-    s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
-                        num_memports, mem_stall_prob, mem_latency )
 
     # Ctrlreg
 
@@ -153,17 +152,18 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
   # load_ctrlreg
   #-----------------------------------------------------------------------
+  # This function loads messages into s.ctrlregsrc/s.ctrlregsink
 
-  def load_ctrlreg( self ):
+  def load_ctrlreg( self, msg_type="asm" ):
 
-    def req_cr( type_, addr, data ):
+    def req( type_, addr, data ):
       msg       = CtrlRegReqMsg()
       msg.type_ = type_
       msg.addr  = addr
       msg.data  = data
       return msg
 
-    def resp_cr( type_, data ):
+    def resp( type_, data ):
       msg       = CtrlRegRespMsg()
       msg.type_ = type_
       msg.data  = data
@@ -172,22 +172,63 @@ class TestHarness( Model ):
     rd = CtrlRegReqMsg.TYPE_READ
     wr = CtrlRegReqMsg.TYPE_WRITE
 
-    #                Req   Req   Req              Resp  Resp
-    #                Type  Addr  Data             Type  Data
-    msgs = [ req_cr(   rd,    1,    0 ), resp_cr(   rd,    0 ), # read debug
-             req_cr(   wr,    1,    1 ), resp_cr(   wr,    0 ), # write debug
-             req_cr(   rd,    1,    0 ), resp_cr(   rd,    1 ), # read debug
-             req_cr(   wr,    0,    1 ), resp_cr(   wr,    0 ), # go
-           ]
+    ID_GO            = CtrlRegReqMsg.ID_GO
+    ID_DEBUG         = CtrlRegReqMsg.ID_DEBUG
+    ID_MDU_HOSTEN    = CtrlRegReqMsg.ID_MDU_HOSTEN
+    ID_ICACHE_HOSTEN = CtrlRegReqMsg.ID_ICACHE_HOSTEN
+    ID_DCACHE_HOSTEN = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+
+    # By default, the msgs starts with a simple check of debug bit
+
+    #             Req   Req       Req        Resp  Resp
+    #             Type  Addr      Data       Type  Data
+    msgs = [  req( rd,   ID_DEBUG, 0 ), resp( rd,   0 ), # read debug
+              req( wr,   ID_DEBUG, 1 ), resp( wr,   0 ), # write debug
+              req( rd,   ID_DEBUG, 0 ), resp( rd,   1 ), # read debug
+          ]
+
+    # asm tests kick off the processor by setting go bit, and set all host_en to 0
+
+    if msg_type == "asm":
+      #              Req  Req               Req        Resp Resp
+      #              Type Addr              Data       Type Data
+      msgs+= [  req( wr,  ID_MDU_HOSTEN,    0 ), resp( wr,   0 ), # write False to mdu_host_en
+                req( wr,  ID_ICACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to icache_host_en
+                req( wr,  ID_DCACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to dcache_host_en
+
+                # req( rd,  ID_MDU_HOSTEN,    0 ), resp( rd,   0 ), # check mdu_host_en
+                # req( rd,  ID_ICACHE_HOSTEN, 0 ), resp( rd,   0 ), # check icache_host_en
+                # req( rd,  ID_DCACHE_HOSTEN, 0 ), resp( rd,   0 ), # check dcache_host_en
+
+                req( wr,  ID_GO,            1 ), resp( wr,   0 ), # go
+              ]
+
+    # mdu tests sets mdu_host_en_to 1 after setting others to zero
+
+    elif msg_type == "mdu":
+      #              Req  Req               Req        Resp Resp
+      #              Type Addr              Data       Type Data
+      msgs = [  req( wr,  ID_GO,            0 ), resp( wr,   0 ), # write False to go
+                req( wr,  ID_ICACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to icache_host_en
+                req( wr,  ID_DCACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to dcache_host_en
+
+                # req( rd,  ID_GO,            0 ), resp( rd,   0 ), # check go
+                # req( rd,  ID_ICACHE_HOSTEN, 0 ), resp( rd,   0 ), # check icache_host_en
+                # req( rd,  ID_DCACHE_HOSTEN, 0 ), resp( rd,   0 ), # check dcache_host_en
+
+                req( wr,  ID_MDU_HOSTEN,    1 ), resp( wr,   0 ), # write False to mdu_host_en
+                req( rd,  ID_MDU_HOSTEN,    0 ), resp( rd,   1 ), # check mdu_host_en
+              ]
 
     self.ctrlregsrc.src.msgs   = msgs[::2]
     self.ctrlregsink.sink.msgs = msgs[1::2]
 
   #-----------------------------------------------------------------------
-  # load
+  # load_asm
   #-----------------------------------------------------------------------
+  # This function loads messages into s.src0-3, s.sink0-3 and memory data
 
-  def load( self, mem_image ):
+  def load_asm( self, mem_image ):
 
     # Iterate over the sections
 
@@ -233,6 +274,36 @@ class TestHarness( Model ):
         self.mem.mem[start_addr:stop_addr] = section.data
 
   #-----------------------------------------------------------------------
+  # load_mdu
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_mdu_src/s.host_mdu_sink
+
+  def load_mdu( self, msgs ):
+    self.host_mdu_src.src.msgs   = msgs[::2]
+
+    # Unordered sink!
+    self.host_mdu_sink.sink.msgs     = msgs[1::2]
+    self.host_mdu_sink.sink.msgs_len = len(msgs)/2
+
+  #-----------------------------------------------------------------------
+  # load_icache
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_icache_src/s.host_icache_sink
+
+  def load_icache( self, msgs ):
+    self.host_icache_src.src.msgs   = msgs[::2]
+    self.host_icache_sink.sink.msgs = msgs[1::2]
+
+  #-----------------------------------------------------------------------
+  # load_dcache
+  #-----------------------------------------------------------------------
+  # This function loads messages into s.host_dcache_src/s.host_dcache_sink
+
+  def load_dcache( self, msgs ):
+    self.host_dcache_src.src.msgs   = msgs[::2]
+    self.host_dcache_sink.sink.msgs = msgs[1::2]
+
+  #-----------------------------------------------------------------------
   # cleanup
   #-----------------------------------------------------------------------
 
@@ -257,18 +328,22 @@ class TestHarness( Model ):
   def line_trace( s ):
     #s.model.ctrlreg.line_trace() + " > " + \
     return s.ctrlregsrc.line_trace()  + " > " + \
-           s.ctrlregsink.line_trace() + \
-           "|".join( [x.line_trace() for x in s.src]  ) + \
-           s.model.line_trace() + \
-           "|".join( [x.line_trace() for x in s.sink] )
+           s.ctrlregsink.line_trace() + " > " + \
+           s.host_mdu_src.line_trace()  + " > " + \
+           s.host_mdu_sink.line_trace() + \
+           s.model.line_trace()
+           # "|".join( [x.line_trace() for x in s.sink] )
 
 #=========================================================================
 # run_test
 #=========================================================================
 
-def run_test( model, gen_test, num_cores, cacheline_nbits=128,
+def run_test( model, msgs, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
               mem_stall_prob=0, mem_latency=0, max_cycles=200000 ):
+
+  assert isinstance( msgs, list )
+  assert len(msgs) == 5
 
   # Instantiate and elaborate the model
 
@@ -278,17 +353,28 @@ def run_test( model, gen_test, num_cores, cacheline_nbits=128,
   model.vcd_file = dump_vcd
   model.elaborate()
 
-  # Assemble the test program
+  # five messages
 
-  mem_image = assemble( gen_test() )
+  # Shunning: basestring doesn't work under Python 3!
+  assert isinstance( msgs[0], basestring ) # ctrlreg 
+  assert isinstance( msgs[1], SparseMemoryImage ) or msgs[1] is None # asm test
+  assert isinstance( msgs[2], list ) # mdu
+  assert isinstance( msgs[3], list ) # icache
+  assert isinstance( msgs[4], list ) # dcache
 
-  # Load the program into the model
+  model.load_ctrlreg( msgs[0] )
 
-  model.load( mem_image )
+  if msgs[1]:
+    model.load_asm( msgs[1] )
 
-  # Load the CtrlReg messages into the model
+  if msgs[2]:
+    model.load_mdu( msgs[2] )
 
-  model.load_ctrlreg()
+  if msgs[3]:
+    model.load_icache( msgs[3] )
+
+  if msgs[4]:
+    model.load_dcache( msgs[4] )
 
   # Create a simulator using the simulation tool
 

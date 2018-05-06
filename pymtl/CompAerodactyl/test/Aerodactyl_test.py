@@ -8,7 +8,7 @@ import pytest
 import random
 
 from pymtl                     import *
-from harnesses                 import asm_test
+from Aerodactyl_harness        import asm_test
 
 from CompAerodactyl.Aerodactyl import Aerodactyl
 
@@ -124,7 +124,7 @@ def test_bne_rand_delays( dump_vcd, test_verilog ):
 # csr
 #-------------------------------------------------------------------------
 
-import inst_csr
+from compositions.test import inst_csr
 
 @pytest.mark.parametrize( "name,test", [
   asm_test( inst_csr.gen_basic_test     ),
@@ -193,7 +193,7 @@ def test_lw_rand_delays( dump_vcd, test_verilog ):
 # sw
 #-------------------------------------------------------------------------
 
-import inst_sw
+from compositions.test import inst_sw
 
 @pytest.mark.parametrize( "name,test", [
   asm_test( inst_sw.gen_sameline_deps_test ),

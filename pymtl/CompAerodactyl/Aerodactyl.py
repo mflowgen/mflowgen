@@ -257,6 +257,7 @@ class Aerodactyl( Model ):
     s.connect( s.icache_adapter.host_en, s.ctrlreg.host_en[1] )
     s.connect( s.dcache_adapter.host_en, s.ctrlreg.host_en[2] )
 
+    # TODO add a ctrlreg for L0_disable
     for i in xrange( num_cores ):
       s.connect( s.l0i[i].L0_disable, 0 )
 
@@ -265,13 +266,6 @@ class Aerodactyl( Model ):
   #-----------------------------------------------------------------------
 
   def line_trace( s ):
-
-    # This is staffs' line trace, which assume the processors are
-    # instantiated in s.proc[], icaches in s.icache[], and the data cache
-    # system is instantiated with the name dcache. You can add net to the
-    # line trace.
-    # Feel free to revamp it based on your need.
-
     trace = "I$" + s.icache.line_trace()
     trace += ' [ ' + s.mdu.line_trace()      + ' ] '
     for i in xrange(len(s.proc)):
