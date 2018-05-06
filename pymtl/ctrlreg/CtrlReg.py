@@ -168,11 +168,6 @@ class CtrlReg( Model ):
       s.cr_debug_en.value = s.rf_wen & ( s.rf_waddr == cr_debug )
       s.cr_debug_in.value = s.rf_wdata
 
-    s.connect_pairs(
-      s.ctrlregs[cr_debug].en,  s.cr_debug_en,
-      s.ctrlregs[cr_debug].in_, s.cr_debug_in,
-    )
-
     # Control Registers: Instruction counters
 
     s.instcounters_en  = Wire             ( num_cores )
@@ -184,15 +179,6 @@ class CtrlReg( Model ):
       for core_idx in xrange(num_cores):
         s.instcounters_en[core_idx].value = s.commit_inst[core_idx] & s.stats_en
         s.instcounters_in[core_idx].value = s.instcounters_out[core_idx] + 1
-
-    #for reg_idx in xrange(cr_instcounter, cr_instcounter + num_cores):
-    for reg_idx in xrange(2, 2 + 4):
-      core_idx = reg_idx - cr_instcounter
-      s.connect_pairs(
-        s.ctrlregs        [reg_idx ].in_, s.instcounters_in[core_idx]    ,
-        s.ctrlregs        [reg_idx ].en , s.instcounters_en[core_idx]    ,
-        s.instcounters_out[core_idx]    , s.ctrlregs       [reg_idx ].out,
-      )
 
     # Control Register: Cycle counters
 
@@ -208,7 +194,7 @@ class CtrlReg( Model ):
 
     # Host_en
 
-    s.wire_host_en      = Wire( valrdy_ifcs )
+    s.wire_host_en = Wire( valrdy_ifcs )
 
     @s.combinational
     def comb_cr_hosten_logic():
@@ -269,8 +255,9 @@ class CtrlReg( Model ):
       elif ridx >= cr_host_en_l and ridx < cr_host_en_h:
         cidx = ridx - cr_host_en
         s.connect_pairs(
-          s.ctrlregs         [ridx].in_, s.rf_wdata          ,
-          s.ctrlregs         [ridx].en , s.wire_host_en[cidx],
+          s.ctrlregs[ridx].in_, s.rf_wdata          ,
+          s.ctrlregs[ridx].en , s.wire_host_en[cidx],
+          s.host_en [cidx]    , s.ctrlregs[ridx].out[0],
         )
 
     #---------------------------------------------------------------------
