@@ -35,14 +35,46 @@ from ifcs import MemMsg, MduMsg, CtrlRegMsg,CtrlRegReqMsg, CtrlRegRespMsg
 #    run_test( ProcXFL, gen_test )
 #
 
-def asm_test( func ):
-  name = func.__name__
-  if name.startswith("gen_"):
-    name = name[4:]
-  if name.endswith("_test"):
-    name = name[:-5]
+def asm_test( test_case, src_delay      = None, sink_delay  = None ,
+                         mem_stall_prob = None, mem_latency = None ):
+  testcase_name = test_case.__name__
 
-  return (name,func)
+  if testcase_name.startswith("gen_" ): testcase_name = testcase_name[ 4:  ]
+  if testcase_name.endswith  ("_test"): testcase_name = testcase_name[  :-5]
+
+  # Add paramteres in the vector
+  if src_delay      == None: src_delay       = 0
+  if sink_delay     == None: sink_delay      = 0
+  if mem_stall_prob == None: mem_stall_prob  = 0
+  if mem_latency    == None: mem_latency     = 0
+
+  # Add parameters to test case's name
+  if src_delay             : testcase_name += '_' + str(src_delay     )
+  if sink_delay            : testcase_name += '_' + str(sink_delay    )
+  if mem_stall_prob        : testcase_name += '_' + str(mem_stall_prob)
+  if mem_latency           : testcase_name += '_' + str(mem_latency   )
+
+  vector = ( testcase_name, test_case )
+
+  # Add paramteres in the vector
+  if src_delay      != None: vector += ( src_delay     , )
+  if sink_delay     != None: vector += ( sink_delay    , )
+  if mem_stall_prob != None: vector += ( mem_stall_prob, )
+  if mem_latency    != None: vector += ( mem_latency   , )
+
+  return vector
+
+#=========================================================================
+# Synthesize test tables
+#=========================================================================
+# For each entry in the test table, this function generates an ID entry
+# to set an explicit py.test name for the test case
+
+def synthesize_testtable( testtable ):
+
+  ids = [ test[0] for test in testtable ]
+
+  return { 'argvalues': testtable, 'ids': ids }
 
 #=========================================================================
 # TestHarness
