@@ -55,10 +55,10 @@ from proc.test import inst_add
 def test_add( name, test, src_delay, sink_delay, mem_stall_prob,
               mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -88,10 +88,10 @@ from proc.test import inst_mul
 def test_mul( name, test, src_delay, sink_delay, mem_stall_prob,
               mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -119,10 +119,10 @@ from proc.test import inst_andi
 def test_andi( name, test, src_delay, sink_delay, mem_stall_prob,
                mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -154,10 +154,10 @@ from proc.test import inst_bne
 def test_bne( name, test, src_delay, sink_delay, mem_stall_prob,
               mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -183,10 +183,10 @@ from proc.test import inst_csr
 def test_csr( name, test, src_delay, sink_delay, mem_stall_prob,
               mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -218,10 +218,10 @@ from proc.test import inst_jal
 def test_jal( name, test, src_delay, sink_delay, mem_stall_prob,
               mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -249,10 +249,10 @@ from proc.test import inst_lw
 def test_lw( name, test, src_delay, sink_delay, mem_stall_prob,
              mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
@@ -277,10 +277,10 @@ from proc.test import inst_sw
 def test_sw( name, test, src_delay, sink_delay, mem_stall_prob,
              mem_latency, dump_vcd, test_verilog ):
 
-  #          ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
-  vector = [ "asm",         test,            [],      [],          [] ],
+  #               ctrlreg_msg    assembly_image   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,            [],      [],          [] ]
 
-  run_test( vector, dump_vcd, test_verilog,
+  run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 

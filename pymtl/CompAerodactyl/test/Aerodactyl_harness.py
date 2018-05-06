@@ -6,9 +6,11 @@
 
 import struct
 
-from pymtl import *
+from pymtl                  import *
 
-from pclib.test import TestSource, TestSink, TestNetSink
+from pclib.test             import TestSource, TestSink, TestNetSink
+
+from proc.tinyrv2_encoding  import assemble
 from proc.SparseMemoryImage import SparseMemoryImage
 
 # BRGTC2 custom TestMemory modified for RISC-V 32
@@ -385,28 +387,46 @@ def run_test( model, msgs, num_cores, cacheline_nbits=128,
   model.vcd_file = dump_vcd
   model.elaborate()
 
-  # five messages
+  # Get all parameters for the test
+  ctrlreg_msg = None
+  asm_msg     = None
+  mdu_msg     = None
+  icache_msg  = None
+  dcache_msg  = None
 
-  # Shunning: basestring doesn't work under Python 3!
-  assert isinstance( msgs[0], basestring ) # ctrlreg 
-  assert isinstance( msgs[1], SparseMemoryImage ) or msgs[1] is None # asm test
-  assert isinstance( msgs[2], list ) # mdu
-  assert isinstance( msgs[3], list ) # icache
-  assert isinstance( msgs[4], list ) # dcache
+  if len(msgs) >= 1: ctrlreg_msg = msgs[0]
+  if len(msgs) >= 2: asm_msg     = msgs[1]
+  if len(msgs) >= 3: mdu_msg     = msgs[2]
+  if len(msgs) >= 4: icache_msg  = msgs[3]
+  if len(msgs) >= 5: dcache_msg  = msgs[4]
 
-  model.load_ctrlreg( msgs[0] )
+  # If the asm is still a function, call it
 
-  if msgs[1]:
-    model.load_asm( msgs[1] )
+  if callable( asm_msg ):
+    asm_msg = asm_msg()
+    asm_msg = assemble( asm_msg )
 
-  if msgs[2]:
-    model.load_mdu( msgs[2] )
+  # Checking types of incoming messages
 
-  if msgs[3]:
-    model.load_icache( msgs[3] )
+  assert isinstance( ctrlreg_msg, basestring        ) or isinstance( asm_msg, str ) # ctrlreg 
+  assert isinstance( asm_msg    , SparseMemoryImage ) or asm_msg is None            # asm test
+  assert isinstance( mdu_msg    , list              )                               # mdu
+  assert isinstance( icache_msg , list              )                               # icache
+  assert isinstance( dcache_msg , list              )                               # dcache
 
-  if msgs[4]:
-    model.load_dcache( msgs[4] )
+  model.load_ctrlreg( ctrlreg_msg )
+
+  if asm_msg:
+    model.load_asm( asm_msg )
+
+  if mdu_msg:
+    model.load_mdu( mdu_msg )
+
+  if icache_msg:
+    model.load_icache( icache_msg )
+
+  if dcache_msg:
+    model.load_dcache( dcache_msg )
 
   # Create a simulator using the simulation tool
 
