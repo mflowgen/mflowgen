@@ -193,7 +193,7 @@ module top;
   // Instantiate the harness
   //----------------------------------------------------------------------
 
-  logic        th_reset = 1'b1;
+  logic        th_reset;
   logic        th_clear;
   logic [31:0] th_src_max_delay;
   logic [31:0] th_mem_max_delay;
@@ -271,21 +271,23 @@ module top;
   integer total_cycles = 0;
 
   initial begin
-    // $vcdpluson;
-    #1;  th_clear = 1'b1;
+    $vcdpluson;
+    th_clear = 1'b0;
+    th_reset = 1'b0;
+    #3;   th_clear = 1'b1;
     #20; th_clear = 1'b0;
-    #1;  th_reset = 1'b1;
+    #2;   th_reset = 1'b1;
     #20; th_reset = 1'b0;
-    #8;
+    #5;
 
     th_src0_idx = 0;
     th_sink0_idx = 0;
 
     // call the dispatch function in the generated all_tests.v
 
-    procl0mdu_testcase_dispatch( test_name );
+    ProcL0Mdu_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 5000 ) begin
+    while ( !th_done && total_cycles < 100 ) begin
       $display("%d:",total_cycles);
       $display("  L0i valid    : %b", th.dut.l0i.inner.dpath.valid_array.out);
       $display("  L0i tag check: %x %x %d", th.dut.l0i.inner.dpath.tag_compare.in0,
@@ -293,6 +295,7 @@ module top;
       // $display("%x",th.mem.imemreq0_val);
       // $display("%x",th.mem.imemreq0_msg);
       // $display("%x",th.mem.imemreq0_rdy);
+      $display("memresp msg data %x",th.dut.l0i.inner.dpath.memresp_msg);
 
       // $display("proc.imemreq_val %x",th.dut.proc.imemreq_val);
       // $display("proc.imemreq_msg %x",th.dut.proc.imemreq_msg);
@@ -303,22 +306,22 @@ module top;
       // $display("%x",th.dut.proc2mngr_rdy);
       // $display("%x",th.mem.mem.imemresp0_queue.enq_msg);
       // $display("%x",th.mem.mem.imemresp0_queue.deq_msg);
-      // $display("F's pc: %x | D's inst: %x",th.dut.proc.dpath.pc_reg_F.out, th.dut.proc.ctrl.inst_D);
+      $display("F's pc: %x | D's inst: %x",th.dut.proc.dpath.pc_reg_F.out, th.dut.proc.ctrl.inst_D);
       // $display("pc_mux_F 0:%x 1:%x 2:%x 3:%x sel:%d", th.dut.proc.dpath.pc_sel_mux_F.in__000,
       // th.dut.proc.dpath.pc_sel_mux_F.in__001,th.dut.proc.dpath.pc_sel_mux_F.in__002,th.dut.proc.dpath.pc_sel_mux_F.in__003,
       // th.dut.proc.dpath.pc_sel_mux_F.sel);
       #10;
       total_cycles = total_cycles + 1;
-      th.display_trace();
+      // th.display_trace();
       // $display("%x + %x + %x = %x", th.dut.proc.dpath.pc_plus_imm_D.in0, th.dut.proc.dpath.pc_plus_imm_D.in1,
       // th.dut.proc.dpath.pc_plus_imm_D.cin, th.dut.proc.dpath.pc_plus_imm_D.out);
     end
-    // $vcdplusoff;
+    $vcdplusoff;
     // Check that the simulation actually finished
 
     if ( !th_done ) begin
       $display( "" );
-      $display( "    [BRG] ERROR: Test did not finish in 5000 cycles." );
+      $display( "    [BRG] ERROR: Test did not finish in 100 cycles." );
       $display( "" );
       $finish(1);
     end

@@ -1,17 +1,19 @@
 #!/bin/bash
 
-rm -f ProcL0Mdu_all_tests.v
-touch ProcL0Mdu_all_tests.v
+DESIGN_NAME=ProcL0Mdu
 
 CURRENT_FOLDER=$(pwd)
-ALLOY_ASIC_ROOT=/work/global/sj634/cornell-brg/alloy-asic
 
+rm -f ${DESIGN_NAME}_all_tests.v
+touch ${DESIGN_NAME}_all_tests.v
+
+mkdir -p ${ALLOY_ASIC_ROOT}/pymtl/build
 cd ${ALLOY_ASIC_ROOT}/pymtl/build
 
 rm -f temp_dispatch.v
 touch temp_dispatch.v
 
-echo "task procl0mdu_testcase_dispatch(logic [799:0] name);" >> temp_dispatch.v
+echo "task ${DESIGN_NAME}_testcase_dispatch(logic [799:0] name);" >> temp_dispatch.v
 echo "begin"              >> temp_dispatch.v
 
 # First dump all test cases into tasks
@@ -19,16 +21,16 @@ echo "begin"              >> temp_dispatch.v
 flag=0
 
 while read p; do # execute test one by one
-  py.test ../compositions/test/ProcL0Mdu_all_test.py -k $p -v
+  py.test ../compositions/test/${DESIGN_NAME}_all_test.py -k $p -v
 
   # add the case to the test case
-  echo "task "$p";"         >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  echo "begin"              >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  cat  proc_testcase_init.v >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  echo "end"                >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  echo "endtask"            >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  echo ""                   >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-  rm -f proc_testcase_init.v
+  echo "task "$p";"        >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "begin"             >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  cat  ${DESIGN_NAME}_testcase_init.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "end"               >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "endtask"           >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo ""                  >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  rm -f ${DESIGN_NAME}_testcase_init.v
 
   # add the task to dispatch function
 
@@ -55,10 +57,10 @@ echo "end"                    >> temp_dispatch.v
 echo "endtask"                >> temp_dispatch.v
 echo ""                       >> temp_dispatch.v
 
-sed -i "s/\[/_/g" ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-sed -i "s/-/_/g"  ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
-sed -i "s/]//g"   ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
+sed -i "s/\[/_/g" ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+sed -i "s/-/_/g"  ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+sed -i "s/]//g"   ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
 
-cat temp_dispatch.v >> ${CURRENT_FOLDER}/ProcL0Mdu_all_tests.v
+cat temp_dispatch.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
 
 rm -f temp_dispatch.v

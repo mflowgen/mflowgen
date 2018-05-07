@@ -152,7 +152,7 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def load( self, mem_image ):
-    with open("proc_testcase_init.v", "w") as f:
+    with open("ProcL0Mdu_testcase_init.v", "w") as f:
 
       f.write( "  th_src_max_delay  = {};\n".format( self.src_delay ) )
       f.write( "  th_sink_max_delay = {};\n".format( self.sink_delay ) )
