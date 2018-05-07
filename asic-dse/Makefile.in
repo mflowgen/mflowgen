@@ -179,6 +179,8 @@ runtimes:
 graph:
 	@python $(base_dir)/utils/graph.py -f setup-flow.mk
 
+junk += .graph # hidden dir used by utils/graph.py
+
 #-------------------------------------------------------------------------
 # Seeding the build directory
 #-------------------------------------------------------------------------
@@ -312,10 +314,15 @@ all: $(dependencies.all)
 # Misc
 #-------------------------------------------------------------------------
 
+# clean
+#
+# Try to prefix with "./" to avoid calling "rm -rf /" due to unresolved
+# variables
+
 .PHONY: clean
 
 clean:
-	rm -rf $(junk)
+	rm -rf $(foreach x, $(junk),./$x)
 
 # print-%
 #

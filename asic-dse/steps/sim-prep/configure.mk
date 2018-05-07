@@ -40,7 +40,7 @@ endef
 
 # Run py.test on the pymtl source dir to collect the tests
 
-pytest_target_dir = $(relative_base_dir)/$(pymtl_src_dir)
+pytest_target     = $(relative_base_dir)/$(pytest_target_str)
 pytest_output     = $(handoff_dir.sim-prep)/pytest-collect.txt
 
 # Convert the py.test dump to YAML and txt
@@ -91,8 +91,8 @@ export ALLOY_ASIC_ROOT = $(base_dir)/..
 
 test_categories = \
   $(shell grep \: $(test_cases_yaml) 2>/dev/null | \
-          sed "s/\.py//" | \
-          sed "s/\://" | \
+          sed "s|\.py||" | \
+          sed "s|\:.*||" | \
           sed "s|\w*/||" )
 
 # Table of test cases in each category
@@ -103,9 +103,9 @@ test_categories = \
 
 define list_tests_in_category
 tests.$(1) = \
-  $$(shell sed -n "/$(1)/,/:/p" $$(test_cases_yaml) | \
+  $$(shell sed -n "\|$(1)|,\|:|p" $$(test_cases_yaml) | \
            grep -v \: | \
-           sed "s/^- //" )
+           sed "s|^- ||" )
 endef
 
 $(foreach x, $(test_categories), $(eval $(call list_tests_in_category,$x)))
@@ -119,7 +119,7 @@ $(foreach x, $(test_categories), $(eval $(call list_tests_in_category,$x)))
 define commands.sim-prep
 	mkdir -p $(handoff_dir.sim-prep)
 # Collect tests with py.test
-	py.test $(pytest_target_dir) --collect-only > $(pytest_output)
+	py.test $(pytest_target) --collect-only > $(pytest_output)
 # Convert the py.test dump to YAML
 	./$(convert_script_py) --file $(pytest_output) --out $(test_cases_yaml)
 # Convert the YAML dump to txt
