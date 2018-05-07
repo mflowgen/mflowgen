@@ -2,61 +2,47 @@
 # HostAerodactyl_test
 #=========================================================================
 
+import os
 import importlib
 
 import pytest
 
-from pymtl                         import *
-from pclib.test                    import run_sim
-from fpga                          import SwShim
-
-# Import designs
-from CompAerodactyl.Aerodactyl     import Aerodactyl
-from CompAerodactyl.HostAerodactyl import HostAerodactyl
+from pymtl import *
 
 #-------------------------------------------------------------------------
-# Redefining run_test for Hosted version
+# Import all _test that matches the file name
 #-------------------------------------------------------------------------
 
-def run_test( test, dump_vcd, test_verilog,
-              src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
+# Get filename and directory
+filename = os.path.basename(__file__).rsplit('.', 1)[0]
+dirname  = os.path.dirname(os.path.realpath(__file__))
 
-  asynch_bitwidth = 8
+# Get base design name
+design_name = filename.rsplit('_', 1)
 
-  dut             = Aerodactyl()
-  hwshim_and_dut  = HostAerodactyl( asynch_bitwidth )
-  swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth,
-                                 dump_vcd, test_verilog )
+# Checks
+assert design_name[-1] == 'test'
 
-  # Set explicit name
-  swshim.explicit_modulename = swshim.__class__.__name__
+# List all files in current directory
+for root, dirs, files in os.walk(dirname):
 
-  num_cores       = 4
-  cacheline_nbits = 128
+  # Loop over all files in the dorectoy
+  for f in files:
 
-  run( swshim, test, num_cores, cacheline_nbits,
-       dump_vcd, test_verilog, src_delay, sink_delay,
-       mem_stall_prob, mem_latency )
+    mod_name = f.rsplit('.', 1)[0]
 
+    load_mod  = mod_name.endswith(design_name[-1])
+    load_mod &= mod_name.startswith('_'.join(design_name[:-1]))
+    load_mod &= (mod_name != filename)
 
-#-------------------------------------------------------------------------
-# Override old run_test
-#-------------------------------------------------------------------------
+    if load_mod:
 
-import Aerodactyl_asm_test
-import Aerodactyl_mdu_test
+      # Load the module
+      f_path = os.path.join(root, f)
 
-Aerodactyl_asm_test.run_test = run_test
-Aerodactyl_mdu_test.run_test = run_test
+      module = importlib.import_module(mod_name)
 
-#-------------------------------------------------------------------------
-# Import everything inside Aerodactyl test infrastructure
-#-------------------------------------------------------------------------
-# Reuse tests from non-host version
-
-from Aerodactyl_test import *
-
-#for x in dir(Aerodactyl_test):
-#  if not x in globals():
-#    print x
-#    globals()[x] = getattr(Aerodactyl_test, x) 
+      for func in dir(module):
+        # If there is no conflict, load the module to globals
+        if not func in globals():
+          globals()[func] = getattr(module, func)
