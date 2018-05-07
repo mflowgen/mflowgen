@@ -118,8 +118,7 @@ define commands.innovus-flowsetup
     $(results_dir.innovus-flowsetup)/INNOVUS/run*.tcl
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-flowsetup)
-	(cd $(handoff_dir.innovus-flowsetup) && \
-    ln -sf ../../$(results_dir.innovus-flowsetup)/* .)
+	ln -srf $(results_dir.innovus-flowsetup)/* $(handoff_dir.innovus-flowsetup)
 # Make common Innovus build directories
 	mkdir -p $(innovus_logs_dir)
 	mkdir -p $(innovus_reports_dir)

@@ -64,8 +64,7 @@ define commands.innovus-place
     -log $(innovus_logs_dir)/place.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-place)
-	(cd $(handoff_dir.innovus-place) && \
-    ln -sf ../../$(innovus_handoffs_dir)/place.* .)
+	ln -srf $(innovus_handoffs_dir)/place.* $(handoff_dir.innovus-place)
 endef
 
 #-------------------------------------------------------------------------

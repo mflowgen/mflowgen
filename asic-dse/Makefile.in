@@ -192,12 +192,10 @@ seed:
 	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
 	@mkdir -p $(collect_dir) $(handoff_dir) $(timestamps_dir)
 # Seed links to the master steps into the flow directory
-	@(cd $(flow_dir); \
-    $(foreach x, $(steps), \
-      ln -sf ../../$(master_steps_dir)/$x .;))
+	@$(foreach x, $(steps), \
+      ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir)/$x;)
 # Pull design-specific plugins into the plugins directory
-	@(cd $(plugins_dir) && \
-    ln -sf ../../$(master_flows_dir)/$(design_flow)/plugins/* .)
+	@ln -srf $(base_dir)/$(master_flows_dir)/$(design_flow)/plugins/* $(plugins_dir)
 # Mark this step done
 	@touch $(VPATH)/$@
 
@@ -269,13 +267,12 @@ include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 # Primary command target for this step
 
 $(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
-# Collect handoffs from the dependencies
+# Collect files from handoffs of dependencies
 	@rm -rf ./$$(collect_dir.$(1))
 	@mkdir -p $$(collect_dir.$(1))
-	@(cd $$(collect_dir.$(1)); \
-  $$(foreach dep, $$(dependencies.$(1)), \
-    $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
-      ln -sf ../../$$(file);)))
+	@$$(foreach dep, $$(dependencies.$(1)), \
+     $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
+       ln -srf $$(file) $$(collect_dir.$(1));))
 # Execute the step
 	@date > $$(timestamps_dir)/$(1).start
 ifdef ascii.$(1)
