@@ -43,8 +43,9 @@ verilog_src      = rtl-handoff/HostGcdUnit.v
 # For simulation
 
 test_harness_v   = rtl-handoff/HostGcdUnit-test/HostGcdUnit_tb.v
-pymtl_src_dir    = ../pymtl/HostGcdUnit
 test_harness_top = top
+pymtl_src_dir    = ../pymtl/HostGcdUnit
+extra_includes   = rtl-handoff/HostGcdUnit-test/HostGcdUnit_SwShim.v
 
 #-------------------------------------------------------------------------
 # Export

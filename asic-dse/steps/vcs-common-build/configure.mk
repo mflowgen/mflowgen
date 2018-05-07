@@ -17,6 +17,7 @@ descriptions.vcs-common-build = \
 #-------------------------------------------------------------------------
 # VCS Common Options
 #-------------------------------------------------------------------------
+# These are the common options used across all VCS simulation
 
 vcs_common_options += -full64 -sverilog +v2k +vc -notice -V
 vcs_common_options += +libext+.v
@@ -55,19 +56,21 @@ endif
 # Design-specific options
 #-------------------------------------------------------------------------
 
-# Specify the verilog DUT, the verilog test harness, and the top module
+# Specify the verilog test harness, and the top module
 
-sim_dut_v            = $(relative_base_dir)/$(verilog_src)
 sim_test_harness_v   = $(relative_base_dir)/$(test_harness_v)
 sim_test_harness_top = $(test_harness_top)
 
-vcs_design_options  += -v $(sim_dut_v)
 vcs_design_options  += $(sim_test_harness_v)
 vcs_design_options  += -top $(sim_test_harness_top)
 
 # Support `include vc, which is currently in rtl-handoff
 
 vcs_design_options  += +incdir+$(relative_base_dir)/rtl-handoff
+
+# Pull in any extra includes
+
+vcs_design_options  += $(foreach f, $(extra_includes),-v $(relative_base_dir)/$f)
 
 #-------------------------------------------------------------------------
 # Run options

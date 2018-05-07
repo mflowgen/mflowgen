@@ -39,55 +39,63 @@ endef
 #abbr.vcs-rtl-build =
 
 #-------------------------------------------------------------------------
-# RTL-specific options
+# RTL-specific structural options
 #-------------------------------------------------------------------------
+# These are common options across VCS simulation steps, but they need to
+# know the exact directory names to set up for the step.
 
 # Specify the simulator binary and simulator compile directory
 
 vcs_rtl_build_simv  = $(handoff_dir.vcs-rtl-build)/simv
 vcs_rtl_compile_dir = $(handoff_dir.vcs-rtl-build)/csrc
 
-vcs_rtl_options    += -o $(vcs_rtl_build_simv)
-vcs_rtl_options    += -Mdir=$(vcs_rtl_compile_dir)
+vcs_rtl_structural_options += -o $(vcs_rtl_build_simv)
+vcs_rtl_structural_options += -Mdir=$(vcs_rtl_compile_dir)
 
-# Library files -- IO cells
+# Library files -- Any collected verilog (e.g., SRAMs)
 
-vcs_rtl_options += -v $(adk_dir)/iocells.v
+vcs_rtl_structural_options += \
+	$(foreach f, $(wildcard $(collect_dir.sim-rtl-build)/*.v),-v $f)
 
-# Library files -- Miscellaneous collected verilog (e.g., SRAMs)
+# Include directory -- Any collected includes are made available
 
-vcs_rtl_options += \
-	$(foreach x, $(wildcard $(collect_dir.sim-rtl-build)/*.v),-v $x)
-
-# The test harness uses an `include statement to include the test_cases
-# verilog, which was collected from the "sim-prep" step. We can tell VCS
-# about this directory by specifying this step's collect directory as a
-# VCS include directory.
-
-vcs_rtl_options  += +incdir+$(collect_dir.vcs-rtl-build)
+vcs_rtl_structural_options += +incdir+$(collect_dir.vcs-rtl-build)
 
 # Dump the bill of materials + file list to help double-check src files
 
-vcs_rtl_options += -bom $(sim_test_harness_top)
-vcs_rtl_options += -bfl $(logs_dir.vcs-rtl-build)/vcs_filelist
+vcs_rtl_structural_options += -bom $(sim_test_harness_top)
+vcs_rtl_structural_options += -bfl $(logs_dir.vcs-rtl-build)/vcs_filelist
+
+#-------------------------------------------------------------------------
+# RTL-specific custom options
+#-------------------------------------------------------------------------
+
+# Verilog RTL design
+
+sim_dut_v               = $(relative_base_dir)/$(verilog_src)
+vcs_rtl_custom_options += -v $(sim_dut_v)
+
+# Library files -- IO cells
+
+vcs_rtl_custom_options += -v $(adk_dir)/iocells.v
 
 # Performance options for RTL simulation
 
-vcs_rtl_options += -rad
+vcs_rtl_custom_options += -rad
 
 # Disable timing checks
 
-vcs_rtl_options += +notimingcheck +nospecify
+vcs_rtl_custom_options += +notimingcheck +nospecify
 
 # Register initialization
 
 ifdef INITREG
-vcs_rtl_options += +vcs+initreg+random
+vcs_rtl_custom_options += +vcs+initreg+random
 endif
 
 # Suppress lint and warnings
 
-vcs_rtl_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
+vcs_rtl_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -95,14 +103,35 @@ vcs_rtl_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
+vcs_rtl_build_log = $(logs_dir.vcs-rtl-build)/build.log
+
 define commands.vcs-rtl-build
+
 	mkdir -p $(logs_dir.vcs-rtl-build)
 	mkdir -p $(handoff_dir.vcs-rtl-build)
+
+# Record the options used to build the simulator
+
+	@echo "vcs_common_options = $(vcs_common_options)" \
+		>  $(vcs_rtl_build_log)
+	@echo "vcs_design_options = $(vcs_design_options)" \
+		>> $(vcs_rtl_build_log)
+	@echo "vcs_rtl_structural_options = $(vcs_rtl_structural_options)" \
+		>> $(vcs_rtl_build_log)
+	@echo "vcs_rtl_custom_options = $(vcs_rtl_custom_options)" \
+		>> $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80} >> $(vcs_rtl_build_log)
+	@echo >> $(vcs_rtl_build_log)
+	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_rtl_structural_options) $(vcs_rtl_custom_options)" \
+		>> $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80} >> $(vcs_rtl_build_log)
+	@echo >> $(vcs_rtl_build_log)
+
 # Build the simulator
-	@echo "vcs $(vcs_design_options) $(vcs_common_options) $(vcs_rtl_options)" \
-		> $(logs_dir.vcs-rtl-build)/build.log
-	vcs $(vcs_design_options) $(vcs_common_options) $(vcs_rtl_options) \
-		| tee -a $(logs_dir.vcs-rtl-build)/build.log
+
+	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_rtl_structural_options) $(vcs_rtl_custom_options) \
+		| tee -a $(vcs_rtl_build_log)
+
 endef
 
 #-------------------------------------------------------------------------
