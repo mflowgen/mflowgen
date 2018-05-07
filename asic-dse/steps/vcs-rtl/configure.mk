@@ -16,7 +16,7 @@
 # These variables are used to generate targets for each test case.
 
 descriptions.vcs-rtl = \
-	"Run all RTL simulations (sub-targets are available with make tab-completion)"
+	"Run all RTL simulations (sub-targets available with tab-completion)"
 
 #-------------------------------------------------------------------------
 # ASCII art

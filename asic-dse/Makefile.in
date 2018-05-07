@@ -122,7 +122,8 @@ list:
 	@echo "Other useful targets"
 	@echo
 	@echo "- seed     : Creates all build directories and seeds the flow steps"
-	@echo "- runtimes : Use timestamps to print runtimes for each executed step"
+	@echo "- runtimes : Prints runtimes for each executed step"
+	@echo "- graph    : Draws an ASCII dependency graph of steps"
 	@echo
 
 # runtimes
@@ -245,6 +246,10 @@ junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 #     - (optional)
 #     - The step configure can define this variable to draw any additional
 #     custom dependencies for this step.
+#
+# - skipvpath.$(1)
+#     - (optional)
+#     - If defined, the build system will not use VPATH for this step
 
 define step_template
 
@@ -280,7 +285,9 @@ ifdef ascii.$(1)
 endif
 	$$(commands.$(1))
 	@date > $$(timestamps_dir)/$(1).end
+ifndef skipvpath.$(1)
 	@touch $(VPATH)/$(1)
+endif
 
 # Alias short name target for this step
 
