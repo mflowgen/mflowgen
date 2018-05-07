@@ -68,7 +68,7 @@ vcs_rtl_simv = ./$(handoff_dir.vcs-rtl-build)/simv
 
 define vcs_rtl_generate_test_cases
 
-$$(logs_dir.vcs-rtl)/run-$(1)-$(2).log:
+$$(logs_dir.vcs-rtl)/run-$(1)-$(2).log: $$(dependencies.vcs-rtl)
 	@mkdir -p $$(logs_dir.vcs-rtl)
 	@touch $$@.start
 	@echo '--------------------------------------------------------------------------------'

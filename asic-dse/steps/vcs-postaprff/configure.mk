@@ -68,7 +68,7 @@ vcs_postaprff_simv = ./$(handoff_dir.vcs-postaprff-build)/simv
 
 define vcs_postaprff_generate_test_cases
 
-$$(logs_dir.vcs-postaprff)/run-$(1)-$(2).log:
+$$(logs_dir.vcs-postaprff)/run-$(1)-$(2).log: $$(dependencies.vcs-postaprff)
 	@mkdir -p $$(logs_dir.vcs-postaprff)
 	@touch $$@.start
 	@echo '--------------------------------------------------------------------------------'
