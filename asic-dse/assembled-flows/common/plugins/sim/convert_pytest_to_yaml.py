@@ -16,11 +16,11 @@
 # The output YAML will look like this:
 #
 #     HostGcdUnit/HostGcdUnit_test.py:
-#     - basic_0x0
-#     - basic_5x0
-#     - basic_0x5
-#     - basic_3x9
-#     - random_3x9
+#     - test[basic_0x0]
+#     - test[basic_5x0]
+#     - test[basic_0x5]
+#     - test[basic_3x9]
+#     - test[random_3x9]
 #
 # This will then be used as the reference list for all runnable test cases
 # at each level of testing in the asic flow.
@@ -95,7 +95,7 @@ def main():
 
     # Search for a test case and add it to the current test group
 
-    match = re.match( r"<Function 'test\[(.*)\]'>", line )
+    match = re.match( r"<Function '(.*)'>", line )
     if match:
       test_case = match.group(1)
       tests[ current_test_group ].append( test_case )
