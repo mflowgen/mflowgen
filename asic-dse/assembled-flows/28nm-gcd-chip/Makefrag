@@ -38,7 +38,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 
 design_name  = GcdUnit
 clock_period = 2.0
-verilog_src  = rtl-handoff/GcdUnitChip.v
+design_v     = rtl-handoff/GcdUnitChip.v
 
 #-------------------------------------------------------------------------
 # Export

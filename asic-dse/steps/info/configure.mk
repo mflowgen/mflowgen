@@ -38,7 +38,7 @@ define commands.info
 	@echo "- Design       : " $(design_name)
 	@echo "- Design Flow  : " $(design_flow)
 	@echo "- Clock Period : " $(clock_period)
-	@echo "- Verilog Src  : " $(verilog_src)
+	@echo "- Verilog Src  : " $(design_v)
 	@echo
 endef
 

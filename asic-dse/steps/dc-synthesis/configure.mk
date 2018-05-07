@@ -57,7 +57,7 @@ export dc_collect_dir  = $(collect_dir.dc-synthesis)
 
 # Verilog source (do not include test harness!)
 
-export dc_rtl_handoff = $(relative_base_dir)/$(verilog_src)
+export dc_rtl_handoff = $(relative_base_dir)/$(design_v)
 
 # Clock period
 

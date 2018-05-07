@@ -156,7 +156,7 @@ runtimes:
       end_2=$$(if [[ -n "$$start_e" ]]; then echo $$end_1; else echo 0; fi); \
       start_2=$$start_1; \
       flag=; \
-      flag=$$([[ "$$end_2" -lt "$$start_2" ]] && echo "*"); \
+      flag=$$([[ "$$end_2" -lt "$$start_2" ]] && echo " <-- in progress"); \
       end=$$(if [[ -n "$$flag" ]]; then date +%s; else echo $$end_2; fi); \
       start=$$start_2; \
       step_secs=$$(( $$end - $$start )); \

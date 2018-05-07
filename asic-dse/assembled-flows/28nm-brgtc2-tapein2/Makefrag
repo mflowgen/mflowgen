@@ -38,7 +38,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 
 design_name  = HostCompCtrlregMcoreL0ArbiterMduCache
 clock_period = 3.0
-verilog_src  = rtl-handoff/brgtc2-tapein2.v
+design_v     = rtl-handoff/brgtc2-tapein2.v
 
 #-------------------------------------------------------------------------
 # Export

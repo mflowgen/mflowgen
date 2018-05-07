@@ -72,7 +72,7 @@ vcs_rtl_structural_options += -bfl $(logs_dir.vcs-rtl-build)/vcs_filelist
 
 # Verilog RTL design
 
-sim_dut_v               = $(relative_base_dir)/$(verilog_src)
+sim_dut_v               = $(relative_base_dir)/$(design_v)
 vcs_rtl_custom_options += -v $(sim_dut_v)
 
 # Library files -- IO cells
