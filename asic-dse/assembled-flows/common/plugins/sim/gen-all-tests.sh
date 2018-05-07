@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DESIGN_NAME=HostGcdUnit
+DESIGN_NAME=${design_name}
 
 CURRENT_FOLDER=$(pwd)
 
