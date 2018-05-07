@@ -36,9 +36,16 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = HostCompCtrlregMcoreL0ArbiterMduCache
-clock_period = 3.0
-design_v     = rtl-handoff/brgtc2-tapein2.v
+design_name       = HostAerodactyl
+clock_period      = 3.0
+design_v          = rtl-handoff/HostAerodactyl.v
+
+# For simulation
+
+test_harness_v    = rtl-handoff/??????_tb.v
+test_harness_top  = top
+pytest_target_str = ../pymtl/CompAerodactyl/test/Host*
+extra_includes    = rtl-handoff/??????_SwShim.v
 
 #-------------------------------------------------------------------------
 # Export

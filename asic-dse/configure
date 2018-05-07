@@ -100,4 +100,9 @@ if [[ x$1 == x--28nm-brgtc2-tapein2* ]]; then
   ln -sf ../assembled-flows/28nm-brgtc2-tapein2/Makefrag
 fi
 
+if [[ x$1 == x--aero* ]]; then
+  ln -sf ../assembled-flows/28nm-brgtc2-tapein2/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-brgtc2-tapein2/Makefrag
+fi
+
 
