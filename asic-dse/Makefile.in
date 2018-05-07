@@ -143,6 +143,14 @@ list:
 #   This number might be different compared to subtracting the first/last
 #   timestamps because the user might have paused between steps.
 
+# Improvements from Khalid
+#
+#     * An flag is printed next to runtimes that are still executing
+#       (i.e, believed to be still running)
+#     * Runtimes for steps that are still executing will be running runtime
+#     * If the end time is older than the start, we assume start is invalid
+#     * if start time do not exist while end does, we assume step never started
+
 runtimes:
 	@echo "--------------------------------------------------------------------------"
 	@echo "Runtimes"
