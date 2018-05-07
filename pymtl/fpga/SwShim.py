@@ -80,7 +80,7 @@ class SwShim( Model ):
     # Translate Verilog if needed
 
     if translate:
-      s.dut = TranslationTool( s.dut, enable_blackbox = True, verilator_xinit=test_verilog )
+      s.dut = TranslationTool( s.dut, enable_blackbox = True, verilator_xinit=translate )
 
     s.connect( s.dut.in_.msg, s.in_valRdyToReqAck.out.msg )
     s.connect( s.dut.in_.req, s.in_valRdyToReqAck.out.req )
