@@ -110,25 +110,21 @@ class BloomFilterXcel( Model ):
       if s.bloomreq_q.enq.rdy:
         if s.clear.out == s.CLEAR_REQUESTED:
           s.bloomreq_q.enq.val.value = 1
-          s.bloomreq_q.enq.msg.value = \
-                bloom_msg.mk_msg( BloomFilterMsg.TYPE_CLEAR, 0 )
+          s.bloomreq_q.enq.msg.type_.value = BloomFilterMsg.TYPE_CLEAR
+          s.bloomreq_q.enq.msg.word.value = 0
           s.clear.in_.value = s.CLEAR_DONE
 
         elif s.check_val.out != s.CHECK_VALUE_DONE:
           s.bloomreq_q.enq.val.value = 1
-          s.bloomreq_q.enq.msg.value = \
-                bloom_msg.mk_msg( BloomFilterMsg.TYPE_CHECK,
-                                  s.check_val.out )
-
+          s.bloomreq_q.enq.msg.type_.value = BloomFilterMsg.TYPE_CHECK
+          s.bloomreq_q.enq.msg.word.value = s.check_val.out
           s.check_val.in_.value = s.CHECK_VALUE_DONE
 
         elif s.snoop_q.deq.val:
           s.bloomreq_q.enq.val.value = 1
           s.snoop_q.deq.rdy.value = 1
-          s.bloomreq_q.enq.msg.value = \
-                bloom_msg.mk_msg( BloomFilterMsg.TYPE_INSERT,
-                                  s.snoop_q.deq.msg )
-
+          s.bloomreq_q.enq.msg.type_.value = BloomFilterMsg.TYPE_INSERT
+          s.bloomreq_q.enq.msg.word.value = s.snoop_q.deq.msg
 
       # Enqueueing the Snoop Queue
 
