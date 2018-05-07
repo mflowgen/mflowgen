@@ -171,6 +171,13 @@ runtimes:
     s=$$(( $$tot_secs % 60        )); \
     printf '%-20s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
 
+# graph
+#
+# Useful target that draws an ASCII dependency graph of all steps
+
+graph:
+	@python $(base_dir)/utils/graph.py -f setup-flow.mk
+
 #-------------------------------------------------------------------------
 # Seeding the build directory
 #-------------------------------------------------------------------------
