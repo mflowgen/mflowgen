@@ -14,7 +14,8 @@ from CompAerodactyl.Aerodactyl import Aerodactyl
 # 4 core, with 2 memory ports, each with 16B data bitwidth
 
 def run_test( test, dump_vcd, test_verilog,
-              src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0 ):
+              src_delay=0, sink_delay=0, mem_stall_prob=0, mem_latency=0,
+              only_one_core=False ):
 
   num_cores       = 4
   cacheline_nbits = 128
@@ -96,4 +97,5 @@ def run_test( test, dump_vcd, test_verilog,
     # TODO test[3] and [4] for icache/dcache
 
   run( Aerodactyl( num_cores ), test, num_cores, cacheline_nbits,
-       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob, mem_latency )
+       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
+       mem_latency, only_one_core=only_one_core )
