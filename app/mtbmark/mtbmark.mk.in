@@ -16,6 +16,7 @@ mtbmark_srcs = \
 mtbmark_install_prog_srcs = \
   mtbmark-vvamoparalleladd.cc \
   mtbmark-vvamowsrtadd.c \
+  mtbmark-bin-search.cc \
   mtbmark-stdtest.c \
   cilk-cilksort.cc \
   cilk-matmul.cc \
