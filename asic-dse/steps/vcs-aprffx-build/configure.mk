@@ -120,6 +120,11 @@ vcs_aprffx_custom_options += +define+ARM_UD_MODEL
 
 vcs_aprffx_build_log = $(logs_dir.vcs-aprffx-build)/build.log
 
+vcs_aprffx_build_cmd = vcs $(vcs_common_options) \
+                           $(vcs_design_options) \
+                           $(vcs_aprffx_structural_options) \
+                           $(vcs_aprffx_custom_options)
+
 define commands.vcs-aprffx-build
 
 	mkdir -p $(logs_dir.vcs-aprffx-build)
@@ -127,25 +132,37 @@ define commands.vcs-aprffx-build
 
 # Record the options used to build the simulator
 
+	@printf "%.s-" {1..80}           > $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
+	@echo   "VCS Options"           >> $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80}          >> $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
 	@echo "vcs_common_options = $(vcs_common_options)" \
-		>  $(vcs_aprffx_build_log)
+		>> $(vcs_aprffx_build_log)
 	@echo "vcs_design_options = $(vcs_design_options)" \
 		>> $(vcs_aprffx_build_log)
 	@echo "vcs_aprffx_structural_options = $(vcs_aprffx_structural_options)" \
 		>> $(vcs_aprffx_build_log)
 	@echo "vcs_aprffx_custom_options = $(vcs_aprffx_custom_options)" \
 		>> $(vcs_aprffx_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprffx_build_log)
-	@echo >> $(vcs_aprffx_build_log)
-	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprffx_structural_options) $(vcs_aprffx_custom_options)" \
-		>> $(vcs_aprffx_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprffx_build_log)
-	@echo >> $(vcs_aprffx_build_log)
+
+# Record the full command used to build the simulator
+
+	@printf "%.s-" {1..80}          >> $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
+	@echo   "Full VCS Command"      >> $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80}          >> $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
+	@echo "$(vcs_aprffx_build_cmd)" >> $(vcs_aprffx_build_log)
 
 # Build the simulator
 
-	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprffx_structural_options) $(vcs_aprffx_custom_options) \
-		| tee -a $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80}          >> $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
+	@echo   "Build log"             >> $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80}          >> $(vcs_aprffx_build_log)
+	@echo                           >> $(vcs_aprffx_build_log)
+	$(vcs_aprffx_build_cmd) | tee -a   $(vcs_aprffx_build_log)
 
 endef
 
@@ -154,6 +171,11 @@ endef
 #-------------------------------------------------------------------------
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
+
+# Print the VCS build command
+
+vcs-aprffx-build.print:
+	@echo $(vcs_aprffx_build_cmd)
 
 # Clean
 

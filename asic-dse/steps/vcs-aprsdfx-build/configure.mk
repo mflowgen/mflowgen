@@ -123,6 +123,11 @@ vcs_aprsdfx_custom_options += +define+ARM_NEG_MODEL
 
 vcs_aprsdfx_build_log = $(logs_dir.vcs-aprsdfx-build)/build.log
 
+vcs_aprsdfx_build_cmd = vcs $(vcs_common_options) \
+                            $(vcs_design_options) \
+                            $(vcs_aprsdfx_structural_options) \
+                            $(vcs_aprsdfx_custom_options)
+
 define commands.vcs-aprsdfx-build
 
 	mkdir -p $(logs_dir.vcs-aprsdfx-build)
@@ -130,25 +135,37 @@ define commands.vcs-aprsdfx-build
 
 # Record the options used to build the simulator
 
+	@printf "%.s-" {1..80}            > $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
+	@echo   "VCS Options"            >> $(vcs_aprsdfx_build_log)
+	@printf "%.s-" {1..80}           >> $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
 	@echo "vcs_common_options = $(vcs_common_options)" \
-		>  $(vcs_aprsdfx_build_log)
+		>> $(vcs_aprsdfx_build_log)
 	@echo "vcs_design_options = $(vcs_design_options)" \
 		>> $(vcs_aprsdfx_build_log)
 	@echo "vcs_aprsdfx_structural_options = $(vcs_aprsdfx_structural_options)" \
 		>> $(vcs_aprsdfx_build_log)
 	@echo "vcs_aprsdfx_custom_options = $(vcs_aprsdfx_custom_options)" \
 		>> $(vcs_aprsdfx_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprsdfx_build_log)
-	@echo >> $(vcs_aprsdfx_build_log)
-	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprsdfx_structural_options) $(vcs_aprsdfx_custom_options)" \
-		>> $(vcs_aprsdfx_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprsdfx_build_log)
-	@echo >> $(vcs_aprsdfx_build_log)
+
+# Record the full command used to build the simulator
+
+	@printf "%.s-" {1..80}           >> $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
+	@echo   "Full VCS Command"       >> $(vcs_aprsdfx_build_log)
+	@printf "%.s-" {1..80}           >> $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
+	@echo "$(vcs_aprsdfx_build_cmd)" >> $(vcs_aprsdfx_build_log)
 
 # Build the simulator
 
-	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprsdfx_structural_options) $(vcs_aprsdfx_custom_options) \
-		| tee -a $(vcs_aprsdfx_build_log)
+	@printf "%.s-" {1..80}           >> $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
+	@echo   "Build log"              >> $(vcs_aprsdfx_build_log)
+	@printf "%.s-" {1..80}           >> $(vcs_aprsdfx_build_log)
+	@echo                            >> $(vcs_aprsdfx_build_log)
+	$(vcs_aprsdfx_build_cmd) | tee -a   $(vcs_aprsdfx_build_log)
 
 endef
 
@@ -157,6 +174,11 @@ endef
 #-------------------------------------------------------------------------
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
+
+# Print the VCS build command
+
+vcs-aprsdfx-build.print:
+	@echo $(vcs_aprsdfx_build_cmd)
 
 # Clean
 

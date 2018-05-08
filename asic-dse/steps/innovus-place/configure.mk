@@ -17,7 +17,7 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
-descriptions.innovus-place = "Place"
+descriptions.innovus-place = "Placement"
 
 #-------------------------------------------------------------------------
 # ASCII art
