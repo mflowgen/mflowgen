@@ -180,6 +180,8 @@ endef
 print.vcs-aprsdfx-build:
 	@echo $(vcs_aprsdfx_build_cmd)
 
+print_list += vcs-aprsdfx-build
+
 # Clean
 
 clean-vcs-aprsdfx-build:

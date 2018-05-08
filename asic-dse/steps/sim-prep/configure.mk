@@ -136,14 +136,17 @@ endef
 
 # Print test categories
 
-print.sim-prep-test-categories:
+print.sim-prep.test-categories:
 	@echo $(test_categories)
+
+print_list += sim-prep.test-categories
 
 # Print test cases
 
 define print_tests_in_category
-print.sim-prep-tests.$(1):
+print.sim-prep.tests.$(1):
 	@echo $$(tests.$(1))
+print_list += sim-prep.tests.$(1)
 endef
 
 $(foreach x, $(test_categories), $(eval $(call print_tests_in_category,$x)))

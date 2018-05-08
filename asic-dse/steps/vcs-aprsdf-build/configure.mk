@@ -193,6 +193,8 @@ endef
 print.vcs-aprsdf-build:
 	@echo $(vcs_aprsdf_build_cmd)
 
+print_list += vcs-aprsdf-build
+
 # Clean
 
 clean-vcs-aprsdf-build:
