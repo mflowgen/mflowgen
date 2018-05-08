@@ -8,7 +8,7 @@
 #-------------------------------------------------------------------------
 # This step runs synthesis using Synopsys DC
 
-descriptions.dc-synthesis = "Synthesis"
+descriptions.dc-synthesis = "Synthesize RTL into gates"
 
 #-------------------------------------------------------------------------
 # ASCII art

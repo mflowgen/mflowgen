@@ -105,6 +105,11 @@ vcs_rtl_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 
 vcs_rtl_build_log = $(logs_dir.vcs-rtl-build)/build.log
 
+vcs_rtl_build_cmd = vcs $(vcs_common_options) \
+                        $(vcs_design_options) \
+                        $(vcs_rtl_structural_options) \
+                        $(vcs_rtl_custom_options)
+
 define commands.vcs-rtl-build
 
 	mkdir -p $(logs_dir.vcs-rtl-build)
@@ -112,25 +117,37 @@ define commands.vcs-rtl-build
 
 # Record the options used to build the simulator
 
+	@printf "%.s-" {1..80}        > $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
+	@echo   "VCS Options"        >> $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80}       >> $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
 	@echo "vcs_common_options = $(vcs_common_options)" \
-		>  $(vcs_rtl_build_log)
+		>> $(vcs_rtl_build_log)
 	@echo "vcs_design_options = $(vcs_design_options)" \
 		>> $(vcs_rtl_build_log)
 	@echo "vcs_rtl_structural_options = $(vcs_rtl_structural_options)" \
 		>> $(vcs_rtl_build_log)
 	@echo "vcs_rtl_custom_options = $(vcs_rtl_custom_options)" \
 		>> $(vcs_rtl_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_rtl_build_log)
-	@echo >> $(vcs_rtl_build_log)
-	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_rtl_structural_options) $(vcs_rtl_custom_options)" \
-		>> $(vcs_rtl_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_rtl_build_log)
-	@echo >> $(vcs_rtl_build_log)
+
+# Record the full command used to build the simulator
+
+	@printf "%.s-" {1..80}       >> $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
+	@echo   "Full VCS Command"   >> $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80}       >> $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
+	@echo "$(vcs_rtl_build_cmd)" >> $(vcs_rtl_build_log)
 
 # Build the simulator
 
-	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_rtl_structural_options) $(vcs_rtl_custom_options) \
-		| tee -a $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80}       >> $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
+	@echo   "Build log"          >> $(vcs_rtl_build_log)
+	@printf "%.s-" {1..80}       >> $(vcs_rtl_build_log)
+	@echo                        >> $(vcs_rtl_build_log)
+	$(vcs_rtl_build_cmd) | tee -a   $(vcs_rtl_build_log)
 
 endef
 
@@ -139,6 +156,13 @@ endef
 #-------------------------------------------------------------------------
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
+
+# Print the VCS build command
+
+print.vcs-rtl-build:
+	@echo $(vcs_rtl_build_cmd)
+
+print_list += vcs-rtl-build
 
 # Clean
 

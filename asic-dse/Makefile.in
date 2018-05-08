@@ -332,14 +332,26 @@ all: $(dependencies.all)
 clean:
 	rm -rf $(foreach x, $(junk),./$x)
 
-# print-%
+# print.%
 #
 # This target makes it easier to debug Makefile rules by allowing you to
 # print any variable. For example, "make print-junk" prints the value of
 # the junk variable.
 
-print-% :
+print.% :
 	@echo $* = $($*)
+
+# print
+#
+# List any targets explicitly defined in the "print.*" namespace
+
+print:
+	@echo "--------------------------------------------------------------------------"
+	@echo "Available print targets"
+	@echo "--------------------------------------------------------------------------"
+	@echo
+	@$(foreach var, $(print_list),printf "%s %-30s   %s\n" '-' "$(var)"  $(descriptions.$(step)) ;)
+	@echo
 
 # run-%
 #
