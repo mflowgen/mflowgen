@@ -87,12 +87,6 @@ vcs_rtl_custom_options += -rad
 
 vcs_rtl_custom_options += +notimingcheck +nospecify
 
-# Register initialization
-
-ifdef INITREG
-vcs_rtl_custom_options += +vcs+initreg+random
-endif
-
 # Suppress lint and warnings
 
 vcs_rtl_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE

@@ -10,8 +10,8 @@ steps = \
   vcs-common-build \
   vcs-rtl-build \
   vcs-rtl \
-  vcs-postaprff-build \
-  vcs-postaprff \
+  vcs-aprff-build \
+  vcs-aprff \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -43,7 +43,7 @@ dependencies.sim-prep            = seed
 dependencies.vcs-rtl-build       = sim-prep
 dependencies.vcs-rtl             = vcs-rtl-build
 
-dependencies.vcs-postaprff-build = sim-prep
-dependencies.vcs-postaprff       = vcs-postaprff-build
+dependencies.vcs-aprff-build     = sim-prep
+dependencies.vcs-aprff           = vcs-aprff-build
 
 

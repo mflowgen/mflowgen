@@ -15,14 +15,14 @@
 #
 # These variables are used to generate targets for each test case.
 
-descriptions.vcs-postaprff = \
+descriptions.vcs-aprff = \
 	"Run all post-APR FF simulations (sub-targets available with tab-completion)"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.vcs-postaprff
+define ascii.vcs-aprff
 	@echo -e $(echo_green)
 	@echo '#--------------------------------------------------------------------------------'
 	@echo '# VCS Post-APR FF Simulate'
@@ -34,7 +34,7 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-#abbr.vcs-postaprff =
+#abbr.vcs-aprff =
 
 #-------------------------------------------------------------------------
 # Collect
@@ -46,7 +46,7 @@ endef
 # constructed the collect dir, so we temporarily magically reach into the
 # correct handoff dir.
 
-vcs_postaprff_simv = ./$(handoff_dir.vcs-postaprff-build)/simv
+vcs_aprff_simv = ./$(handoff_dir.vcs-aprff-build)/simv
 
 #-------------------------------------------------------------------------
 # Generate simulation targets
@@ -58,31 +58,31 @@ vcs_postaprff_simv = ./$(handoff_dir.vcs-postaprff-build)/simv
 # following naming scheme uses all uppercase letters so that users can
 # type "make VCS" and tab-complete to run individual tests.
 #
-# - "VCS-POSTAPRFF.mdu.basic_0x0" : Test category "mdu" for test case "basic_0x0"
+# - "VCS-APRFF.mdu.basic_0x0" : Test category "mdu" for test case "basic_0x0"
 #
 
-# vcs_postaprff_generate_test_cases
+# vcs_aprff_generate_test_cases
 #
 # - $(1): test category
 # - $(2): test name
 
-define vcs_postaprff_generate_test_cases
+define vcs_aprff_generate_test_cases
 
-$$(logs_dir.vcs-postaprff)/run-$(1)-$(2).log: $$(dependencies.vcs-postaprff)
-	@mkdir -p $$(logs_dir.vcs-postaprff)
+$$(logs_dir.vcs-aprff)/run-$(1)-$(2).log: $$(dependencies.vcs-aprff)
+	@mkdir -p $$(logs_dir.vcs-aprff)
 	@touch $$@.start
 	@echo '--------------------------------------------------------------------------------'
 	@echo $$@
 	@echo '--------------------------------------------------------------------------------'
-	$$(vcs_postaprff_simv) $$(vcs_run_options) +test=$(2) 2>&1 | tee $$@
+	$$(vcs_aprff_simv) $$(vcs_run_options) +test=$(2) 2>&1 | tee $$@
 
 # Create alias target to help run an individual test
 
-VCS_POSTAPRFF.$(1).$(2): $$(logs_dir.vcs-postaprff)/run-$(1)-$(2).log
+VCS_APRFF.$(1).$(2): $$(logs_dir.vcs-aprff)/run-$(1)-$(2).log
 
 # Gather all tests for this category
 
-VCS_POSTAPRFF_$(1)_ALL += $$(logs_dir.vcs-postaprff)/run-$(1)-$(2).log
+VCS_APRFF_$(1)_ALL += $$(logs_dir.vcs-aprff)/run-$(1)-$(2).log
 
 endef
 
@@ -90,7 +90,7 @@ endef
 
 $(foreach category, $(test_categories), \
   $(foreach test, $(tests.$(category)), \
-    $(eval $(call vcs_postaprff_generate_test_cases,$(category),$(test)))))
+    $(eval $(call vcs_aprff_generate_test_cases,$(category),$(test)))))
 
 # Generate targets for each test case
 #
@@ -98,23 +98,23 @@ $(foreach category, $(test_categories), \
 # that category. The following naming scheme uses all lowercase letters so
 # that all lowercase targets enable running "groups" of tests.
 #
-# - "vcs-postaprff.mdu" : Run all "mdu" test cases
+# - "vcs-aprff.mdu" : Run all "mdu" test cases
 #
 
-# vcs_postaprff_generate_categories
+# vcs_aprff_generate_categories
 #
 # - $(1): test category
 
-define vcs_postaprff_generate_categories
-vcs-postaprff.$(1): $$(VCS_POSTAPRFF_$(1)_ALL)
+define vcs_aprff_generate_categories
+vcs-aprff.$(1): $$(VCS_APRFF_$(1)_ALL)
 endef
 
 $(foreach category, $(test_categories), \
-  $(eval $(call vcs_postaprff_generate_categories,$(category))))
+  $(eval $(call vcs_aprff_generate_categories,$(category))))
 
 # Summary txt file for the top-level target
 
-vcs_postaprff_summary_txt = $(results_dir.vcs-postaprff)/summary.txt
+vcs_aprff_summary_txt = $(results_dir.vcs-aprff)/summary.txt
 
 #-------------------------------------------------------------------------
 # Extra dependencies
@@ -122,8 +122,8 @@ vcs_postaprff_summary_txt = $(results_dir.vcs-postaprff)/summary.txt
 # Set up extra dependencies so that the top-level step target runs all
 # test cases in every test category
 
-extra_dependencies.vcs-postaprff = \
-	$(foreach x, $(test_categories),vcs-postaprff.$x)
+extra_dependencies.vcs-aprff = \
+	$(foreach x, $(test_categories),vcs-aprff.$x)
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -131,20 +131,20 @@ extra_dependencies.vcs-postaprff = \
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-ifeq (x"$(extra_dependencies.vcs-postaprff)",x"")
-define commands.vcs-postaprff
+ifeq (x"$(extra_dependencies.vcs-aprff)",x"")
+define commands.vcs-aprff
 	@echo -n "Please re-run this step so that the Makefile can read the"
 	@echo -n " simulation targets from the test cases YAML file."
 	@echo
 endef
 else
-define commands.vcs-postaprff
-	@mkdir -p $(results_dir.vcs-postaprff)
-	@grep -r BRG $(logs_dir.vcs-postaprff) > $(vcs_postaprff_summary_txt)
-	@cat $(vcs_postaprff_summary_txt)
+define commands.vcs-aprff
+	@mkdir -p $(results_dir.vcs-aprff)
+	@grep -r BRG $(logs_dir.vcs-aprff) > $(vcs_aprff_summary_txt)
+	@cat $(vcs_aprff_summary_txt)
 	@echo
-	@( echo -n "Total passing   : " ; grep -i pass $(vcs_postaprff_summary_txt) | wc -l; \
-	   echo -n "Total num tests : " ; wc -l < $(vcs_postaprff_summary_txt) )
+	@( echo -n "Total passing   : " ; grep -i pass $(vcs_aprff_summary_txt) | wc -l; \
+	   echo -n "Total num tests : " ; wc -l < $(vcs_aprff_summary_txt) )
 endef
 endif
 
@@ -156,13 +156,13 @@ endif
 
 # Clean
 
-clean-vcs-postaprff:
-	rm -rf ./$(VPATH)/vcs-postaprff
-	rm -rf ./$(logs_dir.vcs-postaprff)
-	rm -rf ./$(results_dir.vcs-postaprff)
-#  rm -rf ./$(collect_dir.vcs-postaprff) # don't clean the YAML file
-	rm -rf ./$(handoff_dir.vcs-postaprff)
+clean-vcs-aprff:
+	rm -rf ./$(VPATH)/vcs-aprff
+	rm -rf ./$(logs_dir.vcs-aprff)
+	rm -rf ./$(results_dir.vcs-aprff)
+#  rm -rf ./$(collect_dir.vcs-aprff) # don't clean the YAML file
+	rm -rf ./$(handoff_dir.vcs-aprff)
 
-clean-postaprff: clean-vcs-postaprff clean-vcs-postaprff-build
+clean-aprff: clean-vcs-aprff clean-vcs-aprff-build
 
 
