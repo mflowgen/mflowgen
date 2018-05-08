@@ -17,6 +17,8 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
+descriptions.innovus-route = "Global routing"
+
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
@@ -62,8 +64,7 @@ define commands.innovus-route
     -log $(innovus_logs_dir)/route.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-route)
-	(cd $(handoff_dir.innovus-route) && \
-    ln -sf ../../$(innovus_handoffs_dir)/route.* .)
+	ln -srf $(innovus_handoffs_dir)/route.* $(handoff_dir.innovus-route)
 endef
 
 #-------------------------------------------------------------------------

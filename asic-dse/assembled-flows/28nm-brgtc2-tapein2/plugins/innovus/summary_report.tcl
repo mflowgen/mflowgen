@@ -1,0 +1,1 @@
+../../../default/plugins/innovus/summary_report.tcl

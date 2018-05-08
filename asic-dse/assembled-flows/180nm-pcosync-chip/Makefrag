@@ -38,7 +38,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 
 design_name  = correlator_top
 clock_period = 50.0
-verilog_src  = rtl-handoff/top.v
+design_v     = rtl-handoff/top.v
 
 #-------------------------------------------------------------------------
 # Export

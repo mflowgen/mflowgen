@@ -1,5 +1,5 @@
 #=========================================================================
-# CompHostCtrlregMcoreL0ArbiterMduCache.py
+# CompCtrlregMcoreL0ArbiterMduCache.py
 #=========================================================================
 
 from pymtl                   import *
@@ -7,14 +7,20 @@ from pclib.ifcs              import InValRdyBundle, OutValRdyBundle
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs                    import MemMsg, MduMsg
+from ifcs                    import CtrlRegMsg, MemMsg, MduMsg
 
-from proc.ProcPRTL           import ProcPRTL
-from cache.BlockingCachePRTL import BlockingCachePRTL
-from mdu.IntMulDivUnit       import IntMulDivUnit
+from ctrlreg.CtrlReg                      import CtrlReg
+from proc.ProcPRTL                        import ProcPRTL
+from proc.NullXcelRTL                     import NullXcelRTL
+from mdu.IntMulDivUnit                    import IntMulDivUnit
+from instbuffer.InstBuffer                import InstBuffer
+
+from cache.BlockingCachePRTL              import BlockingCachePRTL
+from cache_wa.BlockingCacheWideAccessPRTL import BlockingCacheWideAccessPRTL
 
 from networks.Funnel         import Funnel
 from networks.Router         import Router
+from adapters.HostAdapter    import HostAdapter
 
 class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
@@ -43,31 +49,40 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     # - 1 x actual imem req/resp
     # - 1 x actual dmem req/resp
 
-    s.ctrlregreq  = InValRdyBundle ( s.ctrlregifc.req )
-    s.ctrlregresp = OutValRdyBundle( s.ctrlregifc.resp )
+    s.ctrlregreq      = InValRdyBundle ( s.ctrlregifc.req  )
+    s.ctrlregresp     = OutValRdyBundle( s.ctrlregifc.resp )
 
-    s.mngr2proc = InValRdyBundle [num_cores]( 32 )
-    s.proc2mngr = OutValRdyBundle[num_cores]( 32 )
+    # These ports should be an array of port bundles, but the host
+    # interface uses reflection and breaks with an array. So we are
+    # flattening these out here.
 
-    s.imemreq  = OutValRdyBundle( s.cache_mem_ifc.req )
-    s.imemresp = InValRdyBundle ( s.cache_mem_ifc.resp )
+    s.mngr2proc_0    = InValRdyBundle ( 32 )
+    s.proc2mngr_0    = OutValRdyBundle( 32 )
+    s.mngr2proc_1    = InValRdyBundle ( 32 )
+    s.proc2mngr_1    = OutValRdyBundle( 32 )
+    s.mngr2proc_2    = InValRdyBundle ( 32 )
+    s.proc2mngr_2    = OutValRdyBundle( 32 )
+    s.mngr2proc_3    = InValRdyBundle ( 32 )
+    s.proc2mngr_3    = OutValRdyBundle( 32 )
 
-    s.dmemreq  = OutValRdyBundle( s.cache_mem_ifc.req )
-    s.dmemresp = InValRdyBundle ( s.cache_mem_ifc.resp )
+    s.imemreq         = OutValRdyBundle( s.cache_mem_ifc.req  )
+    s.imemresp        = InValRdyBundle ( s.cache_mem_ifc.resp )
 
-    s.host_mdureq  = InValRdyBundle( s.proc_mdu_ifc.req )
-    s.host_mduresp = OutValRdyBundle( s.proc_mdu_ifc.resp )
+    s.dmemreq         = OutValRdyBundle( s.cache_mem_ifc.req  )
+    s.dmemresp        = InValRdyBundle ( s.cache_mem_ifc.resp )
 
-    s.host_icachereq  = InValRdyBundle ( s.proc_cache_ifc.req )
-    s.host_icacheresp = OutValRdyBundle( s.proc_cache_ifc.resp )
+    s.host_mdureq     = InValRdyBundle ( s.proc_mdu_ifc.req  )
+    s.host_mduresp    = OutValRdyBundle( s.proc_mdu_ifc.resp )
 
-    s.host_dcachereq  = InValRdyBundle ( s.proc_cache_ifc.req )
+    s.host_icachereq  = InValRdyBundle ( s.cache_mem_ifc.req  ) # We have L0i!!!
+    s.host_icacheresp = OutValRdyBundle( s.cache_mem_ifc.resp )
+
+    s.host_dcachereq  = InValRdyBundle ( s.proc_cache_ifc.req  )
     s.host_dcacheresp = OutValRdyBundle( s.proc_cache_ifc.resp )
 
     # These ports are for the ctrl register
 
     s.debug = OutPort( 1 )
-    # s.commit_inst = OutPort( num_cores )
 
     #---------------------------------------------------------------------
     # Components
@@ -75,7 +90,7 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
     # Shared L1I
 
-    s.icache         = BlockingCachePRTL( 0 )
+    s.icache         = BlockingCacheWideAccessPRTL( 0 )
     s.icache_adapter = HostAdapter( req=s.icache.cachereq, resp=s.icache.cacheresp )
 
     s.net_icachereq  = Funnel( num_cores, s.cache_mem_ifc.req  )  # N L0is - to - 1 cache
@@ -99,12 +114,13 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
 
     # Control Register
 
-    s.ctrlreg = CtrlReg()
+    s.ctrlreg = CtrlReg( num_cores )
 
     # Processors
 
-    s.proc = ProcPRTL  [num_cores]( num_cores, reset_freeze = True )
-    s.l0i  = InstBuffer[num_cores]( 2, cacheline_nbits/8 )
+    s.proc = ProcPRTL   [num_cores]( num_cores, reset_freeze = True )
+    s.l0i  = InstBuffer [num_cores]( 2, cacheline_nbits/8 )
+    s.xcel = NullXcelRTL[num_cores]()
 
     #---------------------------------------------------------------------
     # Connections
@@ -124,9 +140,23 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
         s.proc[i].go,          s.ctrlreg.go[i],
         s.proc[i].commit_inst, s.ctrlreg.commit_inst[i],
 
-        s.proc[i].mngr2proc,   s.mngr2proc[i],
-        s.proc[i].proc2mngr,   s.proc2mngr[i],
+#        s.proc[i].mngr2proc,   s.mngr2proc[i],
+#        s.proc[i].proc2mngr,   s.proc2mngr[i],
+
+        s.proc[i].xcelreq,     s.xcel[i].xcelreq,
+        s.proc[i].xcelresp,    s.xcel[i].xcelresp,
       )
+
+    s.connect_pairs(
+      s.proc[0].mngr2proc,   s.mngr2proc_0,
+      s.proc[0].proc2mngr,   s.proc2mngr_0,
+      s.proc[1].mngr2proc,   s.mngr2proc_1,
+      s.proc[1].proc2mngr,   s.proc2mngr_1,
+      s.proc[2].mngr2proc,   s.mngr2proc_2,
+      s.proc[2].proc2mngr,   s.proc2mngr_2,
+      s.proc[3].mngr2proc,   s.mngr2proc_3,
+      s.proc[3].proc2mngr,   s.proc2mngr_3,
+    )
 
     # core #0's stats_en is brought up to the top level
 
@@ -220,6 +250,15 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
       s.mdu_adapter.resp, s.mdu.resp,
     )
 
+    # Turn off host_en signals in the adapters
+
+    s.connect( s.mdu_adapter.host_en, 0 )
+    s.connect( s.icache_adapter.host_en, 0 )
+    s.connect( s.dcache_adapter.host_en, 0 )
+
+    for i in xrange( num_cores ):
+      s.connect( s.l0i[i].L0_disable, 0 )
+
   #-----------------------------------------------------------------------
   # Line tracing
   #-----------------------------------------------------------------------
@@ -232,9 +271,10 @@ class CompCtrlregMcoreL0ArbiterMduCache( Model ):
     # line trace.
     # Feel free to revamp it based on your need.
 
-    trace = s.icache.line_trace()
+    trace = "I$" + s.icache.line_trace()
     trace += ' [ ' + s.mdu.line_trace()      + ' ] '
     for i in xrange(len(s.proc)):
-      trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() ' ] '
-    return trace + s.dcache.line_trace()
+      trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() + ' ] '
+    trace += "D$" + s.dcache.line_trace()
+    return trace
 

@@ -98,7 +98,7 @@ class TestHarness( Model ):
     s.connect( s.model.mdu_host_en, 0 )
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     s.mem    = TestMemory( MemMsg(8,32,cacheline_nbits), num_memports,
                            mem_stall_prob, mem_latency )
@@ -152,11 +152,11 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
 
   def load( self, mem_image ):
-    with open("proc_testcase_init.v", "w") as f:
+    with open("ProcL0Mdu_testcase_init.v", "w") as f:
 
-      f.write( "th_src_max_delay  = {};\n".format( self.src_delay ) )
-      f.write( "th_sink_max_delay = {};\n".format( self.sink_delay ) )
-      f.write( "th_mem_max_delay  = {};\n".format( self.mem_delay ) )
+      f.write( "  th_src_max_delay  = {};\n".format( self.src_delay ) )
+      f.write( "  th_sink_max_delay = {};\n".format( self.sink_delay ) )
+      f.write( "  th_mem_max_delay  = {};\n".format( self.mem_delay ) )
 
       # Iterate over the sections
 
@@ -170,7 +170,7 @@ class TestHarness( Model ):
             bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
             for j in xrange(self.num_cores):
               self.src[j].src.msgs.append( Bits(32,bits) )
-              f.write( "load_src%d( 32'h%s );\n" % (j, Bits(32,bits)) );
+              f.write( "  load_src%d( 32'h%s );\n" % (j, Bits(32,bits)) );
 
         elif section.name.endswith("_2proc"):
           idx = int( section.name[5:-6], 0 )
@@ -178,7 +178,7 @@ class TestHarness( Model ):
           for i in xrange(0,len(section.data),4):
             bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
             self.src[idx].src.msgs.append( Bits(32,bits) )
-            f.write( "load_src%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
+            f.write( "  load_src%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
 
         # For .proc2mngr sections, copy section into proc2mngr_ref src
 
@@ -188,7 +188,7 @@ class TestHarness( Model ):
 
             for j in xrange(self.num_cores):
               self.sink[j].sink.msgs.append( Bits(32,bits) )
-              f.write( "load_sink%d( 32'h%s );\n" % (j, Bits(32,bits)) );
+              f.write( "  load_sink%d( 32'h%s );\n" % (j, Bits(32,bits)) );
 
         elif section.name.endswith("_2mngr"):
           idx = int( section.name[5:-6], 0 )
@@ -196,7 +196,7 @@ class TestHarness( Model ):
           for i in xrange(0,len(section.data),4):
             bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
             self.sink[idx].sink.msgs.append( Bits(32,bits) )
-            f.write( "load_sink%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
+            f.write( "  load_sink%d( 32'h%s );\n" % (idx, Bits(32,bits)) );
 
         # For all other sections, simply copy them into the memory
 
@@ -205,7 +205,7 @@ class TestHarness( Model ):
           stop_addr  = section.addr + len(section.data)
           self.mem.mem[start_addr:stop_addr] = section.data
           for j in xrange(start_addr, stop_addr):
-            f.write( "load_mem( %d, 8'h%s );\n" % (j, Bits(8,self.mem.mem[j])) );
+            f.write( "  load_mem( %d, 8'h%s );\n" % (j, Bits(8,self.mem.mem[j])) );
 
   #-----------------------------------------------------------------------
   # cleanup

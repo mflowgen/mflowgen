@@ -12,6 +12,9 @@
 /* Define if we should include subproject ubmark */
 #undef HAVE_UBMARK
 
+/* Define if we should include subproject wsrt */
+#undef HAVE_WSRT
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 

@@ -77,7 +77,10 @@ class DirectMappedInstBufferDpath( Model ):
     # Also, we don't need those xxx_bar and sram_xxx signals -- no SRAM!
     # Each entry in the tag/data array stores the tag/data of each line
 
-    s.valid_array = RegisterFile( 1, num_entries, 1, 1, False)
+    # Shunning: I have to change the valid_array to resetable RegEnRst
+
+    s.valid_array = RegEnRst( dtype = num_entries, reset_value = 0 )
+
     s.tag_array   = RegisterFile( tag_nbits, num_entries, 1, 1, False)
     s.data_array  = RegisterFile( line_nbits, num_entries, 1, 1, False )
 
@@ -95,12 +98,17 @@ class DirectMappedInstBufferDpath( Model ):
     s.tag_read_out  = Wire( tag_nbits )
     s.data_read_out = Wire( line_nbits )
 
+    @s.combinational
+    def comb_valid_read():
+      s.is_valid.value = s.valid_array.out[ s.buffreq_idx ] # effectively a huge mux
+
+    @s.combinational
+    def comb_valid_write():
+      s.valid_array.in_.value = s.valid_array.out  # hawajkm: avoid latches :)
+      s.valid_array.in_[ s.buffreq_idx ].value = 1 # effectively a huge demux
+
     s.connect_pairs(
-      s.valid_array.rd_addr[0], s.buffreq_idx,
-      s.valid_array.rd_data[0], s.is_valid,
-      s.valid_array.wr_en,      s.arrays_wen,
-      s.valid_array.wr_addr,    s.buffreq_idx,
-      s.valid_array.wr_data,    1,
+      s.valid_array.en,         s.arrays_wen,
 
       s.tag_array.rd_addr[0], s.buffreq_idx,
       s.tag_array.rd_data[0], s.tag_read_out,

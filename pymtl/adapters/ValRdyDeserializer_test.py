@@ -54,7 +54,7 @@ class TestHarness( Model ):
     # Translation
 
     if test_verilog:
-      s.dut = TranslationTool( s.dut )
+      s.dut = TranslationTool( s.dut, verilator_xinit=test_verilog )
 
     # Connect test sources and sinks
 
@@ -105,13 +105,22 @@ long_msgs = [
 
 test_case_table = mk_test_case_table([
   (            "dtype_in  dtype_out msgs        src_delay sink_delay"),
+  [ "8-to-15" , 8,        15,       basic_msgs, 0,        0          ],
   [ "8-to-16" , 8,        16,       basic_msgs, 0,        0          ],
-  [ "8-to-30" , 8,        15,       basic_msgs, 0,        0          ],
+  [ "8-to-30" , 8,        30,       basic_msgs, 0,        0          ],
   [ "8-to-32" , 8,        32,       basic_msgs, 0,        0          ],
   [ "32-to-8" , 32,       8,        long_msgs,  0,        0          ],
-  [ "32-to-8" , 32,       16,       long_msgs,  0,        0          ],
-  [ "32-to-8" , 32,       30,       long_msgs,  0,        0          ],
-  [ "32-to-8" , 32,       32,       long_msgs,  0,        0          ],
+  [ "32-to-16", 32,       16,       long_msgs,  0,        0          ],
+  [ "32-to-30", 32,       30,       long_msgs,  0,        0          ],
+  [ "32-to-32" ,32,       32,       long_msgs,  0,        0          ],
+  [ "8-to-15_3x14" , 8,   15,       basic_msgs, 3,        14         ],
+  [ "8-to-16_3x14" , 8,   16,       basic_msgs, 3,        14         ],
+  [ "8-to-30_3x14" , 8,   30,       basic_msgs, 3,        14         ],
+  [ "8-to-32_3x14" , 8,   32,       basic_msgs, 3,        14         ],
+  [ "32-to-8_3x14" , 32,  8,        long_msgs,  3,        14         ],
+  [ "32-to-16_3x14", 32,  16,       long_msgs,  3,        14         ],
+  [ "32-to-30_3x14", 32,  30,       long_msgs,  3,        14         ],
+  [ "32-to-32_3x14", 32,  32,       long_msgs,  3,        14         ],
 ])
 
 #-------------------------------------------------------------------------
@@ -119,8 +128,8 @@ test_case_table = mk_test_case_table([
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table )
-def test( test_params, dump_vcd ):
+def test( test_params, dump_vcd, test_verilog ):
   th = TestHarness( ValRdyDeserializer, test_params.dtype_in, test_params.dtype_out,
                     test_params.msgs, test_params.src_delay, test_params.sink_delay,
-                    False )
+                    dump_vcd, test_verilog )
   run_sim( th )

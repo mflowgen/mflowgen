@@ -1,0 +1,93 @@
+#! /usr/bin/env bash
+#=========================================================================
+# configure
+#=========================================================================
+# Configuration involves choosing an assembled flow (i.e.,
+# "setup-flow.mk") and also selecting an ASIC design kit and design
+# specification (i.e., "Makefrag").
+
+
+#-------------------------------------------------------------------------
+# Constants
+#-------------------------------------------------------------------------
+# Get constants for the script
+
+# Script relative directory
+script_dir=$(dirname ${BASH_SOURCE[0]})
+script_abs_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
+
+# Target flow
+target_flow=$1
+
+#-------------------------------------------------------------------------
+# Avoid being in the same directory as the configuration script
+#-------------------------------------------------------------------------
+
+if [[ x${script_dir} == x"." ]]; then
+  echo "ERROR: Please, create a new build directory."
+  echo "       Avoid configuring the root directory."
+
+  exit -1
+fi
+
+#-------------------------------------------------------------------------
+# Default
+#-------------------------------------------------------------------------
+# Use the default assembled flow if no options are passed in, and also
+# pull in the Makefrag (copy it so that many build directories can be made
+# that point to different designs)
+
+if [[ x${target_flow} == x"" ]]; then
+  target_flow=default
+fi
+
+#-------------------------------------------------------------------------
+# Loop through all possible flows
+#-------------------------------------------------------------------------
+# Search for required flow and link its scripts to current directory
+
+required_files=("setup-flow.mk" "Makefrag")
+
+for flow in $(ls ${script_dir}/assembled-flows/); do
+
+  flow_dir=${script_dir}/assembled-flows/${flow}
+
+  # Check if it is a directory
+  if [[ -d ${flow_dir} ]]; then
+    # Check if it is the target
+    if [[ x${target_flow} == x--${flow} ]] || \
+       [[ x${target_flow} ==   x${flow} ]];   then
+
+      # We found our target flow
+      # For configuration, we just symbolically link couple of files
+      echo "Configuring for flow \"${flow}\" ..."
+
+      # Common Makefile
+      ln -sf ${script_dir}/Makefile.in Makefile
+
+      # Link files
+      for file in ${required_files[@]}; do
+        if [[ -e ${flow_dir}/${file} ]]; then
+          echo "    Linking \"${file}\" ..."
+          ln -sf ${flow_dir}/${file}
+        elif [[ -e ${script_dir}/${file} ]]; then
+          echo "    Copying default \"${file}\" ..."
+          cp -f ${script_dir}/${file} .
+        fi
+      done
+
+      # Terminate
+      exit
+
+    fi
+  fi
+
+done
+
+#-------------------------------------------------------------------------
+# No flow was found
+#-------------------------------------------------------------------------
+
+echo "ERROR: Specified flow \"${target_flow}\" cannot be found!"
+
+exit -1

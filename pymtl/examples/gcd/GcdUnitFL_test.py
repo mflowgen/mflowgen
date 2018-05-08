@@ -39,7 +39,7 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.gcd = TranslationTool( s.gcd )
+      s.gcd = TranslationTool( s.gcd, verilator_xinit=test_verilog )
 
     # Connect
 

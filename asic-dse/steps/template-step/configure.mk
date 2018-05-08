@@ -6,12 +6,9 @@
 #-------------------------------------------------------------------------
 # Step Description
 #-------------------------------------------------------------------------
-# Describe what this step does..
-#
-# Required previous steps:
-#
-# - (Required step 1) -- (Reason why)
-# - (Required step 2) -- (Reason why)
+
+descriptions.template-step = \
+	"This is an example step that shows how to configure a new step"
 
 #-------------------------------------------------------------------------
 # ASCII art
@@ -36,6 +33,12 @@ endef
 #-------------------------------------------------------------------------
 
 #abbr.template-step = template
+
+#-------------------------------------------------------------------------
+# Extra dependencies
+#-------------------------------------------------------------------------
+
+#extra_dependencies.template-step = none
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -63,5 +66,5 @@ clean-template-step:
 	rm -rf ./$(collect_dir.template-step)
 	rm -rf ./$(handoff_dir.template-step)
 
-clean-ex: clean-template-step
+#clean-ex: clean-template-step
 

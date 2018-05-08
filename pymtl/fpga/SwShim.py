@@ -13,7 +13,8 @@ from adapters   import *
 
 class SwShim( Model ):
 
-  def __init__( s, dut, dut_asynch, asynch_bitwidth = 32 ):
+  def __init__( s, dut, dut_asynch, asynch_bitwidth = 32,
+                   dump_vcd = None, translate = False ):
 
     #-Interface----------------------------------------------------------
 
@@ -69,10 +70,21 @@ class SwShim( Model ):
 
     # Sim->DUT Asynch Output
 
-    s.dut = m = dut_asynch
-    s.connect( m.in_.msg, s.in_valRdyToReqAck.out.msg )
-    s.connect( m.in_.req, s.in_valRdyToReqAck.out.req )
-    s.connect( m.in_.ack, s.in_valRdyToReqAck.out.ack )
+    s.dut = dut_asynch
+
+    # VCD
+
+    if dump_vcd:
+      s.dut.vcd_file = dump_vcd
+
+    # Translate Verilog if needed
+
+    if translate:
+      s.dut = TranslationTool( s.dut, enable_blackbox = True, verilator_xinit=translate )
+
+    s.connect( s.dut.in_.msg, s.in_valRdyToReqAck.out.msg )
+    s.connect( s.dut.in_.req, s.in_valRdyToReqAck.out.req )
+    s.connect( s.dut.in_.ack, s.in_valRdyToReqAck.out.ack )
 
     # DUT->Sim ReqAck to ValRdy
 

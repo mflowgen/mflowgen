@@ -52,7 +52,7 @@ int main( int argc, char* argv[] )
   tg.run_and_wait( fib );
   wsrt::task_scheduler_end();
 
-  wprintf(L"fib %d = %d \n",10,arg.ret);
+  brg_wprintf(L"fib %d = %d \n",10,arg.ret);
   test_pass();
 
   return 0;

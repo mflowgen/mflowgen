@@ -41,7 +41,7 @@ class TestHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.sram = TranslationTool( s.sram, enable_blackbox=True )
+      s.sram = TranslationTool( s.sram, enable_blackbox=True, verilator_xinit=test_verilog )
 
     # Connect
 

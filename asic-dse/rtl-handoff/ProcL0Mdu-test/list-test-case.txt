@@ -1,0 +1,11 @@
+test_beq[basic-test0]
+test_beq[src0_dep_taken-test1]
+test_beq[src0_dep_nottaken-test2]
+test_beq[src1_dep_taken-test3]
+test_beq[src1_dep_nottaken-test4]
+test_beq[srcs_dep_taken-test5]
+test_beq[srcs_dep_nottaken-test6]
+test_beq[src0_eq_src1-test7]
+test_beq[value-test8]
+test_beq[random-test9]
+test_beq_rand_delays

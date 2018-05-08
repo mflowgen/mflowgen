@@ -15,10 +15,14 @@ wsrt_hdrs += \
   wsrt-WorkStealing.h \
   wsrt-Runtime.h \
   wsrt-TaskGroup.h \
+  stdx-PreprocessorUtils.h \
+  wsrt-Macros.h \
   wsrt.h \
 
 wsrt_inls += \
   wsrt-Task.inl \
+  wsrt-Macros.inl \
+  stdx-PreprocessorUtils.inl \
   wsrt-WSDeque.inl \
 
 wsrt_srcs += \

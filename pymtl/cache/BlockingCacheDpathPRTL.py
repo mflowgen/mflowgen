@@ -98,17 +98,18 @@ class BlockingCacheDpathPRTL( Model ):
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_data_reg_out = OutPort ( tmp.data  )
-    s.cachereq_len_reg_out  = OutPort ( tmp.len   )
-    s.read_word_sel_mux_out = OutPort ( tmp.data  )
-    s.cachereq_type         = OutPort ( tmp.type_ )
-    s.cachereq_addr         = OutPort ( tmp.addr  )
-    s.tag_match_0           = OutPort (     1     )
-    s.tag_match_1           = OutPort (     1     )
+    s.cachereq_data_reg_out = OutPort( tmp.data  )
+    s.cachereq_len_reg_out  = OutPort( tmp.len   )
+    s.read_word_sel_mux_out = OutPort( tmp.data  )
+    s.cachereq_type         = OutPort( tmp.type_ )
+    s.cachereq_addr         = OutPort( tmp.addr  )
+    s.tag_match_0           = OutPort(     1     )
+    s.tag_match_1           = OutPort(     1     )
 
     # Register the unpacked cachereq_msg
 
-    s.cachereq_type_reg = m = RegEnRst( dtype = tmp.type_, reset_value = 0 )
+    type_bw = tmp.type_.nbits
+    s.cachereq_type_reg = m = RegEnRst( dtype = type_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -116,7 +117,8 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_type
     )
 
-    s.cachereq_addr_reg = m = RegEnRst( dtype = tmp.addr, reset_value = 0 )
+    addr_bw = tmp.addr.nbits
+    s.cachereq_addr_reg = m = RegEnRst( dtype = addr_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -124,7 +126,8 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_addr
     )
 
-    s.cachereq_opaque_reg = m = RegEnRst( dtype = tmp.opaque, reset_value = 0 )
+    opaq_bw = tmp.opaque.nbits
+    s.cachereq_opaque_reg = m = RegEnRst( dtype = opaq_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -132,6 +135,7 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cacheresp_msg.opaque,
     )
 
+    data_bw = tmp.data.nbits
     s.cachereq_data_reg = m = RegEnRst( dtype = tmp.data, reset_value = 0 )
 
     s.connect_pairs(
@@ -140,7 +144,8 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_data_reg_out,
     )
 
-    s.cachereq_len_reg = m = RegEnRst( dtype = tmp.len, reset_value = 0 )
+    len_bw = tmp.len.nbits
+    s.cachereq_len_reg = m = RegEnRst( dtype = len_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -494,15 +499,18 @@ class BlockingCacheDpathPRTL( Model ):
     #     nbits: width of tag = width of addr - $clog2(nblocks) - 4
     #     entries: 256*8/128 = 16
 
-    #@s.combinational
-    #def set_len():
-    #  pass
+    s.omask       = Wire( data_bw )
+    s.output_data = Wire( data_bw )
+
+    @s.combinational
+    def gen_masks():
+      s.omask.value = ~Bits( data_bw, 0 )
 
     @s.combinational
     def comb_cacherespmsgpack():
       s.cacheresp_msg.type_.value = s.cacheresp_type
       s.cacheresp_msg.test.value  = concat( Bits( 1, 0 ), s.cacheresp_hit )
-      s.cacheresp_msg.len.value   = 0
+      s.cacheresp_msg.len.value   = s.cachereq_len_reg_out
 
     @s.combinational
     def comb_memrespmsgpack():
@@ -510,4 +518,3 @@ class BlockingCacheDpathPRTL( Model ):
       s.memreq_msg.opaque.value   = 0
       s.memreq_msg.addr.value     = s.memreq_addr
       s.memreq_msg.len.value      = 0
-

@@ -45,7 +45,7 @@ class SimHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     if mem_stall:
       s.mem = TestMemory( MemMsg(8,32,data_nbits), num_memports, 0.5, 3 )
@@ -137,7 +137,7 @@ class TestHarness( Model ):
     s.model  = model
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     s.mem    = TestMemory( MemMsg(8,32,cacheline_nbits), num_memports,
                            mem_stall_prob, mem_latency )

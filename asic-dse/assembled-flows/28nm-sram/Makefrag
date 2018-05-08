@@ -38,7 +38,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 
 design_name  = SramValRdyPRTL
 clock_period = 1.0
-verilog_src  = ../pymtl/build/SramValRdyPRTL_blackbox.v
+design_v     = ../pymtl/build/SramValRdyPRTL_blackbox.v
 
 #-------------------------------------------------------------------------
 # Export

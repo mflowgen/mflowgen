@@ -10,6 +10,8 @@
 # Innovus-related variables (e.g., directories, exec commands) used
 # throughout the Innovus flow.
 
+descriptions.innovus-flowsetup = "Run the Innovus Foundation Flow"
+
 #-------------------------------------------------------------------------
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
@@ -27,7 +29,7 @@ export innovus_plugins_dir  = $(plugins_dir)/innovus
 export innovus_logs_dir     = $(logs_dir)/innovus
 export innovus_reports_dir  = $(reports_dir)/innovus
 export innovus_results_dir  = $(results_dir)/innovus
-export innovus_handoffs_dir = $(handoffs_dir)/innovus
+export innovus_handoffs_dir = $(handoff_dir)/innovus
 
 # INNOVUS GUI
 #
@@ -116,8 +118,7 @@ define commands.innovus-flowsetup
     $(results_dir.innovus-flowsetup)/INNOVUS/run*.tcl
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-flowsetup)
-	(cd $(handoff_dir.innovus-flowsetup) && \
-    ln -sf ../../$(results_dir.innovus-flowsetup)/* .)
+	ln -srf $(results_dir.innovus-flowsetup)/* $(handoff_dir.innovus-flowsetup)
 # Make common Innovus build directories
 	mkdir -p $(innovus_logs_dir)
 	mkdir -p $(innovus_reports_dir)

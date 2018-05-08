@@ -20,14 +20,14 @@ from ifcs        import CtrlRegReqMsg, CtrlRegRespMsg
 
 class TestHarness( Model ):
 
-  def __init__( s, CtrlReg, src_msgs, sink_msgs,
+  def __init__( s, model, src_msgs, sink_msgs,
                 src_delay, sink_delay,
                 dump_vcd = False, test_verilog = False ):
 
     # Instantiate models
 
     s.src  = TestSource( CtrlRegReqMsg(),  src_msgs,  src_delay  )
-    s.dut  = CtrlReg()
+    s.dut  = model
     s.sink = TestSink  ( CtrlRegRespMsg(), sink_msgs, sink_delay )
 
     # Dump VCD
@@ -85,19 +85,19 @@ def resp( type_, data ):
 # Message generation: random
 #----------------------------------------------------------------------
 
-def random_msgs( num_regs, num_msgs = 20 ):
+def random_msgs( writable_regs, num_msgs = 20 ):
 
   rgen = random.Random()
   rgen.seed(0xa4e28cc2)
 
   # Virtual regfile
 
-  vmem = [ rgen.randint(0,0xffffffff) for _ in range(num_regs) ]
+  vmem = [ rgen.randint(0,0xffffffff) for _ in xrange(max(writable_regs)+1) ]
   msgs = []
 
   # Initialize registers
 
-  for i in range(num_regs):
+  for i in writable_regs:
     msgs.extend([
       req( 'wr', i, vmem[i] ), resp( 'wr', 0 ),
     ])
@@ -105,7 +105,7 @@ def random_msgs( num_regs, num_msgs = 20 ):
   # Randomly read or write
 
   for i in range(num_msgs):
-    addr = rgen.randint( 0, num_regs-1 )
+    addr = rgen.choice( writable_regs )
 
     read = rgen.randint(0,1)
 
@@ -141,11 +141,29 @@ test_case_table = mk_test_case_table([
 @pytest.mark.parametrize( **test_case_table )
 def test_generic( test_params, dump_vcd, test_verilog ):
 
-  dut      = CtrlReg
+  num_cores   = 4
+  valrdy_ifcs = 3
 
-  num_regs = 2 # Only two registers are writable right now
+  # Register Space:
+  #  0 --- Go
+  #  1 --- Debug
+  #  2 --- <--+
+  #  3 ---    |\ 32-bit instruction counters
+  #  4 ---    |/      for four cores
+  #  5 --- <--+
+  #  6 --- <--+
+  #  7 ---    |\ 32-bit cycle counters 
+  #  8 ---    |/     for four cores
+  #  9 --- <--+
+  # 10 --- <--+
+  # 11 ---    |- host_en interface
+  # 12 --- <--+
+
+  dut = CtrlReg( num_cores, valrdy_ifcs )
+
+  writable_regs = [ 0, 1, 10, 11, 12 ]  # Only two registers are writable right now
   num_msgs = 100
-  msgs     = test_params.msg_func( num_regs, num_msgs )
+  msgs     = test_params.msg_func( writable_regs, num_msgs )
 
   # Instantiate testharness
 

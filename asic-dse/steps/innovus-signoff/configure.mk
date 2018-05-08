@@ -18,6 +18,8 @@
 #     - Need the common Innovus variables (e.g., exec command)
 #
 
+descriptions.innovus-signoff = "Signoff"
+
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
@@ -63,8 +65,7 @@ define commands.innovus-signoff
     -log $(innovus_logs_dir)/signoff.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-signoff)
-	(cd $(handoff_dir.innovus-signoff) && \
-    ln -sf ../../$(innovus_handoffs_dir)/signoff.* .)
+	ln -srf $(innovus_handoffs_dir)/signoff.* $(handoff_dir.innovus-signoff)
 # Clean up
 	mv *.spef.gz $(innovus_results_dir)
 	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir)

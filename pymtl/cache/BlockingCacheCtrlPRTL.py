@@ -308,23 +308,52 @@ class BlockingCacheCtrlPRTL( Model ):
       s.valid_bits_write_en_0.value = s.valid_bits_write_en & ~s.way_sel_current
       s.valid_bits_write_en_1.value = s.valid_bits_write_en &  s.way_sel_current
 
-    s.valid_bits_0 = m = RegisterFile( Bits(1), nblocks/2, 1, 1, False)
+
+    # hawajkm: RegisterFile is not resetable. Converting valid arrays to
+    #          bit-vectors
+
+    s.valid_bits_0_in  = Wire( nblocks / 2 )
+    s.valid_bits_0_out = Wire( nblocks / 2 )
+
+    s.valid_bits_0 = m = RegEnRst( dtype = (nblocks / 2), reset_value = 0 )
+
     s.connect_pairs(
-      m.rd_addr[0],  s.cachereq_idx,
-      m.rd_data[0],  s.is_valid_0,
-      m.wr_en,       s.valid_bits_write_en_0,
-      m.wr_addr,     s.cachereq_idx,
-      m.wr_data,     s.valid_bit_in
+      m.en , s.valid_bits_write_en_0,
+      m.in_, s.valid_bits_0_in      ,
+      m.out, s.valid_bits_0_out     ,
     )
 
-    s.valid_bits_1 = m = RegisterFile( Bits(1), nblocks/2, 1, 1, False)
+    @s.combinational
+    def gen_valid_0():
+      # Generate valids for writes
+      s.valid_bits_0_in                .value = s.valid_bits_0_out
+      s.valid_bits_0_in[s.cachereq_idx].value = s.valid_bit_in
+
+      # Read valids
+      s.is_valid_0                     .value = s.valid_bits_0_out[s.cachereq_idx]
+
+    # hawajkm: RegisterFile is not resetable. Converting valid arrays to
+    #          bit-vectors
+
+    s.valid_bits_1_in  = Wire( nblocks / 2 )
+    s.valid_bits_1_out = Wire( nblocks / 2 )
+
+    s.valid_bits_1 = m = RegEnRst( dtype = (nblocks / 2), reset_value = 0 )
+
     s.connect_pairs(
-      m.rd_addr[0],  s.cachereq_idx,
-      m.rd_data[0],  s.is_valid_1,
-      m.wr_en,       s.valid_bits_write_en_1,
-      m.wr_addr,     s.cachereq_idx,
-      m.wr_data,     s.valid_bit_in
+      m.en , s.valid_bits_write_en_1,
+      m.in_, s.valid_bits_1_in      ,
+      m.out, s.valid_bits_1_out     ,
     )
+
+    @s.combinational
+    def gen_valid_1():
+      # Generate valids for writes
+      s.valid_bits_1_in                .value = s.valid_bits_1_out
+      s.valid_bits_1_in[s.cachereq_idx].value = s.valid_bit_in
+
+      # Read valids
+      s.is_valid_1                     .value = s.valid_bits_1_out[s.cachereq_idx]
 
     s.dirty_bit_in          = Wire( 1 )
     s.dirty_bits_write_en   = Wire( 1 )

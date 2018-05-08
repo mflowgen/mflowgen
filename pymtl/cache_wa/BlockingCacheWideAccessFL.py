@@ -54,10 +54,7 @@ class BlockingCacheWideAccessFL( Model ):
       # we zero-extend the data field (or sign-extend if it is a signed
       # AMO operation).
 
-      if s.cachereq.msg.len == 0:
-        len_ = 4
-      else:
-        len_ = s.cachereq.msg.len
+      len_ = s.cachereq.msg.len
 
       if s.cachereq.msg.type_ == MemReqMsg.TYPE_WRITE_INIT:
         s.memreq.msg.type_ = MemReqMsg.TYPE_WRITE
@@ -78,14 +75,14 @@ class BlockingCacheWideAccessFL( Model ):
       # we truncate the data field.
 
       len_ = s.memresp.msg.len
-      if len_ == 4:
-        len_ = 0
+      #if len_ == 4:
+      #  len_ = 0
 
       s.cacheresp.msg.type_  = s.memresp.msg.type_
       s.cacheresp.msg.opaque = s.memresp.msg.opaque
       s.cacheresp.msg.test   = 0                        # "miss"
       s.cacheresp.msg.len    = len_
-      s.cacheresp.msg.data   = s.memresp.msg.data[0:32]
+      s.cacheresp.msg.data   = s.memresp.msg.data
 
   def line_trace(s):
     return "(forw)"

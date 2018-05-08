@@ -8,6 +8,7 @@
 # List the steps to use in the default design flow
 
 steps = \
+  info \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
