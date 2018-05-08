@@ -153,7 +153,7 @@ module top;
 
     HostGcdUnit_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 2000 ) begin
+    while ( !th_done && total_cycles < 20000 ) begin
       #10;
       total_cycles = total_cycles + 1;
       th.display_trace();

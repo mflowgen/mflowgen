@@ -20,22 +20,20 @@
 #
 # X-handling
 #
-# - Squash X's with ARM_EN_X_SQUASH
-# - Initialize registers
-# - Initialize memory
+# - There are no X-suppression flags used
 #
 
-descriptions.vcs-aprff-build = \
-	"Post-APR FF -- Xs squashed, init reg, init mem"
+descriptions.vcs-aprffx-build = \
+	"Post-APR FF -- full X"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.vcs-aprff-build
+define ascii.vcs-aprffx-build
 	@echo -e $(echo_green)
 	@echo '#--------------------------------------------------------------------------------'
-	@echo '# VCS APR-FF Build -- Xs squashed, init reg, init mem'
+	@echo '# VCS APR-FF Build -- Full X'
 	@echo '#--------------------------------------------------------------------------------'
 	@echo -e $(echo_nocolor)
 endef
@@ -44,7 +42,7 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-#abbr.vcs-aprff-build =
+#abbr.vcs-aprffx-build =
 
 #-------------------------------------------------------------------------
 # Post-APR-FF-specific structural options
@@ -54,25 +52,25 @@ endef
 
 # Specify the simulator binary and simulator compile directory
 
-vcs_aprff_build_simv  = $(handoff_dir.vcs-aprff-build)/simv
-vcs_aprff_compile_dir = $(handoff_dir.vcs-aprff-build)/csrc
+vcs_aprffx_build_simv  = $(handoff_dir.vcs-aprffx-build)/simv
+vcs_aprffx_compile_dir = $(handoff_dir.vcs-aprffx-build)/csrc
 
-vcs_aprff_structural_options += -o $(vcs_aprff_build_simv)
-vcs_aprff_structural_options += -Mdir=$(vcs_aprff_compile_dir)
+vcs_aprffx_structural_options += -o $(vcs_aprffx_build_simv)
+vcs_aprffx_structural_options += -Mdir=$(vcs_aprffx_compile_dir)
 
 # Library files -- Any collected verilog (e.g., SRAMs)
 
-vcs_aprff_structural_options += \
-	$(foreach f, $(wildcard $(collect_dir.sim-aprff-build)/*.v),-v $f)
+vcs_aprffx_structural_options += \
+	$(foreach f, $(wildcard $(collect_dir.sim-aprffx-build)/*.v),-v $f)
 
 # Include directory -- Any collected includes are made available
 
-vcs_aprff_structural_options += +incdir+$(collect_dir.vcs-aprff-build)
+vcs_aprffx_structural_options += +incdir+$(collect_dir.vcs-aprffx-build)
 
 # Dump the bill of materials + file list to help double-check src files
 
-vcs_aprff_structural_options += -bom $(sim_test_harness_top)
-vcs_aprff_structural_options += -bfl $(logs_dir.vcs-aprff-build)/vcs_filelist
+vcs_aprffx_structural_options += -bom $(sim_test_harness_top)
+vcs_aprffx_structural_options += -bfl $(logs_dir.vcs-aprffx-build)/vcs_filelist
 
 #-------------------------------------------------------------------------
 # Post-APR-FF-specific custom options
@@ -80,26 +78,26 @@ vcs_aprff_structural_options += -bfl $(logs_dir.vcs-aprff-build)/vcs_filelist
 
 # Gate-level model (magically reach into innovus results dir)
 
-vcs_aprff_custom_options += \
+vcs_aprffx_custom_options += \
 	$(wildcard $(innovus_results_dir)/*.vcs.v)
 
 # Library files -- IO cells and stdcells
 
-vcs_aprff_custom_options += -v $(adk_dir)/iocells.v
-vcs_aprff_custom_options += -v $(adk_dir)/stdcells.v
+vcs_aprffx_custom_options += -v $(adk_dir)/iocells.v
+vcs_aprffx_custom_options += -v $(adk_dir)/stdcells.v
 
 # Performance options for post-APR FF simulation
 
-vcs_aprff_custom_options += -hsopt=gates
-vcs_aprff_custom_options += -rad
+vcs_aprffx_custom_options += -hsopt=gates
+vcs_aprffx_custom_options += -rad
 
 # Disable timing checks
 
-vcs_aprff_custom_options += +notimingcheck +nospecify
+vcs_aprffx_custom_options += +notimingcheck
 
 # Suppress lint and warnings
 
-vcs_aprff_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
+vcs_aprffx_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 
 #-------------------------------------------------------------------------
 # Modeling options and X-handling
@@ -107,28 +105,12 @@ vcs_aprff_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 
 # Use ARM fast-functional model of stdcells
 
-vcs_aprff_custom_options += +define+ARM_UD_MODEL
+vcs_aprffx_custom_options += +define+ARM_UD_MODEL
 
-#vcs_aprff_custom_options += +define+ARM_UD_CP=\#0
-#vcs_aprff_custom_options += +define+ARM_UD_DLY=\#0
-#vcs_aprff_custom_options += +define+ARM_UD_DP=\#0
-#vcs_aprff_custom_options += +define+ARM_UD_SEQ=\#0.001
-
-# Squash X's in ARM stdcells
-
-vcs_aprff_custom_options += +define+ARM_EN_X_SQUASH
-
-# Register initialization
-
-vcs_aprff_custom_options += +vcs+initreg+random
-
-# ARM memory initialization
-#
-# The INITIALIZE_MEMORY flag initializes memory state to 0 (according to
-# "ARM® 28nm TSMC CLN28HPC EDA Tools Support, Revision: r0p0, Application
-# Note", "arm_28nm_tsmc_cln28hpc_eda_an_100298_0000_a.pdf")
-
-vcs_aprff_custom_options += +define+INITIALIZE_MEMORY
+#vcs_aprffx_custom_options += +define+ARM_UD_CP=\#0
+#vcs_aprffx_custom_options += +define+ARM_UD_DLY=\#0
+#vcs_aprffx_custom_options += +define+ARM_UD_DP=\#0
+#vcs_aprffx_custom_options += +define+ARM_UD_SEQ=\#0.001
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -136,34 +118,34 @@ vcs_aprff_custom_options += +define+INITIALIZE_MEMORY
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-vcs_aprff_build_log = $(logs_dir.vcs-aprff-build)/build.log
+vcs_aprffx_build_log = $(logs_dir.vcs-aprffx-build)/build.log
 
-define commands.vcs-aprff-build
+define commands.vcs-aprffx-build
 
-	mkdir -p $(logs_dir.vcs-aprff-build)
-	mkdir -p $(handoff_dir.vcs-aprff-build)
+	mkdir -p $(logs_dir.vcs-aprffx-build)
+	mkdir -p $(handoff_dir.vcs-aprffx-build)
 
 # Record the options used to build the simulator
 
 	@echo "vcs_common_options = $(vcs_common_options)" \
-		>  $(vcs_aprff_build_log)
+		>  $(vcs_aprffx_build_log)
 	@echo "vcs_design_options = $(vcs_design_options)" \
-		>> $(vcs_aprff_build_log)
-	@echo "vcs_aprff_structural_options = $(vcs_aprff_structural_options)" \
-		>> $(vcs_aprff_build_log)
-	@echo "vcs_aprff_custom_options = $(vcs_aprff_custom_options)" \
-		>> $(vcs_aprff_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprff_build_log)
-	@echo >> $(vcs_aprff_build_log)
-	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprff_structural_options) $(vcs_aprff_custom_options)" \
-		>> $(vcs_aprff_build_log)
-	@printf "%.s-" {1..80} >> $(vcs_aprff_build_log)
-	@echo >> $(vcs_aprff_build_log)
+		>> $(vcs_aprffx_build_log)
+	@echo "vcs_aprffx_structural_options = $(vcs_aprffx_structural_options)" \
+		>> $(vcs_aprffx_build_log)
+	@echo "vcs_aprffx_custom_options = $(vcs_aprffx_custom_options)" \
+		>> $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80} >> $(vcs_aprffx_build_log)
+	@echo >> $(vcs_aprffx_build_log)
+	@echo "vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprffx_structural_options) $(vcs_aprffx_custom_options)" \
+		>> $(vcs_aprffx_build_log)
+	@printf "%.s-" {1..80} >> $(vcs_aprffx_build_log)
+	@echo >> $(vcs_aprffx_build_log)
 
 # Build the simulator
 
-	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprff_structural_options) $(vcs_aprff_custom_options) \
-		| tee -a $(vcs_aprff_build_log)
+	vcs $(vcs_common_options) $(vcs_design_options) $(vcs_aprffx_structural_options) $(vcs_aprffx_custom_options) \
+		| tee -a $(vcs_aprffx_build_log)
 
 endef
 
@@ -175,11 +157,11 @@ endef
 
 # Clean
 
-clean-vcs-aprff-build:
-	rm -rf ./$(VPATH)/vcs-aprff-build
-	rm -rf ./$(logs_dir.vcs-aprff-build)
-	rm -rf ./$(collect_dir.vcs-aprff-build)
-	rm -rf ./$(handoff_dir.vcs-aprff-build)
+clean-vcs-aprffx-build:
+	rm -rf ./$(VPATH)/vcs-aprffx-build
+	rm -rf ./$(logs_dir.vcs-aprffx-build)
+	rm -rf ./$(collect_dir.vcs-aprffx-build)
+	rm -rf ./$(handoff_dir.vcs-aprffx-build)
 
-#clean-ex: clean-vcs-aprff-build
+#clean-ex: clean-vcs-aprffx-build
 

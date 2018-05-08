@@ -16,7 +16,7 @@
 # These variables are used to generate targets for each test case.
 
 descriptions.vcs-rtl = \
-	"Run all RTL simulations (sub-targets available with tab-completion)"
+	"RTL -- full X"
 
 #-------------------------------------------------------------------------
 # ASCII art
@@ -25,7 +25,7 @@ descriptions.vcs-rtl = \
 define ascii.vcs-rtl
 	@echo -e $(echo_green)
 	@echo '#--------------------------------------------------------------------------------'
-	@echo '# VCS RTL Simulate'
+	@echo '# VCS RTL Sim -- Full X'
 	@echo '#--------------------------------------------------------------------------------'
 	@echo -e $(echo_nocolor)
 endef

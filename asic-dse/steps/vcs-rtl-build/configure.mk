@@ -17,8 +17,14 @@
 # This step also depends on the "sim-prep" step, which generates the
 # Verilog snippet that is `included in the test harness and that contains
 # all of the test cases.
+#
+# X-handling
+#
+# - There are no X-suppression flags used
+#
 
-descriptions.vcs-rtl-build = "Build the RTL simulator"
+descriptions.vcs-rtl-build = \
+	"RTL -- full X"
 
 #-------------------------------------------------------------------------
 # ASCII art
@@ -27,7 +33,7 @@ descriptions.vcs-rtl-build = "Build the RTL simulator"
 define ascii.vcs-rtl-build
 	@echo -e $(echo_green)
 	@echo '#--------------------------------------------------------------------------------'
-	@echo '# VCS RTL Build'
+	@echo '# VCS RTL Build -- Full X'
 	@echo '#--------------------------------------------------------------------------------'
 	@echo -e $(echo_nocolor)
 endef

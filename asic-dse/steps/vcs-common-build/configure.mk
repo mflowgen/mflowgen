@@ -80,3 +80,19 @@ ifdef VPD
 vcs_run_options += +vcdplusfile=$(VPD).vpd
 endif
 
+#-------------------------------------------------------------------------
+# Extra targets
+#-------------------------------------------------------------------------
+# These are extra useful targets when working with this step. These
+# targets are included into the build Makefile.
+
+# Clean
+
+clean-vcs:
+	rm -rf ./$(VPATH)/vcs*
+	rm -rf ./$(logs_dir)/vcs*
+	rm -rf ./$(reports_dir)/vcs*
+	rm -rf ./$(results_dir)/vcs*
+	rm -rf ./$(collect_dir)/vcs*
+	rm -rf ./$(handoff_dir)/vcs*
+

@@ -12,6 +12,12 @@ steps = \
   vcs-rtl \
   vcs-aprff-build \
   vcs-aprff \
+  vcs-aprffx-build \
+  vcs-aprffx \
+  vcs-aprsdf-build \
+  vcs-aprsdf \
+  vcs-aprsdfx-build \
+  vcs-aprsdfx \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -46,4 +52,12 @@ dependencies.vcs-rtl             = vcs-rtl-build
 dependencies.vcs-aprff-build     = sim-prep
 dependencies.vcs-aprff           = vcs-aprff-build
 
+dependencies.vcs-aprffx-build    = sim-prep
+dependencies.vcs-aprffx          = vcs-aprffx-build
+
+dependencies.vcs-aprsdf-build    = sim-prep
+dependencies.vcs-aprsdf          = vcs-aprsdf-build
+
+dependencies.vcs-aprsdfx-build   = sim-prep
+dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
 
