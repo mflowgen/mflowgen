@@ -79,6 +79,64 @@ def synthesize_testtable( testtable ):
   return { 'argvalues': testtable, 'ids': ids }
 
 #=========================================================================
+# Special control reg messages
+#=========================================================================
+
+def req_cr( type_, addr, data ):
+  msg       = CtrlRegReqMsg()
+  msg.type_ = type_
+  msg.addr  = addr
+  msg.data  = data
+  return msg
+
+def resp_cr( type_, data ):
+  msg       = CtrlRegRespMsg()
+  msg.type_ = type_
+  msg.data  = data
+  return msg
+
+rd = CtrlRegReqMsg.TYPE_READ
+wr = CtrlRegReqMsg.TYPE_WRITE
+
+ID_GO            = CtrlRegReqMsg.ID_GO
+ID_DEBUG         = CtrlRegReqMsg.ID_DEBUG
+ID_MDU_HOSTEN    = CtrlRegReqMsg.ID_MDU_HOSTEN
+ID_ICACHE_HOSTEN = CtrlRegReqMsg.ID_ICACHE_HOSTEN
+ID_DCACHE_HOSTEN = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+
+#                    Req  Req               Req        Resp Resp
+#                    Type Addr              Data       Type Data
+
+debug_msgs = [  req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   0 ), # read debug
+                req_cr( wr,   ID_DEBUG, 1 ), resp_cr( wr,   0 ), # write debug
+                req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   1 ), # read debug
+             ]
+asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,    0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_GO,            1 ), resp_cr( wr,   0 ), # go
+             ]
+mdu_msgs  =  [  req_cr( wr,  ID_GO,            0 ), resp_cr( wr,   0 ), # write False to go
+                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_MDU_HOSTEN,    1 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( rd,  ID_MDU_HOSTEN,    0 ), resp_cr( rd,   1 ), # check mdu_host_en
+             ]
+# TODO
+icache_msgs = [ ]
+dcache_msgs = [ ]
+
+# Dispatch
+
+ctrlreg_msgs = {
+  "debug" :  debug_msgs,
+  "asm" :    asm_msgs,
+  "mdu" :    mdu_msgs,
+  "icache" : icache_msgs,
+  "dcache" : dcache_msgs,
+}
+
+#=========================================================================
 # TestHarness
 #=========================================================================
 
@@ -190,19 +248,6 @@ class TestHarness( Model ):
 
   def load_ctrlreg( self, msg_type="asm" ):
 
-    def req( type_, addr, data ):
-      msg       = CtrlRegReqMsg()
-      msg.type_ = type_
-      msg.addr  = addr
-      msg.data  = data
-      return msg
-
-    def resp( type_, data ):
-      msg       = CtrlRegRespMsg()
-      msg.type_ = type_
-      msg.data  = data
-      return msg
-
     rd = CtrlRegReqMsg.TYPE_READ
     wr = CtrlRegReqMsg.TYPE_WRITE
 
@@ -212,47 +257,11 @@ class TestHarness( Model ):
     ID_ICACHE_HOSTEN = CtrlRegReqMsg.ID_ICACHE_HOSTEN
     ID_DCACHE_HOSTEN = CtrlRegReqMsg.ID_DCACHE_HOSTEN
 
+    assert msg_type in ctrlreg_msgs, "{} is not a valid control reg message sequence name.".format( msg_type )
+
     # By default, the msgs starts with a simple check of debug bit
 
-    #             Req   Req       Req        Resp  Resp
-    #             Type  Addr      Data       Type  Data
-    msgs = [  req( rd,   ID_DEBUG, 0 ), resp( rd,   0 ), # read debug
-              req( wr,   ID_DEBUG, 1 ), resp( wr,   0 ), # write debug
-              req( rd,   ID_DEBUG, 0 ), resp( rd,   1 ), # read debug
-          ]
-
-    # asm tests kick off the processor by setting go bit, and set all host_en to 0
-
-    if msg_type == "asm":
-      #              Req  Req               Req        Resp Resp
-      #              Type Addr              Data       Type Data
-      msgs+= [  req( wr,  ID_MDU_HOSTEN,    0 ), resp( wr,   0 ), # write False to mdu_host_en
-                req( wr,  ID_ICACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to icache_host_en
-                req( wr,  ID_DCACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to dcache_host_en
-
-                # req( rd,  ID_MDU_HOSTEN,    0 ), resp( rd,   0 ), # check mdu_host_en
-                # req( rd,  ID_ICACHE_HOSTEN, 0 ), resp( rd,   0 ), # check icache_host_en
-                # req( rd,  ID_DCACHE_HOSTEN, 0 ), resp( rd,   0 ), # check dcache_host_en
-
-                req( wr,  ID_GO,            1 ), resp( wr,   0 ), # go
-              ]
-
-    # mdu tests sets mdu_host_en_to 1 after setting others to zero
-
-    elif msg_type == "mdu":
-      #              Req  Req               Req        Resp Resp
-      #              Type Addr              Data       Type Data
-      msgs = [  req( wr,  ID_GO,            0 ), resp( wr,   0 ), # write False to go
-                req( wr,  ID_ICACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to icache_host_en
-                req( wr,  ID_DCACHE_HOSTEN, 0 ), resp( wr,   0 ), # write False to dcache_host_en
-
-                # req( rd,  ID_GO,            0 ), resp( rd,   0 ), # check go
-                # req( rd,  ID_ICACHE_HOSTEN, 0 ), resp( rd,   0 ), # check icache_host_en
-                # req( rd,  ID_DCACHE_HOSTEN, 0 ), resp( rd,   0 ), # check dcache_host_en
-
-                req( wr,  ID_MDU_HOSTEN,    1 ), resp( wr,   0 ), # write False to mdu_host_en
-                req( rd,  ID_MDU_HOSTEN,    0 ), resp( rd,   1 ), # check mdu_host_en
-              ]
+    msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ msg_type ]
 
     self.ctrlregsrc.src.msgs   = msgs[::2]
     self.ctrlregsink.sink.msgs = msgs[1::2]
@@ -408,7 +417,7 @@ def run_test( model, msgs, num_cores, cacheline_nbits=128,
 
   # Checking types of incoming messages
 
-  assert isinstance( ctrlreg_msg, basestring        ) or isinstance( asm_msg, str ) # ctrlreg 
+  assert isinstance( ctrlreg_msg, basestring        ) or isinstance( asm_msg, str ) # ctrlreg
   assert isinstance( asm_msg    , SparseMemoryImage ) or asm_msg is None            # asm test
   assert isinstance( mdu_msg    , list              )                               # mdu
   assert isinstance( icache_msg , list              )                               # icache

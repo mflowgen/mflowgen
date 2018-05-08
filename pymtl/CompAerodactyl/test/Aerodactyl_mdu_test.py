@@ -28,8 +28,8 @@ from mdu.test.IntMulDivUnit_test import test_case_table
 def test_mdu_isolation( test_params, dump_vcd, test_verilog ):
   run_test(
 
-    # ctrlreg_msg    assembly_image   mdu_msgs          icache_msgs  dcache
-    [ "mdu",         None,            test_params.msgs, [],          [] ],
+    # ctrlreg_msg    asm_testcase   mdu_msgs          icache_msgs  dcache
+    [ "mdu",         None,          test_params.msgs, [],          [] ],
 
     dump_vcd, test_verilog,
     test_params.src_delay, test_params.sink_delay,
