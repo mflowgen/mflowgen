@@ -159,7 +159,7 @@ endef
 
 # Print the VCS build command
 
-vcs-rtl-build.print:
+print.vcs-rtl-build:
 	@echo $(vcs_rtl_build_cmd)
 
 # Clean

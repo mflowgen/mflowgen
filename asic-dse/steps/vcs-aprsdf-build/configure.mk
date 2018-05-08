@@ -190,7 +190,7 @@ endef
 
 # Print the VCS build command
 
-vcs-aprsdf-build.print:
+print.vcs-aprsdf-build:
 	@echo $(vcs_aprsdf_build_cmd)
 
 # Clean

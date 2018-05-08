@@ -177,7 +177,7 @@ endef
 
 # Print the VCS build command
 
-vcs-aprsdfx-build.print:
+print.vcs-aprsdfx-build:
 	@echo $(vcs_aprsdfx_build_cmd)
 
 # Clean

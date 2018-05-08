@@ -174,7 +174,7 @@ endef
 
 # Print the VCS build command
 
-vcs-aprffx-build.print:
+print.vcs-aprffx-build:
 	@echo $(vcs_aprffx_build_cmd)
 
 # Clean
