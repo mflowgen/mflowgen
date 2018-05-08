@@ -68,12 +68,12 @@ set_false_path -to [all_outputs]
 #-------------------------------------------------------------------------
 # Reset
 #-------------------------------------------------------------------------
-# The reset input has special treatment. Give reset 50% of the core clock
-# cycle to propagate into the chip.
+# The reset input has special treatment. Give reset a set percentage of
+# the core clock cycle to propagate into the chip.
 
 set reset_port reset_io
 
-set reset_percent 50
+set reset_percent 70
 set reset_input_delay [expr ((100-$reset_percent) * $core_clk_period) / 100.0]
 
 set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
