@@ -84,6 +84,11 @@ VCS_APRSDFX.$(1).$(2): $$(logs_dir.vcs-aprsdfx)/run-$(1)-$(2).log
 
 VCS_APRSDFX_$(1)_ALL += $$(logs_dir.vcs-aprsdfx)/run-$(1)-$(2).log
 
+# Create target that prints the vcs command
+
+VCS_APRSDFX.$(1).$(2).print:
+	@echo "$$(vcs_aprsdfx_simv) $$(vcs_run_options) +test=$(2) 2>&1 | tee $$@"
+
 endef
 
 # Call template for each test case in each test category

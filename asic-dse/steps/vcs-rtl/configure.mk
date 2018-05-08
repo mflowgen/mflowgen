@@ -84,6 +84,11 @@ VCS_RTL.$(1).$(2): $$(logs_dir.vcs-rtl)/run-$(1)-$(2).log
 
 VCS_RTL_$(1)_ALL += $$(logs_dir.vcs-rtl)/run-$(1)-$(2).log
 
+# Create target that prints the vcs command
+
+VCS_RTL.$(1).$(2).print:
+	@echo "$$(vcs_rtl_simv) $$(vcs_run_options) +test=$(2) 2>&1 | tee $$@"
+
 endef
 
 # Call template for each test case in each test category
