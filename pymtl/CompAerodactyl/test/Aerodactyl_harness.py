@@ -269,11 +269,9 @@ class TestHarness( Model ):
   #-----------------------------------------------------------------------
   # load_asm
   #-----------------------------------------------------------------------
-  # This function loads messages into s.src0-3, s.sink0-3 and memory data.
-  # If only_one_core is True, loads the messages to src0 and sink0,
-  # disabling cores1-3.
+  # This function loads messages into s.src0-3, s.sink0-3 and memory data
 
-  def load_asm( self, mem_image, only_one_core=False ):
+  def load_asm( self, mem_image ):
 
     # Iterate over the sections
 
@@ -285,11 +283,8 @@ class TestHarness( Model ):
       if section.name == ".mngr2proc":
         for i in xrange(0,len(section.data),4):
           bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
-          if only_one_core:
-            self.src[0].src.msgs.append( Bits(32,bits) )
-          else:
-            for c in xrange(self.num_cores):
-              self.src[c].src.msgs.append( Bits(32,bits) )
+          for i in xrange(self.num_cores):
+            self.src[i].src.msgs.append( Bits(32,bits) )
 
       elif section.name.endswith("_2proc"):
         idx = int( section.name[5:-6], 0 )
@@ -304,11 +299,8 @@ class TestHarness( Model ):
         for i in xrange(0,len(section.data),4):
           bits = struct.unpack_from("<I",buffer(section.data,i,4))[0]
 
-          if only_one_core:
-            self.sink[0].sink.msgs.append( Bits(32,bits) )
-          else:
-            for c in xrange(self.num_cores):
-              self.sink[c].sink.msgs.append( Bits(32,bits) )
+          for i in xrange(self.num_cores):
+            self.sink[i].sink.msgs.append( Bits(32,bits) )
 
       elif section.name.endswith("_2mngr"):
         idx = int( section.name[5:-6], 0 )
@@ -391,8 +383,7 @@ class TestHarness( Model ):
 
 def run_test( model, msgs, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
-              mem_stall_prob=0, mem_latency=0, max_cycles=200000,
-              only_one_core=False ):
+              mem_stall_prob=0, mem_latency=0, max_cycles=200000 ):
 
   assert isinstance( msgs, list )
   assert len(msgs) == 5
@@ -435,7 +426,7 @@ def run_test( model, msgs, num_cores, cacheline_nbits=128,
   model.load_ctrlreg( ctrlreg_msg )
 
   if asm_msg:
-    model.load_asm( asm_msg, only_one_core=only_one_core )
+    model.load_asm( asm_msg )
 
   if mdu_msg:
     model.load_mdu( mdu_msg )

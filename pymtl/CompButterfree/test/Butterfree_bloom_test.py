@@ -1,20 +1,20 @@
 #=========================================================================
-# Aerodactyl_mdu_test.py
+# Butterfree_bloom_test.py
 #=========================================================================
 
 import pytest
 
 from pymtl              import *
 
-from Aerodactyl_harness import asm_test, synthesize_testtable
+from Butterfree_harness import asm_test, synthesize_testtable
 
-from CompAerodactyl.Aerodactyl import Aerodactyl
+from CompButterfree.Butterfree import Butterfree
 
 #-------------------------------------------------------------------------
 # Get new run_test
 #-------------------------------------------------------------------------
 
-from Aerodactyl_run_test       import run_test
+from Butterfree_run_test       import run_test
 
 #-------------------------------------------------------------------------
 # bloom

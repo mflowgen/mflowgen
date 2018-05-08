@@ -22,8 +22,6 @@ from networks.Funnel                      import Funnel
 from networks.Router                      import Router
 from adapters.HostAdapter                 import HostAdapter
 
-from bloom.BloomFilterXcel                import BloomFilterXcel
-
 class Aerodactyl( Model ):
 
   def __init__( s, num_cores=4, mopaque_nbits=8, addr_nbits=32,
@@ -123,24 +121,11 @@ class Aerodactyl( Model ):
 
     s.proc = ProcPRTL   [num_cores]( num_cores, reset_freeze = True )
     s.l0i  = InstBuffer [num_cores]( 2, cacheline_nbits/8 )
-    s.xcel = BloomFilterXcel[num_cores]( snoop_mem_msg=s.proc_cache_ifc.req,
-                                         csr_begin=0 )
+    s.xcel = NullXcelRTL[num_cores]()
 
     #---------------------------------------------------------------------
     # Connections
     #---------------------------------------------------------------------
-
-    # bloom filter connection to the memory system.
-
-    s.cachereq_go = Wire(1)
-
-    for i in xrange( num_cores ):
-      s.connect( s.xcel[i].memreq_snoop.msg, s.dcache.cachereq.msg )
-      s.connect( s.xcel[i].memreq_snoop.val, s.cachereq_go )
-
-    @s.combinational
-    def comb_cachereq_go():
-      s.cachereq_go.value = s.dcache.cachereq.val and s.dcache.cachereq.rdy
 
     # ctrlreg
 
