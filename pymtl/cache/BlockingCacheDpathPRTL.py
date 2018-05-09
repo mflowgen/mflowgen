@@ -20,7 +20,7 @@ from sram.SramRTL         import SramRTL
 from SliceNDicePRTL       import SliceNDicePRTL
 from GenWriteDataPRTL     import GenWriteDataPRTL
 
-size           = 8192               # Cache size in bytes
+size           = 32 * 1024          # Cache size in bytes
 p_opaque_nbits = 8
 
 # local parameters not meant to be set from outside
@@ -30,8 +30,8 @@ abw            = 32                 # Short name for addr bitwidth
 byte_off       = clog2(dbw)         # Byte Offset
 clw            = 128                # Short name for cacheline bitwidth
 nblocks        = size*8/clw         # Number of blocks in the cache
-idw            = clog2(nblocks)-1   # Short name for index width
-idw_off        = idw+4
+idw            = clog2(nblocks)     # Short name for index width
+idw_off        = idw+clog2(clw/8)
 num_words      = clw / dbw          # Number of Words in a CL
 num_bytes      = clw / 8            # Number of Bytes in a CL
 word_off       = clog2( num_words ) # Word Offset
@@ -367,10 +367,9 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_0_read_out = Wire( abw )
 
-    s.tag_array_0 = m = SramRTL(num_bits    =  32                  ,
-                                num_words   = 256                  ,
-                                tech_node   = '28nm'               ,
-                                module_name = 'sram_28nm_32x256_SP')
+    s.tag_array_0 = m = SramRTL( num_bits    =  32    ,
+                                 num_words   = 2048   ,
+                                 tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
@@ -385,10 +384,9 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_1_read_out = Wire( abw )
 
-    s.tag_array_1 = m = SramRTL(num_bits    =  32                  ,
-                                num_words   = 256                  ,
-                                tech_node   = '28nm'               ,
-                                module_name = 'sram_28nm_32x256_SP')
+    s.tag_array_1 = m = SramRTL( num_bits    =  32    ,
+                                 num_words   = 2048   ,
+                                 tech_node   = '28nm' )
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.tag_array_1_read_out,
@@ -402,10 +400,9 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.data_array_0_read_out = Wire( clw )
 
-    s.data_array_0 = m = SramRTL(num_bits    = 128                   ,
-                                 num_words   = 256                   ,
-                                 tech_node   = '28nm'                ,
-                                 module_name = 'sram_28nm_128x256_SP')
+    s.data_array_0 = m = SramRTL( num_bits    = 128    ,
+                                  num_words   = 2048   ,
+                                  tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
@@ -420,10 +417,9 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.data_array_1_read_out = Wire( clw )
 
-    s.data_array_1 = m = SramRTL(num_bits    = 128                   ,
-                                 num_words   = 256                   ,
-                                 tech_node   = '28nm'                ,
-                                 module_name = 'sram_28nm_128x256_SP')
+    s.data_array_1 = m = SramRTL( num_bits    = 128    ,
+                                  num_words   = 2048   ,
+                                  tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
