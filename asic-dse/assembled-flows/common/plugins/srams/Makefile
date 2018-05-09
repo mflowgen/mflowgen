@@ -19,7 +19,7 @@ default: all
 
 SPECS_DIR?=specs
 OUTPUT_DIR?=.
-MEM_COMPILER_SP=sram_sp_hde
+MEM_COMPILER_SP=sram_sp_hsd
 MEM_COMPILER_DP=sram_dp_uhde
 MEM_COMPILER_2P=sram_2p_uhde
 RF_COMPILER_2P=rf_2p_hsc
@@ -57,7 +57,7 @@ $(OUTPUT_DIR):
 #-------------------------------------------------------------------------
 
 # Single Ported
-$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.sram_sp_hsd.spec | $(OUTPUT_DIR)
 	rm -f $@
 	$(MEM_COMPILER_SP) lvs -spec $<
 	-mv -f $(basename $(notdir $@))*.cdl $@
@@ -103,7 +103,7 @@ $(OUTPUT_DIR)/%.cdl: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
 #-------------------------------------------------------------------------
 
 # Single Ported
-$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.gds: $(SPECS_DIR)/%.sram_sp_hsd.spec | $(OUTPUT_DIR)
 	rm -f $@
 	$(MEM_COMPILER_SP) gds2 -spec $<
 	-mv -f $(basename $(notdir $@))*.gds2 $@
@@ -163,7 +163,7 @@ $(OUTPUT_DIR)/%.db: $(OUTPUT_DIR)/%.lib
 #-------------------------------------------------------------------------
 
 # Single Ported
-$(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.sram_sp_hsd.spec | $(OUTPUT_DIR)
 	rm -f $@
 	$(MEM_COMPILER_SP) lef-fp -spec $<
 	-mv -f $(basename $(notdir $@))*.lef $@
@@ -209,7 +209,7 @@ $(OUTPUT_DIR)/%.lef: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
 #-------------------------------------------------------------------------
 
 # Single Ported
-$(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.sram_sp_hsd.spec | $(OUTPUT_DIR)
 	rm -f $@
 	$(MEM_COMPILER_SP) liberty -spec $<
 	-mv -f $(basename $(notdir $@))*.lib $@
@@ -255,7 +255,7 @@ $(OUTPUT_DIR)/%.lib: $(SPECS_DIR)/%.rf_sp_hse.spec | $(OUTPUT_DIR)
 #-------------------------------------------------------------------------
 
 # Single Ported
-$(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.sp.spec | $(OUTPUT_DIR)
+$(OUTPUT_DIR)/%.v: $(SPECS_DIR)/%.sram_sp_hsd.spec | $(OUTPUT_DIR)
 	rm -f $@
 	$(MEM_COMPILER_SP) verilog -spec $<
 	-mv -f $(basename $(notdir $@))*.v $@
