@@ -134,7 +134,7 @@ class Butterfree( Model ):
     s.cachereq_go = Wire(1)
 
     for i in xrange( num_cores ):
-      s.connect( s.xcel[i].memreq_snoop.msg, s.dcache.cachereq.msg )
+      s.connect( s.xcel[i].memreq_snoop.msg, s.dcache_adapter.req.msg )
       s.connect( s.xcel[i].memreq_snoop.val, s.cachereq_go )
 
     @s.combinational
