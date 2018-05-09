@@ -34,6 +34,8 @@ steps = \
   innovus-signoff \
   calibre-seal \
   calibre-drc-sealed \
+  calibre-fill \
+  calibre-drc-filled \
 
 # Step dependency graph
 
@@ -78,4 +80,6 @@ dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
 
 dependencies.calibre-seal        = innovus-signoff
 dependencies.calibre-drc-sealed  = calibre-seal
+dependencies.calibre-fill        = calibre-seal
+dependencies.calibre-drc-filled  = calibre-fill
 

@@ -1,0 +1,13 @@
+*drcRulesFile: ${calibre_fill_rulesfile}
+*drcRunDir: ${calibre_fill_rundir}
+*drcLayoutPaths: ${calibre_fill_layoutpaths}
+*drcLayoutPrimary: ${calibre_fill_layoutprimary}
+*drcResultsFile: ${calibre_fill_resultsfile}
+*drcResultsFormat: GDSII
+*drcSummaryFile: fill.summary
+*drcDRCMaxResultsAll: 1
+*cmnShowOptions: 1
+*cmnTranscriptFile: ${calibre_fill_transcriptfile}
+*cmnTranscriptEchoToFile: 1
+*cmnRunMT: 1
+*cmnRunHyper: 1

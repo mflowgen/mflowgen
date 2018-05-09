@@ -7,14 +7,14 @@
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.calibre-drc-sealed = \
-	"DRC for sealed design"
+descriptions.calibre-drc-filled = \
+	"DRC for sealed and filled design"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.calibre-drc-sealed
+define ascii.calibre-drc-fill
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                            ____    _____     _____                            #'
@@ -23,7 +23,7 @@ define ascii.calibre-drc-sealed
 	@echo '#                           | | | | |  _  /  | |                                #'
 	@echo '#                           | |_| | | | \ \  | |____                            #'
 	@echo '#                           |____/  |_|  \_\  \_____|                           #'
-	@echo '#                                 S E A L E D                                   #'
+	@echo '#                                 F I L L E D                                   #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
 endef
@@ -32,7 +32,7 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-abbr.calibre-drc-sealed = drc-sealed
+abbr.calibre-drc-filled = drc-filled
 
 #-------------------------------------------------------------------------
 # Variables
@@ -40,22 +40,22 @@ abbr.calibre-drc-sealed = drc-sealed
 
 # GDS file
 
-calibre_drc_sealed_gds = $(collect_dir.calibre-drc-sealed)/sealed.gds
+calibre_drc_filled_gds = $(collect_dir.calibre-drc-filled)/top.gds
 
 # Runset files -- the template will be populated to generate the runset
 
-calibre_drc_sealed_runset_template = $(plugins_dir)/calibre/drc-sealed.runset.template
-calibre_drc_sealed_runset          = $(results_dir.calibre-drc-sealed)/drc-sealed.runset
+calibre_drc_filled_runset_template = $(plugins_dir)/calibre/drc-filled.runset.template
+calibre_drc_filled_runset          = $(results_dir.calibre-drc-filled)/drc-filled.runset
 
 # Variables to substitute into the runset template
 #
 # Note: The paths must be absolute or Calibre will complain
 
-export calibre_drc_sealed_rulesfile       = $(adk_dir)/calibre-drc-chip.rule
-export calibre_drc_sealed_rundir          = $(PWD)/$(results_dir.calibre-drc-sealed)
-export calibre_drc_sealed_layoutpaths     = $(PWD)/$(calibre_drc_sealed_gds)
-export calibre_drc_sealed_layoutprimary   = top_sealed
-export calibre_drc_sealed_transcriptfile  = $(PWD)/$(logs_dir.calibre-drc-sealed)/drc.log
+export calibre_drc_filled_rulesfile       = $(adk_dir)/calibre-drc-chip.rule
+export calibre_drc_filled_rundir          = $(PWD)/$(results_dir.calibre-drc-filled)
+export calibre_drc_filled_layoutpaths     = $(PWD)/$(calibre_drc_filled_gds)
+export calibre_drc_filled_layoutprimary   = top
+export calibre_drc_filled_transcriptfile  = $(PWD)/$(logs_dir.calibre-drc-filled)/drc.log
 
 #-------------------------------------------------------------------------
 # Options
@@ -76,12 +76,12 @@ export calibre_drc_sealed_transcriptfile  = $(PWD)/$(logs_dir.calibre-drc-sealed
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-define commands.calibre-drc-sealed
-	mkdir -p $(results_dir.calibre-drc-sealed)
+define commands.calibre-drc-filled
+	mkdir -p $(results_dir.calibre-drc-filled)
 # Generate the drc runset from the template
-	envsubst < $(calibre_drc_sealed_runset_template) > $(calibre_drc_sealed_runset)
+	envsubst < $(calibre_drc_filled_runset_template) > $(calibre_drc_filled_runset)
 # Run drc using the runset
-	calibre -gui -drc -batch -runset $(calibre_drc_sealed_runset)
+	calibre -gui -drc -batch -runset $(calibre_drc_filled_runset)
 endef
 
 #-------------------------------------------------------------------------
@@ -92,15 +92,15 @@ endef
 
 # Clean
 
-clean-calibre-drc-sealed:
-	rm -rf ./$(VPATH)/calibre-drc-sealed
-	rm -rf ./$(collect_dir.calibre-drc-sealed)
-	rm -rf ./$(results_dir.calibre-drc-sealed)
+clean-calibre-drc-filled:
+	rm -rf ./$(VPATH)/calibre-drc-filled
+	rm -rf ./$(collect_dir.calibre-drc-filled)
+	rm -rf ./$(results_dir.calibre-drc-filled)
 
-clean-drc-sealed: clean-calibre-drc-sealed
+clean-drc-filled: clean-calibre-drc-filled
 
-debug-drc-sealed:
-	calibredrv -m $(calibre_drc_sealed_gds) \
+debug-drc-filled:
+	calibredrv -m $(calibre_drc_filled_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -drc $(results_dir.calibre-drc-sealed)/drc.results
+	           -rve -drc $(results_dir.calibre-drc-filled)/drc.results
 

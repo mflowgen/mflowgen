@@ -47,25 +47,30 @@ sealed_gds   = $(handoff_dir.calibre-seal)/sealed.gds
 # included into the build Makefile.
 
 define commands.calibre-seal
+	mkdir -p $(logs_dir.calibre-seal)
 	mkdir -p $(handoff_dir.calibre-seal)
 
 # Merge the design gds with IP gds files to create the unsealed gds
 
+	(set -x; \
 	calibredrv -a layout filemerge \
 		-indir $(collect_dir.calibre-seal) \
 		-in $(adk_dir)/stdcells.gds \
 		-in $(adk_dir)/iocells.gds \
 		-in $(adk_dir)/iocells-bondpads.gds \
 		-topcell $(design_name) \
-		-out $(unsealed_gds)
+		-out $(unsealed_gds) \
+	) > $(logs_dir.calibre-seal)/merge-unsealed.log 2>&1
 
 # Seal the design by merging with the sealring gds
 
+	(set -x; \
 	calibredrv -a layout filemerge \
 		-in $(unsealed_gds) \
 		-in $(adk_dir)/brgtc2-sealring.gds \
-		-createtop top_sealed \
-		-out $(sealed_gds)
+		-createtop top \
+		-out $(sealed_gds) \
+	) > $(logs_dir.calibre-seal)/merge-sealed.log 2>&1
 
 endef
 
@@ -79,8 +84,19 @@ endef
 
 clean-calibre-seal:
 	rm -rf ./$(VPATH)/calibre-seal
+	rm -rf ./$(logs_dir.calibre-seal)
 	rm -rf ./$(collect_dir.calibre-seal)
 	rm -rf ./$(handoff_dir.calibre-seal)
 
 clean-seal: clean-calibre-seal
+
+# Debug
+
+debug-seal-unsealed:
+	calibredrv -m $(unsealed_gds) \
+	           -l $(adk_dir)/calibre.layerprops
+
+debug-seal-sealed:
+	calibredrv -m $(sealed_gds) \
+	           -l $(adk_dir)/calibre.layerprops
 
