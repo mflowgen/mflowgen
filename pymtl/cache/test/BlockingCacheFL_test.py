@@ -166,6 +166,24 @@ def read_hit_1word_clean( base_addr, wide_access = False ):
   ]
 
 #----------------------------------------------------------------------
+# Test Case: read hit path for wide access
+#----------------------------------------------------------------------
+# The test field in the response message: 0 == MISS, 1 == HIT
+
+def read_hit_1word_clean_wide_access( base_addr, wide_access = False ):
+
+  if not wide_access: return []
+
+  l = 0
+
+  return [
+    #    type  opq  addr          len data                                                     type  opq  test len data
+    req( 'in', 0x0, base_addr + 0, l, 0xabcdabcddeadbeea00c0ffeedeadbeef, wide_access ), resp( 'in', 0x0, 0,   l,  0                                 , wide_access ),
+    req( 'rd', 0x1, base_addr + 0, l, 0                                 , wide_access ), resp( 'rd', 0x1, 1,   l,  0xabcdabcddeadbeea00c0ffeedeadbeef, wide_access ),
+    req( 'rd', 0x1, base_addr + 4, l, 0                                 , wide_access ), resp( 'rd', 0x1, 1,   l,  0x00000000abcdabcddeadbeea00c0ffee, wide_access ),
+  ]
+
+#----------------------------------------------------------------------
 # Test Case: read hit/miss path, many requests
 #----------------------------------------------------------------------
 # The test field in the response message: 0 == MISS, 1 == HIT
@@ -290,6 +308,22 @@ def read_miss_1word_mem( base_addr, wide_access = False ):
     # addr      data (in int)
     0x00000000, 0xdeadbeef,
     0x00000004, 0x00c0ffee,
+  ]
+
+#-------------------------------------------------------------------------
+# Test Case: read miss path
+#-------------------------------------------------------------------------
+
+def read_miss_1word_msg_wide_access( base_addr, wide_access = False ):
+
+  if not wide_access: return []
+
+  l = 0
+
+  return [
+    #    type  opq   addr      len  data                            type  opq test len  data
+    req( 'rd', 0x00, 0x00000000, l, 0         , wide_access ), resp('rd', 0x00, 0, l, 0x00c0ffeedeadbeef, wide_access ), # read word  0x00000000
+    req( 'rd', 0x01, 0x00000004, l, 0         , wide_access ), resp('rd', 0x01, 1, l,         0x00c0ffee, wide_access ), # read word  0x00000004
   ]
 
 #-------------------------------------------------------------------------
@@ -896,63 +930,65 @@ def dir_mapped_long0_mem( base_addr, wide_access = False ):
 #-------------------------------------------------------------------------
 
 test_case_table_generic = mk_test_case_table([
-  (                            "msg_func               mem_data_func         stall lat src sink   wide_access"),
-  [ "read_hit_1word_clean",     read_hit_1word_clean,  None,                 0.0,  0,  0,  0    , False       ],
-  [ "read_miss_1word",          read_miss_1word_msg,   read_miss_1word_mem,  0.0,  0,  0,  0    , False       ],
+  (                             "msg_func                          mem_data_func         stall lat src sink   wide_access"),
+  [ "read_hit_1word_clean",      read_hit_1word_clean,             None,                 0.0,  0,  0,  0    , False       ],
+  [ "read_miss_1word",           read_miss_1word_msg,              read_miss_1word_mem,  0.0,  0,  0,  0    , False       ],
 
-  [ "read_hit_1word_clean_wa",  read_hit_1word_clean,  None,                 0.0,  0,  0,  0    , True        ],
-  [ "read_miss_1word_wa",       read_miss_1word_msg,   read_miss_1word_mem,  0.0,  0,  0,  0    , True        ],
+  [ "read_hit_1word_clean_wa",   read_hit_1word_clean,             None,                 0.0,  0,  0,  0    , True        ],
+  [ "read_miss_1word_wa",        read_miss_1word_msg,              read_miss_1word_mem,  0.0,  0,  0,  0    , True        ],
 
+  [ "read_hit_1word_clean_wide", read_hit_1word_clean_wide_access, None,                 0.0,  0,  0,  0    , True        ],
+  [ "read_miss_1word_wide",      read_miss_1word_msg_wide_access,  read_miss_1word_mem,  0.0,  0,  0,  0    , True        ],
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   # LAB TASK: Add test cases to this table
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
-  [ "read_hit_many_clean",      read_hit_many_clean,   None,                 0.0,  0,  0,  0    , False       ],
-  [ "read_capacity",            read_capacity,         read_capacity_mem,    0.0,  0,  0,  0    , False       ],
-  [ "read_hit_1word_dirty",     read_hit_1word_dirty,  None,                 0.0,  0,  0,  0    , False       ],
-#  [ "read_hit_1line_clean",     read_hit_1line_clean,  None,                 0.0,  0,  0,  0   ,  False       ],
-  [ "write_hit_1word_clean",    write_hit_1word_clean, None,                 0.0,  0,  0,  0    , False       ],
-  [ "write_hit_1word_dirty",    write_hit_1word_dirty, None,                 0.0,  0,  0,  0    , False       ],
-  [ "amo_hit_1word_clean",      amo_hit_1word_clean,   None,                 0.0,  0,  0,  0    , False       ],
-  [ "amo_miss_1word",           amo_miss_1word_msg,    amo_miss_1word_mem,   0.0,  0,  0,  0    , False       ],
-  [ "amo_hit_more_clean",       amo_hit_more_clean,    None,                 0.0,  0,  0,  0    , False       ],
-  [ "amo_miss_more",            amo_miss_more_msg,     amo_miss_more_mem,    0.0,  0,  0,  0    , False       ],
-  [ "random",                   random_msgs,           None,                 0.0,  0,  0,  0    , False       ],
-  [ "random_stall0.5_lat0",     random_msgs,           None,                 0.5,  0,  0,  0    , False       ],
-  [ "random_stall0.0_lat4",     random_msgs,           None,                 0.0,  4,  0,  0    , False       ],
-  [ "random_stall0.5_lat4",     random_msgs,           None,                 0.5,  4,  0,  0    , False       ],
-  [ "stream",                   stream_msgs,           None,                 0.0,  0,  0,  0    , False       ],
-  [ "stream_stall0.5_lat0",     stream_msgs,           None,                 0.5,  0,  0,  0    , False       ],
-  [ "stream_stall0.0_lat4",     stream_msgs,           None,                 0.0,  4,  0,  0    , False       ],
-  [ "stream_stall0.5_lat4",     stream_msgs,           None,                 0.5,  4,  0,  0    , False       ],
-  [ "write_miss_1word",         write_miss_1word_msg,  write_miss_1word_mem, 0.0,  0,  0,  0    , False       ],
-  [ "evict",                    evict_msg,             None,                 0.0,  0,  0,  0    , False       ],
-  [ "evict_stall0.5_lat0",      evict_msg,             None,                 0.5,  0,  0,  0    , False       ],
-  [ "evict_stall0.0_lat4",      evict_msg,             None,                 0.0,  4,  0,  0    , False       ],
-  [ "evict_stall0.5_lat4",      evict_msg,             None,                 0.5,  4,  0,  0    , False       ],
+  [ "read_hit_many_clean",       read_hit_many_clean,              None,                 0.0,  0,  0,  0    , False       ],
+  [ "read_capacity",             read_capacity,                    read_capacity_mem,    0.0,  0,  0,  0    , False       ],
+  [ "read_hit_1word_dirty",      read_hit_1word_dirty,             None,                 0.0,  0,  0,  0    , False       ],
+#  [ "read_hit_1line_clean",      read_hit_1line_clean,             None,                 0.0,  0,  0,  0   ,  False       ],
+  [ "write_hit_1word_clean",     write_hit_1word_clean,            None,                 0.0,  0,  0,  0    , False       ],
+  [ "write_hit_1word_dirty",     write_hit_1word_dirty,            None,                 0.0,  0,  0,  0    , False       ],
+  [ "amo_hit_1word_clean",       amo_hit_1word_clean,              None,                 0.0,  0,  0,  0    , False       ],
+  [ "amo_miss_1word",            amo_miss_1word_msg,               amo_miss_1word_mem,   0.0,  0,  0,  0    , False       ],
+  [ "amo_hit_more_clean",        amo_hit_more_clean,               None,                 0.0,  0,  0,  0    , False       ],
+  [ "amo_miss_more",             amo_miss_more_msg,                amo_miss_more_mem,    0.0,  0,  0,  0    , False       ],
+  [ "random",                    random_msgs,                      None,                 0.0,  0,  0,  0    , False       ],
+  [ "random_stall0.5_lat0",      random_msgs,                      None,                 0.5,  0,  0,  0    , False       ],
+  [ "random_stall0.0_lat4",      random_msgs,                      None,                 0.0,  4,  0,  0    , False       ],
+  [ "random_stall0.5_lat4",      random_msgs,                      None,                 0.5,  4,  0,  0    , False       ],
+  [ "stream",                    stream_msgs,                      None,                 0.0,  0,  0,  0    , False       ],
+  [ "stream_stall0.5_lat0",      stream_msgs,                      None,                 0.5,  0,  0,  0    , False       ],
+  [ "stream_stall0.0_lat4",      stream_msgs,                      None,                 0.0,  4,  0,  0    , False       ],
+  [ "stream_stall0.5_lat4",      stream_msgs,                      None,                 0.5,  4,  0,  0    , False       ],
+  [ "write_miss_1word",          write_miss_1word_msg,             write_miss_1word_mem, 0.0,  0,  0,  0    , False       ],
+  [ "evict",                     evict_msg,                        None,                 0.0,  0,  0,  0    , False       ],
+  [ "evict_stall0.5_lat0",       evict_msg,                        None,                 0.5,  0,  0,  0    , False       ],
+  [ "evict_stall0.0_lat4",       evict_msg,                        None,                 0.0,  4,  0,  0    , False       ],
+  [ "evict_stall0.5_lat4",       evict_msg,                        None,                 0.5,  4,  0,  0    , False       ],
 
-  [ "read_hit_many_clean_wa",   read_hit_many_clean,   None,                 0.0,  0,  0,  0    , True        ],
-  [ "read_capacity_wa",         read_capacity,         read_capacity_mem,    0.0,  0,  0,  0    , True        ],
-  [ "read_hit_1word_dirty_wa",  read_hit_1word_dirty,  None,                 0.0,  0,  0,  0    , True        ],
-#  [ "read_hit_1line_clean_wa",  read_hit_1line_clean,  None,                 0.0,  0,  0,  0   ,  True        ],
-  [ "write_hit_1word_clean_wa", write_hit_1word_clean, None,                 0.0,  0,  0,  0    , True        ],
-  [ "write_hit_1word_dirty_wa", write_hit_1word_dirty, None,                 0.0,  0,  0,  0    , True        ],
-  [ "amo_hit_1word_clean_wa",   amo_hit_1word_clean,   None,                 0.0,  0,  0,  0    , True        ],
-  [ "amo_miss_1word_wa",        amo_miss_1word_msg,    amo_miss_1word_mem,   0.0,  0,  0,  0    , True        ],
-  [ "amo_hit_more_clean_wa",    amo_hit_more_clean,    None,                 0.0,  0,  0,  0    , True        ],
-  [ "amo_miss_more_wa",         amo_miss_more_msg,     amo_miss_more_mem,    0.0,  0,  0,  0    , True        ],
-  [ "random_wa",                random_msgs,           None,                 0.0,  0,  0,  0    , True        ],
-  [ "random_stall0.5_lat0_wa",  random_msgs,           None,                 0.5,  0,  0,  0    , True        ],
-  [ "random_stall0.0_lat4_wa",  random_msgs,           None,                 0.0,  4,  0,  0    , True        ],
-  [ "random_stall0.5_lat4_wa",  random_msgs,           None,                 0.5,  4,  0,  0    , True        ],
-  [ "stream_wa",                stream_msgs,           None,                 0.0,  0,  0,  0    , True        ],
-  [ "stream_stall0.5_lat0_wa",  stream_msgs,           None,                 0.5,  0,  0,  0    , True        ],
-  [ "stream_stall0.0_lat4_wa",  stream_msgs,           None,                 0.0,  4,  0,  0    , True        ],
-  [ "stream_stall0.5_lat4_wa",  stream_msgs,           None,                 0.5,  4,  0,  0    , True        ],
-  [ "write_miss_1word_wa",      write_miss_1word_msg,  write_miss_1word_mem, 0.0,  0,  0,  0    , True        ],
-  [ "evict_wa",                 evict_msg,             None,                 0.0,  0,  0,  0    , True        ],
-  [ "evict_stall0.5_lat0_wa",   evict_msg,             None,                 0.5,  0,  0,  0    , True        ],
-  [ "evict_stall0.0_lat4_wa",   evict_msg,             None,                 0.0,  4,  0,  0    , True        ],
-  [ "evict_stall0.5_lat4_wa",   evict_msg,             None,                 0.5,  4,  0,  0    , True        ],
+  [ "read_hit_many_clean_wa",    read_hit_many_clean,              None,                 0.0,  0,  0,  0    , True        ],
+  [ "read_capacity_wa",          read_capacity,                    read_capacity_mem,    0.0,  0,  0,  0    , True        ],
+  [ "read_hit_1word_dirty_wa",   read_hit_1word_dirty,             None,                 0.0,  0,  0,  0    , True        ],
+#  [ "read_hit_1line_clean_wa",   read_hit_1line_clean,             None,                 0.0,  0,  0,  0   ,  True        ],
+  [ "write_hit_1word_clean_wa",  write_hit_1word_clean,            None,                 0.0,  0,  0,  0    , True        ],
+  [ "write_hit_1word_dirty_wa",  write_hit_1word_dirty,            None,                 0.0,  0,  0,  0    , True        ],
+  [ "amo_hit_1word_clean_wa",    amo_hit_1word_clean,              None,                 0.0,  0,  0,  0    , True        ],
+  [ "amo_miss_1word_wa",         amo_miss_1word_msg,               amo_miss_1word_mem,   0.0,  0,  0,  0    , True        ],
+  [ "amo_hit_more_clean_wa",     amo_hit_more_clean,               None,                 0.0,  0,  0,  0    , True        ],
+  [ "amo_miss_more_wa",          amo_miss_more_msg,                amo_miss_more_mem,    0.0,  0,  0,  0    , True        ],
+  [ "random_wa",                 random_msgs,                      None,                 0.0,  0,  0,  0    , True        ],
+  [ "random_stall0.5_lat0_wa",   random_msgs,                      None,                 0.5,  0,  0,  0    , True        ],
+  [ "random_stall0.0_lat4_wa",   random_msgs,                      None,                 0.0,  4,  0,  0    , True        ],
+  [ "random_stall0.5_lat4_wa",   random_msgs,                      None,                 0.5,  4,  0,  0    , True        ],
+  [ "stream_wa",                 stream_msgs,                      None,                 0.0,  0,  0,  0    , True        ],
+  [ "stream_stall0.5_lat0_wa",   stream_msgs,                      None,                 0.5,  0,  0,  0    , True        ],
+  [ "stream_stall0.0_lat4_wa",   stream_msgs,                      None,                 0.0,  4,  0,  0    , True        ],
+  [ "stream_stall0.5_lat4_wa",   stream_msgs,                      None,                 0.5,  4,  0,  0    , True        ],
+  [ "write_miss_1word_wa",       write_miss_1word_msg,             write_miss_1word_mem, 0.0,  0,  0,  0    , True        ],
+  [ "evict_wa",                  evict_msg,                        None,                 0.0,  0,  0,  0    , True        ],
+  [ "evict_stall0.5_lat0_wa",    evict_msg,                        None,                 0.5,  0,  0,  0    , True        ],
+  [ "evict_stall0.0_lat4_wa",    evict_msg,                        None,                 0.0,  4,  0,  0    , True        ],
+  [ "evict_stall0.5_lat4_wa",    evict_msg,                        None,                 0.5,  4,  0,  0    , True        ],
 
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 
