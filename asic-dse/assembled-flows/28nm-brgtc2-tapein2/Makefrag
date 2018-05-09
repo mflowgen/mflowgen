@@ -38,7 +38,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 
 design_name        = HostButterfree
 clock_period       = 3.0
-design_v           = rtl-handoff/HostButterfree.v
+design_v           = rtl-handoff/HostButterfree_blackbox.v
 
 # For simulation
 
