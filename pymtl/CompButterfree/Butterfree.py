@@ -122,7 +122,7 @@ class Butterfree( Model ):
 
     s.proc = ProcPRTL   [num_cores]( num_cores, reset_freeze = True )
     s.l0i  = InstBuffer [num_cores]( 2, cacheline_nbits/8 )
-    s.xcel = BloomFilterXcel[num_cores]( snoop_mem_msg=s.proc_cache_ifc.req,
+    s.xcel = BloomFilterXcel[num_cores]( snoop_mem_msg=s.proc_cache_ifc,
                                          csr_begin=0 )
 
     #---------------------------------------------------------------------
