@@ -15,6 +15,8 @@ from pclib.rtl.queues import SingleElementBypassQueue
 from BlockingCacheCtrlPRTL  import BlockingCacheCtrlPRTL
 from BlockingCacheDpathPRTL import BlockingCacheDpathPRTL
 
+import copy
+
 # Note on num_banks:
 # In a multi-banked cache design, cache lines are interleaved to
 # different cache banks, so that consecutive cache lines correspond to a
@@ -33,32 +35,40 @@ from BlockingCacheDpathPRTL import BlockingCacheDpathPRTL
 
 class BlockingCachePRTL( Model ):
 
-  def __init__( s, num_banks = 0, CacheReqType  = MemReqMsg4B  ,
-                                  CacheRespType = MemRespMsg4B ):
+  def __init__( s, num_banks       = 0            , wide_access      = False         ,
+                   MemReqMsgType   = MemReqMsg16B , MemRespMsgType   = MemRespMsg16B ,
+                   CacheReqMsgType = MemReqMsg4B  , CacheRespMsgType = MemRespMsg4B  ):
 
+    # Banking
     if num_banks <= 0:
       idx_shamt = 0
     else:
       idx_shamt = clog2( num_banks )
 
+    # Narrow access
+
+    if wide_access:
+      CacheReqMsgType  = MemReqMsgType
+      CacheRespMsgType = MemRespMsgType
+
     # Proc <-> Cache
 
-    s.cachereq  = InValRdyBundle ( CacheReqType  )
-    s.cacheresp = OutValRdyBundle( CacheRespType )
+    s.cachereq  = InValRdyBundle ( CacheReqMsgType  )
+    s.cacheresp = OutValRdyBundle( CacheRespMsgType )
 
     # Cache <-> Mem
 
-    s.memreq    = OutValRdyBundle( MemReqMsg16B  )
-    s.memresp   = InValRdyBundle ( MemRespMsg16B )
+    s.memreq    = OutValRdyBundle( MemReqMsgType  )
+    s.memresp   = InValRdyBundle ( MemRespMsgType )
 
-    s.ctrl      = BlockingCacheCtrlPRTL ( idx_shamt, CacheReqType  ,
-                                                     CacheRespType )
-    s.dpath     = BlockingCacheDpathPRTL( idx_shamt, CacheReqType  ,
-                                                     CacheRespType )
+    s.ctrl      = BlockingCacheCtrlPRTL ( idx_shamt, MemReqMsgType  , MemRespMsgType   ,
+                                                     CacheReqMsgType, CacheRespMsgType )
+    s.dpath     = BlockingCacheDpathPRTL( idx_shamt, MemReqMsgType  , MemRespMsgType   ,
+                                                     CacheReqMsgType, CacheRespMsgType )
 
     # Bypass Queue for buffering response
 
-    s.resp_bypass = SingleElementBypassQueue( MemRespMsg4B )
+    s.resp_bypass = SingleElementBypassQueue( CacheRespMsgType )
 
     # Control
 
