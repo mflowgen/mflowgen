@@ -6,6 +6,7 @@ from pymtl import *
 
 # SRAMs Functional model
 from sram.SramSpHde28nmFuncPRTL import SramSpHde28nmFuncPRTL
+from sram.SramSpHsd28nmFuncPRTL import SramSpHsd28nmFuncPRTL
 from sram.  RfSpHde28nmFuncPRTL import   RfSpHde28nmFuncPRTL
 from sram.  RfSpHse28nmFuncPRTL import   RfSpHse28nmFuncPRTL
 
@@ -60,8 +61,8 @@ class SramWrapper28nmPRTL( Model ):
       sram_type  = 'rf_sp_hse'
 
     elif num_words >= 1024:
-      sram_model = SramSpHde28nmFuncPRTL
-      sram_type  = 'sram_sp_hse'
+      sram_model = SramSpHsd28nmFuncPRTL
+      sram_type  = 'sram_sp_hsd'
 
     else:
       raise ValueError
@@ -74,8 +75,8 @@ class SramWrapper28nmPRTL( Model ):
 
       # Force automatic module name generation if banking is to be
       # enforced or if module_name was not specified by parent module
-      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_bits  ,
-                                                 bank_num_words )
+      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_words ,
+                                                 bank_num_bits  )
 
     #------------------------------
     # Instantiating Memories
