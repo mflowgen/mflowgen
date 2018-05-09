@@ -21,16 +21,16 @@ echo "begin"              >> temp_dispatch.v
 flag=0
 
 while read p; do # execute test one by one
-  py.test ../CompButterfree/test/${DESIGN_NAME}_test.py -k $p -v
+  py.test ../CompButterfree/test/Butterfree_* -k $p -v
 
   # add the case to the test case
   echo "task "$p";"        >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
   echo "begin"             >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  cat  ${DESIGN_NAME}_testcase_init.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  cat  Butterfree_testcase_init.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
   echo "end"               >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
   echo "endtask"           >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
   echo ""                  >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  rm -f ${DESIGN_NAME}_testcase_init.v
+  rm -f Butterfree_testcase_init.v
 
   # add the task to dispatch function
 
