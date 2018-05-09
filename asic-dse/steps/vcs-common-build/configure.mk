@@ -56,21 +56,18 @@ endif
 # Design-specific options
 #-------------------------------------------------------------------------
 
-# Specify the verilog test harness, and the top module
+# Specify the verilog config and the top module
 
-sim_test_harness_v   = $(relative_base_dir)/$(test_harness_v)
-sim_test_harness_top = $(test_harness_top)
-
-vcs_design_options  += $(sim_test_harness_v)
-vcs_design_options  += -top $(sim_test_harness_top)
+vcs_design_options += $(plugins_dir)/sim/brg_config.v
+vcs_design_options += -top brg_config
 
 # Support `include vc, which is currently in rtl-handoff
 
-vcs_design_options  += +incdir+$(relative_base_dir)/rtl-handoff
+vcs_design_options += +incdir+$(relative_base_dir)/rtl-handoff
 
-# Pull in any extra includes
+# Pull in testing files as design files
 
-vcs_design_options  += $(foreach f, $(extra_includes),-v $(relative_base_dir)/$f)
+vcs_design_options += $(foreach f, $(testing_files),$(relative_base_dir)/$f)
 
 #-------------------------------------------------------------------------
 # Run options

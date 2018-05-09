@@ -69,7 +69,7 @@ vcs_aprsdfx_structural_options += +incdir+$(collect_dir.vcs-aprsdfx-build)
 
 # Dump the bill of materials + file list to help double-check src files
 
-vcs_aprsdfx_structural_options += -bom $(sim_test_harness_top)
+vcs_aprsdfx_structural_options += -bom top
 vcs_aprsdfx_structural_options += -bfl $(logs_dir.vcs-aprsdfx-build)/vcs_filelist
 
 #-------------------------------------------------------------------------
@@ -78,8 +78,8 @@ vcs_aprsdfx_structural_options += -bfl $(logs_dir.vcs-aprsdfx-build)/vcs_filelis
 
 # Gate-level model (magically reach into innovus results dir)
 
-vcs_aprsdfx_custom_options += \
-	$(wildcard $(innovus_results_dir)/*.vcs.v)
+vcs_aprsdfx_gl_model        = $(wildcard $(innovus_results_dir)/*.vcs.v)
+vcs_aprsdfx_custom_options += $(vcs_aprsdfx_gl_model)
 
 # Library files -- IO cells and stdcells
 
@@ -107,6 +107,16 @@ vcs_aprsdfx_custom_options += -negdelay
 vcs_aprsdfx_custom_options += \
 	-sdf max:$(design_name):$(wildcard $(innovus_results_dir)/*.sdf)
 
+# Testing library map -- the tests will only use files from this library
+
+vcs_aprsdfx_testing_library  = $(handoff_dir.vcs-aprsdfx-build)/testing.library
+vcs_aprsdfx_custom_options  += -libmap $(vcs_aprsdfx_testing_library)
+
+# Design library map -- the design will only use files from this library
+
+vcs_aprsdfx_design_library  = $(handoff_dir.vcs-aprsdfx-build)/design.library
+vcs_aprsdfx_custom_options += -libmap $(vcs_aprsdfx_design_library)
+
 #-------------------------------------------------------------------------
 # Modeling options and X-handling
 #-------------------------------------------------------------------------
@@ -132,6 +142,16 @@ define commands.vcs-aprsdfx-build
 
 	mkdir -p $(logs_dir.vcs-aprsdfx-build)
 	mkdir -p $(handoff_dir.vcs-aprsdfx-build)
+
+# Build the testing library map
+
+	echo "library testinglib" \
+		$(foreach f, $(testing_files),$(base_dir)/$f,) > $(vcs_aprsdfx_testing_library)
+	sed -i "s/,\$$/;/" $(vcs_aprsdfx_testing_library)
+
+# Build the design library map
+
+	echo "library designlib $(PWD)/$(vcs_aprsdfx_gl_model);" > $(vcs_aprsdfx_design_library)
 
 # Record the options used to build the simulator
 

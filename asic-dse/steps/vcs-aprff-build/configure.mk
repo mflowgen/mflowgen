@@ -71,7 +71,7 @@ vcs_aprff_structural_options += +incdir+$(collect_dir.vcs-aprff-build)
 
 # Dump the bill of materials + file list to help double-check src files
 
-vcs_aprff_structural_options += -bom $(sim_test_harness_top)
+vcs_aprff_structural_options += -bom top
 vcs_aprff_structural_options += -bfl $(logs_dir.vcs-aprff-build)/vcs_filelist
 
 #-------------------------------------------------------------------------
@@ -80,8 +80,8 @@ vcs_aprff_structural_options += -bfl $(logs_dir.vcs-aprff-build)/vcs_filelist
 
 # Gate-level model (magically reach into innovus results dir)
 
-vcs_aprff_custom_options += \
-	$(wildcard $(innovus_results_dir)/*.vcs.v)
+vcs_aprff_gl_model        = $(wildcard $(innovus_results_dir)/*.vcs.v)
+vcs_aprff_custom_options += $(vcs_aprff_gl_model)
 
 # Library files -- IO cells and stdcells
 
@@ -100,6 +100,16 @@ vcs_aprff_custom_options += +notimingcheck +nospecify
 # Suppress lint and warnings
 
 vcs_aprff_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
+
+# Testing library map -- the tests will only use files from this library
+
+vcs_aprff_testing_library  = $(handoff_dir.vcs-aprff-build)/testing.library
+vcs_aprff_custom_options  += -libmap $(vcs_aprff_testing_library)
+
+# Design library map -- the design will only use files from this library
+
+vcs_aprff_design_library  = $(handoff_dir.vcs-aprff-build)/design.library
+vcs_aprff_custom_options += -libmap $(vcs_aprff_design_library)
 
 #-------------------------------------------------------------------------
 # Modeling options and X-handling
@@ -147,6 +157,16 @@ define commands.vcs-aprff-build
 
 	mkdir -p $(logs_dir.vcs-aprff-build)
 	mkdir -p $(handoff_dir.vcs-aprff-build)
+
+# Build the testing library map
+
+	echo "library testinglib" \
+		$(foreach f, $(testing_files),$(base_dir)/$f,) > $(vcs_aprff_testing_library)
+	sed -i "s/,\$$/;/" $(vcs_aprff_testing_library)
+
+# Build the design library map
+
+	echo "library designlib $(PWD)/$(vcs_aprff_gl_model);" > $(vcs_aprff_design_library)
 
 # Record the options used to build the simulator
 

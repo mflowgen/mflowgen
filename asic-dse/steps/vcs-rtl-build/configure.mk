@@ -69,7 +69,7 @@ vcs_rtl_structural_options += +incdir+$(collect_dir.vcs-rtl-build)
 
 # Dump the bill of materials + file list to help double-check src files
 
-vcs_rtl_structural_options += -bom $(sim_test_harness_top)
+vcs_rtl_structural_options += -bom top
 vcs_rtl_structural_options += -bfl $(logs_dir.vcs-rtl-build)/vcs_filelist
 
 #-------------------------------------------------------------------------
@@ -97,6 +97,16 @@ vcs_rtl_custom_options += +notimingcheck +nospecify
 
 vcs_rtl_custom_options += +lint=all,noVCDE,noTFIPC,noIWU,noOUDPE
 
+# Testing library map -- the tests will only use files from this library
+
+vcs_rtl_testing_library  = $(handoff_dir.vcs-rtl-build)/testing.library
+vcs_rtl_custom_options  += -libmap $(vcs_rtl_testing_library)
+
+# Design library map -- the design will only use files from this library
+
+vcs_rtl_design_library  = $(handoff_dir.vcs-rtl-build)/design.library
+vcs_rtl_custom_options += -libmap $(vcs_rtl_design_library)
+
 #-------------------------------------------------------------------------
 # Primary command target
 #-------------------------------------------------------------------------
@@ -114,6 +124,16 @@ define commands.vcs-rtl-build
 
 	mkdir -p $(logs_dir.vcs-rtl-build)
 	mkdir -p $(handoff_dir.vcs-rtl-build)
+
+# Build the testing library map
+
+	echo "library testinglib" \
+		$(foreach f, $(testing_files),$(base_dir)/$f,) > $(vcs_rtl_testing_library)
+	sed -i "s/,\$$/;/" $(vcs_rtl_testing_library)
+
+# Build the design library map
+
+	echo "library designlib $(base_dir)/$(design_v);" > $(vcs_rtl_design_library)
 
 # Record the options used to build the simulator
 
