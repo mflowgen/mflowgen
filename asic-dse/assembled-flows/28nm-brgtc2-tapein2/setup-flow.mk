@@ -12,6 +12,12 @@ steps = \
   vcs-rtl \
   vcs-aprff-build \
   vcs-aprff \
+  vcs-aprffx-build \
+  vcs-aprffx \
+  vcs-aprsdf-build \
+  vcs-aprsdf \
+  vcs-aprsdfx-build \
+  vcs-aprsdfx \
   gen-sram-verilog \
   gen-sram-lef \
   gen-sram-gds \
@@ -25,7 +31,9 @@ steps = \
   innovus-postctshold \
   innovus-route \
   innovus-postroute \
-  innovus-signoff
+  innovus-signoff \
+  calibre-seal \
+  calibre-drc-sealed \
 
 # Step dependency graph
 
@@ -57,4 +65,17 @@ dependencies.vcs-rtl             = vcs-rtl-build
 dependencies.vcs-aprff-build     = sim-prep
 dependencies.vcs-aprff           = vcs-aprff-build
 
+dependencies.vcs-aprffx-build    = sim-prep
+dependencies.vcs-aprffx          = vcs-aprffx-build
+
+dependencies.vcs-aprsdf-build    = sim-prep
+dependencies.vcs-aprsdf          = vcs-aprsdf-build
+
+dependencies.vcs-aprsdfx-build   = sim-prep
+dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
+
+# Calibre steps
+
+dependencies.calibre-seal        = innovus-signoff
+dependencies.calibre-drc-sealed  = calibre-seal
 

@@ -219,7 +219,20 @@ def main():
 
     # Keep iterating over remaining steps
 
-    if steps: i = ( i + 1 ) % len( steps )
+    if steps:
+      i = ( i + 1 ) % len( steps )
+
+    # Stop iterating if all steps are in a different connected component
+
+    keep_going = False
+    for s in steps:
+      step_belongs_in_graph = any( [dep in graph for dep in dependencies[s]] )
+      keep_going            = keep_going or step_belongs_in_graph
+
+    if not keep_going:
+      break
+
+  #print "Steps in other connected components: ", steps
 
   #-----------------------------------------------------------------------
   # Use "git log --graph" to print a pretty ASCII dependency graph

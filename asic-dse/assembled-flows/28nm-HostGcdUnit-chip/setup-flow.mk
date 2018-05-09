@@ -26,7 +26,9 @@ steps = \
   innovus-postctshold \
   innovus-route \
   innovus-postroute \
-  innovus-signoff
+  innovus-signoff \
+  calibre-seal \
+  calibre-drc-sealed \
 
 # Step dependency graph
 
@@ -60,4 +62,9 @@ dependencies.vcs-aprsdf          = vcs-aprsdf-build
 
 dependencies.vcs-aprsdfx-build   = sim-prep
 dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
+
+# Calibre steps
+
+dependencies.calibre-seal        = innovus-signoff
+dependencies.calibre-drc-sealed  = calibre-seal
 
