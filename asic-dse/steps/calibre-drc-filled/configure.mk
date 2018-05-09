@@ -204,6 +204,8 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
+drc: calibre-drc-filled
+
 # Clean
 
 clean-calibre-drc-filled:
