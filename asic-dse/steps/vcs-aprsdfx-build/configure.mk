@@ -104,8 +104,10 @@ vcs_aprsdfx_custom_options += -negdelay
 
 # Pull in the Innovus SDF file
 
+vcs_aprsdfx_instance_scope  = top.th.swshim.dut
+
 vcs_aprsdfx_custom_options += \
-	-sdf max:$(design_name):$(wildcard $(innovus_results_dir)/*.sdf)
+	-sdf max:$(vcs_aprsdfx_instance_scope):$(wildcard $(innovus_results_dir)/*.sdf)
 
 # Testing library map -- the tests will only use files from this library
 
