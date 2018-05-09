@@ -7,15 +7,128 @@
 `default_nettype none
 module HostButterfree
 (
-  input  wire [   0:0] clk,
-  output wire [   0:0] in__ack,
-  input  wire [   7:0] in__msg,
-  input  wire [   0:0] in__req,
-  input  wire [   0:0] out_ack,
-  output wire [   7:0] out_msg,
-  output wire [   0:0] out_req,
-  input  wire [   0:0] reset
+  input  wire [   0:0] clk_io,
+  output wire [   0:0] in__ack_io,
+  input  wire [   7:0] in__msg_io,
+  input  wire [   0:0] in__req_io,
+  input  wire [   0:0] out_ack_io,
+  output wire [   7:0] out_msg_io,
+  output wire [   0:0] out_req_io,
+  input  wire [   0:0] reset_io
 );
+
+  //----------------------------------------------------------------------
+  // Pads
+  //----------------------------------------------------------------------
+
+  `define OUTPUT_PAD_V(name,pad,data) \
+  PRWDWUWHWSWDGE_V_G name \
+  (                       \
+    .PAD (pad),           \
+    .C   (),              \
+    .I   (data),          \
+    .OEN (1'b0),          \
+    .IE  (1'b0),          \
+    .SL  (1'b1),          \
+    .DS0 (1'b1),          \
+    .DS1 (1'b1),          \
+    .PE  (1'b0),          \
+    .PS  (1'b0),          \
+    .HE  (1'b0),          \
+    .ST0 (1'b0),          \
+    .ST1 (1'b0)           \
+  );
+
+  `define OUTPUT_PAD_H(name,pad,data) \
+  PRWDWUWHWSWDGE_H_G name \
+  (                       \
+    .PAD (pad),           \
+    .C   (),              \
+    .I   (data),          \
+    .OEN (1'b0),          \
+    .IE  (1'b0),          \
+    .SL  (1'b1),          \
+    .DS0 (1'b1),          \
+    .DS1 (1'b1),          \
+    .PE  (1'b0),          \
+    .PS  (1'b0),          \
+    .HE  (1'b0),          \
+    .ST0 (1'b0),          \
+    .ST1 (1'b0)           \
+  );
+
+  `define INPUT_PAD_V(name,pad,data) \
+  PRWDWUWHWSWDGE_V_G name \
+  (                       \
+    .PAD (pad),           \
+    .C   (data),          \
+    .I   (1'b0),          \
+    .OEN (1'b1),          \
+    .IE  (1'b1),          \
+    .SL  (1'b0),          \
+    .DS0 (1'b0),          \
+    .DS1 (1'b0),          \
+    .PE  (1'b0),          \
+    .PS  (1'b0),          \
+    .HE  (1'b0),          \
+    .ST0 (1'b0),          \
+    .ST1 (1'b0)           \
+  );
+
+  `define INPUT_PAD_H(name,pad,data) \
+  PRWDWUWHWSWDGE_H_G name \
+  (                       \
+    .PAD (pad),           \
+    .C   (data),          \
+    .I   (1'b0),          \
+    .OEN (1'b1),          \
+    .IE  (1'b1),          \
+    .SL  (1'b0),          \
+    .DS0 (1'b0),          \
+    .DS1 (1'b0),          \
+    .PE  (1'b0),          \
+    .PS  (1'b0),          \
+    .HE  (1'b0),          \
+    .ST0 (1'b0),          \
+    .ST1 (1'b0)           \
+  );
+
+  wire [   0:0] clk;     // input
+  wire [   0:0] reset;   // input
+  wire [   7:0] in__msg; // input
+  wire [   0:0] in__req; // input
+  wire [   0:0] in__ack; // output
+  wire [   7:0] out_msg; // output
+  wire [   0:0] out_req; // output
+  wire [   0:0] out_ack; // input
+
+  //                 Inst Name            PAD         data
+
+   `INPUT_PAD_V(        clk_iocell,      clk_io[0],      clk[0] )
+
+   `INPUT_PAD_H(      reset_iocell,    reset_io[0],    reset[0] )
+
+   `INPUT_PAD_V(  in__msg_0_iocell,  in__msg_io[0],  in__msg[0] )
+   `INPUT_PAD_V(  in__msg_1_iocell,  in__msg_io[1],  in__msg[1] )
+   `INPUT_PAD_V(  in__msg_2_iocell,  in__msg_io[2],  in__msg[2] )
+   `INPUT_PAD_V(  in__msg_3_iocell,  in__msg_io[3],  in__msg[3] )
+   `INPUT_PAD_V(  in__msg_4_iocell,  in__msg_io[4],  in__msg[4] )
+   `INPUT_PAD_V(  in__msg_5_iocell,  in__msg_io[5],  in__msg[5] )
+   `INPUT_PAD_V(  in__msg_6_iocell,  in__msg_io[6],  in__msg[6] )
+   `INPUT_PAD_V(  in__msg_7_iocell,  in__msg_io[7],  in__msg[7] )
+   `INPUT_PAD_V(    in__req_iocell,  in__req_io[0],  in__req[0] )
+   `INPUT_PAD_V(    out_ack_iocell,  out_ack_io[0],  out_ack[0] )
+
+  `OUTPUT_PAD_V(    in__ack_iocell,  in__ack_io[0],  in__ack[0] )
+  `OUTPUT_PAD_V(  out_msg_0_iocell,  out_msg_io[0],  out_msg[0] )
+  `OUTPUT_PAD_V(  out_msg_1_iocell,  out_msg_io[1],  out_msg[1] )
+  `OUTPUT_PAD_V(  out_msg_2_iocell,  out_msg_io[2],  out_msg[2] )
+  `OUTPUT_PAD_V(  out_msg_3_iocell,  out_msg_io[3],  out_msg[3] )
+  `OUTPUT_PAD_V(  out_msg_4_iocell,  out_msg_io[4],  out_msg[4] )
+  `OUTPUT_PAD_V(  out_msg_5_iocell,  out_msg_io[5],  out_msg[5] )
+  `OUTPUT_PAD_V(  out_msg_6_iocell,  out_msg_io[6],  out_msg[6] )
+  `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] )
+  `OUTPUT_PAD_V(    out_req_iocell,  out_req_io[0],  out_req[0] )
 
   // wire declarations
   wire   [   0:0] dut_out_val$000;
