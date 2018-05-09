@@ -19,7 +19,7 @@ class SramSpHde28nmFuncPRTL( Model ):
 
     # SRAM Configuration
     sram_conf         = {}
-    sram_conf['type'] = 'sp'
+    sram_conf['type'] = 'sram_sp_hsd'
 
     # If module_name is empty, compose one
     if not module_name:
