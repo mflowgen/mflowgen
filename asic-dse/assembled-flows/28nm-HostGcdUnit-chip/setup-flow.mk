@@ -6,18 +6,6 @@
 
 steps = \
   info \
-  sim-prep \
-  vcs-common-build \
-  vcs-rtl-build \
-  vcs-rtl \
-  vcs-aprff-build \
-  vcs-aprff \
-  vcs-aprffx-build \
-  vcs-aprffx \
-  vcs-aprsdf-build \
-  vcs-aprsdf \
-  vcs-aprsdfx-build \
-  vcs-aprsdfx \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -31,8 +19,22 @@ steps = \
   calibre-drc-sealed \
   calibre-fill \
   calibre-drc-filled \
+  sim-prep \
+  vcs-common-build \
+  vcs-rtl-build \
+  vcs-rtl \
+  vcs-aprff-build \
+  vcs-aprff \
+  vcs-aprffx-build \
+  vcs-aprffx \
+  vcs-aprsdf-build \
+  vcs-aprsdf \
+  vcs-aprsdfx-build \
+  vcs-aprsdfx \
 
 # Step dependency graph
+
+dependencies.info                = seed
 
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis

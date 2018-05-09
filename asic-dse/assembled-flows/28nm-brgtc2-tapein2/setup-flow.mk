@@ -6,18 +6,6 @@
 
 steps = \
   info \
-  sim-prep \
-  vcs-common-build \
-  vcs-rtl-build \
-  vcs-rtl \
-  vcs-aprff-build \
-  vcs-aprff \
-  vcs-aprffx-build \
-  vcs-aprffx \
-  vcs-aprsdf-build \
-  vcs-aprsdf \
-  vcs-aprsdfx-build \
-  vcs-aprsdfx \
   gen-sram-verilog \
   gen-sram-lef \
   gen-sram-gds \
@@ -36,8 +24,22 @@ steps = \
   calibre-drc-sealed \
   calibre-fill \
   calibre-drc-filled \
+  sim-prep \
+  vcs-common-build \
+  vcs-rtl-build \
+  vcs-rtl \
+  vcs-aprff-build \
+  vcs-aprff \
+  vcs-aprffx-build \
+  vcs-aprffx \
+  vcs-aprsdf-build \
+  vcs-aprsdf \
+  vcs-aprsdfx-build \
+  vcs-aprsdfx \
 
 # Step dependency graph
+
+dependencies.info                = seed
 
 dependencies.gen-sram-verilog    = seed
 dependencies.gen-sram-db         = seed
