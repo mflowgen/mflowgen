@@ -36,16 +36,15 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name       = HostAerodactyl
-clock_period      = 3.0
-design_v          = rtl-handoff/HostAerodactyl.v
+design_name        = HostButterfree
+clock_period       = 3.0
+design_v           = rtl-handoff/HostButterfree.v
 
 # For simulation
 
-test_harness_v    = rtl-handoff/Aerodactyl_tb.v
-test_harness_top  = top
-pytest_target_str = ../pymtl/CompAerodactyl/test/Host*
-extra_includes    = rtl-handoff/??????_SwShim.v
+pytest_target_str  = ../pymtl/CompButterfree/test/Host*
+testing_files      = rtl-handoff/Butterfree-test/Butterfree_tb.v
+testing_files     += rtl-handoff/HostButterfree.swshim.v
 
 #-------------------------------------------------------------------------
 # Export
