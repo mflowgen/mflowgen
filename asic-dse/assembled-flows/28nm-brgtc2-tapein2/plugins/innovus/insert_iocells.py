@@ -27,8 +27,8 @@
 # Author : Christopher Torng
 #
 
-template_file = 'HostCompCtrlregMcoreL0ArbiterMduCache.save.io.template'
-output_file   = 'HostCompCtrlregMcoreL0ArbiterMduCache.save.io'
+template_file = 'HostButterfree.save.io.template'
+output_file   = 'HostButterfree.save.io'
 
 #-------------------------------------------------------------------------
 # Mappings
