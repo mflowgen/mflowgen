@@ -9,20 +9,19 @@ from pclib.ifcs              import InValRdyBundle, OutValRdyBundle
 
 from ifcs                    import CtrlRegMsg, MemMsg, MduMsg
 
-from ctrlreg.CtrlReg                      import CtrlReg
-from proc.ProcPRTL                        import ProcPRTL
-from proc.NullXcelRTL                     import NullXcelRTL
-from mdu.IntMulDivUnit                    import IntMulDivUnit
-from instbuffer.InstBuffer                import InstBuffer
+from ctrlreg.CtrlReg         import CtrlReg
+from proc.ProcPRTL           import ProcPRTL
+from proc.NullXcelRTL        import NullXcelRTL
+from mdu.IntMulDivUnit       import IntMulDivUnit
+from instbuffer.InstBuffer   import InstBuffer
 
-from cache.BlockingCachePRTL              import BlockingCachePRTL
-from cache_wa.BlockingCacheWideAccessPRTL import BlockingCacheWideAccessPRTL
+from cache.BlockingCachePRTL import BlockingCachePRTL
 
-from networks.Funnel                      import Funnel
-from networks.Router                      import Router
-from adapters.HostAdapter                 import HostAdapter
+from networks.Funnel         import Funnel
+from networks.Router         import Router
+from adapters.HostAdapter    import HostAdapter
 
-from bloom.BloomFilterXcel                import BloomFilterXcel
+from bloom.BloomFilterXcel   import BloomFilterXcel
 
 class Butterfree( Model ):
 
@@ -93,7 +92,7 @@ class Butterfree( Model ):
 
     # Shared L1I
 
-    s.icache         = BlockingCacheWideAccessPRTL( 0 )
+    s.icache         = BlockingCachePRTL( 0, wide_access = True )
     s.icache_adapter = HostAdapter( req=s.icache.cachereq, resp=s.icache.cacheresp )
 
     s.net_icachereq  = Funnel( num_cores, s.cache_mem_ifc.req  )  # N L0is - to - 1 cache
@@ -101,7 +100,7 @@ class Butterfree( Model ):
 
     # Shared L1D
 
-    s.dcache         = BlockingCachePRTL( 0 )
+    s.dcache         = BlockingCachePRTL( 0, wide_access = False )
     s.dcache_adapter = HostAdapter( req=s.dcache.cachereq, resp=s.dcache.cacheresp )
 
     s.net_dcachereq  = Funnel( num_cores, s.proc_cache_ifc.req  )  # N cores - to - 1 cache

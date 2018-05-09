@@ -45,7 +45,7 @@ for root, dirs, files in os.walk(dirname):
       # Load the module
       f_path = os.path.join(root, f)
 
-      module = importlib.import_module(mod_name)
+      module = importlib.import_module('.' + mod_name, __package__)
 
       for func in dir(module):
         # If there is no conflict, load the module to globals

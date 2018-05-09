@@ -22,7 +22,7 @@ from Butterfree_run_test       import run_test
 # Making py.test pretty :3
 #-------------------------------------------------------------------------
 
-from Butterfree_harness import synthesize_testtable
+from Butterfree_harness        import synthesize_testtable
 
 #-------------------------------------------------------------------------
 # add

@@ -42,10 +42,11 @@ Butterfree_run_test.run_test = _run_test
 # Get currect Python file name
 filename = os.path.basename(__file__).rsplit('.', 1)[0]
 
-if filename.startswith('Host'): filename = filename[4:]
+prefix = 'Host'
+if filename.startswith(prefix): filename = filename[len(prefix):]
 
 # Get Host filename
-module = importlib.import_module(filename)
+module = importlib.import_module('.' + filename, __package__)
 
 for func in dir(module):
   if not func in globals():
