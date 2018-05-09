@@ -195,7 +195,6 @@ class BloomFilterXcel( Model ):
 
     # Direct connections for xcelreq/xcelresp
 
-    s.connect( s.snoop_q.enq.msg, s.memreq_snoop.msg.addr )
     s.connect( s.xcelreq, s.xcelreq_q.enq )
     s.connect( s.xcelreq_q.deq.msg.type_, s.xcelresp.msg.type_ )
     s.connect( s.xcelreq_q.deq.val,       s.xcelresp.val       )
