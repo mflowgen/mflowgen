@@ -27,7 +27,8 @@ def test( test_params, dump_vcd, test_verilog ):
 
   dut             = GcdUnitRTL()
   hwshim_and_dut  = HostGcdUnit( asynch_bitwidth )
-  swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth )
+  swshim          = SwShim( dut, hwshim_and_dut, asynch_bitwidth,
+                                 dump_vcd      , test_verilog    )
 
   with open("HostGcdUnit_testcase_init.v", "w") as f:
     f.write( "  th_src_max_delay  = {};\n".format( test_params.src_delay ) )
