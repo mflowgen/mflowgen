@@ -30,9 +30,9 @@ class CtrlRegReqMsg( BitStructDefinition ):
 
   ID_GO            = 0
   ID_DEBUG         = 1
-  ID_MDU_HOSTEN    = 10
-  ID_ICACHE_HOSTEN = 11
-  ID_DCACHE_HOSTEN = 12
+  ID_MDU_HOSTEN    = 7
+  ID_ICACHE_HOSTEN = 8
+  ID_DCACHE_HOSTEN = 9
 
   def __init__( s ):
     s.type_ = BitField( 1  )
