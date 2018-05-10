@@ -4,6 +4,8 @@
 # PyMTL Model that receives  a ReqAck message of a certain width, and sends out
 # the same message using a ValRdy protocol
 # Author: Taylor Pritchard (tjp79)
+#
+# Shunning: I rewrite the state transition logic
 #-------------------------------------------------------------------------------
 
 from pymtl      import *
@@ -23,12 +25,14 @@ class ReqAckToValRdy( Model ):
 
     #-States-------------------------------------------------------------
 
-    s.state = Wire( 2 )
+    # Shunning: I use RegRst to keep the hierarchy for debugging
 
     s.STATE_RECV = 0
     s.STATE_HOLD = 1
     s.STATE_SEND = 2
     s.STATE_WAIT = 3
+
+    s.state = RegRst( 2, reset_value = s.STATE_RECV )
 
     #-Structural Composition---------------------------------------------
 
@@ -36,7 +40,6 @@ class ReqAckToValRdy( Model ):
 
     s.reg_out     = Wire( dtype )
     s.reg_en      = Wire( 1 )
-    s.synch_1_out = Wire( 1 )
     s.in_req      = Wire( 1 )
 
     # Input Reg
@@ -50,42 +53,42 @@ class ReqAckToValRdy( Model ):
 
     # Synchronizer Regs
 
-    s.synch_1 = m = RegRst( 1 )
-    s.connect_dict({
-      m.in_ : s.in_.req,
-      m.out : s.synch_1_out
-    })
+    s.synch_1 = RegRst( 1, reset_value = 0 )
+    s.synch_2 = RegRst( 1, reset_value = 0 )
 
-    s.synch_2 = m = RegRst( 1 )
-    s.connect_dict({
-      m.in_ : s.synch_1_out,
-      m.out : s.in_req
-    })
+    s.connect_pairs(
+      s.in_.req,     s.synch_1.in_,
+      s.synch_1.out, s.synch_2.in_,
+      s.synch_2.out, s.in_req,
+    )
 
     #-Combinational Logic-----------------------------------------------
 
     @s.combinational
-    def combinational_logic():
-      s.in_.ack.value = ( s.state == s.STATE_WAIT )
-      s.reg_en.value  = s.in_req and ( s.state == s.STATE_RECV )
+    def state_transition():
+      s.state.in_.value = s.state.out
+
+      if   s.state.out == s.STATE_RECV:
+        if s.in_req:
+          s.state.in_.value = s.STATE_WAIT
+
+      elif s.state.out == s.STATE_WAIT:
+        if ~s.in_req:
+          s.state.in_.value = s.STATE_SEND
+
+      elif s.state.out == s.STATE_SEND:
+        if s.out.rdy:
+          s.state.in_.value = s.STATE_HOLD
+
+      elif s.state.out == s.STATE_HOLD:
+        s.state.in_.value = s.STATE_RECV
+
+    @s.combinational
+    def state_output():
+      s.in_.ack.value = ( s.state.out == s.STATE_WAIT )
+      s.reg_en.value  = s.in_req & ( s.state.out == s.STATE_RECV )
       s.out.msg.value = s.reg_out
-      s.out.val.value = ( s.state == s.STATE_SEND )
-
-    #-Sequential Logic---------------------------------------------------
-
-    @s.posedge_clk
-    def sequential_logic():
-      if( s.reset ):
-        s.state.next = s.STATE_RECV
-      elif( s.state == s.STATE_RECV ):
-        if( s.in_req ) : s.state.next = s.STATE_WAIT
-      elif( s.state == s.STATE_WAIT ):
-        if( ~s.in_req ) : s.state.next = s.STATE_SEND
-      elif( s.state == s.STATE_SEND ):
-        if( s.out.rdy ) : s.state.next = s.STATE_HOLD
-      elif( s.state == s.STATE_HOLD ):
-        s.state.next = s.STATE_RECV
+      s.out.val.value = ( s.state.out == s.STATE_SEND )
 
   def line_trace( s ):
     return "({})".format( s.reg_in.out )
-

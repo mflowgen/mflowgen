@@ -45,7 +45,7 @@ class SimHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     if mem_stall:
       s.mem = TestMemory( MemMsg(8,32,data_nbits), num_memports, 0.5, 3 )
@@ -137,7 +137,7 @@ class TestHarness( Model ):
     s.model  = model
 
     if test_verilog:
-      s.model = TranslationTool( s.model )
+      s.model = TranslationTool( s.model, verilator_xinit=test_verilog )
 
     s.mem    = TestMemory( MemMsg(8,32,cacheline_nbits), num_memports,
                            mem_stall_prob, mem_latency )
@@ -253,8 +253,8 @@ def run_test( model, gen_test, num_cores, cacheline_nbits=128,
 
   # Instantiate and elaborate the model
 
-  model = TestHarness( model, dump_vcd, test_verilog, num_cores,
-                       src_delay, sink_delay, mem_stall_prob, mem_latency, cacheline_nbits )
+  model = TestHarness( model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
+                       src_delay, sink_delay, mem_stall_prob, mem_latency )
 
   model.vcd_file = dump_vcd
   model.elaborate()

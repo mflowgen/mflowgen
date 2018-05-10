@@ -73,7 +73,7 @@ def main():
 
   # SIMJIT-RTL
   if opts.sim == "simjit":
-    idiv = TranslationTool( idiv )
+    idiv = TranslationTool( idiv, verilator_xinit=test_verilog )
 
   idiv.elaborate()
   sim = SimulationTool( idiv )

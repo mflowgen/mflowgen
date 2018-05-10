@@ -19,9 +19,11 @@ from XcelMsg import XcelReqMsg, XcelRespMsg
 
 from ifcs import MemReqMsg4B, MemRespMsg4B, MduReqMsg, MduRespMsg
 
+# Shunning: Need to hook up all unused ports ...
+
 class ProcPRTL( Model ):
 
-  def __init__( s, num_cores = 1 ):
+  def __init__( s, num_cores = 1, reset_freeze = False ):
 
     #---------------------------------------------------------------------
     # Interface
@@ -57,6 +59,12 @@ class ProcPRTL( Model ):
     s.xcelreq   = OutValRdyBundle( XcelReqMsg()    )
     s.xcelresp  = InValRdyBundle ( XcelRespMsg()    )
 
+    # Control Register Interface
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    if reset_freeze:
+      s.go = InPort( 1 )
+
     # val_W port used for counting commited insts.
 
     s.commit_inst = OutPort( 1 )
@@ -69,7 +77,7 @@ class ProcPRTL( Model ):
     # Structural composition
     #---------------------------------------------------------------------
 
-    s.ctrl  = ProcCtrlPRTL()
+    s.ctrl  = ProcCtrlPRTL( reset_freeze )
     s.dpath = ProcDpathPRTL( num_cores )
 
     # Connect parameters
@@ -82,12 +90,14 @@ class ProcPRTL( Model ):
     s.dmemreq_queue   = SingleElementBypassQueue( MemReqMsg4B )
     s.proc2mngr_queue = SingleElementBypassQueue( 32 )
     s.xcelreq_queue   = SingleElementBypassQueue( XcelReqMsg() )
+    s.mdureq_queue    = SingleElementBypassQueue( MduReqMsg(32, 8) )
 
     s.connect_pairs(
       s.imemreq_queue.deq,   s.imemreq,
       s.dmemreq_queue.deq,   s.dmemreq,
       s.proc2mngr_queue.deq, s.proc2mngr,
-      s.xcelreq_queue.deq,   s.xcelreq
+      s.xcelreq_queue.deq,   s.xcelreq,
+      s.mdureq_queue.deq,    s.mdureq
     )
 
     # imem drop unit
@@ -105,13 +115,18 @@ class ProcPRTL( Model ):
 
     # Control
 
+    # The go bit is used to unfreeze the frozen processor after reset
+
+    if reset_freeze:
+      s.connect( s.ctrl.go, s.go )
+
     s.connect_pairs(
 
       # mdu
 
-      s.ctrl.mdureq_val,       s.mdureq.val,
-      s.ctrl.mdureq_rdy,       s.mdureq.rdy,
-      s.ctrl.mdureq_msg_type,  s.mdureq.msg.type_,
+      s.ctrl.mdureq_val,       s.mdureq_queue.enq.val,
+      s.ctrl.mdureq_rdy,       s.mdureq_queue.enq.rdy,
+      s.ctrl.mdureq_msg_type,  s.mdureq_queue.enq.msg.type_,
 
       s.ctrl.mduresp_val,      s.mduresp.val,
       s.ctrl.mduresp_rdy,      s.mduresp.rdy,
@@ -167,8 +182,8 @@ class ProcPRTL( Model ):
 
       # mdu
 
-      s.dpath.mdureq_msg_op_a, s.mdureq.msg.op_a,
-      s.dpath.mdureq_msg_op_b, s.mdureq.msg.op_b,
+      s.dpath.mdureq_msg_op_a, s.mdureq_queue.enq.msg.op_a,
+      s.dpath.mdureq_msg_op_b, s.mdureq_queue.enq.msg.op_b,
 
       s.dpath.mduresp_msg, s.mduresp.msg.result,
 
@@ -199,6 +214,9 @@ class ProcPRTL( Model ):
       s.dpath.stats_en,          s.stats_en
 
     )
+
+    # Connect all unconnected ports
+    s.connect( s.dmemreq_queue.enq.msg.opaque, 0 )
 
     # Ctrl <-> Dpath
 

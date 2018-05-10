@@ -177,7 +177,7 @@ SECTIONS
 
   /* Have _gp point to middle of sdata/sbss to maximize displacement range */
   . = ALIGN(16);
-  _gp = . + 0x8000;
+  _gp = . + 0x1000000;
 
   /* Writable small data segment */
   .sdata : 

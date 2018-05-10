@@ -15,7 +15,21 @@ from ifcs import MemReqMsg, MemRespMsg
 
 class BlockingCacheFL( Model ):
 
-  def __init__( s, size=256, nbanks=0 ):
+  def __init__( s, size = 256, nbanks = 0, wide_access = False ):
+
+    #---------------------------------------------------------------------
+    # Interface
+    #---------------------------------------------------------------------
+
+    CacheReqMsgType  = MemReqMsg4B
+    CacheRespMsgType = MemRespMsg4B
+
+    MemReqMsgType    = MemReqMsg16B
+    MemRespMsgType   = MemRespMsg16B
+
+    if wide_access:
+      CacheReqMsgType  = MemReqMsgType
+      CacheRespMsgType = MemRespMsgType
 
     #---------------------------------------------------------------------
     # Interface
@@ -23,13 +37,13 @@ class BlockingCacheFL( Model ):
 
     # Proc <-> Cache
 
-    s.cachereq  = InValRdyBundle ( MemReqMsg4B   )
-    s.cacheresp = OutValRdyBundle( MemRespMsg4B  )
+    s.cachereq  = InValRdyBundle ( CacheReqMsgType  )
+    s.cacheresp = OutValRdyBundle( CacheRespMsgType )
 
     # Cache <-> Mem
 
-    s.memreq    = OutValRdyBundle( MemReqMsg16B  )
-    s.memresp   = InValRdyBundle ( MemRespMsg16B )
+    s.memreq    = OutValRdyBundle(  MemReqMsgType   )
+    s.memresp   = InValRdyBundle (  MemRespMsgType  )
 
     #---------------------------------------------------------------------
     # Control

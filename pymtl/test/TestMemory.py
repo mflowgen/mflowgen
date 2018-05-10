@@ -11,7 +11,7 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 from pclib.cl   import InValRdyRandStallAdapter
 from pclib.cl   import OutValRdyInelasticPipeAdapter
 
-# BRGTC2 custom MemMsg
+# BRGTC2 custom MemMsg modified for RISC-V 32
 
 from ifcs import MemMsg, MemReqMsg, MemRespMsg, MemMsg4B
 

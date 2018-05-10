@@ -31,7 +31,7 @@
 #ifdef _RISCV
 
 inline
-void wprint( int i )
+void brg_wprint( int i )
 {
   asm ( "csrw 0x7C0, %0" :: "r"(0x00030000) );
   asm ( "csrw 0x7C0, %0" :: "r"(i) );
@@ -39,9 +39,9 @@ void wprint( int i )
 #else
 
 inline
-void wprint( int i )
+void brg_wprint( int i )
 {
-  wprintf( L"%d", i );
+  brg_wprintf( L"%d", i );
 }
 
 #endif
@@ -55,7 +55,7 @@ void wprint( int i )
 #ifdef _RISCV
 
 inline
-void wprint( wchar_t c )
+void brg_wprint( wchar_t c )
 {
   asm ( "csrw 0x7C0, %0" :: "r"(0x00030001) );
   asm ( "csrw 0x7C0, %0" :: "r"(c) );
@@ -64,9 +64,9 @@ void wprint( wchar_t c )
 #else
 
 inline
-void wprint( wchar_t c )
+void brg_wprint( wchar_t c )
 {
-  wprintf( L"%C", c );
+  brg_wprintf( L"%C", c );
 }
 
 #endif
@@ -80,7 +80,7 @@ void wprint( wchar_t c )
 #ifdef _RISCV
 
 inline
-void wprint( const wchar_t* p )
+void brg_wprint( const wchar_t* p )
 {
   asm ( "csrw 0x7C0, %0" :: "r"(0x00030002) );
   while ( *p != 0 ) {
@@ -93,9 +93,9 @@ void wprint( const wchar_t* p )
 #else
 
 inline
-void wprint( const wchar_t* str )
+void brg_wprint( const wchar_t* str )
 {
-  wprintf( L"%S", str );
+  brg_wprintf( L"%S", str );
 }
 
 #endif
@@ -112,7 +112,7 @@ void wprint( const wchar_t* str )
 
 #ifdef _RISCV
 
-void wprintf( const wchar_t* fmt... );
+void brg_wprintf( const wchar_t* fmt... );
 
 #endif
 

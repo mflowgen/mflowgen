@@ -42,12 +42,20 @@
 
 from pymtl             import *
 from pclib.ifcs        import InValRdyBundle, OutValRdyBundle
-from pclib.ifcs        import MemReqMsg, MemRespMsg
 from pclib.rtl         import RegRst
 from pclib.rtl         import SingleElementBypassQueue, TwoElementBypassQueue
 from sram              import SramRTL
 
+# BRGTC2 custom MemMsg modified for RISC-V 32
+
+from ifcs              import MemReqMsg, MemRespMsg
+
 class SramValRdyPRTL( Model ):
+
+  # Sizes
+
+  num_bits  = 256
+  num_words = 256
 
   def __init__( s, tech_node = 'generic', prefix = 'sram' ):
 
@@ -55,10 +63,11 @@ class SramValRdyPRTL( Model ):
 
     s.explicit_modulename = "SramValRdyPRTL"
 
-    # size is fixed as 64x64
+    # Parameter
 
-    num_bits  = 64
-    num_words = 64
+    num_bits  = s.__class__.num_bits
+    num_words = s.__class__.num_words
+    num_bytes = s.__class__.num_bits / 8
 
     # Interface
 
@@ -67,15 +76,15 @@ class SramValRdyPRTL( Model ):
     s.memreq  = InValRdyBundle ( MemReqMsg ( 8, 32, num_bits ) )
     s.memresp = OutValRdyBundle( MemRespMsg( 8,     num_bits ) )
 
-    addr_width = clog2( num_words )  # address width
-    addr_start = clog2(num_bits/8)
-    addr_end   = addr_start+addr_width+1
+    addr_width = clog2( num_words     )  # address width
+    addr_start = clog2( num_bits  / 8 )
+    addr_end   = addr_start + addr_width + 1
 
     #---------------------------------------------------------------------
     # MO stage
     #---------------------------------------------------------------------
 
-    s.memreq_go_M0     = Wire( 1 )
+    s.memreq_go_M0      = Wire( 1 )
 
     s.sram_a_addr_32_M0 = Wire( 32 )
     s.sram_a_addr_M0    = Wire( addr_width )
@@ -95,17 +104,22 @@ class SramValRdyPRTL( Model ):
 
     # SRAM
 
-    instance_name = '{}_{}_{}x{}_SP'.format( prefix, tech_node, num_bits, num_words )
+    module_name = '{}_{}_{}x{}_SP'.format( prefix, tech_node, num_bits, num_words )
 
-    s.sram = m = SramRTL( num_bits, num_words, tech_node, instance_name )
+    # Get all ones
+    s.wmask = Wire ( num_bytes )
+    for i in xrange(num_bytes):
+      s.connect(s.wmask[i], 1)
+
+    s.sram = m = SramRTL( num_bits, num_words, tech_node, module_name )
 
     s.connect_pairs(
-      m.addr, s.sram_a_addr_M0,
-      m.wen,  s.sram_a_wen_M0,
-      m.mask, 0b11111111,
-      m.cen,  s.sram_a_en_M0,
-      m.in_,  s.sram_a_wdata_M0,
-      m.out,  s.sram_a_rdata_M1,
+      m.addr,  s.sram_a_addr_M0,
+      m.we,    s.sram_a_wen_M0,
+      m.wmask, s.wmask,
+      m.ce,    s.sram_a_en_M0,
+      m.in_,   s.sram_a_wdata_M0,
+      m.out,   s.sram_a_rdata_M1,
     )
 
     # Pipeline registers
@@ -134,13 +148,10 @@ class SramValRdyPRTL( Model ):
 
     # Bypass queues
 
-    s.memresp_queue_rdy = Wire( 1 )
-
     s.memresp_queue = m = TwoElementBypassQueue( MemRespMsg( 8, num_bits ) )
 
     s.connect_pairs(
       m.enq.val,        s.memreq_val_reg.out,
-      m.enq.rdy,        s.memresp_queue_rdy,
       m.enq.msg.type_,  s.memreq_msg_reg.out.type_,
       m.enq.msg.opaque, s.memreq_msg_reg.out.opaque,
       m.enq.msg.len,    s.memreq_msg_reg.out.len,
@@ -152,7 +163,7 @@ class SramValRdyPRTL( Model ):
       m.deq.msg,        s.memresp.msg,
     )
 
-    # Input ready signal: input (memreq) is ready if the bypass queue is empty
+    # Input ready signal: input is ready for more requests if we have two entries
 
     s.connect( s.memreq.rdy, s.memresp_queue.empty )
 

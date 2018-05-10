@@ -38,7 +38,7 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.idiv = TranslationTool( s.idiv )
+      s.idiv = TranslationTool( s.idiv, verilator_xinit=test_verilog )
 
     # Connect
 

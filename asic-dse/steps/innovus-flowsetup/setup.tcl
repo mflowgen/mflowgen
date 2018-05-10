@@ -79,13 +79,19 @@ source $adk_dir/stdcells.tcl
 set vars(library_sets)        libs_typical
 #set vars(libs_typical,si)     libs/stdcells.cdb
 
-set vars(libs_typical,timing) [join "$adk_dir/stdcells.lib
-                                     $adk_dir/iocells.lib"]
+set vars(libs_typical,timing) [join "
+                                $adk_dir/stdcells.lib
+                                $adk_dir/iocells.lib
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                              "]
 
-set vars(lef_files) [join "$adk_dir/rtk-tech.lef
-                           $adk_dir/iocells.lef
-                           $adk_dir/iocells-bondpads.lef
-                           $adk_dir/stdcells.lef" ]
+set vars(lef_files) [join "
+                      $adk_dir/rtk-tech.lef
+                      $adk_dir/iocells.lef
+                      $adk_dir/iocells-bondpads.lef
+                      $adk_dir/stdcells.lef
+                      [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lef]
+                    " ]
 
 # Difference between library_sets, rc_corners, and delay_corners?
 #
@@ -176,12 +182,12 @@ set vars(pre_place_tcl)               $vars(plug_dir)/pre_place.tcl
 set vars(post_place_tcl)              $vars(plug_dir)/post_place.tcl
 #set vars(pre_prects_tcl)              $vars(plug_dir)/pre_prects.tcl
 #set vars(post_prects_tcl)             $vars(plug_dir)/post_prects.tcl
-#set vars(pre_cts_tcl)                 $vars(plug_dir)/pre_cts.tcl
+set vars(pre_cts_tcl)                 $vars(plug_dir)/pre_cts.tcl
 #set vars(post_cts_tcl)                $vars(plug_dir)/post_cts.tcl
 #set vars(pre_postcts_tcl)             $vars(plug_dir)/pre_postcts.tcl
 #set vars(post_postcts_tcl)            $vars(plug_dir)/post_postcts.tcl
-set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postcts_hold.tcl
-#set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postcts_hold.tcl
+set vars(pre_postcts_hold_tcl)        $vars(plug_dir)/pre_postctshold.tcl
+#set vars(post_postcts_hold_tcl)       $vars(plug_dir)/post_postctshold.tcl
 #set vars(pre_route_tcl)               $vars(plug_dir)/pre_route.tcl
 #set vars(post_route_tcl)              $vars(plug_dir)/post_route.tcl
 set vars(pre_postroute_tcl)           $vars(plug_dir)/pre_postroute.tcl
@@ -233,9 +239,16 @@ set vars(signoff,save_design,replace_tcl)         $vars(plug_dir)/save_design.tc
 set vars(abort) 0
 
 # Power nets
+#
+# - VDD VNW     : from stdcells
+# - VSS VPW     : from stdcells
+# - VDDPST POC  : from iocells
+# - VSSPST      : from iocells
+# - VDDCE VDDPE : from srams
+# - VSSE        : from srams
 
-set vars(power_nets)  "VDD VNW VDDPST POC"
-set vars(ground_nets) "VSS VPW VSSPST"
+set vars(power_nets)  "VDD VNW VDDPST POC VDDCE VDDPE"
+set vars(ground_nets) "VSS VPW VSSPST VSSE"
 
 # Tie cells
 #
@@ -281,7 +294,7 @@ set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
 # Multithreading and distributed processing
 # FIXME
 
-set vars(local_cpus) 8
+set vars(local_cpus) 16
 
 # Flow control
 # - Controls when hold optimization is enabled

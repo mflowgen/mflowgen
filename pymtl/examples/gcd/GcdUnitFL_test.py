@@ -39,7 +39,9 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.gcd = TranslationTool( s.gcd )
+      cls_name = s.gcd.__class__.__name__
+      if ( cls_name != 'SwShim' ) and ( not hasattr( s.gcd, 'dut' ) ):
+        s.gcd = TranslationTool( s.gcd, verilator_xinit=test_verilog )
 
     # Connect
 

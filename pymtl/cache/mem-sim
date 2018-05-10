@@ -25,13 +25,14 @@
 #  --dump-vcd          Dump vcd
 #  --stats             Print stats
 #  --trace             Display line-trace
+#  --translate         Translate and test Verilog implementation
 #  --mem-lat           Set memory latency (in cycles), default=20
 #
 # The cache memory multiplier simulator. Choose an implementation and an
 # access pattern to execute. Use --stats to display statistics about the
 # simulation.
 #
-# Author : Shreesha Srinath, Moyang Wang
+# Author : Shreesha Srinath, Moyang Wang, Khalid Al-Hawaj
 # Date   : October 8, 2015
 
 from __future__ import print_function
@@ -76,19 +77,20 @@ def parse_cmdline():
 
   # Standard command line arguments
 
-  p.add_argument( "-v", "--verbose",  action="store_true"                                          )
-  p.add_argument( "-h", "--help",     action="store_true"                                          )
-  p.add_argument(       "--impl",     choices=["alt"],                   default="alt"    )
+  p.add_argument( "-v", "--verbose",   action="store_true"                                          )
+  p.add_argument( "-h", "--help",      action="store_true"                                          )
+  p.add_argument(       "--impl",      choices=["alt"],                   default="alt"    )
 
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   # LAB TASK: Add choices to --pattern option to use your new patterns
   #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-  p.add_argument(       "--pattern",  choices=["loop-1d", "loop-2d", "loop-3d"], default="loop-1d" )
-  p.add_argument(       "--dump-vcd", action="store_true"                                          )
-  p.add_argument(       "--stats",    action="store_true"                                          )
-  p.add_argument(       "--trace",    action="store_true"                                          )
-  p.add_argument(       "--mem-lat",  type=int,                                  default=20        )
+  p.add_argument(       "--pattern",   choices=["loop-1d", "loop-2d", "loop-3d"], default="loop-1d" )
+  p.add_argument(       "--dump-vcd",  action="store_true"                                          )
+  p.add_argument(       "--stats",     action="store_true"                                          )
+  p.add_argument(       "--trace",     action="store_true"                                          )
+  p.add_argument(       "--translate", action="store_true"                                          )
+  p.add_argument(       "--mem-lat",   type=int,                                  default=20        )
 
   opts = p.parse_args()
   if opts.help: p.error()
@@ -234,6 +236,10 @@ def main():
 
   [ src_msgs, sink_msgs, mem_data ] = pattern_dict[ opts.pattern ]()
 
+  # Verilog Translation
+
+  translate_verilog = opts.translate
+
   # Create VCD filename
 
   dump_vcd = ""
@@ -242,7 +248,9 @@ def main():
 
   # Instantiate and elaborate the model
 
-  model = TestHarness( src_msgs, sink_msgs, 0.0, opts.mem_lat, 0, 0, impl_dict[ opts.impl ], False, False )
+  model = TestHarness( src_msgs, sink_msgs, 0.0, opts.mem_lat,
+                       0, 0, impl_dict[ opts.impl ], False,
+                       dump_vcd, translate_verilog )
   model.load( mem_data[::2], mem_data[1::2] )
   model.elaborate()
   model.vcd_file = dump_vcd

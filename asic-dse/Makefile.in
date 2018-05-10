@@ -50,11 +50,11 @@ export relative_base_dir := ..
 # searches up the directory hierarchy until it finds the marker file. Then
 # it labels that directory as the absolute base directory.
 
-export base_dir_marker   := .TOP
-export absolute_base_dir := $(shell \
-  x=$${PWD};                        \
-  while [ "$$x" != "/" ]; do        \
-    x=$$(dirname "$$x");            \
+export base_dir_marker := .TOP
+export base_dir        := $(shell \
+  x=$${PWD};                      \
+  while [ "$$x" != "/" ]; do      \
+    x=$$(dirname "$$x");          \
     find "$$x" -maxdepth 1 -name $(base_dir_marker) | xargs -I {} dirname {}; \
   done;)
 
@@ -75,7 +75,8 @@ export logs_dir       = logs
 export reports_dir    = reports
 export results_dir    = results
 
-export handoffs_dir   = handoffs
+export collect_dir    = collect
+export handoff_dir    = handoff
 export timestamps_dir = timestamps
 
 #-------------------------------------------------------------------------
@@ -114,14 +115,15 @@ list:
 	@echo "Available steps targets"
 	@echo "--------------------------------------------------------------------------"
 	@echo
-	@printf                          "%s %-20s   %s\n" ' ' "(Long Name)" "(Short Name)"
-	@echo
-	@$(foreach step, $(steps),printf "%s %-20s : %s\n" '-'  $(step)     $(abbr.$(step));)
+	@printf                          "%s %-20s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
+	@echo                            "  ------------------------------------------------------------------------"
+	@$(foreach step, $(steps),printf "%s %-20s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
 	@echo
 	@echo "Other useful targets"
 	@echo
 	@echo "- seed     : Creates all build directories and seeds the flow steps"
-	@echo "- runtimes : Use timestamps to print runtimes for each executed step"
+	@echo "- runtimes : Prints runtimes for each executed step"
+	@echo "- graph    : Draws an ASCII dependency graph of steps"
 	@echo
 
 # runtimes
@@ -141,26 +143,51 @@ list:
 #   This number might be different compared to subtracting the first/last
 #   timestamps because the user might have paused between steps.
 
+# Improvements from Khalid
+#
+#     * An flag is printed next to runtimes that are still executing
+#       (i.e, believed to be still running)
+#     * Runtimes for steps that are still executing will be running runtime
+#     * If the end time is older than the start, we assume start is invalid
+#     * if start time do not exist while end does, we assume step never started
+
 runtimes:
 	@echo "--------------------------------------------------------------------------"
 	@echo "Runtimes"
 	@echo "--------------------------------------------------------------------------"
 	@(tot_secs=0; \
     $(foreach step, $(steps), \
-      end=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
-      start=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      start_e=$(shell [[ -e $(timestamps_dir)/$(step).start ]] && echo "y"); \
+      end_e=$(shell [[ -e $(timestamps_dir)/$(step).end ]] && echo "y"); \
+      end_1=$(shell date -f $(timestamps_dir)/$(step).end +%s 2>/dev/null || echo 0); \
+      start_1=$(shell date -f $(timestamps_dir)/$(step).start +%s 2>/dev/null || echo 0); \
+      end_2=$$(if [[ -n "$$start_e" ]]; then echo $$end_1; else echo 0; fi); \
+      start_2=$$start_1; \
+      flag=; \
+      flag=$$([[ "$$end_2" -lt "$$start_2" ]] && echo " <-- in progress"); \
+      end=$$(if [[ -n "$$flag" ]]; then date +%s; else echo $$end_2; fi); \
+      start=$$start_2; \
       step_secs=$$(( $$end - $$start )); \
       tot_secs=$$(($$tot_secs + $$step_secs)); \
       h=$$(( $$step_secs / 3600      )); \
       m=$$(( $$step_secs % 3600 / 60 )); \
       s=$$(( $$step_secs % 60        )); \
-      printf '%-20s -- %2d hr %2d min %2d sec\n' $(step) $$h $$m $$s | \
+      printf '%-20s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
         sed "s/ 0 hr/     /; s/ 0 min/      /";) \
     echo "--------------------------------------------------------------------------"; \
     h=$$(( $$tot_secs / 3600      )); \
     m=$$(( $$tot_secs % 3600 / 60 )); \
     s=$$(( $$tot_secs % 60        )); \
     printf '%-20s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
+
+# graph
+#
+# Useful target that draws an ASCII dependency graph of all steps
+
+graph:
+	@python $(base_dir)/utils/graph.py -f setup-flow.mk
+
+junk += .graph # hidden dir used by utils/graph.py
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -174,20 +201,18 @@ seed:
 # Generate all asic flow directories
 	@mkdir -p $(VPATH) $(flow_dir) $(plugins_dir)
 	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
-	@mkdir -p $(handoffs_dir) $(timestamps_dir)
+	@mkdir -p $(collect_dir) $(handoff_dir) $(timestamps_dir)
 # Seed links to the master steps into the flow directory
-	@(cd $(flow_dir); \
-    $(foreach x, $(steps), \
-      ln -sf ../../$(master_steps_dir)/$x .;))
+	@$(foreach x, $(steps), \
+      ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir);)
 # Pull design-specific plugins into the plugins directory
-	@(cd $(plugins_dir) && \
-    ln -sf ../../$(master_flows_dir)/$(design_flow)/plugins/* .)
+	@ln -srf $(base_dir)/$(master_flows_dir)/$(design_flow)/plugins/* $(plugins_dir)
 # Mark this step done
 	@touch $(VPATH)/$@
 
 junk += $(flow_dir) $(plugins_dir)
 junk += $(logs_dir) $(reports_dir) $(results_dir)
-junk += $(handoffs_dir) $(timestamps_dir)
+junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
@@ -217,10 +242,24 @@ junk += $(handoffs_dir) $(timestamps_dir)
 #
 # Additional features
 #
-# - ascii.myflowstep: (optional) This hook can be defined in the step
-#                                configure.mk to print a pretty
-#                                banner before executing the step,
-#                                which is visible as text flies by.
+# - ascii.$(1)
+#     - (optional)
+#     - This hook can be defined in the step configure.mk to print a
+#     pretty banner before executing the step, which is visible as text
+#     flies by.
+#
+# - abbr.$(1)
+#     - (optional)
+#     - This hook can be used to create a short alias target for the step
+#
+# - extra_dependencies.$(1)
+#     - (optional)
+#     - The step configure can define this variable to draw any additional
+#     custom dependencies for this step.
+#
+# - skipvpath.$(1)
+#     - (optional)
+#     - If defined, the build system will not use VPATH for this step
 
 define step_template
 
@@ -233,8 +272,8 @@ logs_dir.$(1)    = $(logs_dir)/$(1)
 reports_dir.$(1) = $(reports_dir)/$(1)
 results_dir.$(1) = $(results_dir)/$(1)
 
-collect_dir.$(1) = $(handoffs_dir)/$(1)-collect
-handoff_dir.$(1) = $(handoffs_dir)/$(1)-handoff
+collect_dir.$(1) = $(collect_dir)/$(1)
+handoff_dir.$(1) = $(handoff_dir)/$(1)
 
 # Include the step makefile fragment
 
@@ -242,14 +281,13 @@ include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 
 # Primary command target for this step
 
-$(1): $$(dependencies.$(1))
-# Collect handoffs from the dependencies
+$(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
+# Collect files from handoffs of dependencies
 	@rm -rf ./$$(collect_dir.$(1))
 	@mkdir -p $$(collect_dir.$(1))
-	@(cd $$(collect_dir.$(1)); \
-  $$(foreach dep, $$(dependencies.$(1)), \
-    $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
-      ln -sf ../../$$(file);)))
+	@$$(foreach dep, $$(dependencies.$(1)), \
+     $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
+       ln -srf $$(file) $$(collect_dir.$(1));))
 # Execute the step
 	@date > $$(timestamps_dir)/$(1).start
 ifdef ascii.$(1)
@@ -257,7 +295,9 @@ ifdef ascii.$(1)
 endif
 	$$(commands.$(1))
 	@date > $$(timestamps_dir)/$(1).end
+ifndef skipvpath.$(1)
 	@touch $(VPATH)/$(1)
+endif
 
 # Alias short name target for this step
 
@@ -282,19 +322,36 @@ all: $(dependencies.all)
 # Misc
 #-------------------------------------------------------------------------
 
+# clean
+#
+# Try to prefix with "./" to avoid calling "rm -rf /" due to unresolved
+# variables
+
 .PHONY: clean
 
 clean:
-	rm -rf $(junk)
+	rm -rf $(foreach x, $(junk),./$x)
 
-# print-%
+# print.%
 #
 # This target makes it easier to debug Makefile rules by allowing you to
 # print any variable. For example, "make print-junk" prints the value of
 # the junk variable.
 
-print-% :
+print.% :
 	@echo $* = $($*)
+
+# print
+#
+# List any targets explicitly defined in the "print.*" namespace
+
+print:
+	@echo "--------------------------------------------------------------------------"
+	@echo "Available print targets"
+	@echo "--------------------------------------------------------------------------"
+	@echo
+	@$(foreach var, $(print_list),printf "%s %-30s   %s\n" '-' "$(var)"  $(descriptions.$(step)) ;)
+	@echo
 
 # run-%
 #

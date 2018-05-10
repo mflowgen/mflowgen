@@ -123,6 +123,7 @@ int bthread_spawn( int thread_id, void (*start_routine)(void*), void* arg )
   g_thread_spawn_func_ptrs[thread_id] = start_routine;
 
   // Wake up worker thread
+  asm volatile("": : :"memory");
 
   g_thread_flags[thread_id] = 1;
 
@@ -167,6 +168,8 @@ int bthread_join( int thread_id )
 {
   return 0;
 }
+
+
 
 #endif
 

@@ -1,6 +1,9 @@
 #=========================================================================
 # InstBuffer.py
 #=========================================================================
+# This InstBuffer wraps around DirectMappedInstBuffer and provides the
+# ability to bypass the DirectMappedInstBuffer if the input bit from host
+# is set.
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
@@ -11,8 +14,7 @@ from ifcs import MemReqMsg, MemRespMsg
 
 from pclib.rtl.queues import SingleElementBypassQueue
 
-from InstBufferCtrl  import InstBufferCtrl
-from InstBufferDpath import InstBufferDpath
+from DirectMappedInstBuffer  import DirectMappedInstBuffer
 
 class InstBuffer( Model ):
 
@@ -23,93 +25,91 @@ class InstBuffer( Model ):
     opaque_nbits = 8
     data_nbits   = 32
     addr_nbits   = 32
+    data_len     = addr_nbits / 8
     line_nbits   = line_nbytes * 8
 
-    # Proc <-> Buffer
+    zero_nbits   = line_nbits - addr_nbits
+
+    # Host input bit
+
+    s.L0_disable = InPort( 1 )
+
+    # Proc side
 
     s.buffreq  = InValRdyBundle ( MemReqMsg(opaque_nbits, addr_nbits, data_nbits) )
     s.buffresp = OutValRdyBundle( MemRespMsg(opaque_nbits, data_nbits)  )
 
-    # Buffer <-> Mem
+    # Mem side
 
-    s.memreq    = OutValRdyBundle( MemReqMsg(opaque_nbits, data_nbits, line_nbits) )
-    s.memresp   = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
+    s.memreq   = OutValRdyBundle( MemReqMsg(opaque_nbits, data_nbits, line_nbits) )
+    s.memresp  = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
 
-    s.ctrl      = InstBufferCtrl ( num_entries )
-    s.dpath     = InstBufferDpath( num_entries, line_nbytes )
+    s.inner = DirectMappedInstBuffer( num_entries, line_nbytes )
 
-    # Bypass Queue to cut the ready path because we allow back-to-back
-    # requests by letting cachereq_rdy = cacheresp_rdy 
+    @s.combinational
+    def comb_proc_side():
 
-    s.resp_bypass = SingleElementBypassQueue( MemRespMsg(opaque_nbits, data_nbits) )
+      if s.L0_disable: # host turns the l0 off, proc <-> mem
 
-    # Control
+        # Mute inner.buffreq
+        s.inner.buffreq.val.value  = 0
+        s.inner.buffreq.msg.value  = 0
 
-    s.connect_pairs(
+        # Mute inner.buffresp
+        s.inner.buffresp.rdy.value = 0
 
-      # Buff request
+        # Mute inner.memreq
+        s.inner.memreq.rdy.value   = 0
 
-      s.ctrl.buffreq_val,    s.buffreq.val,
-      s.ctrl.buffreq_rdy,    s.buffreq.rdy,
+        # Mute inner.memresp
+        s.inner.memresp.val.value  = 0
+        s.inner.memresp.msg.value  = 0
 
-      # Buff response
+        # memreq <- buffreq
+        s.memreq.val.value         = s.buffreq.val
 
-      s.ctrl.buffresp_val,   s.resp_bypass.enq.val,
-      s.ctrl.buffresp_rdy,   s.resp_bypass.enq.rdy,
-      s.resp_bypass.deq.val, s.buffresp.val,
-      s.resp_bypass.deq.rdy, s.buffresp.rdy,
+        s.memreq.msg.type_.value   = s.buffreq.msg.type_
+        s.memreq.msg.opaque.value  = s.buffreq.msg.opaque
+        s.memreq.msg.addr.value    = s.buffreq.msg.addr
+        s.memreq.msg.len.value     = data_len
+        s.memreq.msg.data.value    = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
 
-      # Memory request
+        s.buffreq.rdy.value        = s.memreq.rdy
 
-      s.ctrl.memreq_val,        s.memreq.val,
-      s.ctrl.memreq_rdy,        s.memreq.rdy,
+        # buffresp <- memresp
+        s.buffresp.val.value        = s.memresp.val
 
-      # Memory response
+        s.buffresp.msg.type_.value  = s.memresp.msg.type_
+        s.buffresp.msg.opaque.value = s.memresp.msg.opaque
+        s.buffresp.msg.test.value   = s.memresp.msg.test
+        s.buffresp.msg.len.value    = 0
+        s.buffresp.msg.data.value   = s.memresp.msg[0:data_nbits]
 
-      s.ctrl.memresp_val,       s.memresp.val,
-      s.ctrl.memresp_rdy,       s.memresp.rdy,
+        s.memresp.rdy.value         = s.buffresp.rdy
 
-    )
+      else: # otherwise proc <-> inner <-> mem
 
-    # Dpath
+        # inner.buffreq <- buffreq
+        s.inner.buffreq.val.value  = s.buffreq.val
+        s.inner.buffreq.msg.value  = s.buffreq.msg
+        s.buffreq.rdy.value        = s.inner.buffreq.rdy
 
-    s.connect_pairs(
+        # buffresp <- inner.buffresp
+        s.buffresp.val.value       = s.inner.buffresp.val
+        s.buffresp.msg.value       = s.inner.buffresp.msg
+        s.inner.buffresp.rdy.value = s.buffresp.rdy
 
-      # Buff request
+        # memreq <- inner.memreq
+        s.memreq.val.value         = s.inner.memreq.val
+        s.memreq.msg.value         = s.inner.memreq.msg
+        s.inner.memreq.rdy.value   = s.memreq.rdy
 
-      s.dpath.buffreq_msg,     s.buffreq.msg,
-
-      # Buff response
-
-      s.dpath.buffresp_msg,    s.resp_bypass.enq.msg,
-      s.resp_bypass.deq.msg,    s.buffresp.msg,
-
-      # Memory request
-
-      s.dpath.memreq_msg,       s.memreq.msg,
-
-      # Memory response
-
-      s.dpath.memresp_msg,      s.memresp.msg,
-
-    )
-
-    # Ctrl <-> Dpath
-
-    s.connect_auto( s.ctrl, s.dpath )
+        # inner.memresp <- memresp
+        s.inner.memresp.val.value  = s.memresp.val
+        s.inner.memresp.msg.value  = s.memresp.msg
+        s.memresp.rdy.value        = s.inner.memresp.rdy
 
   def line_trace( s ):
+    if s.L0_disable:  return "(--)"
+    return s.inner.line_trace()
 
-    state = s.ctrl.state_reg
-
-    if   state == s.ctrl.STATE_IDLE:           state_str = "(I )"
-    elif state == s.ctrl.STATE_TAG_CHECK:      state_str = "(TC)"
-    elif state == s.ctrl.STATE_MISS_ACCESS:    state_str = "(RD)"
-    elif state == s.ctrl.STATE_REFILL_REQUEST: state_str = "(RR)"
-    elif state == s.ctrl.STATE_REFILL_WAIT:    state_str = "(RW)"
-    elif state == s.ctrl.STATE_REFILL_UPDATE:  state_str = "(RU)"
-    elif state == s.ctrl.STATE_WAIT_HIT:       state_str = "(W )"
-    elif state == s.ctrl.STATE_WAIT_MISS:      state_str = "(W )"
-    else :                                     state_str = "(? )"
-
-    return state_str

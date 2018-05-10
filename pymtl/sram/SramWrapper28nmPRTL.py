@@ -1,126 +1,243 @@
 #=========================================================================
-# SRAM Wrapper for sram_sp_hde 28nm
+# SRAM Wrapper for memories in 28nm technology node
 #=========================================================================
 
 from pymtl import *
 
 # SRAMs Functional model
 from sram.SramSpHde28nmFuncPRTL import SramSpHde28nmFuncPRTL
+from sram.SramSpHsd28nmFuncPRTL import SramSpHsd28nmFuncPRTL
+from sram.  RfSpHde28nmFuncPRTL import   RfSpHde28nmFuncPRTL
+from sram.  RfSpHse28nmFuncPRTL import   RfSpHse28nmFuncPRTL
 
 class SramWrapper28nmPRTL( Model ):
 
-  def __init__( s, num_bits = 32, num_words = 256, instance_name = '' ):
+  def __init__( s, num_bits = 32, num_words = 256, module_name = '' ):
 
     AW = clog2( num_words )      # address width
     nb = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
     BW = num_bits
 
+    #------------------------------
     # BRG SRAM's golden interface
+    #------------------------------
 
-    s.wen  = InPort (  1 )          # write en
-    s.cen  = InPort (  1 )          # whole SRAM en
-    s.addr = InPort ( AW ) # address
-    s.in_  = InPort ( BW )   # write data
-    s.out  = OutPort( BW )   # read data
-    s.mask = InPort ( nb )     # byte write en
+    s.we    = InPort (  1 )   # write en
+    s.ce    = InPort (  1 )   # whole SRAM en
+    s.addr  = InPort ( AW )   # address
+    s.in_   = InPort ( BW )   # write data
+    s.out   = OutPort( BW )   # read data
+    s.wmask = InPort ( nb )   # byte write en
 
-    # Instantiate ARM functional model
+    #------------------------------
+    # Handle physical banking
+    #------------------------------
 
-    s.mem  = SramSpHde28nmFuncPRTL( num_bits, num_words, instance_name )
+    banking_hor    = 1
+    banking_ver    = 1
+
+    bank_num_bits  = num_bits
+    bank_num_words = num_words
+
+    while (bank_num_bits > 128):
+      banking_hor    *= 2
+      assert( num_bits % banking_hor == 0)
+      bank_num_bits   = num_bits / banking_hor
+
+    while (bank_num_words > 4096):
+      banking_ver    *= 2
+      assert( num_words % banking_ver == 0)
+      bank_num_words  = num_words / banking_ver
+
+    #------------------------------
+    # Choosing appropriate model
+    #------------------------------
+
+    if   num_words >= 32 and num_words <= 512:
+      #hawajkm: switching to rf_sp_hse as rf_sp_hde fails LVS
+      #sram_model = RfSpHde28nmFuncPRTL
+      #sram_type  = 'rf_sp_hde'
+      sram_model = RfSpHse28nmFuncPRTL
+      sram_type  = 'rf_sp_hse'
+
+    elif num_words >= 1024:
+      sram_model = SramSpHsd28nmFuncPRTL
+      sram_type  = 'sram_sp_hsd'
+
+    else:
+      raise ValueError
+
+    #------------------------------
+    # Generate automatic naming
+    #------------------------------
+    if (banking_hor > 1 or banking_ver > 1) or \
+       (module_name == ''):
+
+      # Force automatic module name generation if banking is to be
+      # enforced or if module_name was not specified by parent module
+      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_words ,
+                                                 bank_num_bits  )
+
+    #------------------------------
+    # Instantiating Memories
+    #------------------------------
+
+    # We only support Horizantal banking for now
+    assert(banking_ver == 1)
+
+    s.mem = []
+    for v in xrange(banking_ver):
+      s.mem.append([])
+      for h in xrange(banking_hor):
+        s.mem[v].append( sram_model( bank_num_bits  ,
+                                     bank_num_words ,
+                                     module_name    ) )
+
+    # Needed for different ports
+    s.type_ = sram_type
 
     # Wires
-    s.CENY      = Wire(  1 )
-    s.WENY      = Wire(  1 )
-    s.AY        = Wire( AW )
-    s.Q         = Wire( BW )
-    s.SO        = Wire(  3 )
-    s.CEN       = Wire(  1 )
-    s.WEN       = Wire( BW )
-    s.A         = Wire( AW )
-    s.D         = Wire( BW )
-    s.EMA       = Wire(  3 )
-    s.EMAW      = Wire(  2 )
-    s.TEN       = Wire(  1 )
-    s.TCEN      = Wire(  1 )
-    s.TWEN      = Wire(  1 )
-    s.TA        = Wire( AW )
-    s.TD        = Wire( BW )
-    s.GWEN      = Wire(  1 )
-    s.TGWEN     = Wire(  1 )
-    s.RET1N     = Wire(  1 )
-    s.SI        = Wire(  2 )
-    s.SE        = Wire(  1 )
-    s.DFTRAMBYP = Wire(  1 )
+    s.ceny      = Wire(  1 )
+    s.weny      = Wire( BW )
+    s.gweny     = Wire(  1 )
+    s.ay        = Wire( AW )
+    s.q         = Wire( BW )
+    s.so        = Wire(  2 )
+    s.cen       = Wire(  1 )
+    s.wen       = Wire( BW )
+    s.a         = Wire( AW )
+    s.d         = Wire( BW )
+    s.ema       = Wire(  3 )
+    s.emaw      = Wire(  2 )
+    s.emas      = Wire(  1 )
+    s.ten       = Wire(  1 )
+    s.tcen      = Wire(  1 )
+    s.twen      = Wire( BW )
+    s.ta        = Wire( AW )
+    s.td        = Wire( BW )
+    s.gwen      = Wire(  1 )
+    s.tgwen     = Wire(  1 )
+    s.ret1n     = Wire(  1 )
+    s.si        = Wire(  2 )
+    s.se        = Wire(  1 )
+    s.dftrambyp = Wire(  1 )
 
-    # Connect
-    s.connect_pairs (
 
-      # Special Ports
-      s    .clk       , s.mem.CLK       ,
+    # Common connections
 
-      # Input
-      s    .CENY      , s.mem.CENY      ,
-      s    .WENY      , s.mem.WENY      ,
-      s    .AY        , s.mem.AY        ,
-      s    .Q         , s.mem.Q         ,
-      s    .SO        , s.mem.SO        ,
+    # Connect all physical banks
+    for v in xrange(banking_ver):
+      for h in xrange(banking_hor):
 
-      # Output
-      s.mem.CEN       , s    .CEN       ,
-      s.mem.WEN       , s    .WEN       ,
-      s.mem.A         , s    .A         ,
-      s.mem.D         , s    .D         ,
-      s.mem.GWEN      , s    .GWEN      ,
+        # Specify bank
+        bank = s.mem[v][h]
 
-      # Special Constants
-      s.mem.EMA       , 3               ,
-      s.mem.EMAW      , 1               ,
+        # Boundries
+        l  = (h + 0) * bank_num_bits
+        h  = (h + 1) * bank_num_bits
 
-      # Test Constants
-      s.mem.TEN       , 1               ,
-      s.mem.TCEN      , 1               ,
-      s.mem.TWEN      , 1               ,
-      s.mem.TGWEN     , 1               ,
-      s.mem.TA        , 0               ,
-      s.mem.TD        , 0               ,
-      s.mem.RET1N     , 0               ,
-      s.mem.SI        , 0               ,
-      s.mem.SE        , 0               ,
-      s.mem.DFTRAMBYP , 0               ,
+        # Connect
+        s.connect_pairs (
 
-      #s.mem.EMA       , s    .EMA       ,
-      #s.mem.EMAW      , s    .EMAW      ,
-      #s.mem.TEN       , s    .TEN       ,
-      #s.mem.TCEN      , s    .TCEN      ,
-      #s.mem.TWEN      , s    .TWEN      ,
-      #s.mem.TGWEN     , s    .TGWEN     ,
-      #s.mem.TA        , s    .TA        ,
-      #s.mem.TD        , s    .TD        ,
-      #s.mem.RET1N     , s    .RET1N     ,
-      #s.mem.SI        , s    .SI        ,
-      #s.mem.SE        , s    .SE        ,
-      #s.mem.DFTRAMBYP , s    .DFTRAMBYP ,
+          # Outputs
+          s    .q   [l:h] ,  bank.q         ,
 
-    )
+          # Inputs
+           bank.cen       , s    .cen       ,
+           bank.wen       , s    .wen [l:h] ,
+           bank.a         , s    .a         ,
+           bank.d         , s    .d   [l:h] ,
+           bank.gwen      , s    .gwen      ,
+
+          # Special Constants
+           bank.ema       , 3               ,
+           bank.emaw      , 1               ,
+
+          # Test Constants
+           bank.ret1n     , 0               ,
+
+        )
+
+        if hasattr(bank, 'emas'):
+          s.connect(bank.emas, 0)
+
+    # Only SRAMs
+
+    if s.type_ == 'sram_sp_hde':
+      for v in xrange(banking_ver):
+        for h in xrange(banking_hor):
+
+          # Specify bank
+          bank = s.mem[v][h]
+
+          # Connect
+          s.connect_pairs (
+
+            # Outputs
+            #s     .ceny    , bank.ceny     ,
+            #s     .weny    , bank.weny     ,
+            #s     .ay      , bank.ay       ,
+            #s     .so      , bank.so       ,
+
+            # Test Constants
+            bank.ten       , 0                ,
+            bank.tcen      , 0                ,
+            bank.twen      , 0                ,
+            bank.tgwen     , 0                ,
+            bank.ta        , 0                ,
+            bank.td        , 0                ,
+            bank.si        , 0                ,
+            bank.se        , 0                ,
+            bank.dftrambyp , 0                ,
+
+          )
+
+    if s.type_ == 'sram_sp_hsd':
+      for v in xrange(banking_ver):
+        for h in xrange(banking_hor):
+
+          # Specify bank
+          bank = s.mem[v][h]
+
+          # Connect
+          s.connect_pairs (
+
+            # Outputs
+            s     .ceny      , bank.ceny        ,
+            s     .weny      , bank.weny        ,
+            s     .ay        , bank.ay          ,
+            s     .so        , bank.so          ,
+
+            # Test Constants
+            bank.ten         , 0                ,
+            bank.tcen        , 0                ,
+            bank.twen        , 0                ,
+            bank.tgwen       , 0                ,
+            bank.ta          , 0                ,
+            bank.td          , 0                ,
+            bank.si          , 0                ,
+            bank.se          , 0                ,
+            bank.dftrambyp   , 0                ,
+
+          )
 
     # Wrapping Logic
     @s.combinational
     def comb():
 
       # Output request
-      s.out.value = s.Q
+      s.out.value = s.q
 
       # Input request
-      s.CEN .value = ~s.cen
-      s.GWEN.value = ~s.wen
-      s.A   .value =  s.addr
-      s.D   .value =  s.in_
+      s.cen .value = ~s.ce
+      s.gwen.value = ~s.we
+      s.a   .value =  s.addr
+      s.d   .value =  s.in_
 
       # Mask
       for i in xrange(nb):
         for b in xrange(8):
-          s.WEN[i*8 + b].value = ~s.mask[i]
-
+          s.wen[i*8 + b].value = ~s.wmask[i]
 
   def line_trace( s ):
     return "(addr={} din={} dout={})".format( s.addr, s.in_, s.out )

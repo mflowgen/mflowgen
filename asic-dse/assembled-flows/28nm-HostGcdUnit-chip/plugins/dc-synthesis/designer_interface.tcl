@@ -93,5 +93,5 @@ set alib_dir ./alib
 
 # Number of cores for multicore optimization (used in dc_setup.tcl)
 
-set dc_num_cores 8
+set dc_num_cores 16
 

@@ -40,7 +40,7 @@ class TestHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.bram = TranslationTool( s.bram )
+      s.bram = TranslationTool( s.bram, verilator_xinit=test_verilog )
 
     # Connect
 

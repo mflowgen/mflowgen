@@ -48,7 +48,7 @@ class TestHarness( Model ):
     # Verilog translation
 
     if test_verilog:
-      s.dut = TranslationTool( s.dut, enable_blackbox=True )
+      s.dut = TranslationTool( s.dut, enable_blackbox=True, verilator_xinit=test_verilog )
 
     # Zero the opaque field in the DUT's response messages. This allows us
     # to "ignore" the opaque field, which will have been dirtied by the

@@ -339,7 +339,7 @@ if {[info exists DC_FLATTEN_EFFORT]} {
   set dc_flatten_effort 0
 }
 
-# Setup Design Compiler flattening effort
+# Set up Design Compiler flattening effort
 
 puts "Info: Design Compiler flattening effort (DC_FLATTEN_EFFORT) = $dc_flatten_effort"
 
@@ -376,6 +376,23 @@ if {$dc_flatten_effort == 0} {
 
 } else {
   error "Unrecognizable DC_FLATTEN_EFFORT value: $dc_flatten_effort"
+}
+
+# Set up Design Compiler clock gating
+
+if {[info exists DC_GATE_CLOCK]} {
+  set dc_gate_clock $DC_GATE_CLOCK
+  if {"$dc_gate_clock" == ""} {
+    set dc_gate_clock true
+  }
+} else {
+  set dc_gate_clock true
+}
+
+puts "Info: Design Compiler clock gating (DC_GATE_CLOCK) = $dc_gate_clock"
+
+if {$dc_gate_clock == true} {
+  append compile_ultra_options " -gate_clock"
 }
 
 #################################################################################
@@ -469,7 +486,9 @@ if {[shell_is_in_topographical_mode]} {
   # compile_ultra -gate_clock -check_only
 }
 
-eval "compile_ultra -gate_clock $compile_ultra_options"
+puts "Info: Design Compiler compile ultra options (compile_ultra_options) = $compile_ultra_options"
+
+eval "compile_ultra $compile_ultra_options"
 
 #################################################################################
 # High-effort area optimization

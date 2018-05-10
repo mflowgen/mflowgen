@@ -37,3 +37,6 @@ asic/vcs-*/simv_*
 asic/vcs-*/sdfAnnotateInfo
 asic/vcs-*/*.key
 asic/vcs-*/*.vcd
+
+# backup
+*.backup

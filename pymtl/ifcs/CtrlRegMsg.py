@@ -28,6 +28,12 @@ class CtrlRegReqMsg( BitStructDefinition ):
   TYPE_READ  = 0
   TYPE_WRITE = 1
 
+  ID_GO            = 0
+  ID_DEBUG         = 1
+  ID_MDU_HOSTEN    = 10
+  ID_ICACHE_HOSTEN = 11
+  ID_DCACHE_HOSTEN = 12
+
   def __init__( s ):
     s.type_ = BitField( 1  )
     s.addr  = BitField( 4  )
@@ -72,4 +78,13 @@ class CtrlRegRespMsg( BitStructDefinition ):
 
     elif s.type_ == CtrlRegRespMsg.TYPE_WRITE:
       return "wr:{}".format( '        ' )
+
+#-------------------------------------------------------------------------
+# Common Messages
+#-------------------------------------------------------------------------
+
+class CtrlRegMsg( object ):
+  def __init__( s ):
+    s.req  = CtrlRegReqMsg ()
+    s.resp = CtrlRegRespMsg()
 

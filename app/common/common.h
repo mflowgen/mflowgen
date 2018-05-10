@@ -5,6 +5,7 @@
 
 #ifndef COMMON_H
 #define COMMON_H
+#define NULL 0
 
 #include "common-misc.h"
 #include "common-wprint.h"

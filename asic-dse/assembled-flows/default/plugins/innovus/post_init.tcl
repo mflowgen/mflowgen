@@ -15,5 +15,3 @@
 
 report_ports > $vars(rpt_dir)/$vars(step).ports.rpt
 
-set_dont_touch $vars(design)
-

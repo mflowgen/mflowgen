@@ -7,11 +7,13 @@ from pclib.ifcs          import InValRdyBundle, OutValRdyBundle
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs                import MemMsg
+from ifcs                import MemMsg, MduMsg
 
 from proc.ProcPRTL           import ProcPRTL
 from instbuffer.InstBuffer   import InstBuffer
 from mdu.IntMulDivUnit       import IntMulDivUnit
+
+from adapters.HostAdapter    import HostAdapter
 
 class ProcL0Mdu( Model ):
 
@@ -31,8 +33,12 @@ class ProcL0Mdu( Model ):
     # Interface
     #---------------------------------------------------------------------
 
+    s.L0_disable  = InPort( 1 )
+    s.mdu_host_en = InPort( 1 )
+
     s.imemifc = MemMsg( opaque_nbits, addr_nbits, cacheline_nbits )
     s.dmemifc = MemMsg( opaque_nbits, addr_nbits, data_nbits )
+    s.mduifc  = MduMsg( 32, 8 )
 
     s.mngr2proc = InValRdyBundle ( 32 )
     s.proc2mngr = OutValRdyBundle( 32 )
@@ -42,6 +48,9 @@ class ProcL0Mdu( Model ):
 
     s.dmemreq  = OutValRdyBundle( s.dmemifc.req )
     s.dmemresp = InValRdyBundle ( s.dmemifc.resp )
+
+    s.host_mdureq  = InValRdyBundle( s.mduifc.req )
+    s.host_mduresp = OutValRdyBundle( s.mduifc.resp )
 
     # These ports are for statistics. Basically we want to provide the
     # simulator with some useful signals to let the simulator calculate
@@ -58,9 +67,16 @@ class ProcL0Mdu( Model ):
     s.mdu  = IntMulDivUnit( 32, 8 )
     s.l0i  = InstBuffer( 2, cacheline_nbits/8 )
 
+    s.mdu_adapter = HostAdapter( req=s.mdu.req, resp=s.mdu.resp )
+
     #---------------------------------------------------------------------
     # Connections
     #---------------------------------------------------------------------
+
+    # Shunning: these signals should really come from host
+
+    s.connect( s.l0i.L0_disable, s.L0_disable )
+    s.connect( s.mdu_adapter.host_en, s.mdu_host_en )
 
     # core id & mngr
 
@@ -71,8 +87,14 @@ class ProcL0Mdu( Model ):
 
     # mdu
 
-    s.connect( s.proc.mdureq,  s.mdu.req )
-    s.connect( s.proc.mduresp, s.mdu.resp )
+    s.connect( s.host_mdureq,  s.mdu_adapter.hostreq  )
+    s.connect( s.host_mduresp, s.mdu_adapter.hostresp )
+    s.connect( s.proc.mdureq,  s.mdu_adapter.realreq  )
+    s.connect( s.proc.mduresp, s.mdu_adapter.realresp )
+
+    s.connect( s.mdu_adapter.req,  s.mdu.req  )
+    s.connect( s.mdu_adapter.resp, s.mdu.resp )
+
 
     # instruction
 

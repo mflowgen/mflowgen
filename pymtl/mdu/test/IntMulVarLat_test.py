@@ -20,14 +20,14 @@ from ifcs import MduReqMsg, MduRespMsg
 
 class TestHarness (Model):
 
-  def __init__( s, nbits, src_msgs, sink_msgs,
+  def __init__( s, imul, nbits, src_msgs, sink_msgs,
                 src_delay, sink_delay,
                 dump_vcd=False, test_verilog=False ):
 
     # Instantiate models
 
     s.src  = TestSource ( MduReqMsg(nbits, 8), src_msgs,  src_delay  )
-    s.imul = IntMulVarLat( nbits, 8 )
+    s.imul = imul
     s.sink = TestSink   ( MduRespMsg(nbits), sink_msgs, sink_delay )
 
     # Dump VCD
@@ -38,7 +38,7 @@ class TestHarness (Model):
     # Translation
 
     if test_verilog:
-      s.imul = TranslationTool( s.imul )
+      s.imul = TranslationTool( s.imul, verilator_xinit=test_verilog )
 
     # Connect
 
@@ -149,7 +149,7 @@ test_case_table = mk_test_case_table([
 
 @pytest.mark.parametrize( **test_case_table )
 def test( test_params, dump_vcd, test_verilog ):
-  run_sim( TestHarness( 32,
+  run_sim( TestHarness( IntMulVarLat( 32, 8 ), 32,
                         test_params.msgs[::2], test_params.msgs[1::2],
                         test_params.src_delay, test_params.sink_delay,
                         dump_vcd, test_verilog )

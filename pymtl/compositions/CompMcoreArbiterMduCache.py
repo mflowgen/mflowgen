@@ -2,19 +2,19 @@
 # CompMcoreArbiterCache.py
 #=========================================================================
 
-from pymtl               import *
-from pclib.ifcs          import InValRdyBundle, OutValRdyBundle
+from pymtl                   import *
+from pclib.ifcs              import InValRdyBundle, OutValRdyBundle
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-from ifcs                import MemMsg
+from ifcs                    import MemMsg, MduMsg
 
 from proc.ProcPRTL           import ProcPRTL
 from cache.BlockingCachePRTL import BlockingCachePRTL
 from mdu.IntMulDivUnit       import IntMulDivUnit
 
-from networks.Funnel import Funnel
-from networks.Router import Router
+from networks.Funnel         import Funnel
+from networks.Router         import Router
 
 class CompMcoreArbiterMduCache( Model ):
 
@@ -28,6 +28,7 @@ class CompMcoreArbiterMduCache( Model ):
 
     s.proc_cache_ifc = MemMsg( mopaque_nbits, addr_nbits, word_nbits )
     s.cache_mem_ifc  = MemMsg( mopaque_nbits, addr_nbits, cacheline_nbits )
+    s.proc_mdu_ifc   = MduMsg( 32, 8 )
 
     s.mngr2proc = InValRdyBundle [num_cores]( 32 )
     s.proc2mngr = OutValRdyBundle[num_cores]( 32 )
@@ -57,8 +58,8 @@ class CompMcoreArbiterMduCache( Model ):
     s.net_dresp = Router( num_cores, s.proc_cache_ifc.resp )  # 1 cache - to - N cores
 
     s.mdu = IntMulDivUnit( 32, 8 )
-    s.net_mreq  = Funnel( num_cores, s.proc_cache_ifc.req )  # N cores - to - 1 cache
-    s.net_mresp = Router( num_cores, s.proc_cache_ifc.resp )  # 1 cache - to - N cores
+    s.net_mreq  = Funnel( num_cores, s.proc_mdu_ifc.req )  # N cores - to - 1 cache
+    s.net_mresp = Router( num_cores, s.proc_mdu_ifc.resp )  # 1 cache - to - N cores
 
     s.proc = ProcPRTL[num_cores]( num_cores )
 
@@ -104,6 +105,17 @@ class CompMcoreArbiterMduCache( Model ):
     s.connect( s.net_dresp.in_,  s.dcache.cacheresp )
     s.connect( s.dcache.memresp, s.dmemresp )
 
+    # mdu and network
+
+    for i in xrange( num_cores ):
+      # proc < net_mreq
+      s.connect( s.proc[i].mdureq,  s.net_mreq.in_[i] )
+      # net_mresp > proc
+      s.connect( s.net_mresp.out[i], s.proc[i].mduresp )
+
+    s.connect( s.net_mreq.out,   s.mdu.req  )
+    s.connect( s.net_mresp.in_,  s.mdu.resp )
+
     # statistics
 
     # core #0's stats_en is brought up to the top level
@@ -126,6 +138,8 @@ class CompMcoreArbiterMduCache( Model ):
     # Feel free to revamp it based on your need.
 
     trace = s.icache.line_trace()
+    trace += ' [ ' + s.mdu.line_trace()      + ' ] '
     for i in xrange(len(s.proc)):
-      trace += s.proc[i].line_trace()
+      trace += ' [ ' + s.proc[i].line_trace() + ' ] '
     return trace + s.dcache.line_trace()
+

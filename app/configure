@@ -610,6 +610,14 @@ ubmark_libs
 ubmark_ldflags
 ubmark_cppflags
 ubmark_intdeps
+wsrt_extra_libs
+wsrt_extra_ldflags
+wsrt_extra_cppflags
+wsrt_pkcdeps
+wsrt_libs
+wsrt_ldflags
+wsrt_cppflags
+wsrt_intdeps
 common_extra_libs
 common_extra_ldflags
 common_extra_cppflags
@@ -3017,9 +3025,9 @@ if  test "${host}" != "riscv64-unknown-elf" && test "${host}" != "riscv32-unknow
 
 else
 
-    CXXFLAGS="-Wall -g -D_RISCV -fno-builtin -fno-exceptions -fno-rtti -O3 -march=RV32IM"
+    CXXFLAGS="-Wall -g -D_RISCV -fno-use-cxa-atexit -fno-builtin -fno-exceptions -fno-rtti -O3 -march=rv32ima"
 
-    LDFLAGS="-nostdlib -T../scripts/tinyrv2.ld"
+    LDFLAGS="-nostartfiles -T../scripts/tinyrv2.ld"
 
 
 fi
@@ -3853,6 +3861,280 @@ fi
 
   # Set the type of this subproject and add it to a shell and m4 list
 
+  wsrt_type="internal"
+  as_fn_append mcppbs_include_internal "wsrt "
+
+
+  # Optional subprojects add an --with-subproject command line options,
+  # while default subprojects just make sure the shell enabled variable
+  # is set to "yes" so we always configure this subproject.
+
+
+    with_wsrt="yes"
+
+
+  # We create a shell function which contains all the code to actually
+  # configure this project including adding it to the
+  # $mcppbs_include_internal_en running shell variable, setting an
+  # HAVE_SUBPROJECT C define, and actually processing the appropriate
+  # subproject.ac. This will allow us to easily configure optional
+  # subproject later by just executing this function.
+
+  wsrt_cfg ()
+  {
+    ac_config_headers="$ac_config_headers wsrt-config.h:config.h.in"
+
+    ac_config_files="$ac_config_files wsrt.mk:wsrt/wsrt.mk.in"
+
+
+$as_echo "#define HAVE_WSRT /**/" >>confdefs.h
+
+    as_fn_append mcppbs_include_internal_en "wsrt "
+    with_wsrt="yes"
+    #=========================================================================
+# Modular C++ Build System Subproject Autoconf Fragment
+#=========================================================================
+# Please read the documenation in 'mcppbs-uguide.txt' for more details
+# on how the Modular C++ Build System works.
+
+
+  # Verify that the subproject name give in the configure.ac matches the
+  # name give in the autoconf fragment.
+
+
+
+
+
+
+  # Save the list of direct dependencies (ie dirdeps) and a list of
+  # dependencies which are comma separated for pkg-config file.
+
+  wsrt_dirdeps="common"
+  wsrt_pkcdeps="common"
+
+  # Initialize this subproject's compiler and linker flags
+
+  wsrt_cppflags="-I${srcdir}/wsrt "
+  wsrt_libs="-lwsrt "
+
+  # Loop through the list of given subprojects and for each one see if
+  # it has already been configured. If no then configure it by calling
+  # the appropriate shell function created in MCPPBS_SUBPROJECT. This
+  # will recursively configure transitively dependent subprojects.
+  # Eventually maybe this should happen at configure run time as opposed
+  # to autoconf run time.
+
+
+    # Determine if this dependency is required or optional
+
+
+
+    # Create some names which characterize this dependency including a
+    # shell variable indicating if this subproject has been configured,
+    # the function name to call if we need to configure this dependency,
+    # and a shell variable which has this dependency's dependencies.
+
+
+
+
+
+    # If the dependency is required and has not been configured then
+    # configure it. Issue error if subproject does not exist.
+
+
+
+
+      if  test "${with_common}" = "no" ; then :
+
+        eval "common_cfg"
+
+fi
+
+
+    # Add information about this dependency to our running lists
+
+    if  test "${with_common}" = "yes" ; then :
+
+      # Add the actual dependency to our libs list and our intdeps list
+      # which are both ordered such that libs only depend on later libs
+
+      as_fn_append wsrt_libs "-lcommon "
+      if  test "${common_type}" = "internal" ; then :
+
+        as_fn_append wsrt_intdeps "common "
+
+fi
+
+      # Add dependency's variables to our own
+
+      as_fn_append wsrt_intdeps "${common_intdeps} "
+      as_fn_append wsrt_cppflags "${common_cppflags} "
+      as_fn_append wsrt_ldflags "${common_ldflags} "
+      as_fn_append wsrt_libs "${common_libs} "
+
+fi
+
+
+  # Make the dependency list, cppflags, ldflags, and libs variable unique
+  # by eliminating redundant tokens in the full lists.
+
+
+  # Reverse the order of the input
+  wsrt_intdeps_rev=""
+  for input_token in ${wsrt_intdeps}; do
+    wsrt_intdeps_rev="${input_token} ${wsrt_intdeps_rev}"
+  done
+
+  # Step through each input token (now in reverse order)
+  wsrt_intdeps=""
+  for input_token in ${wsrt_intdeps_rev}; do
+
+    # See if input token is in output token list
+    token_found="no"
+    for output_token in ${wsrt_intdeps}; do
+      if ( test "${input_token}" = "${output_token}" ); then
+        token_found="yes"
+      fi
+    done
+
+    # If this is the first time we have seen token push it onto list
+    if ( test "${token_found}" = "no" ); then
+      wsrt_intdeps="${input_token} ${wsrt_intdeps}"
+    fi
+  done
+
+
+  # Reverse the order of the input
+  wsrt_cppflags_rev=""
+  for input_token in ${wsrt_cppflags}; do
+    wsrt_cppflags_rev="${input_token} ${wsrt_cppflags_rev}"
+  done
+
+  # Step through each input token (now in reverse order)
+  wsrt_cppflags=""
+  for input_token in ${wsrt_cppflags_rev}; do
+
+    # See if input token is in output token list
+    token_found="no"
+    for output_token in ${wsrt_cppflags}; do
+      if ( test "${input_token}" = "${output_token}" ); then
+        token_found="yes"
+      fi
+    done
+
+    # If this is the first time we have seen token push it onto list
+    if ( test "${token_found}" = "no" ); then
+      wsrt_cppflags="${input_token} ${wsrt_cppflags}"
+    fi
+  done
+
+
+  # Reverse the order of the input
+  wsrt_ldflags_rev=""
+  for input_token in ${wsrt_ldflags}; do
+    wsrt_ldflags_rev="${input_token} ${wsrt_ldflags_rev}"
+  done
+
+  # Step through each input token (now in reverse order)
+  wsrt_ldflags=""
+  for input_token in ${wsrt_ldflags_rev}; do
+
+    # See if input token is in output token list
+    token_found="no"
+    for output_token in ${wsrt_ldflags}; do
+      if ( test "${input_token}" = "${output_token}" ); then
+        token_found="yes"
+      fi
+    done
+
+    # If this is the first time we have seen token push it onto list
+    if ( test "${token_found}" = "no" ); then
+      wsrt_ldflags="${input_token} ${wsrt_ldflags}"
+    fi
+  done
+
+
+  # Reverse the order of the input
+  wsrt_libs_rev=""
+  for input_token in ${wsrt_libs}; do
+    wsrt_libs_rev="${input_token} ${wsrt_libs_rev}"
+  done
+
+  # Step through each input token (now in reverse order)
+  wsrt_libs=""
+  for input_token in ${wsrt_libs_rev}; do
+
+    # See if input token is in output token list
+    token_found="no"
+    for output_token in ${wsrt_libs}; do
+      if ( test "${input_token}" = "${output_token}" ); then
+        token_found="yes"
+      fi
+    done
+
+    # If this is the first time we have seen token push it onto list
+    if ( test "${token_found}" = "no" ); then
+      wsrt_libs="${input_token} ${wsrt_libs}"
+    fi
+  done
+
+
+  # Keep a copy of the compiler and linker flags as they are now,
+  # because if we want to install this project we don't really need to
+  # include these flags in the pkg-config file. We do of course need to
+  # keep the flags that a user might add later in their subproject.ac.
+
+  wsrt_base_cppflags=${wsrt_cppflags}
+  wsrt_base_ldflags=${wsrt_ldflags}
+  wsrt_base_libs=${wsrt_libs}
+
+  # Substitute variables for makefile
+
+
+
+
+
+
+  # Substitute variables for pkg-config files (these will be set in the
+  # MCPPBS_INSTALL_LIBS macro)
+
+
+
+
+
+
+  # Display that we are now configuring this subproject (ie running the
+  # rest of the macros in the corresponding subproject.ac)
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: configuring internal subproject wsrt" >&5
+$as_echo "$as_me: configuring internal subproject wsrt" >&6;}
+
+
+
+  };
+
+  # See if we should actually configure this subproject and if so then
+  # call the shell function we just created.
+
+  if     test "${with_optional_subprojects}" = "yes" \
+          || test "${with_wsrt}" = "yes"  ; then :
+
+    eval "wsrt_cfg"
+
+fi
+
+
+
+  # Determine if this is a required or an optional subproject and create
+  # a m4 variable for his subproject name with and without dashes.
+
+
+
+
+
+
+  # Set the type of this subproject and add it to a shell and m4 list
+
   ubmark_type="internal"
   as_fn_append mcppbs_include_internal "ubmark "
 
@@ -4176,8 +4458,8 @@ $as_echo "#define HAVE_MTBMARK /**/" >>confdefs.h
   # Save the list of direct dependencies (ie dirdeps) and a list of
   # dependencies which are comma separated for pkg-config file.
 
-  mtbmark_dirdeps="common"
-  mtbmark_pkcdeps="common"
+  mtbmark_dirdeps="common wsrt"
+  mtbmark_pkcdeps="common,wsrt"
 
   # Initialize this subproject's compiler and linker flags
 
@@ -4238,6 +4520,55 @@ fi
       as_fn_append mtbmark_cppflags "${common_cppflags} "
       as_fn_append mtbmark_ldflags "${common_ldflags} "
       as_fn_append mtbmark_libs "${common_libs} "
+
+fi
+
+    # Determine if this dependency is required or optional
+
+
+
+    # Create some names which characterize this dependency including a
+    # shell variable indicating if this subproject has been configured,
+    # the function name to call if we need to configure this dependency,
+    # and a shell variable which has this dependency's dependencies.
+
+
+
+
+
+    # If the dependency is required and has not been configured then
+    # configure it. Issue error if subproject does not exist.
+
+
+
+
+      if  test "${with_wsrt}" = "no" ; then :
+
+        eval "wsrt_cfg"
+
+fi
+
+
+    # Add information about this dependency to our running lists
+
+    if  test "${with_wsrt}" = "yes" ; then :
+
+      # Add the actual dependency to our libs list and our intdeps list
+      # which are both ordered such that libs only depend on later libs
+
+      as_fn_append mtbmark_libs "-lwsrt "
+      if  test "${wsrt_type}" = "internal" ; then :
+
+        as_fn_append mtbmark_intdeps "wsrt "
+
+fi
+
+      # Add dependency's variables to our own
+
+      as_fn_append mtbmark_intdeps "${wsrt_intdeps} "
+      as_fn_append mtbmark_cppflags "${wsrt_cppflags} "
+      as_fn_append mtbmark_ldflags "${wsrt_ldflags} "
+      as_fn_append mtbmark_libs "${wsrt_libs} "
 
 fi
 
@@ -5378,6 +5709,8 @@ do
   case $ac_config_target in
     "common-config.h") CONFIG_HEADERS="$CONFIG_HEADERS common-config.h:config.h.in" ;;
     "common.mk") CONFIG_FILES="$CONFIG_FILES common.mk:common/common.mk.in" ;;
+    "wsrt-config.h") CONFIG_HEADERS="$CONFIG_HEADERS wsrt-config.h:config.h.in" ;;
+    "wsrt.mk") CONFIG_FILES="$CONFIG_FILES wsrt.mk:wsrt/wsrt.mk.in" ;;
     "ubmark-config.h") CONFIG_HEADERS="$CONFIG_HEADERS ubmark-config.h:config.h.in" ;;
     "ubmark.mk") CONFIG_FILES="$CONFIG_FILES ubmark.mk:ubmark/ubmark.mk.in" ;;
     "mtbmark-config.h") CONFIG_HEADERS="$CONFIG_HEADERS mtbmark-config.h:config.h.in" ;;

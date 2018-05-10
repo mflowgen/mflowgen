@@ -8,7 +8,7 @@
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.rtl  import RegEn, Mux
+from pclib.rtl  import RegEn, RegRst, Reg, Mux
 
 class ValRdyDeserializer( Model ):
 
@@ -27,24 +27,24 @@ class ValRdyDeserializer( Model ):
     s.in_ = InValRdyBundle ( dtype_in  )
     s.out = OutValRdyBundle( dtype_out )
 
-    #-States-------------------------------------------------------------
+    #-Structural Composition---------------------------------------------
 
-    s.state = Wire( 3 )
+    if ( p_nmsgs > 1 ) : s.counter = RegRst( clog2(p_nmsgs), reset_value = 0 )
+    else               : s.counter = RegRst( 1, reset_value = 0 )
+
+    # Shunning: I use RegRst to keep the hierarchy for debugging
 
     s.STATE_RECV = 0
     s.STATE_SEND = 1
 
-    #-Structural Composition---------------------------------------------
+    s.state = RegRst( 1, reset_value = s.STATE_RECV )
 
-    # Internal Wires
-    s.reg_in       = Wire( p_regwidth )
-    s.reg_en       = Wire( 1 )
-    s.reg_out      = Wire( p_regwidth )
-    s.count        = Wire( 1 )
-    if ( p_nmsgs > 1 ) : s.counter = Wire( clog2( p_nmsgs ) )
-    else               : s.counter = Wire( 1 )
+    # Input -> Register
 
-    # Register
+    s.reg_in  = Wire( p_regwidth )
+    s.reg_en  = Wire( 1 )
+    s.reg_out = Wire( p_regwidth )
+
     s.reg_ = m = RegEn( p_regwidth )
     s.connect_dict({
       m.en  : s.reg_en,
@@ -63,35 +63,44 @@ class ValRdyDeserializer( Model ):
     #-Combinational Logic-----------------------------------------------
 
     @s.combinational
-    def combinational_logic():
-      s.in_.rdy.value = s.state == s.STATE_RECV
-      s.out.val.value = s.state == s.STATE_SEND
-      s.reg_en.value  = s.in_.val & ( s.state == s.STATE_RECV )
+    def state_transition():
+      s.state.in_.value = s.state.out
 
-    #-Sequential Logic---------------------------------------------------
+      if   s.state.out == s.STATE_RECV:
+        if s.in_.val & (s.counter.out == p_nmsgs-1):
+          s.state.in_.value = s.STATE_SEND
 
-    @s.posedge_clk
-    def sequential_logic():
-      if( s.reset ):
-        s.state  .next = s.STATE_RECV
-        s.counter.next = 0x0
-      elif( s.state == s.STATE_RECV and s.in_.val and s.in_.rdy ):
-        if ( s.counter == p_nmsgs-1 ):
-          s.state  .next = s.STATE_SEND
-          s.counter.next = 0x0
-        else                         :
-          s.state  .next = s.STATE_RECV
-          s.counter.next = s.counter + 1
-      elif( s.state == s.STATE_SEND and s.out.val and s.out.rdy ):
-        s.state  .next = s.STATE_RECV
-        s.counter.next = 0x0
+      elif s.state.out == s.STATE_SEND:
+        if s.out.rdy:
+          s.state.in_.value = s.STATE_RECV
 
+    @s.combinational
+    def state_outputs():
+      s.in_.rdy.value     = 0
+      s.out.val.value     = 0
+
+      s.counter.in_.value = 0
+      s.reg_en.value      = 0
+
+      if s.state.out == s.STATE_RECV:
+        s.in_.rdy.value = 1
+        s.reg_en.value  = s.in_.val
+
+        if s.in_.val & (s.counter.out == p_nmsgs-1):
+          s.counter.in_.value = 0
+        else:
+          s.counter.in_.value = s.counter.out + s.in_.val
+
+      elif s.state.out == s.STATE_SEND:
+        s.out.val.value = 1
+        if ~s.out.rdy:
+          s.counter.in_.value = s.counter.out
 
   def line_trace( s ):
-    if( s.state == s.STATE_SEND ):
+    if( s.state.out == s.STATE_SEND ):
       return "({})".format( s.reg_out )
-    elif( s.counter._uint > 0 ):
-      num_dash = (s.reg_out.nbits/4) - ( (s.in_.msg.nbits * s.counter._uint )/4 )
-      return "({}{})".format( "-" * num_dash, s.reg_out[ s.reg_out.nbits-s.in_.msg.nbits*s.counter._uint:s.reg_out.nbits ] )
+    elif( int(s.counter.out) > 0 ):
+      num_dash = (s.reg_out.nbits/4) - ( (s.in_.msg.nbits * int(s.counter.out) )/4 )
+      return "({}{})".format( "-" * num_dash, s.reg_out[ s.reg_out.nbits-s.in_.msg.nbits*int(s.counter.out):s.reg_out.nbits ] )
     else:
       return "({})".format( "-" * (s.reg_.in_.nbits/4) )

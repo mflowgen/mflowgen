@@ -16,26 +16,59 @@ from ifcs import MemReqMsg16B, MemRespMsg16B
 
 from pclib.rtl            import Mux, RegEnRst
 from pclib.rtl.arith      import EqComparator
-from sram.SramGenericPRTL import SramGenericPRTL
+from sram.SramRTL         import SramRTL
+from SliceNDicePRTL       import SliceNDicePRTL
+from GenWriteDataPRTL     import GenWriteDataPRTL
 
-size           = 8192             # Cache size in bytes
+size           = 32 * 1024          # Cache size in bytes
 p_opaque_nbits = 8
 
 # local parameters not meant to be set from outside
 
-dbw            = 32                # Short name for data bitwidth
-abw            = 32                # Short name for addr bitwidth
-clw            = 128               # Short name for cacheline bitwidth
-nblocks        = size*8/clw        # Number of blocks in the cache
-idw            = clog2(nblocks)-1  # Short name for index width
-idw_off        = idw+4
+dbw            = 32                 # Short name for data bitwidth
+abw            = 32                 # Short name for addr bitwidth
+byte_off       = clog2(dbw)         # Byte Offset
+clw            = 128                # Short name for cacheline bitwidth
+nblocks        = size*8/clw         # Number of blocks in the cache
+idw            = clog2(nblocks) - 1 # Short name for index width
+idw_off        = idw+clog2(clw/8)
+num_words      = clw / dbw          # Number of Words in a CL
+num_bytes      = clw / 8            # Number of Bytes in a CL
+word_off       = clog2( num_words ) # Word Offset
 o              = p_opaque_nbits
 
 #'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
 
 class BlockingCacheDpathPRTL( Model ):
 
-  def __init__( s, idx_shamt=0 ):
+  def __init__( s, idx_shamt   = 0                ,
+                   MemReqMsgType   = MemReqMsg16B , MemRespMsgType   = MemRespMsg16B ,
+                   CacheReqMsgType = MemReqMsg16B , CacheRespMsgType = MemRespMsg16B ):
+
+    #---------------------------------------------------------------------
+    # Parameters
+    #---------------------------------------------------------------------
+
+    # Actually get all datatypes and length from types
+    __cache_req  = CacheReqMsgType ()
+    __cache_resp = CacheRespMsgType()
+
+    c_type_bw    = __cache_req.type_ .nbits
+    c_addr_bw    = __cache_req.addr  .nbits
+    c_opaq_bw    = __cache_req.opaque.nbits
+    c_data_bw    = __cache_req.data  .nbits
+    c_data_Bw    = c_data_bw / 8
+    c_len_bw     = __cache_req.len   .nbits
+
+    __mem_req    = MemReqMsgType  ()
+    __mem_resp   = MemRespMsgType ()
+
+    m_type_bw    = __mem_req  .type_ .nbits
+    m_addr_bw    = __mem_req  .addr  .nbits
+    m_opaq_bw    = __mem_req  .opaque.nbits
+    m_data_bw    = __mem_req  .data  .nbits
+    m_data_Bw    = m_data_bw / 8
+    m_len_bw     = __mem_req  .len   .nbits
 
     #---------------------------------------------------------------------
     # Interface
@@ -43,19 +76,19 @@ class BlockingCacheDpathPRTL( Model ):
 
     # Cache request
 
-    s.cachereq_msg       = InPort ( MemReqMsg4B   )
+    s.cachereq_msg       = InPort ( CacheReqMsgType  )
 
     # Cache response
 
-    s.cacheresp_msg      = OutPort( MemRespMsg4B  )
+    s.cacheresp_msg      = OutPort( CacheRespMsgType )
 
     # Memory request
 
-    s.memreq_msg         = OutPort( MemReqMsg16B  )
+    s.memreq_msg         = OutPort( MemReqMsgType     )
 
     # Memory response
 
-    s.memresp_msg        = InPort ( MemRespMsg16B )
+    s.memresp_msg        = InPort ( MemRespMsgType    )
 
     # control signals (ctrl->dpath)
 
@@ -64,7 +97,9 @@ class BlockingCacheDpathPRTL( Model ):
     s.amo_max_sel        = InPort( 1 )
     s.amo_maxu_sel       = InPort( 1 )
     s.amo_sel            = InPort( 4 )
+    s.is_amo             = InPort( 1 )
     s.cachereq_en        = InPort( 1 )
+    s.memresp_en         = InPort( 1 )
     s.is_refill          = InPort( 1 )
     s.tag_array_0_wen    = InPort( 1 )
     s.tag_array_0_ren    = InPort( 1 )
@@ -82,23 +117,27 @@ class BlockingCacheDpathPRTL( Model ):
     s.data_array_wben    = InPort( clw/8 )
     s.read_data_reg_en   = InPort( 1 )
     s.read_tag_reg_en    = InPort( 1 )
-    s.read_byte_sel      = InPort( clog2(clw/dbw) )
+    s.byte_offset        = InPort( clog2(clw/dbw) )
     s.memreq_type        = InPort( 4 )
     s.cacheresp_type     = InPort( 4 )
     s.cacheresp_hit      = InPort( 1 )
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_data_reg_out = OutPort ( dbw )
-    s.read_byte_sel_mux_out = OutPort ( dbw )
-    s.cachereq_type         = OutPort ( 4 )
-    s.cachereq_addr         = OutPort ( abw )
-    s.tag_match_0           = OutPort ( 1 )
-    s.tag_match_1           = OutPort ( 1 )
+    s.cachereq_data_reg_out = OutPort( c_data_bw )
+    s.cachereq_len_reg_out  = OutPort( c_len_bw  )
+    s.cachereq_type         = OutPort( c_type_bw )
+    s.cachereq_addr         = OutPort( c_addr_bw )
+    s.tag_match_0           = OutPort(     1     )
+    s.tag_match_1           = OutPort(     1     )
+
+    # Special for AMOs
+    s.read_data_word        = OutPort(    dbw    )
+    s.cachereq_data_word    = OutPort(    dbw    )
 
     # Register the unpacked cachereq_msg
 
-    s.cachereq_type_reg = m = RegEnRst( dtype = 4, reset_value = 0 )
+    s.cachereq_type_reg = m = RegEnRst( dtype = c_type_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -106,7 +145,7 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_type
     )
 
-    s.cachereq_addr_reg = m = RegEnRst( dtype = abw, reset_value = 0 )
+    s.cachereq_addr_reg = m = RegEnRst( dtype = c_addr_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -114,7 +153,7 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_addr
     )
 
-    s.cachereq_opaque_reg = m = RegEnRst( dtype = o, reset_value = 0 )
+    s.cachereq_opaque_reg = m = RegEnRst( dtype = c_opaq_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -122,7 +161,7 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cacheresp_msg.opaque,
     )
 
-    s.cachereq_data_reg = m = RegEnRst( dtype = dbw, reset_value = 0 )
+    s.cachereq_data_reg = m = RegEnRst( dtype = c_data_bw, reset_value = 0 )
 
     s.connect_pairs(
       m.en,  s.cachereq_en,
@@ -130,13 +169,41 @@ class BlockingCacheDpathPRTL( Model ):
       m.out, s.cachereq_data_reg_out,
     )
 
+    s.cachereq_len_reg = m = RegEnRst( dtype = c_len_bw, reset_value = 0 )
+
+    s.connect_pairs(
+      m.en,  s.cachereq_en,
+      m.in_, s.cachereq_msg.len,
+      m.out, s.cachereq_len_reg_out,
+    )
+
+    # Register the unpacked data from memresp_msg
+
+    s.memresp_data_reg = m = RegEnRst( dtype = clw, reset_value = 0 )
+
+    s.connect_pairs(
+      m.en,  s.memresp_en,
+      m.in_, s.memresp_msg.data,
+    )
+
+    #---------------------------------------------------------------------
+    # AMOs
+    #---------------------------------------------------------------------
+
+    # Slice data into words
+
+    @s.combinational
+    def gen_amo_data():
+      s.cachereq_data_word.value = s.cachereq_data_reg_out[0:dbw]
+      s.read_data_word    .value = s.read_data            [0:dbw]
+
     # Calculate AMO minimum
 
     s.amo_min_mux = m = Mux( dtype = dbw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.read_byte_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[0],  s.read_data_word,
+      m.in_[1],  s.cachereq_data_word,
       m.sel,     s.amo_min_sel,
     )
 
@@ -145,8 +212,8 @@ class BlockingCacheDpathPRTL( Model ):
     s.amo_minu_mux = m = Mux( dtype = dbw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.read_byte_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[0],  s.read_data_word,
+      m.in_[1],  s.cachereq_data_word,
       m.sel,     s.amo_minu_sel,
     )
 
@@ -155,8 +222,8 @@ class BlockingCacheDpathPRTL( Model ):
     s.amo_max_mux = m = Mux( dtype = dbw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.read_byte_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[0],  s.read_data_word,
+      m.in_[1],  s.cachereq_data_word,
       m.sel,     s.amo_max_sel,
     )
 
@@ -165,8 +232,8 @@ class BlockingCacheDpathPRTL( Model ):
     s.amo_maxu_mux = m = Mux( dtype = dbw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.read_byte_sel_mux_out,
-      m.in_[1],  s.cachereq_data_reg_out,
+      m.in_[0],  s.read_data_word,
+      m.in_[1],  s.cachereq_data_word,
       m.sel,     s.amo_maxu_sel,
     )
 
@@ -183,59 +250,79 @@ class BlockingCacheDpathPRTL( Model ):
     s.cachereq_data_reg_out_maxu  = Wire( dbw )
     s.cachereq_data_reg_out_xor   = Wire( dbw )
 
-    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 10 )
+    s.amo_sel_mux = m = Mux( dtype = dbw, nports = 9 )
 
     @s.combinational
     def comb_connect_wires():
-      s.cachereq_data_reg_out_add.value   = s.cachereq_data_reg_out + s.read_byte_sel_mux_out
-      s.cachereq_data_reg_out_and.value   = s.cachereq_data_reg_out & s.read_byte_sel_mux_out
-      s.cachereq_data_reg_out_or.value    = s.cachereq_data_reg_out | s.read_byte_sel_mux_out
-      s.cachereq_data_reg_out_swap.value  = s.cachereq_data_reg_out
+      s.cachereq_data_reg_out_add.value   = s.cachereq_data_word + s.read_data_word
+      s.cachereq_data_reg_out_and.value   = s.cachereq_data_word & s.read_data_word
+      s.cachereq_data_reg_out_or.value    = s.cachereq_data_word | s.read_data_word
+      s.cachereq_data_reg_out_swap.value  = s.cachereq_data_word
       s.cachereq_data_reg_out_min.value   = s.amo_min_mux.out
       s.cachereq_data_reg_out_minu.value  = s.amo_minu_mux.out
       s.cachereq_data_reg_out_max.value   = s.amo_max_mux.out
       s.cachereq_data_reg_out_maxu.value  = s.amo_maxu_mux.out
-      s.cachereq_data_reg_out_xor.value   = s.cachereq_data_reg_out ^ s.read_byte_sel_mux_out
+      s.cachereq_data_reg_out_xor.value   = s.cachereq_data_word ^ s.read_data_word
 
     s.connect_pairs(
-      m.in_[0],  s.cachereq_data_reg_out,
-      m.in_[1],  s.cachereq_data_reg_out_add,
-      m.in_[2],  s.cachereq_data_reg_out_and,
-      m.in_[3],  s.cachereq_data_reg_out_or,
-      m.in_[4],  s.cachereq_data_reg_out_swap,
-      m.in_[5],  s.cachereq_data_reg_out_min,
-      m.in_[6],  s.cachereq_data_reg_out_minu,
-      m.in_[7],  s.cachereq_data_reg_out_max,
-      m.in_[8],  s.cachereq_data_reg_out_maxu,
-      m.in_[9],  s.cachereq_data_reg_out_xor,
+      m.in_[0],  s.cachereq_data_reg_out_add,
+      m.in_[1],  s.cachereq_data_reg_out_and,
+      m.in_[2],  s.cachereq_data_reg_out_or,
+      m.in_[3],  s.cachereq_data_reg_out_swap,
+      m.in_[4],  s.cachereq_data_reg_out_min,
+      m.in_[5],  s.cachereq_data_reg_out_minu,
+      m.in_[6],  s.cachereq_data_reg_out_max,
+      m.in_[7],  s.cachereq_data_reg_out_maxu,
+      m.in_[8],  s.cachereq_data_reg_out_xor,
       m.sel,     s.amo_sel,
     )
 
-    # Replicate cachereq_write_data
+    # In-case the AMO is smaller than a typical cache response
 
-    s.cachereq_write_data_replicated = Wire ( dbw*clw/dbw )
+    s.amo_out = Wire ( c_data_bw )
 
     @s.combinational
-    def comb_replicate():
-      for i in  xrange(0, clw, dbw) :
-        s.cachereq_write_data_replicated[i:i+dbw].value = s.amo_sel_mux.out
+    def comb_gen_amo_output():
+      s.amo_out       .value = 0
+      s.amo_out[0:dbw].value = s.amo_sel_mux.out
+
+    # Get offset
+
+    s.cachereq_offset  = Wire ( m_len_bw )
+
+    @s.combinational
+    def comb_cachereq_offset():
+      s.cachereq_offset.value = s.cachereq_addr[0:m_len_bw]
+
+    # AMO select or cacheresponse select
+
+    s.cachresp_mux = m = Mux( dtype = c_data_bw, nports = 2 )
+
+    s.connect_pairs(
+      m.in_[0], s.cachereq_data_reg_out,
+      m.in_[1], s.amo_out,
+      m.sel,    s.is_amo,
+    )
+
+    # hawajkm: I would like to have a repeat unit that would produce a line
+    #          with the wanted data repeated in every 
+
+    s.gen_write_data = m = GenWriteDataPRTL( c_data_Bw, m_data_Bw )
+
+    s.connect_pairs(
+      m.in_,    s.cachresp_mux.out,
+      m.offset, s.cachereq_offset,
+    )
 
     # Refill mux
 
     s.refill_mux = m = Mux( dtype = clw, nports = 2 )
 
     s.connect_pairs(
-      m.in_[0],  s.cachereq_write_data_replicated,
+      m.in_[0],  s.gen_write_data.out,
       m.in_[1],  s.memresp_msg.data,
       m.sel,     s.is_refill,
     )
-
-    # Taking slices of the cache request address
-    #     byte offset: 2 bits wide
-    #     word offset: 2 bits wide
-    #     index: $clog2(nblocks) bits wide - 1 bits wide
-    #     nbits: width of tag = width of addr - $clog2(nblocks) - 4
-    #     entries: 256*8/128 = 16
 
     s.cachereq_tag = Wire( abw - 4 )
     s.cachereq_idx = Wire( idw )
@@ -280,67 +367,67 @@ class BlockingCacheDpathPRTL( Model ):
 
     s.tag_array_0_read_out = Wire( abw )
 
-    s.tag_array_0 = m = SramGenericPRTL(num_bits      =  32          ,
-                                        num_words     = 256          ,
-                                        instance_name = 'sram_32_256')
+    s.tag_array_0 = m = SramRTL( num_bits    =  32    ,
+                                 num_words   = 1024   ,
+                                 tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.tag_array_0_read_out,
-      m.wen,   s.tag_array_0_wen,
-      m.mask,  0b1111,
+      m.we,    s.tag_array_0_wen,
+      m.wmask, 0b1111,
       m.in_,   s.temp_cachereq_tag,
-      m.cen,   s.sram_tag_0_en
+      m.ce,    s.sram_tag_0_en
     )
 
     # Tag array 1
 
     s.tag_array_1_read_out = Wire( abw )
 
-    s.tag_array_1 = m = SramGenericPRTL(num_bits      =  32          ,
-                                        num_words     = 256          ,
-                                        instance_name = 'sram_32_256')
+    s.tag_array_1 = m = SramRTL( num_bits    =  32    ,
+                                 num_words   = 1024   ,
+                                 tech_node   = '28nm' )
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.tag_array_1_read_out,
-      m.wen,   s.tag_array_1_wen,
-      m.mask,  0b1111,
+      m.we,    s.tag_array_1_wen,
+      m.wmask, 0b1111,
       m.in_,   s.temp_cachereq_tag,
-      m.cen,   s.sram_tag_1_en
+      m.ce,    s.sram_tag_1_en
     )
 
     # Data array 0
 
     s.data_array_0_read_out = Wire( clw )
 
-    s.data_array_0 = m = SramGenericPRTL(num_bits      = 128           ,
-                                         num_words     = 256           ,
-                                         instance_name = 'sram_128_256')
+    s.data_array_0 = m = SramRTL( num_bits    = 128    ,
+                                  num_words   = 1024   ,
+                                  tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.data_array_0_read_out,
-      m.wen,   s.data_array_0_wen,
-      m.mask,  s.data_array_wben,
+      m.we,    s.data_array_0_wen,
+      m.wmask, s.data_array_wben,
       m.in_,   s.refill_mux.out,
-      m.cen,   s.sram_data_0_en
+      m.ce,    s.sram_data_0_en
     )
 
     # Data array 1
 
     s.data_array_1_read_out = Wire( clw )
 
-    s.data_array_1 = m = SramGenericPRTL(num_bits      = 128           ,
-                                         num_words     = 256           ,
-                                         instance_name = 'sram_128_256')
+    s.data_array_1 = m = SramRTL( num_bits    = 128    ,
+                                  num_words   = 1024   ,
+                                  tech_node   = '28nm' )
 
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
       m.out,   s.data_array_1_read_out,
-      m.wen,   s.data_array_1_wen,
-      m.mask,  s.data_array_wben,
+      m.we,    s.data_array_1_wen,
+      m.wmask, s.data_array_wben,
       m.in_,   s.refill_mux.out,
-      m.cen,   s.sram_data_1_en
+      m.ce,    s.sram_data_1_en
     )
 
     # Data read mux
@@ -425,7 +512,7 @@ class BlockingCacheDpathPRTL( Model ):
 
     # Skip read data reg mux
 
-    s.read_data = Wire( clw )
+    s.int_read_data = Wire( clw )
 
     s.skip_read_data_mux = m = Mux( dtype = clw, nports = 2 )
 
@@ -433,46 +520,63 @@ class BlockingCacheDpathPRTL( Model ):
       m.in_[0],   s.read_data_reg.out,
       m.in_[1],   s.data_read_mux.out,
       m.sel,      s.skip_read_data_reg,
-      m.out,      s.read_data,
+      m.out,      s.int_read_data,
     )
 
-    # Select byte for cache response
+    # Slice and Dice the output data
 
-    s.read_byte_sel_mux = m = Mux( dtype = dbw, nports = 4 )
+    s.read_data = Wire( c_data_bw )
+
+    s.slice_n_dice = m = SliceNDicePRTL( m_data_Bw, c_data_Bw )
 
     s.connect_pairs(
-      m.in_[0],  s.read_data[0:       dbw],
-      m.in_[1],  s.read_data[1*dbw: 2*dbw],
-      m.in_[2],  s.read_data[2*dbw: 3*dbw],
-      m.in_[3],  s.read_data[3*dbw: 4*dbw],
-      m.sel,     s.read_byte_sel,
-      m.out,     s.read_byte_sel_mux_out,
+      m.in_   , s.int_read_data  ,
+      m.offset, s.cachereq_offset,
+      m.len   , s.cachereq_len_reg_out,
+      m.out   , s.read_data      ,
     )
+
+    # For AMOs, we one slice a dbw-sized word; for now, this would support RV32 only
+    # as RV64 requires a 32-bit support also
+
+    # Output will be a wire that take a c_data_bw-sized slice from the cacheline
+    # If the cache was configured to be a wide access, this will cause the output
+    # to get all of the cacheline. The assumption is that output is at most cacheline
+    # sized
+
+    s.cacheresp_data_out = Wire( dbw )
 
     @s.combinational
     def comb_addr_refill():
-      if   s.cacheresp_type == MemReqMsg.TYPE_READ      : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_ADD   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_AND   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_OR    : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_SWAP  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MIN   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MINU  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAX   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAXU  : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_XOR   : s.cacheresp_msg.data.value = s.read_byte_sel_mux_out
-      else                                              : s.cacheresp_msg.data.value = Bits(32, 0)
+
+      if   s.cacheresp_type == MemReqMsg.TYPE_READ      : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_ADD   : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_AND   : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_OR    : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_SWAP  : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MIN   : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MINU  : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAX   : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_MAXU  : s.cacheresp_msg.data.value = s.read_data
+      elif s.cacheresp_type == MemReqMsg.TYPE_AMO_XOR   : s.cacheresp_msg.data.value = s.read_data
+      else                                              : s.cacheresp_msg.data.value = 0
+
+    # Taking slices of the cache request address
+    #     byte offset: 2 bits wide
+    #     word offset: 2 bits wide
+    #     index: $clog2(nblocks) bits wide - 1 bits wide
+    #     nbits: width of tag = width of addr - $clog2(nblocks) - 4
+    #     entries: 256*8/128 = 16
 
     @s.combinational
     def comb_cacherespmsgpack():
-      s.cacheresp_msg.type_.value  = s.cacheresp_type
-      s.cacheresp_msg.test.value   = concat( Bits( 1, 0 ), s.cacheresp_hit )
-      s.cacheresp_msg.len.value    = Bits ( 2, 0 )
+      s.cacheresp_msg.type_.value = s.cacheresp_type
+      s.cacheresp_msg.test.value  = concat( Bits( 1, 0 ), s.cacheresp_hit )
+      s.cacheresp_msg.len.value   = s.cachereq_len_reg_out
 
     @s.combinational
     def comb_memrespmsgpack():
-      s.memreq_msg.type_.value  = s.memreq_type
-      s.memreq_msg.opaque.value = Bits ( 8, 0 )
-      s.memreq_msg.addr.value   = s.memreq_addr
-      s.memreq_msg.len.value    = Bits ( 4, 0 )
-
+      s.memreq_msg.type_.value    = s.memreq_type
+      s.memreq_msg.opaque.value   = 0
+      s.memreq_msg.addr.value     = s.memreq_addr
+      s.memreq_msg.len.value      = 0

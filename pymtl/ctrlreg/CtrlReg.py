@@ -38,6 +38,9 @@
 # - CR1 (r/w) : debug bit
 # - CR2 (r  ) : number of committed instructions
 # - CR3 (r  ) : number of cycles
+# - CR4 (r  ) : host enable for MDU
+# - CR5 (r  ) : host enable for iCache
+# - CR6 (r  ) : host enable for dCache
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
@@ -47,7 +50,14 @@ from ifcs       import CtrlRegReqMsg, CtrlRegRespMsg
 
 class CtrlReg( Model ):
 
-  def __init__( s ):
+  def __init__( s, num_cores, valrdy_ifcs = 3 ):
+
+    #---------------------------------------------------------------------
+    # Constants
+    #---------------------------------------------------------------------
+
+    num_ctrlregs    = 16
+    num_ctrlregs_bw = clog2(num_ctrlregs)
 
     #---------------------------------------------------------------------
     # Interface
@@ -60,12 +70,16 @@ class CtrlReg( Model ):
 
     # Ports from processor to CtrlReg
 
-    s.commit_inst = InPort( 1 )
+    s.commit_inst = InPort( num_cores )
     s.stats_en    = InPort( 1 )
 
     # Ports from CtrlReg to processor
 
-    s.go          = OutPort( 1 )
+    s.go          = OutPort( num_cores )
+
+    # Host enable bits
+
+    s.host_en     = OutPort( valrdy_ifcs )
 
     # Misc ports
 
@@ -100,15 +114,16 @@ class CtrlReg( Model ):
     #
     # NOTE: Make sure that the go bit is ZERO when coming out of reset!
 
-    cr_go           = Bits( 4, 0 ) # Go bit
-    cr_debug        = Bits( 4, 1 ) # Debug bit
-    cr_instcounter  = Bits( 4, 2 ) # Instruction counter
-    cr_cyclecounter = Bits( 4, 3 ) # Cycle counter
+    cr_go           = 0                           # Go bit
+    cr_debug        = 1                           # Debug bit
+    cr_instcounter  = 2                           # Base for instruction counter
+    cr_cyclecounter = cr_instcounter  + num_cores # Base for Cycle counter
+    cr_host_en      = cr_cyclecounter + num_cores # Base for Host Enable counter
 
     # Instantiate registers (16 registers)
 
     s.ctrlregs = \
-      [ RegEnRst( dtype = 32, reset_value = 0 ) for _ in xrange(16) ]
+      [ RegEnRst( dtype = 32, reset_value = 0 ) for _ in xrange(num_ctrlregs) ]
 
     # Read interface
 
@@ -143,11 +158,6 @@ class CtrlReg( Model ):
       s.cr_go_en.value = s.rf_wen & ( s.rf_waddr == cr_go )
       s.cr_go_in.value = s.rf_wdata
 
-    s.connect_pairs(
-      s.ctrlregs[cr_go].en,  s.cr_go_en,
-      s.ctrlregs[cr_go].in_, s.cr_go_in,
-    )
-
     # Control Register: Debug
 
     s.cr_debug_en = Wire( 1 )
@@ -158,52 +168,98 @@ class CtrlReg( Model ):
       s.cr_debug_en.value = s.rf_wen & ( s.rf_waddr == cr_debug )
       s.cr_debug_in.value = s.rf_wdata
 
-    s.connect_pairs(
-      s.ctrlregs[cr_debug].en,  s.cr_debug_en,
-      s.ctrlregs[cr_debug].in_, s.cr_debug_in,
-    )
+    # Control Registers: Instruction counters
 
-    # Control Register: Instruction counter
-
-    s.cr_instcounter_en = Wire( 1 )
-    s.cr_instcounter_in = Wire( 32 )
+    s.instcounters_en  = Wire             ( num_cores )
+    s.instcounters_in  = Wire[ num_cores ](    32     )
+    s.instcounters_out = Wire[ num_cores ](    32     )
 
     @s.combinational
     def comb_cr_instcounter_logic():
-      s.cr_instcounter_en.value = s.commit_inst & s.stats_en
-      s.cr_instcounter_in.value = s.ctrlregs[cr_instcounter].out + 1
+      for core_idx in xrange(num_cores):
+        s.instcounters_en[core_idx].value = s.commit_inst[core_idx] & s.stats_en
+        s.instcounters_in[core_idx].value = s.instcounters_out[core_idx] + 1
 
-    s.connect_pairs(
-      s.ctrlregs[cr_instcounter].en,  s.cr_instcounter_en,
-      s.ctrlregs[cr_instcounter].in_, s.cr_instcounter_in,
-    )
+    # Control Register: Cycle counters
 
-    # Control Register: Cycle counter
-
-    s.cr_cyclecounter_en = Wire( 1 )
-    s.cr_cyclecounter_in = Wire( 32 )
+    s.cyclecounters_en  = Wire             ( num_cores )
+    s.cyclecounters_in  = Wire[ num_cores ](    32     )
+    s.cyclecounters_out = Wire[ num_cores ](    32     )
 
     @s.combinational
     def comb_cr_cyclecounter_logic():
-      s.cr_cyclecounter_en.value = s.stats_en
-      s.cr_cyclecounter_in.value = s.ctrlregs[cr_cyclecounter].out + 1
+      for core_idx in xrange(num_cores):
+        s.cyclecounters_en[core_idx].value = s.stats_en
+        s.cyclecounters_in[core_idx].value = s.cyclecounters_out[core_idx] + 1
 
-    s.connect_pairs(
-      s.ctrlregs[cr_cyclecounter].en,  s.cr_cyclecounter_en,
-      s.ctrlregs[cr_cyclecounter].in_, s.cr_cyclecounter_in,
-    )
+    # Host_en
 
-    # Connections to Output Ports
-    #
-    # These wires directly connect the registers to their output ports
+    s.wire_host_en = Wire( valrdy_ifcs )
 
-    # go bit (1 bit)
+    @s.combinational
+    def comb_cr_hosten_logic():
+      for idx in xrange(valrdy_ifcs):
+        s.wire_host_en[idx].value = s.rf_wen & ( s.rf_waddr == ( idx + cr_host_en ) )
 
-    s.connect( s.ctrlregs[cr_go].out[0], s.go )
+    # Connect write value
 
-    # debug bit (1 bit)
+    # Instacounters
+    cr_instcounter_l  = cr_instcounter
+    cr_instcounter_h  = cr_instcounter  + num_cores
 
-    s.connect( s.ctrlregs[cr_debug].out[0], s.debug )
+    cr_cyclecounter_l = cr_cyclecounter
+    cr_cyclecounter_h = cr_cyclecounter + num_cores
+
+    cr_host_en_l      = cr_host_en
+    cr_host_en_h      = cr_host_en + valrdy_ifcs
+
+    for ridx in xrange( num_ctrlregs ):
+
+      if   ridx == cr_go:
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_go_in,
+          s.ctrlregs[ridx].en , s.cr_go_en,
+        )
+
+        # Go bit is a special case
+        # Shunning: currently we set the go bit of all cores at the same time
+        # hawajkm : Do we ever want each core to have its own go bit?
+        for i in xrange(num_cores):
+          s.connect_pairs(
+            s.go[i], s.ctrlregs[cr_go].out[0],
+          )
+
+      elif ridx == cr_debug:
+        # debug bit (1 bit)
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_debug_in             ,
+          s.ctrlregs[ridx].en , s.cr_debug_en             ,
+          s.debug             , s.ctrlregs   [ridx].out[0],
+        )
+
+      elif ridx >= cr_instcounter_l and ridx < cr_instcounter_h:
+        cidx = ridx - cr_instcounter
+        s.connect_pairs(
+          s.ctrlregs        [ridx].in_, s.instcounters_in[cidx]    ,
+          s.ctrlregs        [ridx].en , s.instcounters_en[cidx]    ,
+          s.instcounters_out[cidx]    , s.ctrlregs       [ridx].out,
+        )
+
+      elif ridx >= cr_cyclecounter_l and ridx < cr_cyclecounter_h:
+        cidx = ridx - cr_cyclecounter
+        s.connect_pairs(
+          s.ctrlregs         [ridx].in_, s.cyclecounters_in[cidx]    ,
+          s.ctrlregs         [ridx].en , s.cyclecounters_en[cidx]    ,
+          s.cyclecounters_out[cidx]    , s.ctrlregs        [ridx].out,
+        )
+
+      elif ridx >= cr_host_en_l and ridx < cr_host_en_h:
+        cidx = ridx - cr_host_en
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.rf_wdata          ,
+          s.ctrlregs[ridx].en , s.wire_host_en[cidx],
+          s.host_en [cidx]    , s.ctrlregs[ridx].out[0],
+        )
 
     #---------------------------------------------------------------------
     # Output Queue
@@ -231,4 +287,3 @@ class CtrlReg( Model ):
 
   def line_trace( s ):
     return '({})'.format(s.in_q.deq)
-

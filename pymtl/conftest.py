@@ -27,6 +27,9 @@ def pytest_addoption(parser):
   parser.addoption( "--vrtl", action="store_true",
                     help="use VRTL implementations" )
 
+  parser.addoption( "--tech_node", action="store",
+                    help="specify technology node for hard IPs" )
+
 @pytest.fixture(autouse=True)
 def fix_randseed():
   """Set the random seed prior to each test case."""
@@ -56,6 +59,11 @@ def dump_bin(request):
 def test_verilog(request):
   """Test Verilog translation rather than python."""
   return request.config.option.test_verilog
+
+@pytest.fixture
+def tech_node(request):
+  """Specified technology node for hard IPs (e.g., SRAMs)."""
+  return request.config.option.tech_node
 
 def pytest_cmdline_preparse(config, args):
   """Don't write *.pyc and __pycache__ files."""

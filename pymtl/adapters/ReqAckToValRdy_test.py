@@ -36,7 +36,7 @@ class TestHarness( Model ):
     # Translation
 
     if test_verilog:
-      s.dut = TranslationTool( s.dut )
+      s.dut = TranslationTool( s.dut, verilator_xinit=test_verilog )
 
     # Connect test sources and sinks
 
@@ -74,8 +74,10 @@ basic_msgs = [
 #-------------------------------------------------------------------------
 
 test_case_table = mk_test_case_table([
-  (            "dtype msgs        src_delay sink_delay"),
-  [ "basic" ,   32,   basic_msgs, 1,        0          ],
+  (               "dtype msgs        src_delay sink_delay"),
+  [ "basic" ,      32,   basic_msgs, 0,        0          ],
+  [ "basicx" ,     32,   basic_msgs, 1,        0          ],
+  [ "basic_3x14" , 32,   basic_msgs, 3,        14         ],
 ])
 
 #-------------------------------------------------------------------------
@@ -83,8 +85,8 @@ test_case_table = mk_test_case_table([
 #-------------------------------------------------------------------------
 
 @pytest.mark.parametrize( **test_case_table )
-def test( test_params, dump_vcd ):
+def test( test_params, dump_vcd, test_verilog ):
   th = TestHarness( ReqAckToValRdy, test_params.dtype,
                     test_params.msgs, test_params.src_delay, test_params.sink_delay,
-                    False )
+                    dump_vcd, test_verilog )
   run_sim( th )

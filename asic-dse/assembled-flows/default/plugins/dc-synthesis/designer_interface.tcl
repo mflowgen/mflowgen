@@ -42,7 +42,10 @@ set post_synthesis_plugin       ${dc_plugins_dir}/post_synth.tcl
 # Interface to the ASIC design kit
 #-------------------------------------------------------------------------
 
-set TARGET_LIBRARY_FILES        "stdcells.db"
+set TARGET_LIBRARY_FILES        [join "
+                                  stdcells.db
+                                  [glob -nocomplain $::env(dc_collect_dir)/*.db]
+                                "]
 
 set ADDITIONAL_SEARCH_PATH      $::env(adk_dir)
 set MW_REFERENCE_LIB_DIRS       $::env(adk_dir)/stdcells.mwlib
@@ -93,5 +96,5 @@ set alib_dir ./alib
 
 # Number of cores for multicore optimization (used in dc_setup.tcl)
 
-set dc_num_cores 8
+set dc_num_cores 16
 

@@ -5,7 +5,146 @@
 import random
 
 from pymtl import *
-from inst_utils import *
+from proc.test.inst_utils import gen_nops, gen_word_data
+
+#-------------------------------------------------------------------------
+# gen_st_template
+#-------------------------------------------------------------------------
+# Template for store instructions. We first write the src and base
+# registers before executing the instruction under test. We parameterize
+# the number of nops after writing these register and the instruction
+# under test to enable using this template for testing various bypass
+# paths. We also parameterize the register specifiers to enable using
+# this template to test situations where the base register is equal to
+# the destination register. We use a lw to bring back in the stored data
+# to verify the store. The lw address is formed by simply masking off the
+# lower two bits of the store address. The result needs to be specified
+# accordingly. This helps make sure that the store doesn't store more
+# data then it is supposed to.
+
+def gen_st_template(
+  num_nops_src, num_nops_base, num_nops_dest,
+  reg_src, reg_base,
+  inst, src, offset, base, result
+):
+  return """
+
+    # Move src value into register
+    csrr {reg_src}, mngr2proc < {src}
+    {nops_src}
+
+    # Move base value into register
+    csrr {reg_base}, mngr2proc < {base}
+    {nops_base}
+
+    # Instruction under test
+    {inst} {reg_src}, {offset}({reg_base})
+    {nops_dest}
+
+    # Check the result
+    csrr x4, mngr2proc < {lw_base}
+    lw   x3, 0(x4)
+    csrw proc2mngr, x3 > {result}
+
+  """.format(
+    nops_src  = gen_nops(num_nops_src),
+    nops_base = gen_nops(num_nops_base),
+    nops_dest = gen_nops(num_nops_dest),
+    lw_base   = (base + offset) & 0xfffffffc,
+    **locals()
+  )
+
+#-------------------------------------------------------------------------
+# gen_st_dest_dep_test
+#-------------------------------------------------------------------------
+# Test the destination bypass path by varying how many nops are
+# inserted between the instruction under test and reading the destination
+# register with a lw instruction.
+
+def gen_st_dest_dep_test( num_nops, inst, src, base, result ):
+  return gen_st_template( 0, 8, num_nops, "x1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_st_base_dep_test
+#-------------------------------------------------------------------------
+# Test the base register bypass paths by varying how many nops are
+# inserted between writing the base register and reading this register in
+# the instruction under test.
+
+def gen_st_base_dep_test( num_nops, inst, src, base, result ):
+  return gen_st_template( 8-num_nops, num_nops, 0, "x1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_st_src_dep_test
+#-------------------------------------------------------------------------
+# Test the src register bypass paths by varying how many nops are
+# inserted between writing the src register and reading this register in
+# the instruction under test.
+
+def gen_st_src_dep_test( num_nops, inst, src, base, result ):
+  return gen_st_template( num_nops, 0, 0, "x1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_st_srcs_dep_test
+#-------------------------------------------------------------------------
+# Test both source bypass paths at the same time by varying how many nops
+# are inserted between writing both src registers and reading both
+# registers in the instruction under test.
+
+def gen_st_srcs_dep_test( num_nops, inst, src, base, result ):
+  return gen_st_template( 0, num_nops, 0, "x1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_st_src_eq_base_test
+#-------------------------------------------------------------------------
+# Test situation where the src register specifier is the same as the base
+# register specifier.
+
+def gen_st_src_eq_base_test( inst, src, result ):
+  return gen_st_template( 0, 0, 0, "x1", "x1",
+                          inst, src, 0, src, result )
+
+#-------------------------------------------------------------------------
+# gen_st_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of a store instruction under test. We assume
+# that bypassing has already been tested.
+
+def gen_st_value_test( inst, src, offset, base, result ):
+  return gen_st_template( 0, 0, 0, "x1", "x2",
+                          inst, src, offset, base, result )
+
+#-------------------------------------------------------------------------
+# gen_st_random_test
+#-------------------------------------------------------------------------
+# Similar to gen_st_value_test except that we can specifically use lhu or
+# lbu so that we don't need to worry about the high order bits.
+
+def gen_st_random_test( inst, ld_inst, src, offset, base ):
+  return """
+
+    # Move src value into register
+    csrr x1, mngr2proc < {src}
+
+    # Move base value into register
+    csrr x2, mngr2proc < {base}
+
+    # Instruction under test
+    {inst} x1, {offset}(x2)
+
+    # Check the result
+    csrr x4, mngr2proc < {ld_base}
+    {ld_inst} x3, 0(x4)
+    csrw proc2mngr, x3 > {src}
+
+  """.format(
+    ld_base = (base + offset),
+    **locals()
+  )
 
 #-------------------------------------------------------------------------
 # gen_basic_test
@@ -38,10 +177,6 @@ def gen_basic_test():
     .data
     .word 0x01020304
   """
-
-# ''' LAB TASK ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-# Define additional directed and random test cases.
-# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''\/
 
 #-------------------------------------------------------------------------
 # gen_dest_dep_test
@@ -245,4 +380,206 @@ def gen_random_test():
   asm_code.append( gen_word_data( initial_data ) )
   return asm_code
 
-# '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''/\
+#-------------------------------------------------------------------------
+# gen_sameline_deps_test
+#-------------------------------------------------------------------------
+
+def gen_sameline_deps_test():
+  return """
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    .data
+    .word 0x01020304
+    .word 0x02030405
+    .word 0x03040506
+    .word 0x04050607
+  """
+
+#-------------------------------------------------------------------------
+# gen_twoline_deps_test
+#-------------------------------------------------------------------------
+
+def gen_twoline_deps_test():
+  return """
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002008,0x00002010,0x00002018}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    .data
+    .word 0x01020304
+    .word 0x00000000
+    .word 0x02030405
+    .word 0x00000000
+    .word 0x03040506
+    .word 0x00000000
+    .word 0x04050607
+  """
+
+#-------------------------------------------------------------------------
+# gen_diffline_deps_test
+#-------------------------------------------------------------------------
+
+def gen_diffline_deps_test():
+  return """
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0xdeadbeef,0xeeadbeef,0xfeadbeef,0x0eadbeef}
+
+    csrr x1, mngr2proc < {0x00002000,0x00002010,0x00002020,0x00002030}
+    csrr x2, mngr2proc < {0x01020304,0x02030405,0x03040506,0x04050607}
+    sw   x2, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    nop
+    lw   x3, 0(x1)
+    csrw proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+
+    .data
+    .word 0x01020304
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x02030405
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x03040506
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x00000000
+    .word 0x04050607
+  """

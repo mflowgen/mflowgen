@@ -19,7 +19,7 @@ class SramRTL( Model ):
 
   # Constructor
 
-  def __init__( s, num_bits = 32, num_words = 256, tech_node = 'generic', instance_name = '' ):
+  def __init__( s, num_bits = 32, num_words = 256, tech_node = 'generic', module_name = '' ):
 
     addr_width = clog2( num_words )      # address width
     nbytes     = int( num_bits + 7 ) / 8 # $ceil(num_bits/8)
@@ -28,12 +28,12 @@ class SramRTL( Model ):
     # Interface
     #---------------------------------------------------------------------
 
-    s.wen  = InPort ( 1 )          # write en
-    s.cen  = InPort ( 1 )          # whole SRAM en
-    s.addr = InPort ( addr_width ) # address
-    s.in_  = InPort ( num_bits )   # write data
-    s.out  = OutPort( num_bits )   # read data
-    s.mask = InPort ( nbytes )     # byte write en
+    s.we    = InPort ( 1 )          # write en
+    s.ce    = InPort ( 1 )          # whole SRAM en
+    s.addr  = InPort ( addr_width ) # address
+    s.in_   = InPort ( num_bits )   # write data
+    s.out   = OutPort( num_bits )   # read data
+    s.wmask = InPort ( nbytes )     # byte write en
 
     #---------------------------------------------------------------------
     # Load Appropriate Model
@@ -48,7 +48,7 @@ class SramRTL( Model ):
         sram_module = importlib.import_module('.{}'.format(class_name), 'sram')
         sram_class  = getattr(sram_module, class_name)
       except Exception as e:
-        pass
+        print('WARNING: Can not find SRAMs for the specified technology node')
 
     if sram_class == None:
       from sram import SramGenericPRTL as sram_class
@@ -57,7 +57,7 @@ class SramRTL( Model ):
     # Instantiate an SRAM
     #---------------------------------------------------------------------
 
-    s.sram = sram_class( num_bits, num_words, instance_name )
+    s.sram = sram_class( num_bits, num_words, module_name )
 
     #---------------------------------------------------------------------
     # Connect ports
@@ -66,11 +66,11 @@ class SramRTL( Model ):
     s.connect_pairs(
 
       # Inputs
-      s.wen     , s.sram.wen ,
-      s.cen     , s.sram.cen ,
-      s.addr    , s.sram.addr,
-      s.in_     , s.sram.in_ ,
-      s.mask    , s.sram.mask,
+      s.we      , s.sram.we   ,
+      s.ce      , s.sram.ce   ,
+      s.addr    , s.sram.addr ,
+      s.in_     , s.sram.in_  ,
+      s.wmask   , s.sram.wmask,
 
       # Outputs
       s.sram.out, s     .out ,
