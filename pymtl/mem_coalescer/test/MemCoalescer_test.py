@@ -225,6 +225,17 @@ def basic_4_ports_rand( base_addr ):
 
   return test_list
 
+def basic_4_ports_1_addr( base_addr ):
+
+  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
+  test_list = []
+
+  ref_data  = mem_data(0)
+
+  for i in range(256):
+    test_list = test_list + [ req( 'rd', i, ref_data[0], 0, 0 ), resp('rd', i, 0, ref_data[1] ) ]
+
+  return test_list
 # Data to be loaded into memory before running the test
 
 def mem_data( base_addr ):
@@ -242,22 +253,23 @@ def mem_data( base_addr ):
 
 test_case_table_generic = mk_test_case_table([
   (                                         "msg_func                       mem_data_func   nports stall lat src sink"),
-#  [ "basic_2_ports_1_msg_no_coal",          basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  0,  0,  0    ],
-#  [ "basic_2_ports_1_msg_coal",             basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  0,  0,  0    ],
-#  [ "basic_2_ports_1_msg_no_coal_memd",     basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  1,  0,  0    ],
-#  [ "basic_2_ports_1_msg_coal_memd",        basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  1,  0,  0    ],
+  [ "basic_2_ports_1_msg_no_coal",          basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  0,  0,  0    ],
+  [ "basic_2_ports_1_msg_coal",             basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  0,  0,  0    ],
+  [ "basic_2_ports_1_msg_no_coal_memd",     basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  1,  0,  0    ],
+  [ "basic_2_ports_1_msg_coal_memd",        basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  1,  0,  0    ],
 
-#  [ "basic_4_ports_1_msg_no_coal",          basic_4_ports_1_msg_no_coal,    mem_data,       4,     0.0,  0,  0,  0    ],
-#  [ "basic_4_ports_1_msg_coal_all",         basic_4_ports_1_msg_coal_all,   mem_data,       4,     0.0,  0,  0,  0    ],
-#  [ "basic_4_ports_1_msg_coal_02",          basic_4_ports_1_msg_coal_02,    mem_data,       4,     0.0,  0,  0,  0    ],
-#  [ "basic_4_ports_1_msg_coal_02_13",       basic_4_ports_1_msg_coal_02_13, mem_data,       4,     0.0,  0,  0,  0    ],
-#  [ "basic_4_ports_1_msg_coal_01_23",       basic_4_ports_1_msg_coal_01_23, mem_data,       4,     0.0,  0,  0,  0    ],
-#
-#  [ "basic_4_ports_4_msg_no_coal",           basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.0,  4,  0,  0    ],
-#  [ "basic_4_ports_4_msg_no_coal_d",         basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.2,  3,  2,  4    ],
+  [ "basic_4_ports_1_msg_no_coal",          basic_4_ports_1_msg_no_coal,    mem_data,       4,     0.0,  0,  0,  0    ],
+  [ "basic_4_ports_1_msg_coal_all",         basic_4_ports_1_msg_coal_all,   mem_data,       4,     0.0,  0,  0,  0    ],
+  [ "basic_4_ports_1_msg_coal_02",          basic_4_ports_1_msg_coal_02,    mem_data,       4,     0.0,  0,  0,  0    ],
+  [ "basic_4_ports_1_msg_coal_02_13",       basic_4_ports_1_msg_coal_02_13, mem_data,       4,     0.0,  0,  0,  0    ],
+  [ "basic_4_ports_1_msg_coal_01_23",       basic_4_ports_1_msg_coal_01_23, mem_data,       4,     0.0,  0,  0,  0    ],
 
-#  [ "basic_4_ports_rand",                    basic_4_ports_rand,             mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_rand_d",                  basic_4_ports_rand,             mem_data,       4,     0.4,  1,  1,  10    ],
+  [ "basic_4_ports_4_msg_no_coal",          basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.0,  4,  0,  0    ],
+  [ "basic_4_ports_4_msg_no_coal_d",        basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.2,  3,  2,  4    ],
+
+  [ "basic_4_ports_rand",                   basic_4_ports_rand,             mem_data,       4,     0.0,  0,  0,  0    ],
+  [ "basic_4_ports_rand_d",                 basic_4_ports_rand,             mem_data,       4,     0.4,  2,  4,  10    ],
+  [ "basic_4_ports_1_addr",                 basic_4_ports_1_addr,           mem_data,       4,     0.4,  6,  4,  10    ],
 ])
 
 @pytest.mark.parametrize( **test_case_table_generic )

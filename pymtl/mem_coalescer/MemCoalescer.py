@@ -40,13 +40,6 @@ class MemCoalescer( Model ):
     # Coalescer's states
     #---------------------------------------------------------------------
 
-    # Coalescer's states (for all requesting ports)
-
-    s.STATE_IDLE    = 0
-    s.STATE_PENDING = 1
-
-    s.state = RegRst( 1, reset_value = s.STATE_IDLE )
-
     # Per-port states
 
     s.PORT_STATE_IDLE     = 0
@@ -96,6 +89,9 @@ class MemCoalescer( Model ):
 
     s.encoded_arb_grant     = Wire ( clog2( nports ) )
 
+    # Can I go in this cycle if I have a valid request?
+    s.go_bit                = Wire ( 1 )
+
     #---------------------------------------------------------------------
     # Connections
     #---------------------------------------------------------------------
@@ -131,12 +127,95 @@ class MemCoalescer( Model ):
       s.connect_pairs( s.addr_cmps[i].out, s.coalesced_bits[i] )
 
     #---------------------------------------------------------------------
-    # Internal combinational logic units
+    # Combinational logic units
     #---------------------------------------------------------------------
 
+    s.go_vector = Wire( nports )
+
+    # Set go_bit
+    @s.combinational
+    def comb_go_bit_set():
+
+      for i in range( nports ):
+        s.go_vector[i].value =  ( s.ports_state[i].out == s.PORT_STATE_IDLE ) | \
+                                ( s.tmp_resps_val[i] & s.resps[i].rdy )
+
+      s.go_bit.value = reduce_and( s.go_vector )
+
+    s.memreq_kill = Wire( 1 )
+    s.memreq_tmp_req  = Wire( MsgType.req )
+
+    # Set memreq
+    @s.combinational
+    def comb_memreq_set():
+
+      s.memreq.val.value =  s.go_bit & ( s.arbiter.grants != 0 )
+
+      s.memreq_kill.value = 0
+      s.memreq.msg.value  = 0
+
+      for i in range( nports ):
+        if s.arbiter.grants[i] and s.memreq_kill == 0:
+          # hawajkm: PyMTL bug
+          s.memreq_tmp_req.value  = s.reqs[i].msg
+          s.memreq.msg.value      = s.memreq_tmp_req
+          s.memreq_kill.value     = 1
+
+    s.issued    = Wire( nports )
+    s.coalesced = Wire( nports )
+
+    # Set reqs_rdy
+    @s.combinational
+    def comb_reqs_rdy_set():
+
+      for i in range( nports ):
+
+        # whether a request can be issued
+        s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
+
+        # whether a request can be coalesced
+        s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
+                                ( s.ports_state[i].out == s.PORT_STATE_IDLE ) & ~s.memresp.val
+
+        # ready if a request is either issued or coalesced
+        s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
+
+    s.memresp_rdy_vector = Wire( nports )
+
+    # Set memresp_rdy
+    @s.combinational
+    def comb_memresp_rdy_set():
+
+      for i in range( nports ):
+        s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == s.PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
+                                        ( s.ports_state[i].out == s.PORT_STATE_IDLE )
+      s.memresp.rdy.value = reduce_and( s.memresp_rdy_vector )
+
+    # PyMTL temps
+    s.tmp_resp  = Wire( MsgType.resp )
+    s.tmp_resps_val = Wire(    nports    )
+
+    # Set resps
+    @s.combinational
+    def comb_resps_set():
+
+      for i in range( nports ):
+        s.tmp_resps_val[i].value = s.memresp.val & \
+                               s.memresp.rdy & \
+                               ( s.ports_state[i].out == s.PORT_STATE_PENDING )
+
+    @s.combinational
+    def comb_connect_resp_val():
+
+      for i in xrange( nports ):
+        s.resps[i].val.value = s.tmp_resps_val[i]
+
+        # hawajkm: PyMTL bug
+        s.tmp_resp.value        = s.memresp.msg
+        s.tmp_resp.opaque.value = s.opaque_regs[i].out
+        s.resps[i].msg.value    = s.tmp_resp
+
     # Enable/Disable arbiter
-    # Enable the arbiter only if there's a valid mem request that can
-    # go out to the memory in this cycle
     @s.combinational
     def comb_arbiter_en():
 
@@ -160,28 +239,9 @@ class MemCoalescer( Model ):
     @s.combinational
     def comb_curr_addr_reg_en():
 
-      s.curr_addr_reg.en.value = ( s.state.out == s.STATE_IDLE )
+      s.curr_addr_reg.en.value = s.go_bit
 
-    # Global state transitions
-    @s.combinational
-    def state_transition():
-
-      curr_state = s.state.out
-      next_state = s.state.out
-
-      # STATE_IDLE -> STATE_PENDING
-      if ( curr_state == s.STATE_IDLE ):
-        if ( s.memreq.val and s.memreq.rdy ):
-          next_state = s.STATE_PENDING
-
-      # STATE_PENDING -> STATE_IDLE
-      if ( curr_state == s.STATE_PENDING ):
-        if ( s.memresp.rdy and s.memresp.val ):
-          next_state = s.STATE_IDLE
-
-      s.state.in_.value = next_state
-
-    # Port state transitions
+    # State transitions
     @s.combinational
     def ports_state_transition():
 
@@ -195,9 +255,9 @@ class MemCoalescer( Model ):
             next_state = s.PORT_STATE_PENDING
 
         # PORT_STATE_PENDING -> PORT_STATE_IDLE
-        if ( curr_state == s.PORT_STATE_PENDING ):
-          if ( s.memresp.rdy and s.memresp.val ):
-            next_state = s.STATE_IDLE
+        elif ( curr_state == s.PORT_STATE_PENDING ):
+          if ( s.memresp.rdy and s.memresp.val and ~( s.reqs[i].val and s.reqs[i].rdy ) ):
+            next_state = s.PORT_STATE_IDLE
 
         s.ports_state[i].in_.value = next_state
 
@@ -211,101 +271,18 @@ class MemCoalescer( Model ):
       for i in range( nports ):
         # hawajkm: PyMTL bug
         s.opaque_tmp_req.value = s.reqs[i].msg
-        s.opaque_regs[i].en.value = ( s.ports_state[i].out == s.PORT_STATE_IDLE )
+        s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == s.PORT_STATE_IDLE )
         s.opaque_regs[i].in_.value = s.opaque_tmp_req.opaque
 
     @s.combinational
     def comb_cmp_addr_sel_mux_sel():
 
-      s.cmp_addr_sel_mux.sel.value = (s.state.out == s.STATE_PENDING)
+      s.cmp_addr_sel_mux.sel.value = ~s.go_bit
 
     @s.combinational
     def comb_granted_addr_sel_mux_sel():
 
       s.granted_addr_sel_mux.sel.value = s.encoded_arb_grant
-
-    #---------------------------------------------------------------------
-    # Interface combinational logic units
-    #---------------------------------------------------------------------
-
-    s.issued    = Wire( nports )
-    s.coalesced = Wire( nports )
-
-    # Set reqs_rdy signals
-    @s.combinational
-    def comb_reqs_rdy():
-
-      for i in range( nports ):
-
-        # whether a request can be issued
-
-        s.issued[i].value = ( s.state.out == s.STATE_IDLE ) & s.coalesced_bits[i] & s.memreq.rdy
-
-        # whether a request can be coalesced
-
-        s.coalesced[i].value = ( s.state.out == s.STATE_PENDING ) &  s.coalesced_bits[i] & \
-                               ( s.ports_state[i].out == s.PORT_STATE_IDLE ) & ~s.memresp.val
-
-        # ready if a request is either issued or coalesced
-
-        s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
-
-    # Set memreq
-
-    s.memreq_kill = Wire( 1 )
-    s.memreq_tmp_req  = Wire( MsgType.req )
-
-    @s.combinational
-    def comb_memreq():
-
-      # val
-      s.memreq.val.value =  ( s.state.out == s.STATE_IDLE ) & \
-                            ( s.arbiter.grants != 0 )
-
-      s.memreq_kill.value = 0
-      s.memreq.msg.value  = 0
-
-      # msg
-      for i in range( nports ):
-        if s.arbiter.grants[i] and s.memreq_kill == 0:
-          # hawajkm: PyMTL bug
-          s.memreq_tmp_req.value  = s.reqs[i].msg
-          s.memreq.msg.value      = s.memreq_tmp_req
-          s.memreq_kill.value     = 1
-
-    # Set memresp_rdy
-    s.rdy_vector = Wire( nports )
-
-    @s.combinational
-    def comb_memresp_rdy():
-
-#      for i in range( nports ):
-#        s.rdy_vector[i].value = (( s.ports_state[i].out == s.PORT_STATE_PENDING ) & s.resps[i].rdy) | ( s.ports_state[i].out == s.PORT_STATE_IDLE )
-#      s.memresp.rdy.value = reduce_or( s.rdy_vector )
-
-      s.memresp.rdy.value = 1
-      for i in range( nports ):
-        if ( s.ports_state[i].out == s.PORT_STATE_PENDING ):
-          s.memresp.rdy.value = s.memresp.rdy & s.resps[i].rdy
-        else:
-          s.memresp.rdy.value = s.memresp.rdy & 1
-
-    # Set resps
-
-    s.tmp_resp  = Wire( MsgType.resp )
-
-    @s.combinational
-    def comb_resps():
-
-      for i in range( nports ):
-        s.resps[i].val.value = s.memresp.val & \
-                               s.memresp.rdy & \
-                               ( s.ports_state[i].out == s.PORT_STATE_PENDING )
-
-        # hawajkm: PyMTL bug
-        s.tmp_resp.value        = s.memresp.msg
-        s.tmp_resp.opaque.value = s.opaque_regs[i].out
-        s.resps[i].msg.value    = s.tmp_resp
 
   def line_trace(s):
     req_str   = '{' + '|'.join(map(str,s.reqs)) + '}'
