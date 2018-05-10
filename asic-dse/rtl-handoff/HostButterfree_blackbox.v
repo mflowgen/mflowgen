@@ -266,11 +266,11 @@ module HostButterfree
   wire   [   0:0] in_q$000$reset;
   wire   [   0:0] in_q$000$deq_rdy;
   wire   [   0:0] in_q$000$enq_rdy;
-  wire   [   3:0] in_q$000$num_free_entries;
+  wire   [   4:0] in_q$000$num_free_entries;
   wire   [ 145:0] in_q$000$deq_msg;
   wire   [   0:0] in_q$000$deq_val;
 
-  NormalQueue_0x13101d59dbd845e9 in_q$000
+  NormalQueue_0x2f40bb4fbe95aa17 in_q$000
   (
     .clk              ( in_q$000$clk ),
     .enq_msg          ( in_q$000$enq_msg ),
@@ -290,11 +290,11 @@ module HostButterfree
   wire   [   0:0] in_q$001$reset;
   wire   [   0:0] in_q$001$deq_rdy;
   wire   [   0:0] in_q$001$enq_rdy;
-  wire   [   3:0] in_q$001$num_free_entries;
+  wire   [   4:0] in_q$001$num_free_entries;
   wire   [ 175:0] in_q$001$deq_msg;
   wire   [   0:0] in_q$001$deq_val;
 
-  NormalQueue_0x693d9fdf75eefee7 in_q$001
+  NormalQueue_0x3ab90c4e3f034ee7 in_q$001
   (
     .clk              ( in_q$001$clk ),
     .enq_msg          ( in_q$001$enq_msg ),
@@ -314,11 +314,11 @@ module HostButterfree
   wire   [   0:0] in_q$002$reset;
   wire   [   0:0] in_q$002$deq_rdy;
   wire   [   0:0] in_q$002$enq_rdy;
-  wire   [   3:0] in_q$002$num_free_entries;
+  wire   [   4:0] in_q$002$num_free_entries;
   wire   [  36:0] in_q$002$deq_msg;
   wire   [   0:0] in_q$002$deq_val;
 
-  NormalQueue_0x2f5639163bab99dc in_q$002
+  NormalQueue_0x60e518ea8d2a340a in_q$002
   (
     .clk              ( in_q$002$clk ),
     .enq_msg          ( in_q$002$enq_msg ),
@@ -338,11 +338,11 @@ module HostButterfree
   wire   [   0:0] in_q$003$reset;
   wire   [   0:0] in_q$003$deq_rdy;
   wire   [   0:0] in_q$003$enq_rdy;
-  wire   [   3:0] in_q$003$num_free_entries;
+  wire   [   4:0] in_q$003$num_free_entries;
   wire   [  77:0] in_q$003$deq_msg;
   wire   [   0:0] in_q$003$deq_val;
 
-  NormalQueue_0x1d47c7c731267113 in_q$003
+  NormalQueue_0x591bd2093ecf65eb in_q$003
   (
     .clk              ( in_q$003$clk ),
     .enq_msg          ( in_q$003$enq_msg ),
@@ -362,11 +362,11 @@ module HostButterfree
   wire   [   0:0] in_q$004$reset;
   wire   [   0:0] in_q$004$deq_rdy;
   wire   [   0:0] in_q$004$enq_rdy;
-  wire   [   3:0] in_q$004$num_free_entries;
+  wire   [   4:0] in_q$004$num_free_entries;
   wire   [ 145:0] in_q$004$deq_msg;
   wire   [   0:0] in_q$004$deq_val;
 
-  NormalQueue_0x13101d59dbd845e9 in_q$004
+  NormalQueue_0x2f40bb4fbe95aa17 in_q$004
   (
     .clk              ( in_q$004$clk ),
     .enq_msg          ( in_q$004$enq_msg ),
@@ -386,11 +386,11 @@ module HostButterfree
   wire   [   0:0] in_q$005$reset;
   wire   [   0:0] in_q$005$deq_rdy;
   wire   [   0:0] in_q$005$enq_rdy;
-  wire   [   3:0] in_q$005$num_free_entries;
+  wire   [   4:0] in_q$005$num_free_entries;
   wire   [  69:0] in_q$005$deq_msg;
   wire   [   0:0] in_q$005$deq_val;
 
-  NormalQueue_0x79370f78d0d01895 in_q$005
+  NormalQueue_0x371e2f8d9e1182c3 in_q$005
   (
     .clk              ( in_q$005$clk ),
     .enq_msg          ( in_q$005$enq_msg ),
@@ -410,11 +410,11 @@ module HostButterfree
   wire   [   0:0] in_q$006$reset;
   wire   [   0:0] in_q$006$deq_rdy;
   wire   [   0:0] in_q$006$enq_rdy;
-  wire   [   3:0] in_q$006$num_free_entries;
+  wire   [   4:0] in_q$006$num_free_entries;
   wire   [  31:0] in_q$006$deq_msg;
   wire   [   0:0] in_q$006$deq_val;
 
-  NormalQueue_0x5d6b3b47697c8177 in_q$006
+  NormalQueue_0x761e6db39471549 in_q$006
   (
     .clk              ( in_q$006$clk ),
     .enq_msg          ( in_q$006$enq_msg ),
@@ -434,11 +434,11 @@ module HostButterfree
   wire   [   0:0] in_q$007$reset;
   wire   [   0:0] in_q$007$deq_rdy;
   wire   [   0:0] in_q$007$enq_rdy;
-  wire   [   3:0] in_q$007$num_free_entries;
+  wire   [   4:0] in_q$007$num_free_entries;
   wire   [  31:0] in_q$007$deq_msg;
   wire   [   0:0] in_q$007$deq_val;
 
-  NormalQueue_0x5d6b3b47697c8177 in_q$007
+  NormalQueue_0x761e6db39471549 in_q$007
   (
     .clk              ( in_q$007$clk ),
     .enq_msg          ( in_q$007$enq_msg ),
@@ -458,11 +458,11 @@ module HostButterfree
   wire   [   0:0] in_q$008$reset;
   wire   [   0:0] in_q$008$deq_rdy;
   wire   [   0:0] in_q$008$enq_rdy;
-  wire   [   3:0] in_q$008$num_free_entries;
+  wire   [   4:0] in_q$008$num_free_entries;
   wire   [  31:0] in_q$008$deq_msg;
   wire   [   0:0] in_q$008$deq_val;
 
-  NormalQueue_0x5d6b3b47697c8177 in_q$008
+  NormalQueue_0x761e6db39471549 in_q$008
   (
     .clk              ( in_q$008$clk ),
     .enq_msg          ( in_q$008$enq_msg ),
@@ -482,11 +482,11 @@ module HostButterfree
   wire   [   0:0] in_q$009$reset;
   wire   [   0:0] in_q$009$deq_rdy;
   wire   [   0:0] in_q$009$enq_rdy;
-  wire   [   3:0] in_q$009$num_free_entries;
+  wire   [   4:0] in_q$009$num_free_entries;
   wire   [  31:0] in_q$009$deq_msg;
   wire   [   0:0] in_q$009$deq_val;
 
-  NormalQueue_0x5d6b3b47697c8177 in_q$009
+  NormalQueue_0x761e6db39471549 in_q$009
   (
     .clk              ( in_q$009$clk ),
     .enq_msg          ( in_q$009$enq_msg ),
@@ -1992,14 +1992,14 @@ endmodule // RegEn_0x45f1552f10c5f05d
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x13101d59dbd845e9
+// NormalQueue_0x2f40bb4fbe95aa17
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 146
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x13101d59dbd845e9
+module NormalQueue_0x2f40bb4fbe95aa17
 (
   input  wire [   0:0] clk,
   output wire [ 145:0] deq_msg,
@@ -2008,7 +2008,7 @@ module NormalQueue_0x13101d59dbd845e9
   input  wire [ 145:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -2021,10 +2021,10 @@ module NormalQueue_0x13101d59dbd845e9
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -2047,7 +2047,7 @@ module NormalQueue_0x13101d59dbd845e9
   wire   [ 145:0] dpath$enq_bits;
   wire   [ 145:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x13101d59dbd845e9 dpath
+  NormalQueueDpath_0x2f40bb4fbe95aa17 dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -2076,24 +2076,24 @@ module NormalQueue_0x13101d59dbd845e9
 
 
 
-endmodule // NormalQueue_0x13101d59dbd845e9
+endmodule // NormalQueue_0x2f40bb4fbe95aa17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueCtrl_0x18ba6db74e0ae73
+// NormalQueueCtrl_0x7e615dc0798cc6a5
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueCtrl_0x18ba6db74e0ae73
+module NormalQueueCtrl_0x7e615dc0798cc6a5
 (
   input  wire [   0:0] clk,
   input  wire [   0:0] deq_rdy,
   output reg  [   0:0] deq_val,
   output reg  [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output reg  [   3:0] num_free_entries,
+  output reg  [   4:0] num_free_entries,
   output reg  [   3:0] raddr,
   input  wire [   0:0] reset,
   output reg  [   3:0] waddr,
@@ -2114,8 +2114,8 @@ module NormalQueueCtrl_0x18ba6db74e0ae73
   reg    [   0:0] full_next_cycle;
 
   // localparam declarations
-  localparam last_idx = 9;
-  localparam num_entries = 10;
+  localparam last_idx = 15;
+  localparam num_entries = 16;
 
 
 
@@ -2287,18 +2287,18 @@ module NormalQueueCtrl_0x18ba6db74e0ae73
   end
 
 
-endmodule // NormalQueueCtrl_0x18ba6db74e0ae73
+endmodule // NormalQueueCtrl_0x7e615dc0798cc6a5
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x13101d59dbd845e9
+// NormalQueueDpath_0x2f40bb4fbe95aa17
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 146
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x13101d59dbd845e9
+module NormalQueueDpath_0x2f40bb4fbe95aa17
 (
   input  wire [   0:0] clk,
   output wire [ 145:0] deq_bits,
@@ -2318,7 +2318,7 @@ module NormalQueueDpath_0x13101d59dbd845e9
   wire   [   0:0] queue$reset;
   wire   [ 145:0] queue$rd_data$000;
 
-  RegisterFile_0x7d76b6747bf51d1e queue
+  RegisterFile_0x28967938e2af7d6c queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -2340,21 +2340,21 @@ module NormalQueueDpath_0x13101d59dbd845e9
 
 
 
-endmodule // NormalQueueDpath_0x13101d59dbd845e9
+endmodule // NormalQueueDpath_0x2f40bb4fbe95aa17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x7d76b6747bf51d1e
+// RegisterFile_0x28967938e2af7d6c
 //-----------------------------------------------------------------------------
 // dtype: 146
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x7d76b6747bf51d1e
+module RegisterFile_0x28967938e2af7d6c
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -2376,10 +2376,16 @@ module RegisterFile_0x7d76b6747bf51d1e
   wire   [ 145:0] regs$007;
   wire   [ 145:0] regs$008;
   wire   [ 145:0] regs$009;
+  wire   [ 145:0] regs$010;
+  wire   [ 145:0] regs$011;
+  wire   [ 145:0] regs$012;
+  wire   [ 145:0] regs$013;
+  wire   [ 145:0] regs$014;
+  wire   [ 145:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -2391,7 +2397,7 @@ module RegisterFile_0x7d76b6747bf51d1e
   assign rd_addr[  0] = rd_addr$000;
   reg    [ 145:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [ 145:0] regs[0:9];
+  reg    [ 145:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -2402,6 +2408,12 @@ module RegisterFile_0x7d76b6747bf51d1e
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -2436,18 +2448,18 @@ module RegisterFile_0x7d76b6747bf51d1e
   end
 
 
-endmodule // RegisterFile_0x7d76b6747bf51d1e
+endmodule // RegisterFile_0x28967938e2af7d6c
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x693d9fdf75eefee7
+// NormalQueue_0x3ab90c4e3f034ee7
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 176
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x693d9fdf75eefee7
+module NormalQueue_0x3ab90c4e3f034ee7
 (
   input  wire [   0:0] clk,
   output wire [ 175:0] deq_msg,
@@ -2456,7 +2468,7 @@ module NormalQueue_0x693d9fdf75eefee7
   input  wire [ 175:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -2469,10 +2481,10 @@ module NormalQueue_0x693d9fdf75eefee7
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -2495,7 +2507,7 @@ module NormalQueue_0x693d9fdf75eefee7
   wire   [ 175:0] dpath$enq_bits;
   wire   [ 175:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x693d9fdf75eefee7 dpath
+  NormalQueueDpath_0x3ab90c4e3f034ee7 dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -2524,18 +2536,18 @@ module NormalQueue_0x693d9fdf75eefee7
 
 
 
-endmodule // NormalQueue_0x693d9fdf75eefee7
+endmodule // NormalQueue_0x3ab90c4e3f034ee7
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x693d9fdf75eefee7
+// NormalQueueDpath_0x3ab90c4e3f034ee7
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 176
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x693d9fdf75eefee7
+module NormalQueueDpath_0x3ab90c4e3f034ee7
 (
   input  wire [   0:0] clk,
   output wire [ 175:0] deq_bits,
@@ -2555,7 +2567,7 @@ module NormalQueueDpath_0x693d9fdf75eefee7
   wire   [   0:0] queue$reset;
   wire   [ 175:0] queue$rd_data$000;
 
-  RegisterFile_0x540da3782093b314 queue
+  RegisterFile_0x171965303b06399e queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -2577,21 +2589,21 @@ module NormalQueueDpath_0x693d9fdf75eefee7
 
 
 
-endmodule // NormalQueueDpath_0x693d9fdf75eefee7
+endmodule // NormalQueueDpath_0x3ab90c4e3f034ee7
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x540da3782093b314
+// RegisterFile_0x171965303b06399e
 //-----------------------------------------------------------------------------
 // dtype: 176
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x540da3782093b314
+module RegisterFile_0x171965303b06399e
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -2613,10 +2625,16 @@ module RegisterFile_0x540da3782093b314
   wire   [ 175:0] regs$007;
   wire   [ 175:0] regs$008;
   wire   [ 175:0] regs$009;
+  wire   [ 175:0] regs$010;
+  wire   [ 175:0] regs$011;
+  wire   [ 175:0] regs$012;
+  wire   [ 175:0] regs$013;
+  wire   [ 175:0] regs$014;
+  wire   [ 175:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -2628,7 +2646,7 @@ module RegisterFile_0x540da3782093b314
   assign rd_addr[  0] = rd_addr$000;
   reg    [ 175:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [ 175:0] regs[0:9];
+  reg    [ 175:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -2639,6 +2657,12 @@ module RegisterFile_0x540da3782093b314
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -2673,18 +2697,18 @@ module RegisterFile_0x540da3782093b314
   end
 
 
-endmodule // RegisterFile_0x540da3782093b314
+endmodule // RegisterFile_0x171965303b06399e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x2f5639163bab99dc
+// NormalQueue_0x60e518ea8d2a340a
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 37
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x2f5639163bab99dc
+module NormalQueue_0x60e518ea8d2a340a
 (
   input  wire [   0:0] clk,
   output wire [  36:0] deq_msg,
@@ -2693,7 +2717,7 @@ module NormalQueue_0x2f5639163bab99dc
   input  wire [  36:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -2706,10 +2730,10 @@ module NormalQueue_0x2f5639163bab99dc
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -2732,7 +2756,7 @@ module NormalQueue_0x2f5639163bab99dc
   wire   [  36:0] dpath$enq_bits;
   wire   [  36:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x2f5639163bab99dc dpath
+  NormalQueueDpath_0x60e518ea8d2a340a dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -2761,18 +2785,18 @@ module NormalQueue_0x2f5639163bab99dc
 
 
 
-endmodule // NormalQueue_0x2f5639163bab99dc
+endmodule // NormalQueue_0x60e518ea8d2a340a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x2f5639163bab99dc
+// NormalQueueDpath_0x60e518ea8d2a340a
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 37
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x2f5639163bab99dc
+module NormalQueueDpath_0x60e518ea8d2a340a
 (
   input  wire [   0:0] clk,
   output wire [  36:0] deq_bits,
@@ -2792,7 +2816,7 @@ module NormalQueueDpath_0x2f5639163bab99dc
   wire   [   0:0] queue$reset;
   wire   [  36:0] queue$rd_data$000;
 
-  RegisterFile_0x7aa13ae1703f6c2f queue
+  RegisterFile_0x4a0d880832ab3ee1 queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -2814,21 +2838,21 @@ module NormalQueueDpath_0x2f5639163bab99dc
 
 
 
-endmodule // NormalQueueDpath_0x2f5639163bab99dc
+endmodule // NormalQueueDpath_0x60e518ea8d2a340a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x7aa13ae1703f6c2f
+// RegisterFile_0x4a0d880832ab3ee1
 //-----------------------------------------------------------------------------
 // dtype: 37
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x7aa13ae1703f6c2f
+module RegisterFile_0x4a0d880832ab3ee1
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -2850,10 +2874,16 @@ module RegisterFile_0x7aa13ae1703f6c2f
   wire   [  36:0] regs$007;
   wire   [  36:0] regs$008;
   wire   [  36:0] regs$009;
+  wire   [  36:0] regs$010;
+  wire   [  36:0] regs$011;
+  wire   [  36:0] regs$012;
+  wire   [  36:0] regs$013;
+  wire   [  36:0] regs$014;
+  wire   [  36:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -2865,7 +2895,7 @@ module RegisterFile_0x7aa13ae1703f6c2f
   assign rd_addr[  0] = rd_addr$000;
   reg    [  36:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [  36:0] regs[0:9];
+  reg    [  36:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -2876,6 +2906,12 @@ module RegisterFile_0x7aa13ae1703f6c2f
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -2910,18 +2946,18 @@ module RegisterFile_0x7aa13ae1703f6c2f
   end
 
 
-endmodule // RegisterFile_0x7aa13ae1703f6c2f
+endmodule // RegisterFile_0x4a0d880832ab3ee1
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x1d47c7c731267113
+// NormalQueue_0x591bd2093ecf65eb
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 78
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x1d47c7c731267113
+module NormalQueue_0x591bd2093ecf65eb
 (
   input  wire [   0:0] clk,
   output wire [  77:0] deq_msg,
@@ -2930,7 +2966,7 @@ module NormalQueue_0x1d47c7c731267113
   input  wire [  77:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -2943,10 +2979,10 @@ module NormalQueue_0x1d47c7c731267113
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -2969,7 +3005,7 @@ module NormalQueue_0x1d47c7c731267113
   wire   [  77:0] dpath$enq_bits;
   wire   [  77:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x1d47c7c731267113 dpath
+  NormalQueueDpath_0x591bd2093ecf65eb dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -2998,18 +3034,18 @@ module NormalQueue_0x1d47c7c731267113
 
 
 
-endmodule // NormalQueue_0x1d47c7c731267113
+endmodule // NormalQueue_0x591bd2093ecf65eb
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x1d47c7c731267113
+// NormalQueueDpath_0x591bd2093ecf65eb
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 78
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x1d47c7c731267113
+module NormalQueueDpath_0x591bd2093ecf65eb
 (
   input  wire [   0:0] clk,
   output wire [  77:0] deq_bits,
@@ -3029,7 +3065,7 @@ module NormalQueueDpath_0x1d47c7c731267113
   wire   [   0:0] queue$reset;
   wire   [  77:0] queue$rd_data$000;
 
-  RegisterFile_0x4037074424b65b2 queue
+  RegisterFile_0x79085f268e4f7cd0 queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -3051,21 +3087,21 @@ module NormalQueueDpath_0x1d47c7c731267113
 
 
 
-endmodule // NormalQueueDpath_0x1d47c7c731267113
+endmodule // NormalQueueDpath_0x591bd2093ecf65eb
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x4037074424b65b2
+// RegisterFile_0x79085f268e4f7cd0
 //-----------------------------------------------------------------------------
 // dtype: 78
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x4037074424b65b2
+module RegisterFile_0x79085f268e4f7cd0
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -3087,10 +3123,16 @@ module RegisterFile_0x4037074424b65b2
   wire   [  77:0] regs$007;
   wire   [  77:0] regs$008;
   wire   [  77:0] regs$009;
+  wire   [  77:0] regs$010;
+  wire   [  77:0] regs$011;
+  wire   [  77:0] regs$012;
+  wire   [  77:0] regs$013;
+  wire   [  77:0] regs$014;
+  wire   [  77:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -3102,7 +3144,7 @@ module RegisterFile_0x4037074424b65b2
   assign rd_addr[  0] = rd_addr$000;
   reg    [  77:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [  77:0] regs[0:9];
+  reg    [  77:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -3113,6 +3155,12 @@ module RegisterFile_0x4037074424b65b2
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -3147,18 +3195,18 @@ module RegisterFile_0x4037074424b65b2
   end
 
 
-endmodule // RegisterFile_0x4037074424b65b2
+endmodule // RegisterFile_0x79085f268e4f7cd0
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x79370f78d0d01895
+// NormalQueue_0x371e2f8d9e1182c3
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 70
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x79370f78d0d01895
+module NormalQueue_0x371e2f8d9e1182c3
 (
   input  wire [   0:0] clk,
   output wire [  69:0] deq_msg,
@@ -3167,7 +3215,7 @@ module NormalQueue_0x79370f78d0d01895
   input  wire [  69:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -3180,10 +3228,10 @@ module NormalQueue_0x79370f78d0d01895
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -3206,7 +3254,7 @@ module NormalQueue_0x79370f78d0d01895
   wire   [  69:0] dpath$enq_bits;
   wire   [  69:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x79370f78d0d01895 dpath
+  NormalQueueDpath_0x371e2f8d9e1182c3 dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -3235,18 +3283,18 @@ module NormalQueue_0x79370f78d0d01895
 
 
 
-endmodule // NormalQueue_0x79370f78d0d01895
+endmodule // NormalQueue_0x371e2f8d9e1182c3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x79370f78d0d01895
+// NormalQueueDpath_0x371e2f8d9e1182c3
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 70
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x79370f78d0d01895
+module NormalQueueDpath_0x371e2f8d9e1182c3
 (
   input  wire [   0:0] clk,
   output wire [  69:0] deq_bits,
@@ -3266,7 +3314,7 @@ module NormalQueueDpath_0x79370f78d0d01895
   wire   [   0:0] queue$reset;
   wire   [  69:0] queue$rd_data$000;
 
-  RegisterFile_0x3dd46087af21d76 queue
+  RegisterFile_0x70b372422056dcd8 queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -3288,21 +3336,21 @@ module NormalQueueDpath_0x79370f78d0d01895
 
 
 
-endmodule // NormalQueueDpath_0x79370f78d0d01895
+endmodule // NormalQueueDpath_0x371e2f8d9e1182c3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x3dd46087af21d76
+// RegisterFile_0x70b372422056dcd8
 //-----------------------------------------------------------------------------
 // dtype: 70
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x3dd46087af21d76
+module RegisterFile_0x70b372422056dcd8
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -3324,10 +3372,16 @@ module RegisterFile_0x3dd46087af21d76
   wire   [  69:0] regs$007;
   wire   [  69:0] regs$008;
   wire   [  69:0] regs$009;
+  wire   [  69:0] regs$010;
+  wire   [  69:0] regs$011;
+  wire   [  69:0] regs$012;
+  wire   [  69:0] regs$013;
+  wire   [  69:0] regs$014;
+  wire   [  69:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -3339,7 +3393,7 @@ module RegisterFile_0x3dd46087af21d76
   assign rd_addr[  0] = rd_addr$000;
   reg    [  69:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [  69:0] regs[0:9];
+  reg    [  69:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -3350,6 +3404,12 @@ module RegisterFile_0x3dd46087af21d76
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -3384,18 +3444,18 @@ module RegisterFile_0x3dd46087af21d76
   end
 
 
-endmodule // RegisterFile_0x3dd46087af21d76
+endmodule // RegisterFile_0x70b372422056dcd8
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueue_0x5d6b3b47697c8177
+// NormalQueue_0x761e6db39471549
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 32
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueue_0x5d6b3b47697c8177
+module NormalQueue_0x761e6db39471549
 (
   input  wire [   0:0] clk,
   output wire [  31:0] deq_msg,
@@ -3404,7 +3464,7 @@ module NormalQueue_0x5d6b3b47697c8177
   input  wire [  31:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   3:0] num_free_entries,
+  output wire [   4:0] num_free_entries,
   input  wire [   0:0] reset
 );
 
@@ -3417,10 +3477,10 @@ module NormalQueue_0x5d6b3b47697c8177
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
   wire   [   3:0] ctrl$raddr;
-  wire   [   3:0] ctrl$num_free_entries;
+  wire   [   4:0] ctrl$num_free_entries;
   wire   [   0:0] ctrl$enq_rdy;
 
-  NormalQueueCtrl_0x18ba6db74e0ae73 ctrl
+  NormalQueueCtrl_0x7e615dc0798cc6a5 ctrl
   (
     .clk              ( ctrl$clk ),
     .enq_val          ( ctrl$enq_val ),
@@ -3443,7 +3503,7 @@ module NormalQueue_0x5d6b3b47697c8177
   wire   [  31:0] dpath$enq_bits;
   wire   [  31:0] dpath$deq_bits;
 
-  NormalQueueDpath_0x5d6b3b47697c8177 dpath
+  NormalQueueDpath_0x761e6db39471549 dpath
   (
     .waddr    ( dpath$waddr ),
     .clk      ( dpath$clk ),
@@ -3472,18 +3532,18 @@ module NormalQueue_0x5d6b3b47697c8177
 
 
 
-endmodule // NormalQueue_0x5d6b3b47697c8177
+endmodule // NormalQueue_0x761e6db39471549
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// NormalQueueDpath_0x5d6b3b47697c8177
+// NormalQueueDpath_0x761e6db39471549
 //-----------------------------------------------------------------------------
-// num_entries: 10
+// num_entries: 16
 // dtype: 32
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module NormalQueueDpath_0x5d6b3b47697c8177
+module NormalQueueDpath_0x761e6db39471549
 (
   input  wire [   0:0] clk,
   output wire [  31:0] deq_bits,
@@ -3503,7 +3563,7 @@ module NormalQueueDpath_0x5d6b3b47697c8177
   wire   [   0:0] queue$reset;
   wire   [  31:0] queue$rd_data$000;
 
-  RegisterFile_0x2802997ae98ca224 queue
+  RegisterFile_0x66d40fda46b4658e queue
   (
     .rd_addr$000 ( queue$rd_addr$000 ),
     .wr_data     ( queue$wr_data ),
@@ -3525,21 +3585,21 @@ module NormalQueueDpath_0x5d6b3b47697c8177
 
 
 
-endmodule // NormalQueueDpath_0x5d6b3b47697c8177
+endmodule // NormalQueueDpath_0x761e6db39471549
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x2802997ae98ca224
+// RegisterFile_0x66d40fda46b4658e
 //-----------------------------------------------------------------------------
 // dtype: 32
-// nregs: 10
+// nregs: 16
 // const_zero: False
 // wr_ports: 1
 // rd_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x2802997ae98ca224
+module RegisterFile_0x66d40fda46b4658e
 (
   input  wire [   0:0] clk,
   input  wire [   3:0] rd_addr$000,
@@ -3561,10 +3621,16 @@ module RegisterFile_0x2802997ae98ca224
   wire   [  31:0] regs$007;
   wire   [  31:0] regs$008;
   wire   [  31:0] regs$009;
+  wire   [  31:0] regs$010;
+  wire   [  31:0] regs$011;
+  wire   [  31:0] regs$012;
+  wire   [  31:0] regs$013;
+  wire   [  31:0] regs$014;
+  wire   [  31:0] regs$015;
 
 
   // localparam declarations
-  localparam nregs = 10;
+  localparam nregs = 16;
   localparam rd_ports = 1;
 
   // loop variable declarations
@@ -3576,7 +3642,7 @@ module RegisterFile_0x2802997ae98ca224
   assign rd_addr[  0] = rd_addr$000;
   reg    [  31:0] rd_data[0:0];
   assign rd_data$000 = rd_data[  0];
-  reg    [  31:0] regs[0:9];
+  reg    [  31:0] regs[0:15];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -3587,6 +3653,12 @@ module RegisterFile_0x2802997ae98ca224
   assign regs$007 = regs[  7];
   assign regs$008 = regs[  8];
   assign regs$009 = regs[  9];
+  assign regs$010 = regs[ 10];
+  assign regs$011 = regs[ 11];
+  assign regs$012 = regs[ 12];
+  assign regs$013 = regs[ 13];
+  assign regs$014 = regs[ 14];
+  assign regs$015 = regs[ 15];
 
   // PYMTL SOURCE:
   //
@@ -3621,7 +3693,7 @@ module RegisterFile_0x2802997ae98ca224
   end
 
 
-endmodule // RegisterFile_0x2802997ae98ca224
+endmodule // RegisterFile_0x66d40fda46b4658e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -4887,7 +4959,7 @@ module Butterfree
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x4924e7298338bd96 xcel$000
+  BloomFilterXcel_0x78b36cc30b50888d xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -4915,7 +4987,7 @@ module Butterfree
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x4924e7298338bd96 xcel$001
+  BloomFilterXcel_0x78b36cc30b50888d xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -4943,7 +5015,7 @@ module Butterfree
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x4924e7298338bd96 xcel$002
+  BloomFilterXcel_0x78b36cc30b50888d xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -4971,7 +5043,7 @@ module Butterfree
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x4924e7298338bd96 xcel$003
+  BloomFilterXcel_0x78b36cc30b50888d xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5209,10 +5281,6 @@ module Butterfree
   assign ctrlregresp_msg             = ctrlreg$resp_msg;
   assign ctrlregresp_val             = ctrlreg$resp_val;
   assign dcache$cachereq_msg         = dcache_adapter$req_msg;
-  assign dcache$cachereq_msg         = xcel$000$memreq_snoop_msg;
-  assign dcache$cachereq_msg         = xcel$001$memreq_snoop_msg;
-  assign dcache$cachereq_msg         = xcel$002$memreq_snoop_msg;
-  assign dcache$cachereq_msg         = xcel$003$memreq_snoop_msg;
   assign dcache$cachereq_val         = dcache_adapter$req_val;
   assign dcache$cacheresp_rdy        = dcache_adapter$resp_rdy;
   assign dcache$clk                  = clk;
@@ -5466,24 +5534,28 @@ module Butterfree
   assign proc2mngr_3_msg             = proc$003$proc2mngr_msg;
   assign proc2mngr_3_val             = proc$003$proc2mngr_val;
   assign xcel$000$clk                = clk;
+  assign xcel$000$memreq_snoop_msg   = dcache_adapter$req_msg;
   assign xcel$000$memreq_snoop_val   = cachereq_go;
   assign xcel$000$reset              = reset;
   assign xcel$000$xcelreq_msg        = proc$000$xcelreq_msg;
   assign xcel$000$xcelreq_val        = proc$000$xcelreq_val;
   assign xcel$000$xcelresp_rdy       = proc$000$xcelresp_rdy;
   assign xcel$001$clk                = clk;
+  assign xcel$001$memreq_snoop_msg   = dcache_adapter$req_msg;
   assign xcel$001$memreq_snoop_val   = cachereq_go;
   assign xcel$001$reset              = reset;
   assign xcel$001$xcelreq_msg        = proc$001$xcelreq_msg;
   assign xcel$001$xcelreq_val        = proc$001$xcelreq_val;
   assign xcel$001$xcelresp_rdy       = proc$001$xcelresp_rdy;
   assign xcel$002$clk                = clk;
+  assign xcel$002$memreq_snoop_msg   = dcache_adapter$req_msg;
   assign xcel$002$memreq_snoop_val   = cachereq_go;
   assign xcel$002$reset              = reset;
   assign xcel$002$xcelreq_msg        = proc$002$xcelreq_msg;
   assign xcel$002$xcelreq_val        = proc$002$xcelreq_val;
   assign xcel$002$xcelresp_rdy       = proc$002$xcelresp_rdy;
   assign xcel$003$clk                = clk;
+  assign xcel$003$memreq_snoop_msg   = dcache_adapter$req_msg;
   assign xcel$003$memreq_snoop_val   = cachereq_go;
   assign xcel$003$reset              = reset;
   assign xcel$003$xcelreq_msg        = proc$003$xcelreq_msg;
@@ -5509,8 +5581,8 @@ endmodule // Butterfree
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f90b5672350>
-// req: <pymtl.model.signals.InPort object at 0x7f90b5672090>
+// resp: <pymtl.model.signals.OutPort object at 0x7ffa094fc690>
+// req: <pymtl.model.signals.InPort object at 0x7ffa094fc3d0>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -8844,11 +8916,11 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   reg    [  31:0] cachereq_data_reg_out_or;
   reg    [  31:0] cachereq_data_reg_out_swap;
   reg    [  31:0] cachereq_data_reg_out_xor;
-  reg    [  10:0] cachereq_idx;
+  reg    [   9:0] cachereq_idx;
   reg    [  31:0] cachereq_msg_addr;
   reg    [   3:0] cachereq_offset;
   reg    [  27:0] cachereq_tag;
-  reg    [  10:0] cur_cachereq_idx;
+  reg    [   9:0] cur_cachereq_idx;
   reg    [   0:0] data_array_0_wen;
   reg    [   0:0] data_array_1_wen;
   reg    [  31:0] memreq_addr;
@@ -8871,7 +8943,7 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   localparam TYPE_READ = 0;
   localparam abw = 32;
   localparam dbw = 32;
-  localparam idw_off = 15;
+  localparam idw_off = 14;
   localparam m_len_bw = 4;
 
   // read_tag_reg temporaries
@@ -9025,14 +9097,14 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   // tag_array_0 temporaries
   wire   [   0:0] tag_array_0$ce;
   wire   [  31:0] tag_array_0$in_;
-  wire   [  10:0] tag_array_0$addr;
+  wire   [   9:0] tag_array_0$addr;
   wire   [   3:0] tag_array_0$wmask;
   wire   [   0:0] tag_array_0$clk;
   wire   [   0:0] tag_array_0$we;
   wire   [   0:0] tag_array_0$reset;
   wire   [  31:0] tag_array_0$out;
 
-  SramRTL_0x7f462a58d0912e0c tag_array_0
+  SramRTL_0x1d0877c36bd105f4 tag_array_0
   (
     .ce    ( tag_array_0$ce ),
     .in_   ( tag_array_0$in_ ),
@@ -9047,14 +9119,14 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   // tag_array_1 temporaries
   wire   [   0:0] tag_array_1$ce;
   wire   [  31:0] tag_array_1$in_;
-  wire   [  10:0] tag_array_1$addr;
+  wire   [   9:0] tag_array_1$addr;
   wire   [   3:0] tag_array_1$wmask;
   wire   [   0:0] tag_array_1$clk;
   wire   [   0:0] tag_array_1$we;
   wire   [   0:0] tag_array_1$reset;
   wire   [  31:0] tag_array_1$out;
 
-  SramRTL_0x7f462a58d0912e0c tag_array_1
+  SramRTL_0x1d0877c36bd105f4 tag_array_1
   (
     .ce    ( tag_array_1$ce ),
     .in_   ( tag_array_1$in_ ),
@@ -9123,14 +9195,14 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   // data_array_1 temporaries
   wire   [   0:0] data_array_1$ce;
   wire   [ 127:0] data_array_1$in_;
-  wire   [  10:0] data_array_1$addr;
+  wire   [   9:0] data_array_1$addr;
   wire   [  15:0] data_array_1$wmask;
   wire   [   0:0] data_array_1$clk;
   wire   [   0:0] data_array_1$we;
   wire   [   0:0] data_array_1$reset;
   wire   [ 127:0] data_array_1$out;
 
-  SramRTL_0x2a29e7e99fd0ff54 data_array_1
+  SramRTL_0x2d6938eb96dccb54 data_array_1
   (
     .ce    ( data_array_1$ce ),
     .in_   ( data_array_1$in_ ),
@@ -9145,14 +9217,14 @@ module BlockingCacheDpathPRTL_0x499835e454a1a1cd
   // data_array_0 temporaries
   wire   [   0:0] data_array_0$ce;
   wire   [ 127:0] data_array_0$in_;
-  wire   [  10:0] data_array_0$addr;
+  wire   [   9:0] data_array_0$addr;
   wire   [  15:0] data_array_0$wmask;
   wire   [   0:0] data_array_0$clk;
   wire   [   0:0] data_array_0$we;
   wire   [   0:0] data_array_0$reset;
   wire   [ 127:0] data_array_0$out;
 
-  SramRTL_0x2a29e7e99fd0ff54 data_array_0
+  SramRTL_0x2d6938eb96dccb54 data_array_0
   (
     .ce    ( data_array_0$ce ),
     .in_   ( data_array_0$in_ ),
@@ -10083,18 +10155,18 @@ endmodule // Mux_0x5af2f539a1a7deea
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SramRTL_0x7f462a58d0912e0c
+// SramRTL_0x1d0877c36bd105f4
 //-----------------------------------------------------------------------------
 // num_bits: 32
 // tech_node: 28nm
-// num_words: 2048
+// num_words: 1024
 // module_name: 
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SramRTL_0x7f462a58d0912e0c
+module SramRTL_0x1d0877c36bd105f4
 (
-  input  wire [  10:0] addr,
+  input  wire [   9:0] addr,
   input  wire [   0:0] ce,
   input  wire [   0:0] clk,
   input  wire [  31:0] in_,
@@ -10107,14 +10179,14 @@ module SramRTL_0x7f462a58d0912e0c
   // sram temporaries
   wire   [   0:0] sram$ce;
   wire   [  31:0] sram$in_;
-  wire   [  10:0] sram$addr;
+  wire   [   9:0] sram$addr;
   wire   [   3:0] sram$wmask;
   wire   [   0:0] sram$clk;
   wire   [   0:0] sram$we;
   wire   [   0:0] sram$reset;
   wire   [  31:0] sram$out;
 
-  SramWrapper28nmPRTL_0x38980e79c2fe5454 sram
+  SramWrapper28nmPRTL_0x79c097bc28415054 sram
   (
     .ce    ( sram$ce ),
     .in_   ( sram$in_ ),
@@ -10138,21 +10210,21 @@ module SramRTL_0x7f462a58d0912e0c
 
 
 
-endmodule // SramRTL_0x7f462a58d0912e0c
+endmodule // SramRTL_0x1d0877c36bd105f4
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SramWrapper28nmPRTL_0x38980e79c2fe5454
+// SramWrapper28nmPRTL_0x79c097bc28415054
 //-----------------------------------------------------------------------------
 // num_bits: 32
-// num_words: 2048
+// num_words: 1024
 // module_name: 
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SramWrapper28nmPRTL_0x38980e79c2fe5454
+module SramWrapper28nmPRTL_0x79c097bc28415054
 (
-  input  wire [  10:0] addr,
+  input  wire [   9:0] addr,
   input  wire [   0:0] ce,
   input  wire [   0:0] clk,
   input  wire [  31:0] in_,
@@ -10166,25 +10238,26 @@ module SramWrapper28nmPRTL_0x38980e79c2fe5454
   wire   [   0:0] emas;
   wire   [   1:0] emaw;
   wire   [   0:0] ret1n;
-  wire   [  10:0] ay;
+  wire   [   9:0] ay;
   wire   [   0:0] tcen;
+  wire   [   0:0] gweny;
   wire   [   1:0] si;
   wire   [  31:0] td;
   wire   [   0:0] dftrambyp;
-  wire   [  10:0] ta;
+  wire   [   9:0] ta;
   wire   [   0:0] tgwen;
   wire   [   0:0] ceny;
-  wire   [   0:0] twen;
+  wire   [  31:0] twen;
   wire   [   2:0] ema;
   wire   [  31:0] q;
   wire   [   0:0] ten;
-  wire   [   2:0] so;
-  wire   [   0:0] weny;
+  wire   [   1:0] so;
+  wire   [  31:0] weny;
   wire   [   0:0] se;
 
 
   // register declarations
-  reg    [  10:0] a;
+  reg    [   9:0] a;
   reg    [   0:0] cen;
   reg    [  31:0] d;
   reg    [   0:0] gwen;
@@ -10198,6 +10271,7 @@ module SramWrapper28nmPRTL_0x38980e79c2fe5454
   integer i;
 
   // mem$000$000 temporaries
+  wire   [   0:0] mem$000$000$emas;
   wire   [   0:0] mem$000$000$gwen;
   wire   [   1:0] mem$000$000$emaw;
   wire   [   0:0] mem$000$000$ret1n;
@@ -10207,24 +10281,26 @@ module SramWrapper28nmPRTL_0x38980e79c2fe5454
   wire   [   0:0] mem$000$000$clk;
   wire   [  31:0] mem$000$000$wen;
   wire   [  31:0] mem$000$000$td;
-  wire   [  10:0] mem$000$000$ta;
-  wire   [  10:0] mem$000$000$a;
+  wire   [   9:0] mem$000$000$ta;
+  wire   [   9:0] mem$000$000$a;
   wire   [   0:0] mem$000$000$cen;
   wire   [   0:0] mem$000$000$tgwen;
-  wire   [   0:0] mem$000$000$twen;
+  wire   [  31:0] mem$000$000$twen;
   wire   [   0:0] mem$000$000$reset;
   wire   [   2:0] mem$000$000$ema;
   wire   [  31:0] mem$000$000$d;
   wire   [   1:0] mem$000$000$si;
   wire   [   0:0] mem$000$000$se;
-  wire   [  10:0] mem$000$000$ay;
+  wire   [   9:0] mem$000$000$ay;
   wire   [   0:0] mem$000$000$ceny;
+  wire   [   0:0] mem$000$000$gweny;
   wire   [  31:0] mem$000$000$q;
-  wire   [   2:0] mem$000$000$so;
-  wire   [   0:0] mem$000$000$weny;
+  wire   [   1:0] mem$000$000$so;
+  wire   [  31:0] mem$000$000$weny;
 
-  sram_28nm_32x2048_SP mem$000$000
+  sram_28nm_1024x32_SP mem$000$000
   (
+    .emas      ( mem$000$000$emas ),
     .gwen      ( mem$000$000$gwen ),
     .emaw      ( mem$000$000$emaw ),
     .ret1n     ( mem$000$000$ret1n ),
@@ -10245,23 +10321,38 @@ module SramWrapper28nmPRTL_0x38980e79c2fe5454
     .se        ( mem$000$000$se ),
     .ay        ( mem$000$000$ay ),
     .ceny      ( mem$000$000$ceny ),
+    .gweny     ( mem$000$000$gweny ),
     .q         ( mem$000$000$q ),
     .so        ( mem$000$000$so ),
     .weny      ( mem$000$000$weny )
   );
 
   // signal connections
-  assign mem$000$000$a     = a;
-  assign mem$000$000$cen   = cen;
-  assign mem$000$000$clk   = clk;
-  assign mem$000$000$d     = d[31:0];
-  assign mem$000$000$ema   = 3'd3;
-  assign mem$000$000$emaw  = 2'd1;
-  assign mem$000$000$gwen  = gwen;
-  assign mem$000$000$reset = reset;
-  assign mem$000$000$ret1n = 1'd0;
-  assign mem$000$000$wen   = wen[31:0];
-  assign q[31:0]           = mem$000$000$q;
+  assign ay                    = mem$000$000$ay;
+  assign ceny                  = mem$000$000$ceny;
+  assign mem$000$000$a         = a;
+  assign mem$000$000$cen       = cen;
+  assign mem$000$000$clk       = clk;
+  assign mem$000$000$d         = d[31:0];
+  assign mem$000$000$dftrambyp = 1'd0;
+  assign mem$000$000$ema       = 3'd3;
+  assign mem$000$000$emas      = 1'd0;
+  assign mem$000$000$emaw      = 2'd1;
+  assign mem$000$000$gwen      = gwen;
+  assign mem$000$000$reset     = reset;
+  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$se        = 1'd0;
+  assign mem$000$000$si        = 2'd0;
+  assign mem$000$000$ta        = 10'd0;
+  assign mem$000$000$tcen      = 1'd0;
+  assign mem$000$000$td        = 32'd0;
+  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$tgwen     = 1'd0;
+  assign mem$000$000$twen      = 32'd0;
+  assign mem$000$000$wen       = wen[31:0];
+  assign q[31:0]               = mem$000$000$q;
+  assign so                    = mem$000$000$so;
+  assign weny                  = mem$000$000$weny;
 
 
   // PYMTL SOURCE:
@@ -10300,47 +10391,49 @@ module SramWrapper28nmPRTL_0x38980e79c2fe5454
   end
 
 
-endmodule // SramWrapper28nmPRTL_0x38980e79c2fe5454
+endmodule // SramWrapper28nmPRTL_0x79c097bc28415054
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// sram_28nm_32x2048_SP
+// sram_28nm_1024x32_SP
 //-----------------------------------------------------------------------------
 // num_bits: 32
-// num_words: 2048
-// module_name: sram_28nm_32x2048_SP
+// num_words: 1024
+// module_name: sram_28nm_1024x32_SP
 // dump-vcd: False
 // verilator-xinit: zeros
 // This module is treated as a black box
 `default_nettype none
-module sram_28nm_32x2048_SP
+module sram_28nm_1024x32_SP
 (
-  input  wire [  10:0] a,
-  output wire [  10:0] ay,
+  input  wire [   9:0] a,
+  output wire [   9:0] ay,
   input  wire [   0:0] cen,
   output wire [   0:0] ceny,
   input  wire [   0:0] clk,
   input  wire [  31:0] d,
   input  wire [   0:0] dftrambyp,
   input  wire [   2:0] ema,
+  input  wire [   0:0] emas,
   input  wire [   1:0] emaw,
   input  wire [   0:0] gwen,
+  output wire [   0:0] gweny,
   output reg  [  31:0] q,
   input  wire [   0:0] ret1n,
   input  wire [   0:0] se,
   input  wire [   1:0] si,
-  output wire [   2:0] so,
-  input  wire [  10:0] ta,
+  output wire [   1:0] so,
+  input  wire [   9:0] ta,
   input  wire [   0:0] tcen,
   input  wire [  31:0] td,
   input  wire [   0:0] ten,
   input  wire [   0:0] tgwen,
-  input  wire [   0:0] twen,
+  input  wire [  31:0] twen,
   input  wire [  31:0] wen,
-  output wire [   0:0] weny
+  output wire [  31:0] weny
 );
 
-endmodule // sram_28nm_32x2048_SP
+endmodule // sram_28nm_1024x32_SP
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -10387,18 +10480,18 @@ endmodule // Mux_0xb6e139e9f208756
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SramRTL_0x2a29e7e99fd0ff54
+// SramRTL_0x2d6938eb96dccb54
 //-----------------------------------------------------------------------------
 // num_bits: 128
 // tech_node: 28nm
-// num_words: 2048
+// num_words: 1024
 // module_name: 
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SramRTL_0x2a29e7e99fd0ff54
+module SramRTL_0x2d6938eb96dccb54
 (
-  input  wire [  10:0] addr,
+  input  wire [   9:0] addr,
   input  wire [   0:0] ce,
   input  wire [   0:0] clk,
   input  wire [ 127:0] in_,
@@ -10411,14 +10504,14 @@ module SramRTL_0x2a29e7e99fd0ff54
   // sram temporaries
   wire   [   0:0] sram$ce;
   wire   [ 127:0] sram$in_;
-  wire   [  10:0] sram$addr;
+  wire   [   9:0] sram$addr;
   wire   [  15:0] sram$wmask;
   wire   [   0:0] sram$clk;
   wire   [   0:0] sram$we;
   wire   [   0:0] sram$reset;
   wire   [ 127:0] sram$out;
 
-  SramWrapper28nmPRTL_0x3faf52cd15a7430c sram
+  SramWrapper28nmPRTL_0x6865ae273cdbc0f4 sram
   (
     .ce    ( sram$ce ),
     .in_   ( sram$in_ ),
@@ -10442,21 +10535,21 @@ module SramRTL_0x2a29e7e99fd0ff54
 
 
 
-endmodule // SramRTL_0x2a29e7e99fd0ff54
+endmodule // SramRTL_0x2d6938eb96dccb54
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SramWrapper28nmPRTL_0x3faf52cd15a7430c
+// SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 //-----------------------------------------------------------------------------
 // num_bits: 128
-// num_words: 2048
+// num_words: 1024
 // module_name: 
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SramWrapper28nmPRTL_0x3faf52cd15a7430c
+module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 (
-  input  wire [  10:0] addr,
+  input  wire [   9:0] addr,
   input  wire [   0:0] ce,
   input  wire [   0:0] clk,
   input  wire [ 127:0] in_,
@@ -10470,25 +10563,26 @@ module SramWrapper28nmPRTL_0x3faf52cd15a7430c
   wire   [   0:0] emas;
   wire   [   1:0] emaw;
   wire   [   0:0] ret1n;
-  wire   [  10:0] ay;
+  wire   [   9:0] ay;
   wire   [   0:0] tcen;
+  wire   [   0:0] gweny;
   wire   [   1:0] si;
   wire   [ 127:0] td;
   wire   [   0:0] dftrambyp;
-  wire   [  10:0] ta;
+  wire   [   9:0] ta;
   wire   [   0:0] tgwen;
   wire   [   0:0] ceny;
-  wire   [   0:0] twen;
+  wire   [ 127:0] twen;
   wire   [   2:0] ema;
   wire   [ 127:0] q;
   wire   [   0:0] ten;
-  wire   [   2:0] so;
-  wire   [   0:0] weny;
+  wire   [   1:0] so;
+  wire   [ 127:0] weny;
   wire   [   0:0] se;
 
 
   // register declarations
-  reg    [  10:0] a;
+  reg    [   9:0] a;
   reg    [   0:0] cen;
   reg    [ 127:0] d;
   reg    [   0:0] gwen;
@@ -10502,6 +10596,7 @@ module SramWrapper28nmPRTL_0x3faf52cd15a7430c
   integer i;
 
   // mem$000$000 temporaries
+  wire   [   0:0] mem$000$000$emas;
   wire   [   0:0] mem$000$000$gwen;
   wire   [   1:0] mem$000$000$emaw;
   wire   [   0:0] mem$000$000$ret1n;
@@ -10511,24 +10606,26 @@ module SramWrapper28nmPRTL_0x3faf52cd15a7430c
   wire   [   0:0] mem$000$000$clk;
   wire   [ 127:0] mem$000$000$wen;
   wire   [ 127:0] mem$000$000$td;
-  wire   [  10:0] mem$000$000$ta;
-  wire   [  10:0] mem$000$000$a;
+  wire   [   9:0] mem$000$000$ta;
+  wire   [   9:0] mem$000$000$a;
   wire   [   0:0] mem$000$000$cen;
   wire   [   0:0] mem$000$000$tgwen;
-  wire   [   0:0] mem$000$000$twen;
+  wire   [ 127:0] mem$000$000$twen;
   wire   [   0:0] mem$000$000$reset;
   wire   [   2:0] mem$000$000$ema;
   wire   [ 127:0] mem$000$000$d;
   wire   [   1:0] mem$000$000$si;
   wire   [   0:0] mem$000$000$se;
-  wire   [  10:0] mem$000$000$ay;
+  wire   [   9:0] mem$000$000$ay;
   wire   [   0:0] mem$000$000$ceny;
+  wire   [   0:0] mem$000$000$gweny;
   wire   [ 127:0] mem$000$000$q;
-  wire   [   2:0] mem$000$000$so;
-  wire   [   0:0] mem$000$000$weny;
+  wire   [   1:0] mem$000$000$so;
+  wire   [ 127:0] mem$000$000$weny;
 
-  sram_28nm_128x2048_SP mem$000$000
+  sram_28nm_1024x128_SP mem$000$000
   (
+    .emas      ( mem$000$000$emas ),
     .gwen      ( mem$000$000$gwen ),
     .emaw      ( mem$000$000$emaw ),
     .ret1n     ( mem$000$000$ret1n ),
@@ -10549,23 +10646,38 @@ module SramWrapper28nmPRTL_0x3faf52cd15a7430c
     .se        ( mem$000$000$se ),
     .ay        ( mem$000$000$ay ),
     .ceny      ( mem$000$000$ceny ),
+    .gweny     ( mem$000$000$gweny ),
     .q         ( mem$000$000$q ),
     .so        ( mem$000$000$so ),
     .weny      ( mem$000$000$weny )
   );
 
   // signal connections
-  assign mem$000$000$a     = a;
-  assign mem$000$000$cen   = cen;
-  assign mem$000$000$clk   = clk;
-  assign mem$000$000$d     = d[127:0];
-  assign mem$000$000$ema   = 3'd3;
-  assign mem$000$000$emaw  = 2'd1;
-  assign mem$000$000$gwen  = gwen;
-  assign mem$000$000$reset = reset;
-  assign mem$000$000$ret1n = 1'd0;
-  assign mem$000$000$wen   = wen[127:0];
-  assign q[127:0]          = mem$000$000$q;
+  assign ay                    = mem$000$000$ay;
+  assign ceny                  = mem$000$000$ceny;
+  assign mem$000$000$a         = a;
+  assign mem$000$000$cen       = cen;
+  assign mem$000$000$clk       = clk;
+  assign mem$000$000$d         = d[127:0];
+  assign mem$000$000$dftrambyp = 1'd0;
+  assign mem$000$000$ema       = 3'd3;
+  assign mem$000$000$emas      = 1'd0;
+  assign mem$000$000$emaw      = 2'd1;
+  assign mem$000$000$gwen      = gwen;
+  assign mem$000$000$reset     = reset;
+  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$se        = 1'd0;
+  assign mem$000$000$si        = 2'd0;
+  assign mem$000$000$ta        = 10'd0;
+  assign mem$000$000$tcen      = 1'd0;
+  assign mem$000$000$td        = 128'd0;
+  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$tgwen     = 1'd0;
+  assign mem$000$000$twen      = 128'd0;
+  assign mem$000$000$wen       = wen[127:0];
+  assign q[127:0]              = mem$000$000$q;
+  assign so                    = mem$000$000$so;
+  assign weny                  = mem$000$000$weny;
 
 
   // PYMTL SOURCE:
@@ -10604,47 +10716,49 @@ module SramWrapper28nmPRTL_0x3faf52cd15a7430c
   end
 
 
-endmodule // SramWrapper28nmPRTL_0x3faf52cd15a7430c
+endmodule // SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// sram_28nm_128x2048_SP
+// sram_28nm_1024x128_SP
 //-----------------------------------------------------------------------------
 // num_bits: 128
-// num_words: 2048
-// module_name: sram_28nm_128x2048_SP
+// num_words: 1024
+// module_name: sram_28nm_1024x128_SP
 // dump-vcd: False
 // verilator-xinit: zeros
 // This module is treated as a black box
 `default_nettype none
-module sram_28nm_128x2048_SP
+module sram_28nm_1024x128_SP
 (
-  input  wire [  10:0] a,
-  output wire [  10:0] ay,
+  input  wire [   9:0] a,
+  output wire [   9:0] ay,
   input  wire [   0:0] cen,
   output wire [   0:0] ceny,
   input  wire [   0:0] clk,
   input  wire [ 127:0] d,
   input  wire [   0:0] dftrambyp,
   input  wire [   2:0] ema,
+  input  wire [   0:0] emas,
   input  wire [   1:0] emaw,
   input  wire [   0:0] gwen,
+  output wire [   0:0] gweny,
   output reg  [ 127:0] q,
   input  wire [   0:0] ret1n,
   input  wire [   0:0] se,
   input  wire [   1:0] si,
-  output wire [   2:0] so,
-  input  wire [  10:0] ta,
+  output wire [   1:0] so,
+  input  wire [   9:0] ta,
   input  wire [   0:0] tcen,
   input  wire [ 127:0] td,
   input  wire [   0:0] ten,
   input  wire [   0:0] tgwen,
-  input  wire [   0:0] twen,
+  input  wire [ 127:0] twen,
   input  wire [ 127:0] wen,
-  output wire [   0:0] weny
+  output wire [ 127:0] weny
 );
 
-endmodule // sram_28nm_128x2048_SP
+endmodule // sram_28nm_1024x128_SP
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -21256,11 +21370,11 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   reg    [  31:0] cachereq_data_reg_out_or;
   reg    [  31:0] cachereq_data_reg_out_swap;
   reg    [  31:0] cachereq_data_reg_out_xor;
-  reg    [  10:0] cachereq_idx;
+  reg    [   9:0] cachereq_idx;
   reg    [  31:0] cachereq_msg_addr;
   reg    [   3:0] cachereq_offset;
   reg    [  27:0] cachereq_tag;
-  reg    [  10:0] cur_cachereq_idx;
+  reg    [   9:0] cur_cachereq_idx;
   reg    [   0:0] data_array_0_wen;
   reg    [   0:0] data_array_1_wen;
   reg    [  31:0] memreq_addr;
@@ -21283,7 +21397,7 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   localparam TYPE_READ = 0;
   localparam abw = 32;
   localparam dbw = 32;
-  localparam idw_off = 15;
+  localparam idw_off = 14;
   localparam m_len_bw = 4;
 
   // read_tag_reg temporaries
@@ -21437,14 +21551,14 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   // tag_array_0 temporaries
   wire   [   0:0] tag_array_0$ce;
   wire   [  31:0] tag_array_0$in_;
-  wire   [  10:0] tag_array_0$addr;
+  wire   [   9:0] tag_array_0$addr;
   wire   [   3:0] tag_array_0$wmask;
   wire   [   0:0] tag_array_0$clk;
   wire   [   0:0] tag_array_0$we;
   wire   [   0:0] tag_array_0$reset;
   wire   [  31:0] tag_array_0$out;
 
-  SramRTL_0x7f462a58d0912e0c tag_array_0
+  SramRTL_0x1d0877c36bd105f4 tag_array_0
   (
     .ce    ( tag_array_0$ce ),
     .in_   ( tag_array_0$in_ ),
@@ -21459,14 +21573,14 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   // tag_array_1 temporaries
   wire   [   0:0] tag_array_1$ce;
   wire   [  31:0] tag_array_1$in_;
-  wire   [  10:0] tag_array_1$addr;
+  wire   [   9:0] tag_array_1$addr;
   wire   [   3:0] tag_array_1$wmask;
   wire   [   0:0] tag_array_1$clk;
   wire   [   0:0] tag_array_1$we;
   wire   [   0:0] tag_array_1$reset;
   wire   [  31:0] tag_array_1$out;
 
-  SramRTL_0x7f462a58d0912e0c tag_array_1
+  SramRTL_0x1d0877c36bd105f4 tag_array_1
   (
     .ce    ( tag_array_1$ce ),
     .in_   ( tag_array_1$in_ ),
@@ -21535,14 +21649,14 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   // data_array_1 temporaries
   wire   [   0:0] data_array_1$ce;
   wire   [ 127:0] data_array_1$in_;
-  wire   [  10:0] data_array_1$addr;
+  wire   [   9:0] data_array_1$addr;
   wire   [  15:0] data_array_1$wmask;
   wire   [   0:0] data_array_1$clk;
   wire   [   0:0] data_array_1$we;
   wire   [   0:0] data_array_1$reset;
   wire   [ 127:0] data_array_1$out;
 
-  SramRTL_0x2a29e7e99fd0ff54 data_array_1
+  SramRTL_0x2d6938eb96dccb54 data_array_1
   (
     .ce    ( data_array_1$ce ),
     .in_   ( data_array_1$in_ ),
@@ -21557,14 +21671,14 @@ module BlockingCacheDpathPRTL_0x6b511b3b41602acf
   // data_array_0 temporaries
   wire   [   0:0] data_array_0$ce;
   wire   [ 127:0] data_array_0$in_;
-  wire   [  10:0] data_array_0$addr;
+  wire   [   9:0] data_array_0$addr;
   wire   [  15:0] data_array_0$wmask;
   wire   [   0:0] data_array_0$clk;
   wire   [   0:0] data_array_0$we;
   wire   [   0:0] data_array_0$reset;
   wire   [ 127:0] data_array_0$out;
 
-  SramRTL_0x2a29e7e99fd0ff54 data_array_0
+  SramRTL_0x2d6938eb96dccb54 data_array_0
   (
     .ce    ( data_array_0$ce ),
     .in_   ( data_array_0$in_ ),
@@ -22325,16 +22439,16 @@ endmodule // GenWriteDataPRTL_0x472c29e762348c17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x4924e7298338bd96
+// BloomFilterXcel_0x78b36cc30b50888d
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: 78
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7ffa09a8c490>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x4924e7298338bd96
+module BloomFilterXcel_0x78b36cc30b50888d
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -22539,7 +22653,6 @@ module BloomFilterXcel_0x4924e7298338bd96
   assign clear$reset          = reset;
   assign memreq_snoop_rdy     = 1'd1;
   assign snoop_q$clk          = clk;
-  assign snoop_q$enq_msg      = memreq_snoop_msg[65:34];
   assign snoop_q$reset        = reset;
   assign status$clk           = clk;
   assign status$reset         = reset;
@@ -22597,9 +22710,9 @@ module BloomFilterXcel_0x4924e7298338bd96
   //
   //         # Filter out the memory requests based on the status we're in.
   //         if ( (s.status.out == s.STATUS_ENABLED_R and
-  //               s.memreq_snoop.msg.type_ == snoop_mem_msg.TYPE_READ) or
+  //               s.memreq_snoop.msg.type_ == snoop_mem_msg.req.TYPE_READ) or
   //              (s.status.out == s.STATUS_ENABLED_W and
-  //               s.memreq_snoop.msg.type_ != snoop_mem_msg.TYPE_READ) or
+  //               s.memreq_snoop.msg.type_ != snoop_mem_msg.req.TYPE_READ) or
   //              s.status.out == s.STATUS_ENABLED_RW ):
   //           s.snoop_q.enq.val.value = 1
   //           s.snoop_q.enq.msg.value = s.memreq_snoop.msg.addr
@@ -22778,7 +22891,7 @@ module BloomFilterXcel_0x4924e7298338bd96
   end
 
 
-endmodule // BloomFilterXcel_0x4924e7298338bd96
+endmodule // BloomFilterXcel_0x78b36cc30b50888d
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -24407,8 +24520,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f90b4d2df90>
-// req: <pymtl.model.signals.InPort object at 0x7f90b4d2d9d0>
+// resp: <pymtl.model.signals.OutPort object at 0x7ffa08fcd9d0>
+// req: <pymtl.model.signals.InPort object at 0x7ffa08fcd410>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -25663,8 +25776,8 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f90b5faf790>
-// req: <pymtl.model.signals.InPort object at 0x7f90b5fa1650>
+// resp: <pymtl.model.signals.OutPort object at 0x7ffa09a286d0>
+// req: <pymtl.model.signals.InPort object at 0x7ffa09a28390>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
