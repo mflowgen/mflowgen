@@ -81,7 +81,7 @@ export calibre_lvs_reportfile     = $(calibre_lvs_rundir)/lvs.report
 
 calibre_lvs_spiceincfiles        += $(adk_dir)/stdcells.cdl
 calibre_lvs_spiceincfiles        += $(adk_dir)/iocells.spi
-calibre_lvs_spiceincfiles        += $(calibre_lvs_extras)
+calibre_lvs_spiceincfiles        += $(foreach x, $(calibre_lvs_extras),$(PWD)/$x)
 
 export calibre_lvs_spiceincfiles
 
