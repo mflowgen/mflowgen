@@ -14,7 +14,7 @@ descriptions.calibre-drc-filled = \
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.calibre-drc-fill
+define ascii.calibre-drc-filled
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                            ____    _____     _____                            #'
