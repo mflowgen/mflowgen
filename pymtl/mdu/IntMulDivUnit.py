@@ -5,8 +5,9 @@
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 
-from IntDivRem4   import IntDivRem4
-from IntMulScycle import IntMulScycle
+from IntDivRem4      import IntDivRem4
+from IntMulScycle    import IntMulScycle
+from IntMulPipelined import IntMulPipelined
 
 from ifcs import MduReqMsg, MduRespMsg
 
@@ -40,7 +41,7 @@ class IntMulDivUnit( Model ):
 
     # Instantiate arith units
 
-    s.imul = IntMulScycle( nbits, ntypes )
+    s.imul = IntMulPipelined( nbits, ntypes, nstages=2 )
     s.idiv = IntDivRem4( nbits, ntypes )
 
     # Req/input side

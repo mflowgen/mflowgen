@@ -3,11 +3,9 @@
 #=========================================================================
 # This multiplier is designed to work with RV32M's mul/mulh/mulhsu/mulhu
 
-# TODO add a bypass queue at response side to cut the long rdy path
-
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.rtl  import RegEn, RegEnRst
+from pclib.rtl  import RegEn, RegEnRst, SingleElementBypassQueue
 from ifcs import MduMsg, MduReqMsg
 
 # 0 - mul       hilo=0 low  32 bits of zext64(a)*b
@@ -33,6 +31,11 @@ class IntMulPipelined( Model ):
     s.req      = InValRdyBundle  ( s.ifc_type.req )
     s.resp     = OutValRdyBundle ( s.ifc_type.resp )
 
+    # Add a bypass queue at response side to cut the rdy path
+
+    s.resp_q = SingleElementBypassQueue( s.ifc_type.resp )
+    s.connect( s.resp_q.deq, s.resp )
+
     # Add amount of stages for register retiming
     # Shunning: The design I'm doing here guarantees registered input.
     #           Since we resort to register retiming, all the work are
@@ -41,10 +44,11 @@ class IntMulPipelined( Model ):
     #           register the input, and the remaining three stages hold
     #           output
 
+    # The req goes into the first register to follow the registered-input
+    # convention
+
     s.reg_req_val = RegEnRst( 1, reset_value = 0 )
     s.reg_req_msg = RegEn( s.ifc_type.req )
-
-    # The req goes into the first register
 
     s.connect_pairs(
       s.req.val, s.reg_req_val.in_,
@@ -57,8 +61,11 @@ class IntMulPipelined( Model ):
     # Pass reg_req_val and msg.opaque to the first reg_resp
     # msg.result will be calculated
 
+    s.resp_result = Wire( nbits )
+
     s.connect( s.reg_req_val.out,        s.regs_resp_val[0].in_ )
     s.connect( s.reg_req_msg.out.opaque, s.regs_resp_msg[0].in_.opaque )
+    s.connect( s.resp_result,            s.regs_resp_msg[0].in_.result )
 
     # Connect all intermediate response registers
 
@@ -71,21 +78,21 @@ class IntMulPipelined( Model ):
     # The response goes out from the last register
 
     s.connect_pairs(
-      s.regs_resp_val[ nstages-2 ].out, s.resp.val,
-      s.regs_resp_msg[ nstages-2 ].out, s.resp.msg,
+      s.regs_resp_val[ nstages-2 ].out, s.resp_q.enq.val,
+      s.regs_resp_msg[ nstages-2 ].out, s.resp_q.enq.msg,
     )
 
     # The response ready signal propagates everywhere
 
     s.connect_pairs(
-      s.resp.rdy, s.req.rdy,
-      s.resp.rdy, s.reg_req_val.en,
-      s.resp.rdy, s.reg_req_msg.en,
+      s.resp_q.enq.rdy, s.req.rdy,
+      s.resp_q.enq.rdy, s.reg_req_val.en,
+      s.resp_q.enq.rdy, s.reg_req_msg.en,
     )
     for i in xrange(nstages-1):
       s.connect_pairs(
-        s.resp.rdy, s.regs_resp_val[i].en,
-        s.resp.rdy, s.regs_resp_msg[i].en,
+        s.resp_q.enq.rdy, s.regs_resp_val[i].en,
+        s.resp_q.enq.rdy, s.regs_resp_msg[i].en,
       )
 
     #---------------------------------------------------------------------
@@ -98,9 +105,6 @@ class IntMulPipelined( Model ):
     s.connect( s.reg_req_msg.out.type_, s.typ )
     s.connect( s.reg_req_msg.out.op_a,  s.opa )
     s.connect( s.reg_req_msg.out.op_b,  s.opb )
-
-    s.resp_result = Wire( nbits )
-    s.connect( s.resp_result, s.regs_resp_msg[0].in_.result )
 
     # Sign-extend opa under MULH/MULHSU
 
