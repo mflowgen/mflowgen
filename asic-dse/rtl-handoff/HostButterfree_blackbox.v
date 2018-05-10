@@ -2136,6 +2136,7 @@ module NormalQueueCtrl_0x7e615dc0798cc6a5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
+  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -23083,6 +23084,7 @@ module NormalQueueCtrl_0x4c319dcf628a6cd4
   //       else:                       s.full.next = s.full
 
   // logic for seq()
+  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -23517,6 +23519,7 @@ module NormalQueueCtrl_0x7a42a348c9205b5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
+  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
