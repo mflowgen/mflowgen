@@ -45,11 +45,11 @@ class TestHarness( Model ):
     mem_msgs   = MemMsg4B()
 
     # Instantiate models
-    s.srcs          = [ TestSource ( mem_msgs.req, src_msgs[i::nports], src_delay ) \
+    s.srcs          = [ TestSource ( mem_msgs.req, src_msgs[i::nports], src_delay + i ) \
                           for i in range( nports ) ]
     s.mem_coalescer = MemCoalescer ( nports, mem_msgs )
     s.mem           = TestMemory( mem_msgs, 1, stall_prob, latency )
-    s.sinks         = [ TestSink ( mem_msgs.resp, sink_msgs[i::nports], sink_delay) \
+    s.sinks         = [ TestSink ( mem_msgs.resp, sink_msgs[i::nports], sink_delay ) \
                           for i in range( nports ) ]
 
     # Dump VCD
@@ -90,8 +90,8 @@ class TestHarness( Model ):
       trace = trace + s.srcs[i].line_trace() + ' : '
     trace = trace + ' || '
 
-    # mem_coalescer
-    trace = trace + s.mem_coalescer.line_trace() + ' || '
+#    # mem_coalescer
+#    trace = trace + s.mem_coalescer.line_trace() + ' || '
 
 #    # mem
 #    trace = trace + s.mem.line_trace() + " "
@@ -219,7 +219,7 @@ def basic_4_ports_rand( base_addr ):
 
   ref_data  = mem_data(0)
 
-  for i in range(128):
+  for i in range(256):
     rand_idx = random.randint(0, 3) 
     test_list = test_list + [ req( 'rd', i, ref_data[rand_idx * 2], 0, 0 ), resp('rd', i, 0, ref_data[rand_idx * 2 + 1] ) ]
 
@@ -246,17 +246,18 @@ test_case_table_generic = mk_test_case_table([
 #  [ "basic_2_ports_1_msg_coal",             basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  0,  0,  0    ],
 #  [ "basic_2_ports_1_msg_no_coal_memd",     basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  1,  0,  0    ],
 #  [ "basic_2_ports_1_msg_coal_memd",        basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  1,  0,  0    ],
-#
+
 #  [ "basic_4_ports_1_msg_no_coal",          basic_4_ports_1_msg_no_coal,    mem_data,       4,     0.0,  0,  0,  0    ],
 #  [ "basic_4_ports_1_msg_coal_all",         basic_4_ports_1_msg_coal_all,   mem_data,       4,     0.0,  0,  0,  0    ],
 #  [ "basic_4_ports_1_msg_coal_02",          basic_4_ports_1_msg_coal_02,    mem_data,       4,     0.0,  0,  0,  0    ],
 #  [ "basic_4_ports_1_msg_coal_02_13",       basic_4_ports_1_msg_coal_02_13, mem_data,       4,     0.0,  0,  0,  0    ],
 #  [ "basic_4_ports_1_msg_coal_01_23",       basic_4_ports_1_msg_coal_01_23, mem_data,       4,     0.0,  0,  0,  0    ],
 #
-#  [ "basic_4_ports_4_msg_no_coal",          basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.0,  4,  0,  0    ],
+#  [ "basic_4_ports_4_msg_no_coal",           basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.0,  4,  0,  0    ],
+#  [ "basic_4_ports_4_msg_no_coal_d",         basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.2,  3,  2,  4    ],
 
 #  [ "basic_4_ports_rand",                    basic_4_ports_rand,             mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_rand_d",                  basic_4_ports_rand,             mem_data,       4,     0.2,  3,  2,  4    ],
+  [ "basic_4_ports_rand_d",                  basic_4_ports_rand,             mem_data,       4,     0.4,  1,  1,  10    ],
 ])
 
 @pytest.mark.parametrize( **test_case_table_generic )

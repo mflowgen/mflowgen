@@ -191,7 +191,7 @@ class MemCoalescer( Model ):
 
         # PORT_STATE_IDLE -> PORT_STATE_PENDING
         if ( curr_state == s.PORT_STATE_IDLE ):
-          if ( s.coalesced_bits[i] and s.reqs[i].val and ~s.memresp.val ):
+          if ( s.reqs[i].val and s.reqs[i].rdy ):
             next_state = s.PORT_STATE_PENDING
 
         # PORT_STATE_PENDING -> PORT_STATE_IDLE
@@ -274,13 +274,21 @@ class MemCoalescer( Model ):
           s.memreq_kill.value     = 1
 
     # Set memresp_rdy
+    s.rdy_vector = Wire( nports )
+
     @s.combinational
     def comb_memresp_rdy():
+
+#      for i in range( nports ):
+#        s.rdy_vector[i].value = (( s.ports_state[i].out == s.PORT_STATE_PENDING ) & s.resps[i].rdy) | ( s.ports_state[i].out == s.PORT_STATE_IDLE )
+#      s.memresp.rdy.value = reduce_or( s.rdy_vector )
 
       s.memresp.rdy.value = 1
       for i in range( nports ):
         if ( s.ports_state[i].out == s.PORT_STATE_PENDING ):
-          s.memresp.rdy.value &= s.resps[i].rdy
+          s.memresp.rdy.value = s.memresp.rdy & s.resps[i].rdy
+        else:
+          s.memresp.rdy.value = s.memresp.rdy & 1
 
     # Set resps
 
@@ -291,6 +299,7 @@ class MemCoalescer( Model ):
 
       for i in range( nports ):
         s.resps[i].val.value = s.memresp.val & \
+                               s.memresp.rdy & \
                                ( s.ports_state[i].out == s.PORT_STATE_PENDING )
 
         # hawajkm: PyMTL bug
@@ -299,4 +308,7 @@ class MemCoalescer( Model ):
         s.resps[i].msg.value    = s.tmp_resp
 
   def line_trace(s):
-    return ''
+    req_str   = '{' + '|'.join(map(str,s.reqs)) + '}'
+    resp_str  = '{' + '|'.join(map(str,s.resps)) + '}'
+
+    return req_str + ' ' + resp_str
