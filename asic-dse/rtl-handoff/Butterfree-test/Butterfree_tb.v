@@ -815,6 +815,52 @@ module top;
       th.display_trace();
       // $display("%x + %x + %x = %x", th.dut.proc.dpath.pc_plus_imm_D.in0, th.dut.proc.dpath.pc_plus_imm_D.in1,
       // th.dut.proc.dpath.pc_plus_imm_D.cin, th.dut.proc.dpath.pc_plus_imm_D.out);
+
+      // ctorng debug trace
+
+      // // L1 icache memreq
+      // if ( top.th.dut.dut.dut.icache.memreq_val & top.th.dut.dut.dut.icache.memreq_rdy ) begin
+      //   $display( "%d: icache memreq  : %h", total_cycles, top.th.dut.dut.dut.icache.dpath.memreq_addr );
+      // end
+      // if ( top.th.dut.dut.dut.icache.memresp_val & top.th.dut.dut.dut.icache.memresp_rdy ) begin
+      //   $display( "%d: icache memresp", total_cycles );
+      // end
+      // // L1 icache req
+      // if ( top.th.dut.dut.dut.icache.cachereq_val & top.th.dut.dut.dut.icache.cachereq_rdy ) begin
+      //   $display( "%d: icache req  : %h", total_cycles, top.th.dut.dut.dut.icache.dpath.cachereq_addr_reg$in_ );
+      // end
+      // if ( top.th.dut.dut.dut.icache.cacheresp_val & top.th.dut.dut.dut.icache.cacheresp_rdy ) begin
+      //   $display( "%d: icache resp", total_cycles );
+      // end
+      // // L0i cachereq
+      // if ( top.th.dut.dut.dut.l0i$000.memreq_val & top.th.dut.dut.dut.l0i$000.memreq_rdy ) begin
+      //   $display( "%d: L0i cachereq  : %h", total_cycles, top.th.dut.dut.dut.l0i$000.inner.dpath.memreq_msg[(164)-1:132] );
+      // end
+      // if ( top.th.dut.dut.dut.l0i$000.memresp_val & top.th.dut.dut.dut.l0i$000.memresp_rdy ) begin
+      //   $display( "%d: L0i cacheresp", total_cycles );
+      // end
+      // if ( top.th.dut.dut.dut.l0i$000.memreq_val ) begin
+      //   $display( "%d: L0i cachereq val: %h", total_cycles, top.th.dut.dut.dut.l0i$000.inner.dpath.memreq_msg[(164)-1:132] );
+      // end
+      // // L0i req
+      // if ( top.th.dut.dut.dut.l0i$000.buffreq_val & top.th.dut.dut.dut.l0i$000.buffreq_rdy ) begin
+      //   $display( "%d: L0i req  : %h", total_cycles, top.th.dut.dut.dut.l0i$000.inner.dpath.buffreq_addr_reg$in_ );
+      // end
+      // if ( top.th.dut.dut.dut.l0i$000.buffresp_val & top.th.dut.dut.dut.l0i$000.buffresp_rdy ) begin
+      //   $display( "%d: L0i resp", total_cycles );
+      // end
+      // // Proc
+      // if ( top.th.dut.dut.dut.proc$000.imemresp_val & top.th.dut.dut.dut.proc$000.imemresp_rdy ) begin
+      //   $display( "%d: proc0 imemresp", total_cycles );
+      // end
+      // if ( top.th.dut.dut.dut.proc$000.imemreq_val & top.th.dut.dut.dut.proc$000.imemreq_rdy ) begin
+      //   $display( "%d: proc0 imemreq  : %h", total_cycles, top.th.dut.dut.dut.proc$000.dpath.pc_sel_mux_F$out );
+      // end
+      // // Proc F
+      // if ( top.th.dut.dut.dut.proc$000.ctrl.val_F & ~top.th.dut.dut.dut.proc$000.ctrl.stall_F) begin
+      //   $display( "%d: proc0 F : %h", total_cycles, top.th.dut.dut.dut.proc$000.dpath.pc_F );
+      // end
+
     end
     $vcdplusoff;
     // Check that the simulation actually finished

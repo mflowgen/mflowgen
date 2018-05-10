@@ -10396,48 +10396,6 @@ endmodule // SramWrapper28nmPRTL_0x79c097bc28415054
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// sram_28nm_1024x32_SP
-//-----------------------------------------------------------------------------
-// num_bits: 32
-// num_words: 1024
-// module_name: sram_28nm_1024x32_SP
-// dump-vcd: False
-// verilator-xinit: zeros
-// This module is treated as a black box
-`default_nettype none
-module sram_28nm_1024x32_SP
-(
-  input  wire [   9:0] a,
-  output wire [   9:0] ay,
-  input  wire [   0:0] cen,
-  output wire [   0:0] ceny,
-  input  wire [   0:0] clk,
-  input  wire [  31:0] d,
-  input  wire [   0:0] dftrambyp,
-  input  wire [   2:0] ema,
-  input  wire [   0:0] emas,
-  input  wire [   1:0] emaw,
-  input  wire [   0:0] gwen,
-  output wire [   0:0] gweny,
-  output reg  [  31:0] q,
-  input  wire [   0:0] ret1n,
-  input  wire [   0:0] se,
-  input  wire [   1:0] si,
-  output wire [   1:0] so,
-  input  wire [   9:0] ta,
-  input  wire [   0:0] tcen,
-  input  wire [  31:0] td,
-  input  wire [   0:0] ten,
-  input  wire [   0:0] tgwen,
-  input  wire [  31:0] twen,
-  input  wire [  31:0] wen,
-  output wire [  31:0] weny
-);
-
-endmodule // sram_28nm_1024x32_SP
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
 // Mux_0xb6e139e9f208756
 //-----------------------------------------------------------------------------
 // nports: 2
@@ -10718,48 +10676,6 @@ module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 
 
 endmodule // SramWrapper28nmPRTL_0x6865ae273cdbc0f4
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// sram_28nm_1024x128_SP
-//-----------------------------------------------------------------------------
-// num_bits: 128
-// num_words: 1024
-// module_name: sram_28nm_1024x128_SP
-// dump-vcd: False
-// verilator-xinit: zeros
-// This module is treated as a black box
-`default_nettype none
-module sram_28nm_1024x128_SP
-(
-  input  wire [   9:0] a,
-  output wire [   9:0] ay,
-  input  wire [   0:0] cen,
-  output wire [   0:0] ceny,
-  input  wire [   0:0] clk,
-  input  wire [ 127:0] d,
-  input  wire [   0:0] dftrambyp,
-  input  wire [   2:0] ema,
-  input  wire [   0:0] emas,
-  input  wire [   1:0] emaw,
-  input  wire [   0:0] gwen,
-  output wire [   0:0] gweny,
-  output reg  [ 127:0] q,
-  input  wire [   0:0] ret1n,
-  input  wire [   0:0] se,
-  input  wire [   1:0] si,
-  output wire [   1:0] so,
-  input  wire [   9:0] ta,
-  input  wire [   0:0] tcen,
-  input  wire [ 127:0] td,
-  input  wire [   0:0] ten,
-  input  wire [   0:0] tgwen,
-  input  wire [ 127:0] twen,
-  input  wire [ 127:0] wen,
-  output wire [ 127:0] weny
-);
-
-endmodule // sram_28nm_1024x128_SP
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
