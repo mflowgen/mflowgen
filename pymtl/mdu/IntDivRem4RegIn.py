@@ -15,21 +15,19 @@ D_MUX_SEL_RSH = 1
 
 from ifcs import MduReqMsg, MduRespMsg
 
-class IntDivRem4Dpath( Model ):
+class IntDivRem4RegInDpath( Model ):
 
-  def __init__( s, nbits ):
+  def __init__( s, nbits, ntypes ):
     nbitsX2 = nbits * 2
 
-    s.req_msg_a      = InPort  (nbits)
-    s.req_msg_b      = InPort  (nbits)
-    s.req_msg_opaque = InPort  (3)
-    s.resp_result    = OutPort (nbits)
-    s.resp_opaque    = OutPort (3)
+    s.req_msg  = InPort( MduReqMsg(nbits, ntypes) )
+    s.resp_msg = OutPort( MduRespMsg(nbits) )
 
     # Status signals
 
     s.sub_negative1 = OutPort( 1 )
     s.sub_negative2 = OutPort( 1 )
+    s.req_type      = OutPort( clog2(ntypes) )
 
     # Control signals (ctrl -> dpath)
 
@@ -44,10 +42,25 @@ class IntDivRem4Dpath( Model ):
     s.is_signed         = InPort( 1 )
     s.is_div            = InPort( 1 )
     s.buffers_en        = InPort( 1 )
+    s.input_reg_en      = InPort( 1 )
 
     #---------------------------------------------------------------------
     # Struction composition
     #---------------------------------------------------------------------
+
+    s.req_msg_a      = Wire(nbits)
+    s.req_msg_b      = Wire(nbits)
+    s.req_msg_opaque = Wire(3)
+
+    s.input_reg = m = RegEn( MduReqMsg(nbits, ntypes) )
+    s.connect_pairs(
+      m.in_,        s.req_msg,
+      m.en,         s.input_reg_en,
+      m.out.type_,  s.req_type,
+      m.out.opaque, s.req_msg_opaque,
+      m.out.op_a,   s.req_msg_a,
+      m.out.op_b,   s.req_msg_b,
+    )
 
     s.a_negate = Wire( nbits )
     s.b_negate = Wire( nbits )
@@ -203,7 +216,7 @@ class IntDivRem4Dpath( Model ):
     s.connect_dict({
       m.en  : s.buffers_en,
       m.in_ : s.req_msg_opaque,
-      m.out : s.resp_opaque,
+      m.out : s.resp_msg.opaque,
     })
 
     # div/rem mux
@@ -213,7 +226,7 @@ class IntDivRem4Dpath( Model ):
       m.sel    : s.is_div_reg.out,
       m.in_[0] : s.res_rem_mux.out, # rem
       m.in_[1] : s.res_quo_mux.out,  # div
-      m.out    : s.resp_result, # Connect to output port
+      m.out    : s.resp_msg.result, # Connect to output port
     })
 
     #---------------------------------------------------------------------
@@ -260,7 +273,7 @@ class IntDivRem4Dpath( Model ):
       m.shamt, 1,
     )
 
-class IntDivRem4Ctrl( Model ):
+class IntDivRem4RegInCtrl( Model ):
 
   def __init__( s, nbits, ntypes ):
     s.req_val  = InPort  (1)
@@ -287,10 +300,12 @@ class IntDivRem4Ctrl( Model ):
     s.is_div            = OutPort( 1 )
     s.buffers_en        = OutPort( 1 )
     s.is_signed         = OutPort( 1 )
+    s.input_reg_en      = OutPort( 1 )
 
     s.STATE_IDLE = 0
     s.STATE_DONE = 1
     s.STATE_CALC = 1+nbits/2
+    s.STATE_WAIT = s.STATE_CALC + 1
 
     s.state = RegRst( 1+clog2(nbits/2), reset_value = s.STATE_IDLE )
 
@@ -303,7 +318,10 @@ class IntDivRem4Ctrl( Model ):
 
       if   curr_state == s.STATE_IDLE:
         if s.req_val:
-          s.state.in_.value = s.STATE_CALC
+          s.state.in_.value = s.STATE_WAIT
+
+      elif curr_state == s.STATE_WAIT: # Register input
+        s.state.in_.value = s.STATE_CALC
 
       elif curr_state == s.STATE_DONE:
         if s.resp_rdy:
@@ -323,10 +341,22 @@ class IntDivRem4Ctrl( Model ):
       s.buffers_en.value   = 0
       s.is_div.value       = 0
       s.is_signed.value    = 0
+      s.input_reg_en.value = 0
 
       if   curr_state == s.STATE_IDLE:
-        s.req_rdy.value     = 1
+        s.req_rdy.value = 1
 
+        s.remainder_mux_sel.value = R_MUX_SEL_IN
+        s.remainder_reg_en.value  = 0
+
+        s.quotient_mux_sel.value  = Q_MUX_SEL_0
+        s.quotient_reg_en.value   = 0
+
+        s.divisor_mux_sel.value   = D_MUX_SEL_IN
+
+        s.input_reg_en.value = 1
+
+      elif   curr_state == s.STATE_WAIT:
         s.remainder_mux_sel.value = R_MUX_SEL_IN
         s.remainder_reg_en.value  = 1
 
@@ -367,7 +397,7 @@ class IntDivRem4Ctrl( Model ):
 # Integer Divider with Radix of 4 (process 2 bits in 1 cycle)
 #=========================================================================
 
-class IntDivRem4( Model ):
+class IntDivRem4RegIn( Model ):
 
   # Constructor
 
@@ -380,22 +410,18 @@ class IntDivRem4( Model ):
 
     # Instantiate datapath and control
 
-    s.dpath = IntDivRem4Dpath( nbits )
-    s.ctrl  = IntDivRem4Ctrl( nbits, ntypes )
+    s.dpath = IntDivRem4RegInDpath( nbits, ntypes )
+    s.ctrl  = IntDivRem4RegInCtrl ( nbits, ntypes )
 
     # Connect input interface to dpath/ctrl
 
-    s.connect( s.req.msg.op_a,   s.dpath.req_msg_a      )
-    s.connect( s.req.msg.op_b,   s.dpath.req_msg_b      )
-    s.connect( s.req.msg.opaque, s.dpath.req_msg_opaque )
-    s.connect( s.req.msg.type_,  s.ctrl.req_type        )
-    s.connect( s.req.val,        s.ctrl.req_val  )
-    s.connect( s.req.rdy,        s.ctrl.req_rdy  )
+    s.connect( s.req.msg, s.dpath.req_msg )
+    s.connect( s.req.val, s.ctrl.req_val  )
+    s.connect( s.req.rdy, s.ctrl.req_rdy  )
 
     # Connect dpath/ctrl to output interface
 
-    s.connect( s.dpath.resp_result, s.resp.msg.result )
-    s.connect( s.dpath.resp_opaque, s.resp.msg.opaque )
+    s.connect( s.dpath.resp_msg, s.resp.msg )
     s.connect( s.ctrl.resp_val,  s.resp.val )
     s.connect( s.ctrl.resp_rdy,  s.resp.rdy )
 
