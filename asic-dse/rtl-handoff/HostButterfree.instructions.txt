@@ -26,3 +26,7 @@
 // 2. Rename the ports of the DUT to have "*_io" suffix (e.g., "clk_io")
 // 3. Remove any definitions of black box SRAMs
 //
+// Extra steps
+//
+// 1. Add directives to normal queues // synopsys sync_set_reset "reset"
+//

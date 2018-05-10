@@ -23,6 +23,14 @@ vcs_common_options += -full64 -sverilog +v2k +vc -notice -V
 vcs_common_options += +libext+.v
 vcs_common_options += +noportcoerce
 
+# Enable dumping waveforms
+
+vcs_common_options += -debug_pp
+
+# Dump info about how registers were initialized with +vcs+initreg
+
+export VCS_PRINT_INITREG_INITIALIZATION=1
+
 # Useful diagnostics
 #
 # - timescale : shows timescales for all modules to check for consistency
@@ -31,26 +39,32 @@ vcs_common_options += +noportcoerce
 vcs_common_options += -diag timescale
 vcs_common_options += -diag env
 
-# Enable dumping waveforms
+# Libconfig logs are useful to see what source code VCS is using for each
+# instance. The dump is large, so this can be turned off with
+# NO_LIBCONFIG=1 when running make. Highly recommend dumping this to a
+# file.
 
-vcs_common_options += -debug_pp
+ifndef NO_LIBCONFIG
+vcs_common_options += -diag libconfig
+endif
 
 # The timescale may need to be tweaked so that the timescales in all IP
 # verilog match and use consistent units for their "pound-delays"
 
 vcs_common_options += -timescale=1ns/1ps
 
-# Dump info about how registers were initialized with +vcs+initreg
+# Enable certain error-checking cases
+#
+# If there are problems with the verilog config, modules will be mapped to
+# the wrong verilog source definitions. They are warnings by default, but
+# they should be errors, so we enable errors for these cases here:
+#
+# - Warning-[CIRNU] Config instance rule not used
+#   Instance 'top.th.swshim.dut' may not exist in the scope of the sign
+#   for which the configuration was attempted.
+#
 
-export VCS_PRINT_INITREG_INITIALIZATION=1
-
-# Libconfig logs are useful to see what source code VCS is using for each
-# instance. The dump is large, so this can be turned on with LIBCONFIG=yes
-# when running make. Highly recommend dumping this to a file.
-
-ifdef LIBCONFIG
-vcs_common_options += -diag libconfig
-endif
+vcs_common_options += -error=CIRNU
 
 #-------------------------------------------------------------------------
 # Design-specific options

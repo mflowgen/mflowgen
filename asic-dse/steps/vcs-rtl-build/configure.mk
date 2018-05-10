@@ -58,11 +58,6 @@ vcs_rtl_compile_dir = $(handoff_dir.vcs-rtl-build)/csrc
 vcs_rtl_structural_options += -o $(vcs_rtl_build_simv)
 vcs_rtl_structural_options += -Mdir=$(vcs_rtl_compile_dir)
 
-# Library files -- Any collected verilog (e.g., SRAMs)
-
-vcs_rtl_structural_options += \
-	$(foreach f, $(wildcard $(collect_dir.sim-rtl-build)/*.v),-v $f)
-
 # Include directory -- Any collected includes are made available
 
 vcs_rtl_structural_options += +incdir+$(collect_dir.vcs-rtl-build)
@@ -85,6 +80,11 @@ vcs_rtl_custom_options += -v $(sim_dut_v)
 
 vcs_rtl_custom_options += -v $(adk_dir)/iocells.v
 
+# Library files -- SRAMs (magically reach into handoff dir)
+
+vcs_rtl_custom_options += \
+	$(foreach f, $(wildcard $(handoff_dir.gen-sram-verilog)/*.v),-v $f)
+
 # Performance options for RTL simulation
 
 vcs_rtl_custom_options += -rad
@@ -106,6 +106,19 @@ vcs_rtl_custom_options  += -libmap $(vcs_rtl_testing_library)
 
 vcs_rtl_design_library  = $(handoff_dir.vcs-rtl-build)/design.library
 vcs_rtl_custom_options += -libmap $(vcs_rtl_design_library)
+
+#-------------------------------------------------------------------------
+# Modeling options and X-handling
+#-------------------------------------------------------------------------
+
+# Use ARM fast-functional model of memory
+
+vcs_rtl_custom_options += +define+ARM_UD_MODEL
+
+#vcs_rtl_custom_options += +define+ARM_UD_CP=\#0
+#vcs_rtl_custom_options += +define+ARM_UD_DLY=\#0
+#vcs_rtl_custom_options += +define+ARM_UD_DP=\#0
+#vcs_rtl_custom_options += +define+ARM_UD_SEQ=\#0.001
 
 #-------------------------------------------------------------------------
 # Primary command target
