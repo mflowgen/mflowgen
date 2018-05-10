@@ -6,6 +6,7 @@ from pymtl import *
 
 # SRAMs Functional model
 from sram.SramSpHde28nmFuncPRTL import SramSpHde28nmFuncPRTL
+from sram.SramSpHsd28nmFuncPRTL import SramSpHsd28nmFuncPRTL
 from sram.  RfSpHde28nmFuncPRTL import   RfSpHde28nmFuncPRTL
 from sram.  RfSpHse28nmFuncPRTL import   RfSpHse28nmFuncPRTL
 
@@ -60,8 +61,8 @@ class SramWrapper28nmPRTL( Model ):
       sram_type  = 'rf_sp_hse'
 
     elif num_words >= 1024:
-      sram_model = SramSpHde28nmFuncPRTL
-      sram_type  = 'sram_sp_hse'
+      sram_model = SramSpHsd28nmFuncPRTL
+      sram_type  = 'sram_sp_hsd'
 
     else:
       raise ValueError
@@ -74,8 +75,8 @@ class SramWrapper28nmPRTL( Model ):
 
       # Force automatic module name generation if banking is to be
       # enforced or if module_name was not specified by parent module
-      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_bits  ,
-                                                 bank_num_words )
+      module_name = 'sram_28nm_{}x{}_SP'.format( bank_num_words ,
+                                                 bank_num_bits  )
 
     #------------------------------
     # Instantiating Memories
@@ -97,10 +98,11 @@ class SramWrapper28nmPRTL( Model ):
 
     # Wires
     s.ceny      = Wire(  1 )
-    s.weny      = Wire(  1 )
+    s.weny      = Wire( BW )
+    s.gweny     = Wire(  1 )
     s.ay        = Wire( AW )
     s.q         = Wire( BW )
-    s.so        = Wire(  3 )
+    s.so        = Wire(  2 )
     s.cen       = Wire(  1 )
     s.wen       = Wire( BW )
     s.a         = Wire( AW )
@@ -110,7 +112,7 @@ class SramWrapper28nmPRTL( Model ):
     s.emas      = Wire(  1 )
     s.ten       = Wire(  1 )
     s.tcen      = Wire(  1 )
-    s.twen      = Wire(  1 )
+    s.twen      = Wire( BW )
     s.ta        = Wire( AW )
     s.td        = Wire( BW )
     s.gwen      = Wire(  1 )
@@ -119,6 +121,7 @@ class SramWrapper28nmPRTL( Model ):
     s.si        = Wire(  2 )
     s.se        = Wire(  1 )
     s.dftrambyp = Wire(  1 )
+
 
     # Common connections
 
@@ -156,33 +159,67 @@ class SramWrapper28nmPRTL( Model ):
         )
 
         if hasattr(bank, 'emas'):
-          s.connect(bank.emas, 1)
+          s.connect(bank.emas, 0)
 
     # Only SRAMs
 
     if s.type_ == 'sram_sp_hde':
-      # Connect
-      s.connect_pairs (
+      for v in xrange(banking_ver):
+        for h in xrange(banking_hor):
 
-        # Outputs
-        s    .ceny      , s.mem.ceny      ,
-        s    .weny      , s.mem.weny      ,
-        s    .ay        , s.mem.ay        ,
-        s    .so        , s.mem.so        ,
+          # Specify bank
+          bank = s.mem[v][h]
 
-        # Test Constants
-        s.mem.ten       , 1               ,
-        s.mem.tcen      , 1               ,
-        s.mem.twen      , 1               ,
-        s.mem.tgwen     , 1               ,
-        s.mem.ta        , 0               ,
-        s.mem.td        , 0               ,
-        s.mem.si        , 0               ,
-        s.mem.se        , 0               ,
-        s.mem.dftrambyp , 0               ,
+          # Connect
+          s.connect_pairs (
 
-      )
+            # Outputs
+            #s     .ceny    , bank.ceny     ,
+            #s     .weny    , bank.weny     ,
+            #s     .ay      , bank.ay       ,
+            #s     .so      , bank.so       ,
 
+            # Test Constants
+            bank.ten       , 0                ,
+            bank.tcen      , 0                ,
+            bank.twen      , 0                ,
+            bank.tgwen     , 0                ,
+            bank.ta        , 0                ,
+            bank.td        , 0                ,
+            bank.si        , 0                ,
+            bank.se        , 0                ,
+            bank.dftrambyp , 0                ,
+
+          )
+
+    if s.type_ == 'sram_sp_hsd':
+      for v in xrange(banking_ver):
+        for h in xrange(banking_hor):
+
+          # Specify bank
+          bank = s.mem[v][h]
+
+          # Connect
+          s.connect_pairs (
+
+            # Outputs
+            s     .ceny      , bank.ceny        ,
+            s     .weny      , bank.weny        ,
+            s     .ay        , bank.ay          ,
+            s     .so        , bank.so          ,
+
+            # Test Constants
+            bank.ten         , 0                ,
+            bank.tcen        , 0                ,
+            bank.twen        , 0                ,
+            bank.tgwen       , 0                ,
+            bank.ta          , 0                ,
+            bank.td          , 0                ,
+            bank.si          , 0                ,
+            bank.se          , 0                ,
+            bank.dftrambyp   , 0                ,
+
+          )
 
     # Wrapping Logic
     @s.combinational

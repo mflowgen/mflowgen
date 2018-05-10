@@ -13,22 +13,55 @@ from ifcs import MemReqMsg16B, MemRespMsg16B
 from pclib.rtl     import RegisterFile, RegEnRst
 from DecodeWbenRTL import DecodeWbenRTL
 
-size           = 8192             # Cache size in bytes
+size           = 8192               # Cache size in bytes
 p_opaque_nbits = 8
 
 # local parameters not meant to be set from outside
 
-dbw            = 32              # Short name for data bitwidth
-abw            = 32              # Short name for addr bitwidth
-clw            = 128             # Short name for cacheline bitwidth
-nblocks        = size*8/clw      # Number of blocks in the cache
+dbw            = 32                 # Short name for data bitwidth
+abw            = 32                 # Short name for addr bitwidth
+byte_off       = clog2(dbw / 8)     # Byte Offset
+clw            = 128                # Short name for cacheline bitwidth
+nbytes         = clw / 8
+nbytes_bw      = clog2( nbytes )
+nblocks        = size*8/clw         # Number of blocks in the cache
 o              = p_opaque_nbits
-idw            = clog2(nblocks)-1  # Short name for index width
+idw            = clog2(nblocks)-1   # Short name for index width
+word_offset    = clog2(dbw)
+num_words      = clw / dbw          # Number of Words in a CL
+num_bytes      = clw / 8            # Number of Bytes in a CL
+word_off       = clog2( num_words ) # Word Offset
 idw_off        = idw+4
 
 class BlockingCacheCtrlPRTL( Model ):
-  def __init__( s, idx_shamt = 0, CacheReqType  = MemReqMsg4B  ,
-                                  CacheRespType = MemRespMsg4B ):
+  def __init__( s, idx_shamt   = 0                ,
+                   MemReqMsgType   = MemReqMsg16B , MemRespMsgType   = MemRespMsg16B ,
+                   CacheReqMsgType = MemReqMsg16B , CacheRespMsgType = MemRespMsg16B ):
+
+    #---------------------------------------------------------------------
+    # Get all needed parameters
+    #---------------------------------------------------------------------
+
+    # Actually get all datatypes and length from types
+    __cache_req  = CacheReqMsgType ()
+    __cache_resp = CacheRespMsgType()
+
+    c_type_bw    = __cache_req.type_ .nbits
+    c_addr_bw    = __cache_req.addr  .nbits
+    c_opaq_bw    = __cache_req.opaque.nbits
+    c_data_bw    = __cache_req.data  .nbits
+    c_data_Bw    = c_data_bw / 8
+    c_len_bw     = __cache_req.len   .nbits
+
+    __mem_req    = MemReqMsgType  ()
+    __mem_resp   = MemRespMsgType ()
+
+    m_type_bw    = __mem_req  .type_ .nbits
+    m_addr_bw    = __mem_req  .addr  .nbits
+    m_opaq_bw    = __mem_req  .opaque.nbits
+    m_data_bw    = __mem_req  .data  .nbits
+    m_data_Bw    = m_data_bw / 8
+    m_len_bw     = __mem_req  .len   .nbits
 
     #---------------------------------------------------------------------
     # Interface
@@ -61,6 +94,7 @@ class BlockingCacheCtrlPRTL( Model ):
     s.amo_max_sel        = OutPort( 1 )
     s.amo_maxu_sel       = OutPort( 1 )
     s.amo_sel            = OutPort( 4 )
+    s.is_amo             = OutPort( 1 )
     s.cachereq_en        = OutPort( 1 )
     s.memresp_en         = OutPort( 1 )
     s.is_refill          = OutPort( 1 )
@@ -79,19 +113,23 @@ class BlockingCacheCtrlPRTL( Model ):
     s.data_array_wben    = OutPort( clw/8 )
     s.read_data_reg_en   = OutPort( 1 )
     s.read_tag_reg_en    = OutPort( 1 )
-    s.read_word_sel      = OutPort( clog2(clw/dbw) )
+    s.byte_offset        = OutPort( clog2(clw/dbw) )
     s.memreq_type        = OutPort( 4 )
     s.cacheresp_type     = OutPort( 4 )
     s.cacheresp_hit      = OutPort( 1 )
 
     # status signals (dpath->ctrl)
 
-    s.cachereq_data_reg_out = InPort ( dbw )
-    s.read_word_sel_mux_out = InPort ( dbw )
-    s.cachereq_type         = InPort ( 4 )
-    s.cachereq_addr         = InPort ( abw )
-    s.tag_match_0           = InPort ( 1 )
-    s.tag_match_1           = InPort ( 1 )
+    s.cachereq_data_reg_out = InPort ( c_data_bw )
+    s.cachereq_len_reg_out  = InPort ( c_len_bw  )
+    s.cachereq_type         = InPort ( c_type_bw )
+    s.cachereq_addr         = InPort ( c_addr_bw )
+    s.tag_match_0           = InPort (     1     )
+    s.tag_match_1           = InPort (     1     )
+
+    # Special for AMOs
+    s.read_data_word        = InPort (    dbw    )
+    s.cachereq_data_word    = InPort (    dbw    )
 
     #----------------------------------------------------------------------
     # State Definitions
@@ -140,7 +178,6 @@ class BlockingCacheCtrlPRTL( Model ):
     s.is_read   = Wire( 1 )
     s.is_write  = Wire( 1 )
     s.is_init   = Wire( 1 )
-    s.is_amo    = Wire( 1 )
     s.read_hit  = Wire( 1 )
     s.write_hit = Wire( 1 )
     s.amo_hit   = Wire( 1 )
@@ -148,6 +185,16 @@ class BlockingCacheCtrlPRTL( Model ):
     s.miss_1    = Wire( 1 )
     s.refill    = Wire( 1 )
     s.evict     = Wire( 1 )
+
+    @s.combinational
+    def gen_ctrl_signals():
+      # Generate dirty bits
+      s.is_dirty_0.value = s.is_valid_0 & s.raw_dirty_bit_0
+      s.is_dirty_1.value = s.is_valid_1 & s.raw_dirty_bit_1
+
+      # LRU
+      s.lru_way   .value = ( s.is_valid_0 | s.is_valid_1 ) & \
+                             s.raw_lru_way
 
     @s.combinational
     def comb_state_transition():
@@ -159,7 +206,6 @@ class BlockingCacheCtrlPRTL( Model ):
       s.is_read.value   = s.cachereq_type == MemReqMsg.TYPE_READ
       s.is_write.value  = s.cachereq_type == MemReqMsg.TYPE_WRITE
       s.is_init.value   = s.cachereq_type == MemReqMsg.TYPE_WRITE_INIT
-      s.is_amo.value    = s.amo_sel != Bits( 4, 0 )
       s.read_hit.value  = s.is_read & s.hit
       s.write_hit.value = s.is_write & s.hit
       s.amo_hit.value   = s.is_amo & s.hit
@@ -176,11 +222,11 @@ class BlockingCacheCtrlPRTL( Model ):
 
     @s.combinational
     def comb_amo_min():
-      s.tmp_min.value = concat( s.cachereq_data_reg_out[dbw-1], s.cachereq_data_reg_out ) \
-                         - concat( s.read_word_sel_mux_out[dbw-1], s.read_word_sel_mux_out )
+      s.tmp_min.value = concat( s.cachereq_data_word[dbw-1], s.cachereq_data_word ) \
+                         - concat( s.read_data_word[dbw-1], s.read_data_word )
 
       s.amo_min_sel.value  = s.tmp_min[dbw]
-      s.amo_minu_sel.value = s.cachereq_data_reg_out < s.read_word_sel_mux_out
+      s.amo_minu_sel.value = s.cachereq_data_word < s.read_data_word
 
     # Choose amo max
 
@@ -191,19 +237,23 @@ class BlockingCacheCtrlPRTL( Model ):
 
     # Determine amo type
 
+    def cs_amo( amo_sel, is_amo ):
+      s.amo_sel.value = amo_sel
+      s.is_amo .value = is_amo
+
     @s.combinational
     def comb_amo_type():
       cachereq_type = s.cachereq_type
-      if   cachereq_type == MemReqMsg.TYPE_AMO_ADD  : s.amo_sel.value = Bits( 4, 1 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_AND  : s.amo_sel.value = Bits( 4, 2 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_OR   : s.amo_sel.value = Bits( 4, 3 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_SWAP : s.amo_sel.value = Bits( 4, 4 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MIN  : s.amo_sel.value = Bits( 4, 5 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MINU : s.amo_sel.value = Bits( 4, 6 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MAX  : s.amo_sel.value = Bits( 4, 7 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_MAXU : s.amo_sel.value = Bits( 4, 8 )
-      elif cachereq_type == MemReqMsg.TYPE_AMO_XOR  : s.amo_sel.value = Bits( 4, 9 )
-      else                                          : s.amo_sel.value = Bits( 4, 0 )
+      if   cachereq_type == MemReqMsg.TYPE_AMO_ADD  : s.amo_sel.value =  0; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_AND  : s.amo_sel.value =  1; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_OR   : s.amo_sel.value =  2; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_SWAP : s.amo_sel.value =  3; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MIN  : s.amo_sel.value =  4; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MINU : s.amo_sel.value =  5; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MAX  : s.amo_sel.value =  6; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_MAXU : s.amo_sel.value =  7; s.is_amo.value = 1;
+      elif cachereq_type == MemReqMsg.TYPE_AMO_XOR  : s.amo_sel.value =  8; s.is_amo.value = 1;
+      else                                          : s.amo_sel.value =  0; s.is_amo.value = 0;
 
     s.state_reg  = Wire( 5 )
     s.state_next = Wire( 5 )
@@ -360,7 +410,9 @@ class BlockingCacheCtrlPRTL( Model ):
     s.dirty_bits_write_en_0 = Wire( 1 )
     s.dirty_bits_write_en_1 = Wire( 1 )
     s.is_dirty_0            = Wire( 1 )
+    s.raw_dirty_bit_0       = Wire( 1 )
     s.is_dirty_1            = Wire( 1 )
+    s.raw_dirty_bit_1       = Wire( 1 )
 
     @s.combinational
     def comb_cachereq_idx():
@@ -370,7 +422,7 @@ class BlockingCacheCtrlPRTL( Model ):
     s.dirty_bits_0 = m = RegisterFile( Bits(1), nblocks/2, 1, 1, False)
     s.connect_pairs(
       m.rd_addr[0],  s.cachereq_idx,
-      m.rd_data[0],  s.is_dirty_0,
+      m.rd_data[0],  s.raw_dirty_bit_0,
       m.wr_en,       s.dirty_bits_write_en_0,
       m.wr_addr,     s.cachereq_idx,
       m.wr_data,     s.dirty_bit_in
@@ -379,7 +431,7 @@ class BlockingCacheCtrlPRTL( Model ):
     s.dirty_bits_1 = m = RegisterFile( Bits(1), nblocks/2, 1, 1, False)
     s.connect_pairs(
       m.rd_addr[0],  s.cachereq_idx,
-      m.rd_data[0],  s.is_dirty_1,
+      m.rd_data[0],  s.raw_dirty_bit_1,
       m.wr_en,       s.dirty_bits_write_en_1,
       m.wr_addr,     s.cachereq_idx,
       m.wr_data,     s.dirty_bit_in
@@ -388,11 +440,12 @@ class BlockingCacheCtrlPRTL( Model ):
     s.lru_bit_in            = Wire( 1 )
     s.lru_bits_write_en     = Wire( 1 )
     s.lru_way               = Wire( 1 )
+    s.raw_lru_way           = Wire( 1 )
 
     s.lru_bits     = m = RegisterFile( Bits(1), nblocks/2, 1, 1, False)
     s.connect_pairs(
       m.rd_addr[0],  s.cachereq_idx,
-      m.rd_data[0],  s.lru_way,
+      m.rd_data[0],  s.raw_lru_way,
       m.wr_en,       s.lru_bits_write_en,
       m.wr_addr,     s.cachereq_idx,
       m.wr_data,     s.lru_bit_in
@@ -606,24 +659,21 @@ class BlockingCacheCtrlPRTL( Model ):
     # This is in control because we want to facilitate more complex patterns
     #   when we want to start supporting subword accesses
 
-    s.cachereq_offset  = Wire (  2 )
-    s.wben_decoder_out = Wire ( 16 )
+    s.cachereq_offset  = Wire ( m_len_bw  )
+    s.wben_decoder_out = Wire ( m_data_Bw )
 
     @s.combinational
     def comb_cachereq_offset():
-      s.cachereq_offset.value = s.cachereq_addr[2:4]
+      s.cachereq_offset.value = s.cachereq_addr[0:m_len_bw]
 
-    s.wben_decoder = m = DecodeWbenRTL( 2 )
+    s.wben_decoder = m = DecodeWbenRTL( m_data_Bw, c_data_Bw )
     s.connect_pairs(
-      m.in_,  s.cachereq_offset,
-      m.out,  s.wben_decoder_out,
+      m.idx,  s.cachereq_offset     ,
+      m.len,  s.cachereq_len_reg_out,
+      m.out,  s.wben_decoder_out    ,
     )
 
     # Choose byte to read from cacheline based on what the offset was
-
-    @s.combinational
-    def comb_read_word_sel():
-      s.read_word_sel.value = s.cachereq_offset
 
     @s.combinational
     def comb_enable_writing():

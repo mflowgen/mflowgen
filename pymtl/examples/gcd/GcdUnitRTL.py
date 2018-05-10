@@ -207,6 +207,18 @@ class GcdUnitCtrlRTL (Model):
 
       current_state = s.state.out
 
+      # Avoid latches
+
+      s.do_swap.value   = 0
+      s.do_sub .value   = 0
+
+      s.req_rdy.value   = 0
+      s.resp_val.value  = 0
+      s.a_mux_sel.value = 0
+      s.a_reg_en.value  = 0
+      s.b_mux_sel.value = 0
+      s.b_reg_en.value  = 0
+
       # In IDLE state we simply wait for inputs to arrive and latch them
 
       if current_state == s.STATE_IDLE:

@@ -6,6 +6,20 @@
 
 steps = \
   info \
+  dc-synthesis \
+  innovus-flowsetup \
+  innovus-init \
+  innovus-place \
+  innovus-cts \
+  innovus-postctshold \
+  innovus-route \
+  innovus-postroute \
+  innovus-signoff \
+  calibre-seal \
+  calibre-drc-sealed \
+  calibre-fill \
+  calibre-drc-filled \
+  calibre-lvs \
   sim-prep \
   vcs-common-build \
   vcs-rtl-build \
@@ -18,17 +32,10 @@ steps = \
   vcs-aprsdf \
   vcs-aprsdfx-build \
   vcs-aprsdfx \
-  dc-synthesis \
-  innovus-flowsetup \
-  innovus-init \
-  innovus-place \
-  innovus-cts \
-  innovus-postctshold \
-  innovus-route \
-  innovus-postroute \
-  innovus-signoff
 
 # Step dependency graph
+
+dependencies.info                = seed
 
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
@@ -60,4 +67,13 @@ dependencies.vcs-aprsdf          = vcs-aprsdf-build
 
 dependencies.vcs-aprsdfx-build   = sim-prep
 dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
+
+# Calibre steps
+
+dependencies.calibre-seal        = innovus-signoff
+dependencies.calibre-drc-sealed  = calibre-seal
+dependencies.calibre-fill        = calibre-seal
+dependencies.calibre-drc-filled  = calibre-fill
+
+dependencies.calibre-lvs         = innovus-signoff calibre-seal
 

@@ -14,7 +14,7 @@ from pclib.test       import TestSource, TestSink
 from pclib.test.TestSynchronizer import TestSynchronizer, TestSynchInfo
 
 from proc.XcelMsg     import XcelReqMsg, XcelRespMsg
-from ifcs.MemMsg import MemReqMsg4B
+from ifcs import MemMsg4B
 from bloom.BloomFilterXcel import BloomFilterXcel
 
 # BRGTC2 custom TestMemory modified for RISC-V 32
@@ -25,7 +25,7 @@ from test import TestMemory
 # Constants
 #-------------------------------------------------------------------------
 
-SnoopMemMsg = MemReqMsg4B
+SnoopMemMsg = MemMsg4B
 # Initialize xcel just so that we can get the constants.
 x = BloomFilterXcel()
 
@@ -51,8 +51,8 @@ class TestHarness (Model):
 
     s.xcel_src  = TestSource( XcelReqMsg(),  xcel_src_msgs,  xcel_src_delay )
     s.xcel_src_synch = TestSynchronizer( XcelReqMsg(), 0, synch_info )
-    s.snoop_src = TestSource( SnoopMemMsg(), snoop_src_msgs, snoop_src_delay )
-    s.snoop_synch = TestSynchronizer( SnoopMemMsg(), 1, synch_info )
+    s.snoop_src = TestSource( SnoopMemMsg().req, snoop_src_msgs, snoop_src_delay )
+    s.snoop_synch = TestSynchronizer( SnoopMemMsg().req, 1, synch_info )
     s.xcel = BloomFilterXcel( snoop_mem_msg=SnoopMemMsg(), csr_begin=CSR_BEGIN )
     s.xcel_sink_synch = TestSynchronizer( XcelRespMsg(), 2, synch_info )
     s.xcel_sink = TestSink( XcelRespMsg(), xcel_sink_msgs, xcel_sink_delay )
@@ -109,10 +109,10 @@ def xcel_resp( type_, data ):
   return msg
 
 def snoop_req( type_, addr ):
-  msg = SnoopMemMsg()
+  msg = SnoopMemMsg().req()
 
-  if   type_ == 'r': msg.type_ = SnoopMemMsg.TYPE_READ
-  elif type_ == 'w': msg.type_ = SnoopMemMsg.TYPE_WRITE
+  if   type_ == 'r': msg.type_ = SnoopMemMsg().req.TYPE_READ
+  elif type_ == 'w': msg.type_ = SnoopMemMsg().req.TYPE_WRITE
 
   msg.addr  = addr
   return msg
@@ -440,7 +440,7 @@ def run_test( test_params, dump_vcd, test_verilog ):
     elif msg.nbits == XcelRespMsg().nbits:
       xcel_sink_msgs.append( msg )
       synch_table[-1][2][0] += 1
-    elif msg.nbits == SnoopMemMsg().nbits:
+    elif msg.nbits == SnoopMemMsg().req.nbits:
       snoop_src_msgs.append( msg )
       synch_table[-1][1][0] += 1
     else:

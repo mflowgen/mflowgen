@@ -62,4 +62,4 @@ class ValRdySplit( Model ):
 
   def line_trace( s ):
     p_nbits = s.in_.msg.nbits - s.channel.nbits
-    return "{}:{}".format( s.out_val.bin()[:2], s.in_.msg[ 0:p_nbits ] )
+    return "{}:{}".format( s.out_val.bin()[2:], s.in_.msg[ 0:p_nbits ] )

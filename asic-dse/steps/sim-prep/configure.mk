@@ -91,9 +91,7 @@ export ALLOY_ASIC_ROOT = $(base_dir)/..
 
 test_categories = \
   $(shell grep \: $(test_cases_yaml) 2>/dev/null | \
-          sed "s|\.py||" | \
-          sed "s|\:.*||" | \
-          sed "s|\w*/||" )
+          sed -r "s|.*/(\w+).py.*|\1|" )
 
 # Table of test cases in each category
 

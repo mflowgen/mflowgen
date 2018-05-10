@@ -66,6 +66,8 @@ define commands.innovus-signoff
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-signoff)
 	ln -srf $(innovus_handoffs_dir)/signoff.* $(handoff_dir.innovus-signoff)
+# Hand off results
+	ln -srf $(innovus_results_dir)/* $(handoff_dir.innovus-signoff)
 # Clean up
 	mv *.spef.gz $(innovus_results_dir)
 	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir)

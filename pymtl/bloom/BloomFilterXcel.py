@@ -11,14 +11,13 @@ from BloomFilter  import BloomFilterMsg, BloomFilterParallel
 
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
-#from ifcs import MemMsg4B
-from ifcs.MemMsg import MemReqMsg4B
+from ifcs import MemMsg4B
 
 class BloomFilterXcel( Model ):
 
   # Constructor
 
-  def __init__( s, snoop_mem_msg=MemReqMsg4B(), csr_begin=128,
+  def __init__( s, snoop_mem_msg=MemMsg4B(), csr_begin=128,
                 num_bits_exponent=8, num_hash_funs=3 ):
 
     # CSR offsets for accelerator registers
@@ -56,7 +55,7 @@ class BloomFilterXcel( Model ):
 
     # Interface
 
-    bloom_msg = BloomFilterMsg( snoop_mem_msg.addr.nbits )
+    bloom_msg = BloomFilterMsg( snoop_mem_msg.req.addr.nbits )
 
     # Processor ports
 
@@ -65,7 +64,8 @@ class BloomFilterXcel( Model ):
 
     # Snoop port for dcache requests
 
-    s.memreq_snoop    = InValRdyBundle ( snoop_mem_msg  )
+    s.memreq_snoop    = InValRdyBundle ( snoop_mem_msg.req  )
+    #s.memreq_snoop    = InValRdyBundle ( MemMsg4B().req  )
 
     # Queues
 
@@ -74,7 +74,7 @@ class BloomFilterXcel( Model ):
     # Note: we're using a 3-element queue to support some buffering when
     # there are streaming requests from the snoop port and we want to
     # check one value.
-    s.snoop_q = NormalQueue( 3, snoop_mem_msg.addr.nbits )
+    s.snoop_q = NormalQueue( 3, snoop_mem_msg.req.addr.nbits )
 
     # Accelerator registers
 
@@ -133,9 +133,9 @@ class BloomFilterXcel( Model ):
 
         # Filter out the memory requests based on the status we're in.
         if ( (s.status.out == s.STATUS_ENABLED_R and
-              s.memreq_snoop.msg.type_ == snoop_mem_msg.TYPE_READ) or
+              s.memreq_snoop.msg.type_ == snoop_mem_msg.req.TYPE_READ) or
              (s.status.out == s.STATUS_ENABLED_W and
-              s.memreq_snoop.msg.type_ != snoop_mem_msg.TYPE_READ) or
+              s.memreq_snoop.msg.type_ != snoop_mem_msg.req.TYPE_READ) or
              s.status.out == s.STATUS_ENABLED_RW ):
           s.snoop_q.enq.val.value = 1
           s.snoop_q.enq.msg.value = s.memreq_snoop.msg.addr
@@ -195,7 +195,6 @@ class BloomFilterXcel( Model ):
 
     # Direct connections for xcelreq/xcelresp
 
-    s.connect( s.snoop_q.enq.msg, s.memreq_snoop.msg.addr )
     s.connect( s.xcelreq, s.xcelreq_q.enq )
     s.connect( s.xcelreq_q.deq.msg.type_, s.xcelresp.msg.type_ )
     s.connect( s.xcelreq_q.deq.val,       s.xcelresp.val       )

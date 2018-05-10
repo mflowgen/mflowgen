@@ -116,9 +116,9 @@ class CtrlReg( Model ):
 
     cr_go           = 0                           # Go bit
     cr_debug        = 1                           # Debug bit
-    cr_instcounter  = 2                           # Base for instruction counter
-    cr_cyclecounter = cr_instcounter  + num_cores # Base for Cycle counter
-    cr_host_en      = cr_cyclecounter + num_cores # Base for Host Enable counter
+    cr_cyclecounter = 2                           # Cycle counter
+    cr_instcounter  = 3                           # Base for instruction counter
+    cr_host_en      = cr_instcounter + num_cores  # Base for Host Enable counter
 
     # Instantiate registers (16 registers)
 
@@ -182,15 +182,14 @@ class CtrlReg( Model ):
 
     # Control Register: Cycle counters
 
-    s.cyclecounters_en  = Wire             ( num_cores )
-    s.cyclecounters_in  = Wire[ num_cores ](    32     )
-    s.cyclecounters_out = Wire[ num_cores ](    32     )
+    s.cyclecounters_en  = Wire( 1 )
+    s.cyclecounters_in  = Wire( 32 )
+    s.cyclecounters_out = Wire( 32 )
 
     @s.combinational
     def comb_cr_cyclecounter_logic():
-      for core_idx in xrange(num_cores):
-        s.cyclecounters_en[core_idx].value = s.stats_en
-        s.cyclecounters_in[core_idx].value = s.cyclecounters_out[core_idx] + 1
+      s.cyclecounters_en.value = s.stats_en
+      s.cyclecounters_in.value = s.cyclecounters_out + 1
 
     # Host_en
 
@@ -206,9 +205,6 @@ class CtrlReg( Model ):
     # Instacounters
     cr_instcounter_l  = cr_instcounter
     cr_instcounter_h  = cr_instcounter  + num_cores
-
-    cr_cyclecounter_l = cr_cyclecounter
-    cr_cyclecounter_h = cr_cyclecounter + num_cores
 
     cr_host_en_l      = cr_host_en
     cr_host_en_h      = cr_host_en + valrdy_ifcs
@@ -237,20 +233,19 @@ class CtrlReg( Model ):
           s.debug             , s.ctrlregs   [ridx].out[0],
         )
 
+      elif ridx == cr_cyclecounter:
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cyclecounters_in,
+          s.ctrlregs[ridx].en , s.cyclecounters_en,
+          s.cyclecounters_out,  s.ctrlregs[ridx].out,
+        )
+
       elif ridx >= cr_instcounter_l and ridx < cr_instcounter_h:
         cidx = ridx - cr_instcounter
         s.connect_pairs(
           s.ctrlregs        [ridx].in_, s.instcounters_in[cidx]    ,
           s.ctrlregs        [ridx].en , s.instcounters_en[cidx]    ,
           s.instcounters_out[cidx]    , s.ctrlregs       [ridx].out,
-        )
-
-      elif ridx >= cr_cyclecounter_l and ridx < cr_cyclecounter_h:
-        cidx = ridx - cr_cyclecounter
-        s.connect_pairs(
-          s.ctrlregs         [ridx].in_, s.cyclecounters_in[cidx]    ,
-          s.ctrlregs         [ridx].en , s.cyclecounters_en[cidx]    ,
-          s.cyclecounters_out[cidx]    , s.ctrlregs        [ridx].out,
         )
 
       elif ridx >= cr_host_en_l and ridx < cr_host_en_h:
