@@ -30,7 +30,7 @@ abw            = 32                 # Short name for addr bitwidth
 byte_off       = clog2(dbw)         # Byte Offset
 clw            = 128                # Short name for cacheline bitwidth
 nblocks        = size*8/clw         # Number of blocks in the cache
-idw            = clog2(nblocks)     # Short name for index width
+idw            = clog2(nblocks) - 1 # Short name for index width
 idw_off        = idw+clog2(clw/8)
 num_words      = clw / dbw          # Number of Words in a CL
 num_bytes      = clw / 8            # Number of Bytes in a CL
@@ -368,7 +368,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.tag_array_0_read_out = Wire( abw )
 
     s.tag_array_0 = m = SramRTL( num_bits    =  32    ,
-                                 num_words   = 2048   ,
+                                 num_words   = 1024   ,
                                  tech_node   = '28nm' )
 
     s.connect_pairs(
@@ -385,7 +385,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.tag_array_1_read_out = Wire( abw )
 
     s.tag_array_1 = m = SramRTL( num_bits    =  32    ,
-                                 num_words   = 2048   ,
+                                 num_words   = 1024   ,
                                  tech_node   = '28nm' )
     s.connect_pairs(
       m.addr,  s.cur_cachereq_idx,
@@ -401,7 +401,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.data_array_0_read_out = Wire( clw )
 
     s.data_array_0 = m = SramRTL( num_bits    = 128    ,
-                                  num_words   = 2048   ,
+                                  num_words   = 1024   ,
                                   tech_node   = '28nm' )
 
     s.connect_pairs(
@@ -418,7 +418,7 @@ class BlockingCacheDpathPRTL( Model ):
     s.data_array_1_read_out = Wire( clw )
 
     s.data_array_1 = m = SramRTL( num_bits    = 128    ,
-                                  num_words   = 2048   ,
+                                  num_words   = 1024   ,
                                   tech_node   = '28nm' )
 
     s.connect_pairs(

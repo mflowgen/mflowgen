@@ -15,8 +15,6 @@ from pclib.rtl.queues import SingleElementBypassQueue
 from BlockingCacheCtrlPRTL  import BlockingCacheCtrlPRTL
 from BlockingCacheDpathPRTL import BlockingCacheDpathPRTL
 
-import copy
-
 # Note on num_banks:
 # In a multi-banked cache design, cache lines are interleaved to
 # different cache banks, so that consecutive cache lines correspond to a
