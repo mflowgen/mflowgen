@@ -12,15 +12,8 @@ from pclib.rtl  import RegRst, RegEnRst, RoundRobinArbiterEn, Mux, EqComparator
 
 class MemCoalescer( Model ):
 
-  def __init__( s, nports, MsgType ):
-
-    #---------------------------------------------------------------------
-    # Paremeters
-    #---------------------------------------------------------------------
-
-    addr_nbits    = 32
-    data_nbits    = 32
-    opaque_nbits  = 8
+  def __init__( s, nports, MsgType,
+                addr_nbits = 32, data_nbits = 32, opaque_nbits = 8 ):
 
     #---------------------------------------------------------------------
     # Requesters <-> MemCoalescer
