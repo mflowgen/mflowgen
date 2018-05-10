@@ -253,47 +253,47 @@ set sram_inset [expr $r_pitch * 4]
 
 # I$ SRAMs
 
-placeInstance dut/icache/dpath/tag_array_0/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 000.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
-
-placeInstance dut/icache/dpath/tag_array_1/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 060.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
-
 placeInstance dut/icache/dpath/data_array_0/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 120.0 ] \
-              [expr $core_lly + $sram_inset] \
+              [ expr $core_llx + $sram_inset + 000.0 ] \
+              [ expr $core_lly + $sram_inset ] \
               My
 
 placeInstance dut/icache/dpath/data_array_1/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 180.0 ] \
-              [expr $core_lly + $sram_inset] \
+              [ expr $core_llx + $sram_inset + 140.0 ] \
+              [ expr $core_lly + $sram_inset ] \
+              My
+
+placeInstance dut/icache/dpath/tag_array_0/sram/mem_000_000 \
+              [ expr $core_llx + $sram_inset + 280.0 ] \
+              [ expr $core_lly + $sram_inset ] \
+              My
+
+placeInstance dut/icache/dpath/tag_array_1/sram/mem_000_000 \
+              [ expr $core_llx + $sram_inset + 280.0 ] \
+              [ expr $core_lly + $sram_inset + 130.0 ] \
               My
 
 # D$ SRAMs
 
 placeInstance dut/dcache/dpath/tag_array_0/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 240.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
+              [ expr $core_llx + $sram_inset + 440.0 ] \
+              [ expr $core_lly + $sram_inset ] \
+              R0
 
 placeInstance dut/dcache/dpath/tag_array_1/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 300.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
+              [ expr $core_llx + $sram_inset + 440.0 ] \
+              [ expr $core_lly + $sram_inset + 130.0 ] \
+              R0
 
 placeInstance dut/dcache/dpath/data_array_0/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 360.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
+              [ expr $core_llx + $sram_inset + 580.0 ] \
+              [ expr $core_lly + $sram_inset ] \
+              R0
 
 placeInstance dut/dcache/dpath/data_array_1/sram/mem_000_000 \
-              [expr $core_llx + $sram_inset + 420.0 ] \
-              [expr $core_lly + $sram_inset] \
-              My
+              [ expr $core_llx + $sram_inset + 720.0 ] \
+              [ expr $core_lly + $sram_inset ] \
+              R0
 
 # Cut the stdcell rows around the SRAM
 
