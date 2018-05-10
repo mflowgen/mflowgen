@@ -787,7 +787,7 @@ module top;
 
     Butterfree_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 20000 ) begin
+    while ( !th_done && total_cycles < 200000 ) begin
       // $display("%d:",total_cycles);
       // $display("  L0i valid    : %b", th.dut.l0i.inner.dpath.valid_array.out);
       // $display("  L0i tag check: %x %x %d", th.dut.l0i.inner.dpath.tag_compare.in0,
@@ -821,7 +821,7 @@ module top;
 
     if ( !th_done ) begin
       $display( "" );
-      $display( "    [BRG] ERROR: Test did not finish in 20000 cycles." );
+      $display( "    [BRG] ERROR: Test did not finish in 200000 cycles." );
       $display( "" );
       $finish(1);
     end
