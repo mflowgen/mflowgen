@@ -391,7 +391,7 @@ class TestHarness( Model ):
 
 def run_test( model, msgs, num_cores, cacheline_nbits=128,
               dump_vcd=None, test_verilog=False, src_delay=0, sink_delay=0,
-              mem_stall_prob=0, mem_latency=0, max_cycles=200000,
+              mem_stall_prob=0, mem_latency=0, max_cycles=2000000,
               only_one_core=False ):
 
   assert isinstance( msgs, list )
