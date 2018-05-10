@@ -47,6 +47,10 @@ abbr.calibre-lvs = lvs
 calibre_lvs_gds = $(handoff_dir.calibre-seal)/unsealed.gds
 calibre_lvs_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 
+# Also pull in any extra files we need (e.g., SRAM cdl)
+
+calibre_lvs_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
+
 #-------------------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------------------
@@ -77,6 +81,7 @@ export calibre_lvs_reportfile     = $(calibre_lvs_rundir)/lvs.report
 
 calibre_lvs_spiceincfiles        += $(adk_dir)/stdcells.cdl
 calibre_lvs_spiceincfiles        += $(adk_dir)/iocells.spi
+calibre_lvs_spiceincfiles        += $(calibre_lvs_extras)
 
 export calibre_lvs_spiceincfiles
 

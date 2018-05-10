@@ -81,10 +81,10 @@ dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
 
 # Calibre steps
 
-dependencies.calibre-seal        = innovus-signoff
+dependencies.calibre-seal        = innovus-signoff gen-sram-gds
 dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-fill        = calibre-seal
 dependencies.calibre-drc-filled  = calibre-fill
 
-dependencies.calibre-lvs         = innovus-signoff calibre-seal
+dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
 

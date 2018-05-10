@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DESIGN_NAME=${design_name}
+DESIGN_NAME=Butterfree
 
 CURRENT_FOLDER=$(pwd)
 
@@ -21,7 +21,7 @@ echo "begin"              >> temp_dispatch.v
 flag=0
 
 while read p; do # execute test one by one
-  py.test ../CompButterfree/test/Butterfree_* -k $p -v
+  py.test ../CompButterfree/test/${DESIGN_NAME}_* -k $p -v
 
   # add the case to the test case
   echo "task "$p";"        >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
