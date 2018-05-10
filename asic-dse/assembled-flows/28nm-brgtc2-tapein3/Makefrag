@@ -42,7 +42,7 @@ design_v           = rtl-handoff/HostButterfree_blackbox.v
 
 # For simulation
 
-pytest_target_str  = ../pymtl/CompButterfree/test/Host*
+pytest_target_str  = ../pymtl/CompButterfree/test/Butterfree_test*
 testing_files      = rtl-handoff/Butterfree-test/Butterfree_tb.v
 testing_files     += rtl-handoff/HostButterfree.swshim.v
 

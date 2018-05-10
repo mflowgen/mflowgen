@@ -21,7 +21,7 @@ echo "begin"              >> temp_dispatch.v
 flag=0
 
 while read p; do # execute test one by one
-  py.test ../CompButterfree/test/${DESIGN_NAME}_* -k $p -v
+  py.test ../CompButterfree/test/${DESIGN_NAME}_test.py -k $p -v
 
   # add the case to the test case
 
