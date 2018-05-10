@@ -103,7 +103,7 @@ class HostButterfree( Model ):
         dtype._instantiate = msg.dtype._instantiate
 
       width = s.dut_in_msg[ _ ].nbits
-      queue = NormalQueue( 10, dtype )
+      queue = NormalQueue( 16, dtype )
       s.in_q.append( queue )
       # s.q_ct.append( 0 )
       s.connect( m.out[ _ ].msg[ 0:width ], queue.enq.msg )
