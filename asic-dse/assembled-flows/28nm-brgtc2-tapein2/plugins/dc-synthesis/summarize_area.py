@@ -14,9 +14,25 @@ from glob import glob
 
 report_path = 'reports/dc-synthesis/*.mapped.area.rpt'
 
-# Normalize numbers to the area of this instance
+# Normalize results to the total area of this group
 
-normalization_instance = 'dut'
+normalization_group = [
+  'dut',
+  'in_deserialize',
+  'in_split',
+  'in_q_000',
+  'in_q_001',
+  'in_q_002',
+  'in_q_003',
+  'in_q_004',
+  'in_q_005',
+  'in_q_006',
+  'in_q_007',
+  'in_q_008',
+  'in_q_009',
+  'out_merge',
+  'out_serialize',
+]
 
 # List of instances to grab from DC area report
 
@@ -102,11 +118,29 @@ instances = [
 groups = {
 
   'top': [
-     'HostButterfree',
+    'HostButterfree',
     ],
 
   'design': [
-     'dut',
+    'dut',
+    'in_deserialize',
+    'in_split',
+    'in_q_000',
+    'in_q_001',
+    'in_q_002',
+    'in_q_003',
+    'in_q_004',
+    'in_q_005',
+    'in_q_006',
+    'in_q_007',
+    'in_q_008',
+    'in_q_009',
+    'out_merge',
+    'out_serialize',
+    ],
+
+  'design-nohost': [
+    'dut',
     ],
 
   'ctrlreg': [
@@ -202,11 +236,15 @@ lines = [ { 'inst'   : l[0],
 
 # Add an extra column for percentage area of normalization instance
 
-core_area = \
-  filter( lambda l: l['inst'] == normalization_instance, lines )[0]['area']
+normalization_instance_areas = \
+  [ filter( lambda l: l['inst'] == inst, lines )[0]['area'] \
+      for inst in normalization_group ]
+
+normalizer_area = \
+  reduce( lambda a, b: float(a) + float(b), normalization_instance_areas )
 
 for l in lines:
-  l['pc_area'] = float(l['area']) / float(core_area) * 100
+  l['pc_area'] = float(l['area']) / float(normalizer_area) * 100
 
 # Create summary data by aggregating all data within each group into a
 # single area number per group
@@ -230,7 +268,7 @@ for group, instlist in groups.iteritems():
 # Print the detailed header
 
 print '='*74
-print 'Detailed Area Breakdown'
+print 'Detailed Area Breakdown -- DC Synthesis'
 print '='*74
 print
 
@@ -272,7 +310,7 @@ sorted_summary_data = sorted( summary_data,
 # Print the summary header
 
 print '='*74
-print 'Area Summary'
+print 'Area Summary -- DC Synthesis'
 print '='*74
 print
 
