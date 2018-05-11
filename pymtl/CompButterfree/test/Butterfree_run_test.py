@@ -84,8 +84,9 @@ def run_test( test, dump_vcd, test_verilog,
         # For all other sections, simply copy them into the memory
 
         else:
+          base_addr = section.addr
           for j in xrange(len(section.data)):
-            f.write( "  load_mem( %d, 8'h%s );\n" % (j, Bits(8,section.data[j])) );
+            f.write( "  load_mem( %d, 8'h%s );\n" % (j + base_addr, Bits(8,section.data[j])) );
 
     if test[2]:
       # dump mdumsg
