@@ -40,11 +40,10 @@ vcs_common_options += -diag timescale
 vcs_common_options += -diag env
 
 # Libconfig logs are useful to see what source code VCS is using for each
-# instance. The dump is large, so this can be turned off with
-# NO_LIBCONFIG=1 when running make. Highly recommend dumping this to a
-# file.
+# instance. The dump is large, so this can be turned on with LIBCONFIG=yes
+# when running make. Highly recommend dumping this to a file.
 
-ifndef NO_LIBCONFIG
+ifdef LIBCONFIG
 vcs_common_options += -diag libconfig
 endif
 
