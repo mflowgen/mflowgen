@@ -154,7 +154,7 @@ class SramWrapper28nmPRTL( Model ):
            bank.emaw      , 1               ,
 
           # Test Constants
-           bank.ret1n     , 0               ,
+           bank.ret1n     , 1               ,
 
         )
 
@@ -180,7 +180,7 @@ class SramWrapper28nmPRTL( Model ):
             #s     .so      , bank.so       ,
 
             # Test Constants
-            bank.ten       , 0                ,
+            bank.ten       , 1                ,
             bank.tcen      , 0                ,
             bank.twen      , 0                ,
             bank.tgwen     , 0                ,
@@ -209,7 +209,7 @@ class SramWrapper28nmPRTL( Model ):
             s     .so        , bank.so          ,
 
             # Test Constants
-            bank.ten         , 0                ,
+            bank.ten         , 1                ,
             bank.tcen        , 0                ,
             bank.twen        , 0                ,
             bank.tgwen       , 0                ,
