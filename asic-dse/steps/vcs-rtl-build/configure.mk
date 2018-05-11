@@ -82,8 +82,8 @@ vcs_rtl_custom_options += -v $(adk_dir)/iocells.v
 
 # Library files -- SRAMs (magically reach into handoff dir)
 
-vcs_rtl_custom_options += \
-	$(foreach f, $(wildcard $(handoff_dir.gen-sram-verilog)/*.v),-v $f)
+vcs_rtl_srams = $(wildcard $(PWD)/$(handoff_dir.gen-sram-verilog)/*.v)
+vcs_rtl_custom_options += $(foreach f, $(vcs_rtl_srams),-v $f)
 
 # Performance options for RTL simulation
 

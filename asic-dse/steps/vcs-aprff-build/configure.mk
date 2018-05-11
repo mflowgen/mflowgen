@@ -76,7 +76,7 @@ vcs_aprff_structural_options += -bfl $(logs_dir.vcs-aprff-build)/vcs_filelist
 # Gate-level model (magically reach into innovus results dir)
 
 vcs_aprff_gl_model        = $(wildcard $(innovus_results_dir)/*.vcs.v)
-vcs_aprff_custom_options += $(vcs_aprff_gl_model)
+vcs_aprff_custom_options += -v $(vcs_aprff_gl_model)
 
 # Library files -- IO cells and stdcells
 
@@ -85,8 +85,8 @@ vcs_aprff_custom_options += -v $(adk_dir)/stdcells.v
 
 # Library files -- SRAMs (magically reach into handoff dir)
 
-vcs_aprff_custom_options += \
-	$(foreach f, $(wildcard $(handoff_dir.gen-sram-verilog)/*.v),-v $f)
+vcs_aprff_srams = $(wildcard $(PWD)/$(handoff_dir.gen-sram-verilog)/*.v)
+vcs_aprff_custom_options += $(foreach f, $(vcs_aprff_srams),-v $f)
 
 # Performance options for post-APR FF simulation
 
