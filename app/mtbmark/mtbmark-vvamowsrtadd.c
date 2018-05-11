@@ -51,7 +51,8 @@ void vvadd_mt( void* arg_vptr, void* null_ptr )
     wsrt::TaskDescriptor task14(&vvadd_mt, &arg13 );
     wsrt::TaskDescriptor task13(&vvadd_mt, &arg12 );
     tg1.run( task13 );
-    tg1.run_and_wait( task14 );
+    tg1.run( task14 );
+    tg1.wait();
   }
   if (begin == 79 ) {
     arg_t arg8 = { dest, src0, src1,   60,           72 };
@@ -60,7 +61,8 @@ void vvadd_mt( void* arg_vptr, void* null_ptr )
     wsrt::TaskDescriptor task9(&vvadd_mt, &arg8 );
     wsrt::TaskDescriptor task10(&vvadd_mt, &arg9 );
     tg2.run( task9 );
-    tg2.run_and_wait( task10 );
+    tg2.run( task10 );
+    tg2.wait();
   }
   // Do the actual work.
 

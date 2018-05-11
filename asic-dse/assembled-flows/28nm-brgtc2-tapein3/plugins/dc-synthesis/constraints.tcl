@@ -92,3 +92,17 @@ report_attribute -port        > reports/dc-synthesis/ports.attributes.rpt
 report_clock -groups -nosplit       > reports/dc-synthesis/clocks.rpt
 report_clock -groups -nosplit -skew > reports/dc-synthesis/clocks.skew.rpt
 
+#-------------------------------------------------------------------------
+# Register retiming
+#-------------------------------------------------------------------------
+
+# Retime the multiplier
+
+set_optimize_registers true \
+                       -design IntMulPipelined_2Stage \
+                       -clock $core_clk_name \
+                       -delay_threshold $core_clk_period \
+                       -check_design \
+                       -verbose \
+                       -print_critical_loop
+

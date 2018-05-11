@@ -27,8 +27,8 @@
 # Author : Christopher Torng
 #
 
-template_file = 'HostButterfree.save.io.template'
-output_file   = 'HostButterfree.save.io'
+template_file = 'HostChansey.save.io.template'
+output_file   = 'HostChansey.save.io'
 
 #-------------------------------------------------------------------------
 # Mappings

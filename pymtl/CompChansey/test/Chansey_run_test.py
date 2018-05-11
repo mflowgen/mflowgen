@@ -1,12 +1,12 @@
 #=========================================================================
-# Butterfree_run_test
+# Chansey_run_test
 #=========================================================================
 # Includes the run_test needed by the composition
 
 from pymtl import *
 
 # Import designs
-from CompButterfree.Butterfree import Butterfree
+from CompChansey.Chansey import Chansey
 
 #=========================================================================
 # run_test
@@ -20,15 +20,15 @@ def run_test( test, dump_vcd, test_verilog,
   num_cores       = 4
   cacheline_nbits = 128
 
-  from Butterfree_harness import run_test as run
+  from Chansey_harness import run_test as run
 
-  with open("Butterfree_testcase_init.v", "w") as f:
+  with open("Chansey_testcase_init.v", "w") as f:
     f.write( "  th_src_max_delay  = {};\n".format( src_delay ) )
     f.write( "  th_sink_max_delay = {};\n".format( sink_delay ) )
     f.write( "  th_mem_max_delay  = {};\n".format( mem_latency ) )
 
     if test[0]:
-      from Butterfree_harness import ctrlreg_msgs
+      from Chansey_harness import ctrlreg_msgs
       # dump ctrlreg msg
 
       msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ test[0] ]
@@ -97,6 +97,6 @@ def run_test( test, dump_vcd, test_verilog,
 
     # TODO test[3] and [4] for icache/dcache
 
-  run( Butterfree( num_cores ), test, num_cores, cacheline_nbits,
+  run( Chansey( num_cores ), test, num_cores, cacheline_nbits,
        dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
        mem_latency, only_one_core=only_one_core )

@@ -4960,7 +4960,7 @@ module Butterfree
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x78b36cc30b50888d xcel$000
+  BloomFilterXcel_0x34da69f726c3baf3 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -4988,7 +4988,7 @@ module Butterfree
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x78b36cc30b50888d xcel$001
+  BloomFilterXcel_0x34da69f726c3baf3 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -5016,7 +5016,7 @@ module Butterfree
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x78b36cc30b50888d xcel$002
+  BloomFilterXcel_0x34da69f726c3baf3 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -5044,7 +5044,7 @@ module Butterfree
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x78b36cc30b50888d xcel$003
+  BloomFilterXcel_0x34da69f726c3baf3 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5582,8 +5582,8 @@ endmodule // Butterfree
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7ffa094fc690>
-// req: <pymtl.model.signals.InPort object at 0x7ffa094fc3d0>
+// resp: <pymtl.model.signals.OutPort object at 0x7fb5bb426610>
+// req: <pymtl.model.signals.InPort object at 0x7fb5bb426350>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -10341,13 +10341,13 @@ module SramWrapper28nmPRTL_0x79c097bc28415054
   assign mem$000$000$emaw      = 2'd1;
   assign mem$000$000$gwen      = gwen;
   assign mem$000$000$reset     = reset;
-  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$ret1n     = 1'd1;
   assign mem$000$000$se        = 1'd0;
   assign mem$000$000$si        = 2'd0;
   assign mem$000$000$ta        = 10'd0;
   assign mem$000$000$tcen      = 1'd0;
   assign mem$000$000$td        = 32'd0;
-  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$ten       = 1'd1;
   assign mem$000$000$tgwen     = 1'd0;
   assign mem$000$000$twen      = 32'd0;
   assign mem$000$000$wen       = wen[31:0];
@@ -10393,48 +10393,6 @@ module SramWrapper28nmPRTL_0x79c097bc28415054
 
 
 endmodule // SramWrapper28nmPRTL_0x79c097bc28415054
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// sram_28nm_1024x32_SP
-//-----------------------------------------------------------------------------
-// num_bits: 32
-// num_words: 1024
-// module_name: sram_28nm_1024x32_SP
-// dump-vcd: False
-// verilator-xinit: zeros
-// This module is treated as a black box
-`default_nettype none
-module sram_28nm_1024x32_SP
-(
-  input  wire [   9:0] a,
-  output wire [   9:0] ay,
-  input  wire [   0:0] cen,
-  output wire [   0:0] ceny,
-  input  wire [   0:0] clk,
-  input  wire [  31:0] d,
-  input  wire [   0:0] dftrambyp,
-  input  wire [   2:0] ema,
-  input  wire [   0:0] emas,
-  input  wire [   1:0] emaw,
-  input  wire [   0:0] gwen,
-  output wire [   0:0] gweny,
-  output reg  [  31:0] q,
-  input  wire [   0:0] ret1n,
-  input  wire [   0:0] se,
-  input  wire [   1:0] si,
-  output wire [   1:0] so,
-  input  wire [   9:0] ta,
-  input  wire [   0:0] tcen,
-  input  wire [  31:0] td,
-  input  wire [   0:0] ten,
-  input  wire [   0:0] tgwen,
-  input  wire [  31:0] twen,
-  input  wire [  31:0] wen,
-  output wire [  31:0] weny
-);
-
-endmodule // sram_28nm_1024x32_SP
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -10666,13 +10624,13 @@ module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
   assign mem$000$000$emaw      = 2'd1;
   assign mem$000$000$gwen      = gwen;
   assign mem$000$000$reset     = reset;
-  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$ret1n     = 1'd1;
   assign mem$000$000$se        = 1'd0;
   assign mem$000$000$si        = 2'd0;
   assign mem$000$000$ta        = 10'd0;
   assign mem$000$000$tcen      = 1'd0;
   assign mem$000$000$td        = 128'd0;
-  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$ten       = 1'd1;
   assign mem$000$000$tgwen     = 1'd0;
   assign mem$000$000$twen      = 128'd0;
   assign mem$000$000$wen       = wen[127:0];
@@ -10718,48 +10676,6 @@ module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 
 
 endmodule // SramWrapper28nmPRTL_0x6865ae273cdbc0f4
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// sram_28nm_1024x128_SP
-//-----------------------------------------------------------------------------
-// num_bits: 128
-// num_words: 1024
-// module_name: sram_28nm_1024x128_SP
-// dump-vcd: False
-// verilator-xinit: zeros
-// This module is treated as a black box
-`default_nettype none
-module sram_28nm_1024x128_SP
-(
-  input  wire [   9:0] a,
-  output wire [   9:0] ay,
-  input  wire [   0:0] cen,
-  output wire [   0:0] ceny,
-  input  wire [   0:0] clk,
-  input  wire [ 127:0] d,
-  input  wire [   0:0] dftrambyp,
-  input  wire [   2:0] ema,
-  input  wire [   0:0] emas,
-  input  wire [   1:0] emaw,
-  input  wire [   0:0] gwen,
-  output wire [   0:0] gweny,
-  output reg  [ 127:0] q,
-  input  wire [   0:0] ret1n,
-  input  wire [   0:0] se,
-  input  wire [   1:0] si,
-  output wire [   1:0] so,
-  input  wire [   9:0] ta,
-  input  wire [   0:0] tcen,
-  input  wire [ 127:0] td,
-  input  wire [   0:0] ten,
-  input  wire [   0:0] tgwen,
-  input  wire [ 127:0] twen,
-  input  wire [ 127:0] wen,
-  output wire [ 127:0] weny
-);
-
-endmodule // sram_28nm_1024x128_SP
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -12423,7 +12339,7 @@ module IntMulDivUnit
   wire   [   0:0] imul$resp_val;
   wire   [   0:0] imul$req_rdy;
 
-  IntMulScycle imul
+  IntMulPipelined_2Stage imul
   (
     .resp_rdy ( imul$resp_rdy ),
     .clk      ( imul$clk ),
@@ -12443,7 +12359,7 @@ module IntMulDivUnit
   wire   [   0:0] idiv$resp_val;
   wire   [   0:0] idiv$req_rdy;
 
-  IntDivRem4_0x18c371d1cf60a588 idiv
+  IntDivRem4RegIn_0x59e69d2f49a6706a idiv
   (
     .resp_rdy ( idiv$resp_rdy ),
     .clk      ( idiv$clk ),
@@ -12545,14 +12461,15 @@ endmodule // IntMulDivUnit
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// IntMulScycle
+// IntMulPipelined_2Stage
 //-----------------------------------------------------------------------------
 // nbits: 32
 // ntypes: 8
+// nstages: 2
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module IntMulScycle
+module IntMulPipelined_2Stage
 (
   input  wire [   0:0] clk,
   input  wire [  69:0] req_msg,
@@ -12583,6 +12500,22 @@ module IntMulScycle
   localparam nbits = 32;
   localparam nbitsx2 = 64;
 
+  // regs_resp_val$000 temporaries
+  wire   [   0:0] regs_resp_val$000$reset;
+  wire   [   0:0] regs_resp_val$000$en;
+  wire   [   0:0] regs_resp_val$000$clk;
+  wire   [   0:0] regs_resp_val$000$in_;
+  wire   [   0:0] regs_resp_val$000$out;
+
+  RegEnRst_0x2ce052f8c32c5c39 regs_resp_val$000
+  (
+    .reset ( regs_resp_val$000$reset ),
+    .en    ( regs_resp_val$000$en ),
+    .clk   ( regs_resp_val$000$clk ),
+    .in_   ( regs_resp_val$000$in_ ),
+    .out   ( regs_resp_val$000$out )
+  );
+
   // reg_req_val temporaries
   wire   [   0:0] reg_req_val$reset;
   wire   [   0:0] reg_req_val$en;
@@ -12597,6 +12530,22 @@ module IntMulScycle
     .clk   ( reg_req_val$clk ),
     .in_   ( reg_req_val$in_ ),
     .out   ( reg_req_val$out )
+  );
+
+  // regs_resp_msg$000 temporaries
+  wire   [   0:0] regs_resp_msg$000$reset;
+  wire   [  34:0] regs_resp_msg$000$in_;
+  wire   [   0:0] regs_resp_msg$000$clk;
+  wire   [   0:0] regs_resp_msg$000$en;
+  wire   [  34:0] regs_resp_msg$000$out;
+
+  RegEn_0x48bd4b6ec5ffe974 regs_resp_msg$000
+  (
+    .reset ( regs_resp_msg$000$reset ),
+    .in_   ( regs_resp_msg$000$in_ ),
+    .clk   ( regs_resp_msg$000$clk ),
+    .en    ( regs_resp_msg$000$en ),
+    .out   ( regs_resp_msg$000$out )
   );
 
   // reg_req_msg temporaries
@@ -12640,26 +12589,34 @@ module IntMulScycle
   );
 
   // signal connections
-  assign opa                   = reg_req_msg$out[63:32];
-  assign opb                   = reg_req_msg$out[31:0];
-  assign reg_req_msg$clk       = clk;
-  assign reg_req_msg$en        = resp_q$enq_rdy;
-  assign reg_req_msg$in_       = req_msg;
-  assign reg_req_msg$reset     = reset;
-  assign reg_req_val$clk       = clk;
-  assign reg_req_val$en        = resp_q$enq_rdy;
-  assign reg_req_val$in_       = req_val;
-  assign reg_req_val$reset     = reset;
-  assign req_rdy               = resp_q$enq_rdy;
-  assign resp_msg              = resp_q$deq_msg;
-  assign resp_q$clk            = clk;
-  assign resp_q$deq_rdy        = resp_rdy;
-  assign resp_q$enq_msg[31:0]  = resp_result;
-  assign resp_q$enq_msg[34:32] = reg_req_msg$out[66:64];
-  assign resp_q$enq_val        = reg_req_val$out;
-  assign resp_q$reset          = reset;
-  assign resp_val              = resp_q$deq_val;
-  assign typ                   = reg_req_msg$out[69:67];
+  assign opa                          = reg_req_msg$out[63:32];
+  assign opb                          = reg_req_msg$out[31:0];
+  assign reg_req_msg$clk              = clk;
+  assign reg_req_msg$en               = resp_q$enq_rdy;
+  assign reg_req_msg$in_              = req_msg;
+  assign reg_req_msg$reset            = reset;
+  assign reg_req_val$clk              = clk;
+  assign reg_req_val$en               = resp_q$enq_rdy;
+  assign reg_req_val$in_              = req_val;
+  assign reg_req_val$reset            = reset;
+  assign regs_resp_msg$000$clk        = clk;
+  assign regs_resp_msg$000$en         = resp_q$enq_rdy;
+  assign regs_resp_msg$000$in_[31:0]  = resp_result;
+  assign regs_resp_msg$000$in_[34:32] = reg_req_msg$out[66:64];
+  assign regs_resp_msg$000$reset      = reset;
+  assign regs_resp_val$000$clk        = clk;
+  assign regs_resp_val$000$en         = resp_q$enq_rdy;
+  assign regs_resp_val$000$in_        = reg_req_val$out;
+  assign regs_resp_val$000$reset      = reset;
+  assign req_rdy                      = resp_q$enq_rdy;
+  assign resp_msg                     = resp_q$deq_msg;
+  assign resp_q$clk                   = clk;
+  assign resp_q$deq_rdy               = resp_rdy;
+  assign resp_q$enq_msg               = regs_resp_msg$000$out;
+  assign resp_q$enq_val               = regs_resp_val$000$out;
+  assign resp_q$reset                 = reset;
+  assign resp_val                     = resp_q$deq_val;
+  assign typ                          = reg_req_msg$out[69:67];
 
 
   // PYMTL SOURCE:
@@ -12733,7 +12690,45 @@ module IntMulScycle
   end
 
 
-endmodule // IntMulScycle
+endmodule // IntMulPipelined_2Stage
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x48bd4b6ec5ffe974
+//-----------------------------------------------------------------------------
+// dtype: 35
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x48bd4b6ec5ffe974
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  34:0] in_,
+  output reg  [  34:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x48bd4b6ec5ffe974
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -12968,52 +12963,14 @@ endmodule // Mux_0xefbd361882188ff
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegEn_0x48bd4b6ec5ffe974
-//-----------------------------------------------------------------------------
-// dtype: 35
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEn_0x48bd4b6ec5ffe974
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [  34:0] in_,
-  output reg  [  34:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (en) begin
-      out <= in_;
-    end
-    else begin
-    end
-  end
-
-
-endmodule // RegEn_0x48bd4b6ec5ffe974
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// IntDivRem4_0x18c371d1cf60a588
+// IntDivRem4RegIn_0x59e69d2f49a6706a
 //-----------------------------------------------------------------------------
 // nbits: 32
 // ntypes: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module IntDivRem4_0x18c371d1cf60a588
+module IntDivRem4RegIn_0x59e69d2f49a6706a
 (
   input  wire [   0:0] clk,
   input  wire [  69:0] req_msg,
@@ -13041,10 +12998,11 @@ module IntDivRem4_0x18c371d1cf60a588
   wire   [   0:0] ctrl$is_signed;
   wire   [   0:0] ctrl$divisor_mux_sel;
   wire   [   1:0] ctrl$remainder_mux_sel;
+  wire   [   0:0] ctrl$input_reg_en;
   wire   [   0:0] ctrl$req_rdy;
   wire   [   0:0] ctrl$buffers_en;
 
-  IntDivRem4Ctrl_0x18c371d1cf60a588 ctrl
+  IntDivRem4RegInCtrl_0x59e69d2f49a6706a ctrl
   (
     .resp_rdy          ( ctrl$resp_rdy ),
     .sub_negative1     ( ctrl$sub_negative1 ),
@@ -13061,6 +13019,7 @@ module IntDivRem4_0x18c371d1cf60a588
     .is_signed         ( ctrl$is_signed ),
     .divisor_mux_sel   ( ctrl$divisor_mux_sel ),
     .remainder_mux_sel ( ctrl$remainder_mux_sel ),
+    .input_reg_en      ( ctrl$input_reg_en ),
     .req_rdy           ( ctrl$req_rdy ),
     .buffers_en        ( ctrl$buffers_en )
   );
@@ -13072,19 +13031,18 @@ module IntDivRem4_0x18c371d1cf60a588
   wire   [   0:0] dpath$quotient_reg_en;
   wire   [   0:0] dpath$clk;
   wire   [   0:0] dpath$is_signed;
-  wire   [  31:0] dpath$req_msg_b;
-  wire   [   0:0] dpath$divisor_mux_sel;
+  wire   [  69:0] dpath$req_msg;
   wire   [   1:0] dpath$remainder_mux_sel;
   wire   [   0:0] dpath$reset;
-  wire   [   2:0] dpath$req_msg_opaque;
+  wire   [   0:0] dpath$input_reg_en;
   wire   [   0:0] dpath$buffers_en;
-  wire   [  31:0] dpath$req_msg_a;
-  wire   [   2:0] dpath$resp_opaque;
+  wire   [   0:0] dpath$divisor_mux_sel;
   wire   [   0:0] dpath$sub_negative1;
   wire   [   0:0] dpath$sub_negative2;
-  wire   [  31:0] dpath$resp_result;
+  wire   [   2:0] dpath$req_type;
+  wire   [  34:0] dpath$resp_msg;
 
-  IntDivRem4Dpath_0x23a9c358c75db7a2 dpath
+  IntDivRem4RegInDpath_0x59e69d2f49a6706a dpath
   (
     .remainder_reg_en  ( dpath$remainder_reg_en ),
     .quotient_mux_sel  ( dpath$quotient_mux_sel ),
@@ -13092,22 +13050,21 @@ module IntDivRem4_0x18c371d1cf60a588
     .quotient_reg_en   ( dpath$quotient_reg_en ),
     .clk               ( dpath$clk ),
     .is_signed         ( dpath$is_signed ),
-    .req_msg_b         ( dpath$req_msg_b ),
-    .divisor_mux_sel   ( dpath$divisor_mux_sel ),
+    .req_msg           ( dpath$req_msg ),
     .remainder_mux_sel ( dpath$remainder_mux_sel ),
     .reset             ( dpath$reset ),
-    .req_msg_opaque    ( dpath$req_msg_opaque ),
+    .input_reg_en      ( dpath$input_reg_en ),
     .buffers_en        ( dpath$buffers_en ),
-    .req_msg_a         ( dpath$req_msg_a ),
-    .resp_opaque       ( dpath$resp_opaque ),
+    .divisor_mux_sel   ( dpath$divisor_mux_sel ),
     .sub_negative1     ( dpath$sub_negative1 ),
     .sub_negative2     ( dpath$sub_negative2 ),
-    .resp_result       ( dpath$resp_result )
+    .req_type          ( dpath$req_type ),
+    .resp_msg          ( dpath$resp_msg )
   );
 
   // signal connections
   assign ctrl$clk                = clk;
-  assign ctrl$req_type           = req_msg[69:67];
+  assign ctrl$req_type           = dpath$req_type;
   assign ctrl$req_val            = req_val;
   assign ctrl$reset              = reset;
   assign ctrl$resp_rdy           = resp_rdy;
@@ -13116,39 +13073,38 @@ module IntDivRem4_0x18c371d1cf60a588
   assign dpath$buffers_en        = ctrl$buffers_en;
   assign dpath$clk               = clk;
   assign dpath$divisor_mux_sel   = ctrl$divisor_mux_sel;
+  assign dpath$input_reg_en      = ctrl$input_reg_en;
   assign dpath$is_div            = ctrl$is_div;
   assign dpath$is_signed         = ctrl$is_signed;
   assign dpath$quotient_mux_sel  = ctrl$quotient_mux_sel;
   assign dpath$quotient_reg_en   = ctrl$quotient_reg_en;
   assign dpath$remainder_mux_sel = ctrl$remainder_mux_sel;
   assign dpath$remainder_reg_en  = ctrl$remainder_reg_en;
-  assign dpath$req_msg_a         = req_msg[63:32];
-  assign dpath$req_msg_b         = req_msg[31:0];
-  assign dpath$req_msg_opaque    = req_msg[66:64];
+  assign dpath$req_msg           = req_msg;
   assign dpath$reset             = reset;
   assign req_rdy                 = ctrl$req_rdy;
-  assign resp_msg[31:0]          = dpath$resp_result;
-  assign resp_msg[34:32]         = dpath$resp_opaque;
+  assign resp_msg                = dpath$resp_msg;
   assign resp_val                = ctrl$resp_val;
 
 
 
-endmodule // IntDivRem4_0x18c371d1cf60a588
+endmodule // IntDivRem4RegIn_0x59e69d2f49a6706a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// IntDivRem4Ctrl_0x18c371d1cf60a588
+// IntDivRem4RegInCtrl_0x59e69d2f49a6706a
 //-----------------------------------------------------------------------------
 // nbits: 32
 // ntypes: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module IntDivRem4Ctrl_0x18c371d1cf60a588
+module IntDivRem4RegInCtrl_0x59e69d2f49a6706a
 (
   output reg  [   0:0] buffers_en,
   input  wire [   0:0] clk,
   output reg  [   0:0] divisor_mux_sel,
+  output reg  [   0:0] input_reg_en,
   output reg  [   0:0] is_div,
   output reg  [   0:0] is_signed,
   output reg  [   0:0] quotient_mux_sel,
@@ -13181,6 +13137,7 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   localparam STATE_CALC = 17;
   localparam STATE_DONE = 1;
   localparam STATE_IDLE = 0;
+  localparam STATE_WAIT = 18;
 
   // state temporaries
   wire   [   0:0] state$reset;
@@ -13210,11 +13167,14 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   //       s.state.in_.value = s.state.out
   //
   //       if   curr_state == s.STATE_IDLE:
-  //         if s.req_val and s.req_rdy:
-  //           s.state.in_.value = s.STATE_CALC
+  //         if s.req_val:
+  //           s.state.in_.value = s.STATE_WAIT
+  //
+  //       elif curr_state == s.STATE_WAIT: # Register input
+  //         s.state.in_.value = s.STATE_CALC
   //
   //       elif curr_state == s.STATE_DONE:
-  //         if s.resp_val and s.resp_rdy:
+  //         if s.resp_rdy:
   //           s.state.in_.value = s.STATE_IDLE
   //
   //       else:
@@ -13225,22 +13185,27 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
     curr_state__0 = state$out;
     state$in_ = state$out;
     if ((curr_state__0 == STATE_IDLE)) begin
-      if ((req_val&&req_rdy)) begin
-        state$in_ = STATE_CALC;
+      if (req_val) begin
+        state$in_ = STATE_WAIT;
       end
       else begin
       end
     end
     else begin
-      if ((curr_state__0 == STATE_DONE)) begin
-        if ((resp_val&&resp_rdy)) begin
-          state$in_ = STATE_IDLE;
-        end
-        else begin
-        end
+      if ((curr_state__0 == STATE_WAIT)) begin
+        state$in_ = STATE_CALC;
       end
       else begin
-        state$in_ = (curr_state__0-1);
+        if ((curr_state__0 == STATE_DONE)) begin
+          if (resp_rdy) begin
+            state$in_ = STATE_IDLE;
+          end
+          else begin
+          end
+        end
+        else begin
+          state$in_ = (curr_state__0-1);
+        end
       end
     end
   end
@@ -13252,14 +13217,28 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   //
   //       curr_state = s.state.out
   //
-  //       s.buffers_en.value = 0
-  //       s.is_div.value     = 0
-  //       s.is_signed.value  = 0
+  //       s.req_rdy.value  = 0
+  //       s.resp_val.value = 0
+  //
+  //       s.buffers_en.value   = 0
+  //       s.is_div.value       = 0
+  //       s.is_signed.value    = 0
+  //       s.input_reg_en.value = 0
   //
   //       if   curr_state == s.STATE_IDLE:
-  //         s.req_rdy.value     = 1
-  //         s.resp_val.value    = 0
+  //         s.req_rdy.value = 1
   //
+  //         s.remainder_mux_sel.value = R_MUX_SEL_IN
+  //         s.remainder_reg_en.value  = 0
+  //
+  //         s.quotient_mux_sel.value  = Q_MUX_SEL_0
+  //         s.quotient_reg_en.value   = 0
+  //
+  //         s.divisor_mux_sel.value   = D_MUX_SEL_IN
+  //
+  //         s.input_reg_en.value = 1
+  //
+  //       elif   curr_state == s.STATE_WAIT:
   //         s.remainder_mux_sel.value = R_MUX_SEL_IN
   //         s.remainder_reg_en.value  = 1
   //
@@ -13273,20 +13252,17 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   //         s.is_signed.value         = (s.req_type[0] == 0) # div/rem = 0b100, 0b110
   //
   //       elif curr_state == s.STATE_DONE:
-  //         s.req_rdy.value     = 0
   //         s.resp_val.value    = 1
-  //
-  //         s.quotient_mux_sel.value  = Q_MUX_SEL_0
-  //         s.quotient_reg_en.value   = 0
   //
   //         s.remainder_mux_sel.value = R_MUX_SEL_IN
   //         s.remainder_reg_en.value  = 0
   //
+  //         s.quotient_mux_sel.value  = Q_MUX_SEL_0
+  //         s.quotient_reg_en.value   = 0
+  //
   //         s.divisor_mux_sel.value   = D_MUX_SEL_IN
   //
   //       else: # calculating
-  //         s.req_rdy.value     = 0
-  //         s.resp_val.value    = 0
   //
   //         s.remainder_reg_en.value = ~(s.sub_negative1 & s.sub_negative2)
   //         if s.sub_negative2:
@@ -13302,79 +13278,94 @@ module IntDivRem4Ctrl_0x18c371d1cf60a588
   // logic for state_outputs()
   always @ (*) begin
     curr_state__1 = state$out;
+    req_rdy = 0;
+    resp_val = 0;
     buffers_en = 0;
     is_div = 0;
     is_signed = 0;
+    input_reg_en = 0;
     if ((curr_state__1 == STATE_IDLE)) begin
       req_rdy = 1;
-      resp_val = 0;
       remainder_mux_sel = R_MUX_SEL_IN;
-      remainder_reg_en = 1;
+      remainder_reg_en = 0;
       quotient_mux_sel = Q_MUX_SEL_0;
-      quotient_reg_en = 1;
+      quotient_reg_en = 0;
       divisor_mux_sel = D_MUX_SEL_IN;
-      buffers_en = 1;
-      is_div = (req_type[1] == 0);
-      is_signed = (req_type[0] == 0);
+      input_reg_en = 1;
     end
     else begin
-      if ((curr_state__1 == STATE_DONE)) begin
-        req_rdy = 0;
-        resp_val = 1;
-        quotient_mux_sel = Q_MUX_SEL_0;
-        quotient_reg_en = 0;
+      if ((curr_state__1 == STATE_WAIT)) begin
         remainder_mux_sel = R_MUX_SEL_IN;
-        remainder_reg_en = 0;
+        remainder_reg_en = 1;
+        quotient_mux_sel = Q_MUX_SEL_0;
+        quotient_reg_en = 1;
         divisor_mux_sel = D_MUX_SEL_IN;
+        buffers_en = 1;
+        is_div = (req_type[1] == 0);
+        is_signed = (req_type[0] == 0);
       end
       else begin
-        req_rdy = 0;
-        resp_val = 0;
-        remainder_reg_en = ~(sub_negative1&sub_negative2);
-        if (sub_negative2) begin
-          remainder_mux_sel = R_MUX_SEL_SUB1;
+        if ((curr_state__1 == STATE_DONE)) begin
+          resp_val = 1;
+          remainder_mux_sel = R_MUX_SEL_IN;
+          remainder_reg_en = 0;
+          quotient_mux_sel = Q_MUX_SEL_0;
+          quotient_reg_en = 0;
+          divisor_mux_sel = D_MUX_SEL_IN;
         end
         else begin
-          remainder_mux_sel = R_MUX_SEL_SUB2;
+          remainder_reg_en = ~(sub_negative1&sub_negative2);
+          if (sub_negative2) begin
+            remainder_mux_sel = R_MUX_SEL_SUB1;
+          end
+          else begin
+            remainder_mux_sel = R_MUX_SEL_SUB2;
+          end
+          quotient_reg_en = 1;
+          quotient_mux_sel = Q_MUX_SEL_LSH;
+          divisor_mux_sel = D_MUX_SEL_RSH;
         end
-        quotient_reg_en = 1;
-        quotient_mux_sel = Q_MUX_SEL_LSH;
-        divisor_mux_sel = D_MUX_SEL_RSH;
       end
     end
   end
 
 
-endmodule // IntDivRem4Ctrl_0x18c371d1cf60a588
+endmodule // IntDivRem4RegInCtrl_0x59e69d2f49a6706a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// IntDivRem4Dpath_0x23a9c358c75db7a2
+// IntDivRem4RegInDpath_0x59e69d2f49a6706a
 //-----------------------------------------------------------------------------
 // nbits: 32
+// ntypes: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module IntDivRem4Dpath_0x23a9c358c75db7a2
+module IntDivRem4RegInDpath_0x59e69d2f49a6706a
 (
   input  wire [   0:0] buffers_en,
   input  wire [   0:0] clk,
   input  wire [   0:0] divisor_mux_sel,
+  input  wire [   0:0] input_reg_en,
   input  wire [   0:0] is_div,
   input  wire [   0:0] is_signed,
   input  wire [   0:0] quotient_mux_sel,
   input  wire [   0:0] quotient_reg_en,
   input  wire [   1:0] remainder_mux_sel,
   input  wire [   0:0] remainder_reg_en,
-  input  wire [  31:0] req_msg_a,
-  input  wire [  31:0] req_msg_b,
-  input  wire [   2:0] req_msg_opaque,
+  input  wire [  69:0] req_msg,
+  output wire [   2:0] req_type,
   input  wire [   0:0] reset,
-  output wire [   2:0] resp_opaque,
-  output wire [  31:0] resp_result,
+  output wire [  34:0] resp_msg,
   output wire [   0:0] sub_negative1,
   output wire [   0:0] sub_negative2
 );
+
+  // wire declarations
+  wire   [  31:0] req_msg_b;
+  wire   [  31:0] req_msg_a;
+  wire   [   2:0] req_msg_opaque;
+
 
   // register declarations
   reg    [  31:0] a_negate;
@@ -13389,22 +13380,22 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
   localparam Q_MUX_SEL_LSH = 1;
   localparam nbits = 32;
 
-  // remainder_mid_mux temporaries
-  wire   [   0:0] remainder_mid_mux$reset;
-  wire   [  63:0] remainder_mid_mux$in_$000;
-  wire   [  63:0] remainder_mid_mux$in_$001;
-  wire   [   0:0] remainder_mid_mux$clk;
-  wire   [   0:0] remainder_mid_mux$sel;
-  wire   [  63:0] remainder_mid_mux$out;
+  // quotient_mux temporaries
+  wire   [   0:0] quotient_mux$reset;
+  wire   [  31:0] quotient_mux$in_$000;
+  wire   [  31:0] quotient_mux$in_$001;
+  wire   [   0:0] quotient_mux$clk;
+  wire   [   0:0] quotient_mux$sel;
+  wire   [  31:0] quotient_mux$out;
 
-  Mux_0x147b842ad2b97e56 remainder_mid_mux
+  Mux_0x7e8c65f0610ab9ca quotient_mux
   (
-    .reset   ( remainder_mid_mux$reset ),
-    .in_$000 ( remainder_mid_mux$in_$000 ),
-    .in_$001 ( remainder_mid_mux$in_$001 ),
-    .clk     ( remainder_mid_mux$clk ),
-    .sel     ( remainder_mid_mux$sel ),
-    .out     ( remainder_mid_mux$out )
+    .reset   ( quotient_mux$reset ),
+    .in_$000 ( quotient_mux$in_$000 ),
+    .in_$001 ( quotient_mux$in_$001 ),
+    .clk     ( quotient_mux$clk ),
+    .sel     ( quotient_mux$sel ),
+    .out     ( quotient_mux$out )
   );
 
   // remainder_mux temporaries
@@ -13477,6 +13468,40 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
     .out   ( res_rem_negate_flag$out )
   );
 
+  // input_reg temporaries
+  wire   [   0:0] input_reg$reset;
+  wire   [  69:0] input_reg$in_;
+  wire   [   0:0] input_reg$clk;
+  wire   [   0:0] input_reg$en;
+  wire   [  69:0] input_reg$out;
+
+  RegEn_0x33e44399f27afd57 input_reg
+  (
+    .reset ( input_reg$reset ),
+    .in_   ( input_reg$in_ ),
+    .clk   ( input_reg$clk ),
+    .en    ( input_reg$en ),
+    .out   ( input_reg$out )
+  );
+
+  // remainder_mid_mux temporaries
+  wire   [   0:0] remainder_mid_mux$reset;
+  wire   [  63:0] remainder_mid_mux$in_$000;
+  wire   [  63:0] remainder_mid_mux$in_$001;
+  wire   [   0:0] remainder_mid_mux$clk;
+  wire   [   0:0] remainder_mid_mux$sel;
+  wire   [  63:0] remainder_mid_mux$out;
+
+  Mux_0x147b842ad2b97e56 remainder_mid_mux
+  (
+    .reset   ( remainder_mid_mux$reset ),
+    .in_$000 ( remainder_mid_mux$in_$000 ),
+    .in_$001 ( remainder_mid_mux$in_$001 ),
+    .clk     ( remainder_mid_mux$clk ),
+    .sel     ( remainder_mid_mux$sel ),
+    .out     ( remainder_mid_mux$out )
+  );
+
   // is_div_reg temporaries
   wire   [   0:0] is_div_reg$reset;
   wire   [   0:0] is_div_reg$in_;
@@ -13509,24 +13534,6 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
     .out   ( res_quo_negate_flag$out )
   );
 
-  // res_divrem_mux temporaries
-  wire   [   0:0] res_divrem_mux$reset;
-  wire   [  31:0] res_divrem_mux$in_$000;
-  wire   [  31:0] res_divrem_mux$in_$001;
-  wire   [   0:0] res_divrem_mux$clk;
-  wire   [   0:0] res_divrem_mux$sel;
-  wire   [  31:0] res_divrem_mux$out;
-
-  Mux_0x7e8c65f0610ab9ca res_divrem_mux
-  (
-    .reset   ( res_divrem_mux$reset ),
-    .in_$000 ( res_divrem_mux$in_$000 ),
-    .in_$001 ( res_divrem_mux$in_$001 ),
-    .clk     ( res_divrem_mux$clk ),
-    .sel     ( res_divrem_mux$sel ),
-    .out     ( res_divrem_mux$out )
-  );
-
   // quotient_reg temporaries
   wire   [   0:0] quotient_reg$reset;
   wire   [  31:0] quotient_reg$in_;
@@ -13541,24 +13548,6 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
     .clk   ( quotient_reg$clk ),
     .en    ( quotient_reg$en ),
     .out   ( quotient_reg$out )
-  );
-
-  // quotient_mux temporaries
-  wire   [   0:0] quotient_mux$reset;
-  wire   [  31:0] quotient_mux$in_$000;
-  wire   [  31:0] quotient_mux$in_$001;
-  wire   [   0:0] quotient_mux$clk;
-  wire   [   0:0] quotient_mux$sel;
-  wire   [  31:0] quotient_mux$out;
-
-  Mux_0x7e8c65f0610ab9ca quotient_mux
-  (
-    .reset   ( quotient_mux$reset ),
-    .in_$000 ( quotient_mux$in_$000 ),
-    .in_$001 ( quotient_mux$in_$001 ),
-    .clk     ( quotient_mux$clk ),
-    .sel     ( quotient_mux$sel ),
-    .out     ( quotient_mux$out )
   );
 
   // sub2 temporaries
@@ -13625,6 +13614,24 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
     .clk   ( opaque_reg$clk ),
     .en    ( opaque_reg$en ),
     .out   ( opaque_reg$out )
+  );
+
+  // res_divrem_mux temporaries
+  wire   [   0:0] res_divrem_mux$reset;
+  wire   [  31:0] res_divrem_mux$in_$000;
+  wire   [  31:0] res_divrem_mux$in_$001;
+  wire   [   0:0] res_divrem_mux$clk;
+  wire   [   0:0] res_divrem_mux$sel;
+  wire   [  31:0] res_divrem_mux$out;
+
+  Mux_0x7e8c65f0610ab9ca res_divrem_mux
+  (
+    .reset   ( res_divrem_mux$reset ),
+    .in_$000 ( res_divrem_mux$in_$000 ),
+    .in_$001 ( res_divrem_mux$in_$001 ),
+    .clk     ( res_divrem_mux$clk ),
+    .sel     ( res_divrem_mux$sel ),
+    .out     ( res_divrem_mux$out )
   );
 
   // res_rem_mux temporaries
@@ -13726,6 +13733,10 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
   assign divisor_rsh2$in_             = divisor_rsh1$out;
   assign divisor_rsh2$reset           = reset;
   assign divisor_rsh2$shamt           = 1'd1;
+  assign input_reg$clk                = clk;
+  assign input_reg$en                 = input_reg_en;
+  assign input_reg$in_                = req_msg;
+  assign input_reg$reset              = reset;
   assign is_div_reg$clk               = clk;
   assign is_div_reg$en                = buffers_en;
   assign is_div_reg$in_               = is_div;
@@ -13761,6 +13772,10 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
   assign remainder_reg$en             = remainder_reg_en;
   assign remainder_reg$in_            = remainder_mux$out;
   assign remainder_reg$reset          = reset;
+  assign req_msg_a                    = input_reg$out[63:32];
+  assign req_msg_b                    = input_reg$out[31:0];
+  assign req_msg_opaque               = input_reg$out[66:64];
+  assign req_type                     = input_reg$out[69:67];
   assign res_divrem_mux$clk           = clk;
   assign res_divrem_mux$in_$000       = res_rem_mux$out;
   assign res_divrem_mux$in_$001       = res_quo_mux$out;
@@ -13784,8 +13799,8 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
   assign res_rem_negate_flag$en       = buffers_en;
   assign res_rem_negate_flag$in_      = res_rem_negate;
   assign res_rem_negate_flag$reset    = reset;
-  assign resp_opaque                  = opaque_reg$out;
-  assign resp_result                  = res_divrem_mux$out;
+  assign resp_msg[31:0]               = res_divrem_mux$out;
+  assign resp_msg[34:32]              = opaque_reg$out;
   assign sub1$clk                     = clk;
   assign sub1$in0                     = remainder_reg$out;
   assign sub1$in1                     = divisor_reg$out;
@@ -13876,50 +13891,7 @@ module IntDivRem4Dpath_0x23a9c358c75db7a2
   end
 
 
-endmodule // IntDivRem4Dpath_0x23a9c358c75db7a2
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Mux_0x147b842ad2b97e56
-//-----------------------------------------------------------------------------
-// dtype: 64
-// nports: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Mux_0x147b842ad2b97e56
-(
-  input  wire [   0:0] clk,
-  input  wire [  63:0] in_$000,
-  input  wire [  63:0] in_$001,
-  output reg  [  63:0] out,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] sel
-);
-
-  // localparam declarations
-  localparam nports = 2;
-
-
-  // array declarations
-  wire   [  63:0] in_[0:1];
-  assign in_[  0] = in_$000;
-  assign in_[  1] = in_$001;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       assert s.sel < nports
-  //       s.out.v = s.in_[ s.sel ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = in_[sel];
-  end
-
-
-endmodule // Mux_0x147b842ad2b97e56
+endmodule // IntDivRem4RegInDpath_0x59e69d2f49a6706a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -14041,6 +14013,49 @@ module RegEn_0x7b12395e8ee7e2a2
 
 
 endmodule // RegEn_0x7b12395e8ee7e2a2
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x147b842ad2b97e56
+//-----------------------------------------------------------------------------
+// dtype: 64
+// nports: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x147b842ad2b97e56
+(
+  input  wire [   0:0] clk,
+  input  wire [  63:0] in_$000,
+  input  wire [  63:0] in_$001,
+  output reg  [  63:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 2;
+
+
+  // array declarations
+  wire   [  63:0] in_[0:1];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x147b842ad2b97e56
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -22440,16 +22455,16 @@ endmodule // GenWriteDataPRTL_0x472c29e762348c17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x78b36cc30b50888d
+// BloomFilterXcel_0x34da69f726c3baf3
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7ffa09a8c490>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fb5bb9c1c90>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x78b36cc30b50888d
+module BloomFilterXcel_0x34da69f726c3baf3
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -22892,7 +22907,7 @@ module BloomFilterXcel_0x78b36cc30b50888d
   end
 
 
-endmodule // BloomFilterXcel_0x78b36cc30b50888d
+endmodule // BloomFilterXcel_0x34da69f726c3baf3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -24523,8 +24538,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7ffa08fcd9d0>
-// req: <pymtl.model.signals.InPort object at 0x7ffa08fcd410>
+// resp: <pymtl.model.signals.OutPort object at 0x7fb5baefdb90>
+// req: <pymtl.model.signals.InPort object at 0x7fb5baefd5d0>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -24786,14 +24801,7 @@ module CtrlReg_0x2547fdfd5863c73b
   wire   [  31:0] instcounters_out$001;
   wire   [  31:0] instcounters_out$002;
   wire   [  31:0] instcounters_out$003;
-  wire   [  31:0] cyclecounters_out$000;
-  wire   [  31:0] cyclecounters_out$001;
-  wire   [  31:0] cyclecounters_out$002;
-  wire   [  31:0] cyclecounters_out$003;
-  wire   [  31:0] cyclecounters_in$000;
-  wire   [  31:0] cyclecounters_in$001;
-  wire   [  31:0] cyclecounters_in$002;
-  wire   [  31:0] cyclecounters_in$003;
+  wire   [  31:0] cyclecounters_out;
 
 
   // register declarations
@@ -24801,7 +24809,8 @@ module CtrlReg_0x2547fdfd5863c73b
   reg    [  31:0] cr_debug_in;
   reg    [   0:0] cr_go_en;
   reg    [  31:0] cr_go_in;
-  reg    [   3:0] cyclecounters_en;
+  reg    [   0:0] cyclecounters_en;
+  reg    [  31:0] cyclecounters_in;
   reg    [   3:0] instcounters_en;
   reg    [  32:0] out_q$enq_msg;
   reg    [   3:0] rf_raddr;
@@ -24815,7 +24824,7 @@ module CtrlReg_0x2547fdfd5863c73b
   localparam TYPE_WRITE = 1;
   localparam cr_debug = 1;
   localparam cr_go = 0;
-  localparam cr_host_en = 10;
+  localparam cr_host_en = 7;
   localparam num_cores = 4;
   localparam valrdy_ifcs = 3;
 
@@ -25123,92 +25132,83 @@ module CtrlReg_0x2547fdfd5863c73b
   );
 
   // signal connections
-  assign ctrlregs$000$clk      = clk;
-  assign ctrlregs$000$en       = cr_go_en;
-  assign ctrlregs$000$in_      = cr_go_in;
-  assign ctrlregs$000$reset    = reset;
-  assign ctrlregs$001$clk      = clk;
-  assign ctrlregs$001$en       = cr_debug_en;
-  assign ctrlregs$001$in_      = cr_debug_in;
-  assign ctrlregs$001$reset    = reset;
-  assign ctrlregs$002$clk      = clk;
-  assign ctrlregs$002$en       = instcounters_en[0];
-  assign ctrlregs$002$in_      = instcounters_in$000;
-  assign ctrlregs$002$reset    = reset;
-  assign ctrlregs$003$clk      = clk;
-  assign ctrlregs$003$en       = instcounters_en[1];
-  assign ctrlregs$003$in_      = instcounters_in$001;
-  assign ctrlregs$003$reset    = reset;
-  assign ctrlregs$004$clk      = clk;
-  assign ctrlregs$004$en       = instcounters_en[2];
-  assign ctrlregs$004$in_      = instcounters_in$002;
-  assign ctrlregs$004$reset    = reset;
-  assign ctrlregs$005$clk      = clk;
-  assign ctrlregs$005$en       = instcounters_en[3];
-  assign ctrlregs$005$in_      = instcounters_in$003;
-  assign ctrlregs$005$reset    = reset;
-  assign ctrlregs$006$clk      = clk;
-  assign ctrlregs$006$en       = cyclecounters_en[0];
-  assign ctrlregs$006$in_      = cyclecounters_in$000;
-  assign ctrlregs$006$reset    = reset;
-  assign ctrlregs$007$clk      = clk;
-  assign ctrlregs$007$en       = cyclecounters_en[1];
-  assign ctrlregs$007$in_      = cyclecounters_in$001;
-  assign ctrlregs$007$reset    = reset;
-  assign ctrlregs$008$clk      = clk;
-  assign ctrlregs$008$en       = cyclecounters_en[2];
-  assign ctrlregs$008$in_      = cyclecounters_in$002;
-  assign ctrlregs$008$reset    = reset;
-  assign ctrlregs$009$clk      = clk;
-  assign ctrlregs$009$en       = cyclecounters_en[3];
-  assign ctrlregs$009$in_      = cyclecounters_in$003;
-  assign ctrlregs$009$reset    = reset;
-  assign ctrlregs$010$clk      = clk;
-  assign ctrlregs$010$en       = wire_host_en[0];
-  assign ctrlregs$010$in_      = rf_wdata;
-  assign ctrlregs$010$reset    = reset;
-  assign ctrlregs$011$clk      = clk;
-  assign ctrlregs$011$en       = wire_host_en[1];
-  assign ctrlregs$011$in_      = rf_wdata;
-  assign ctrlregs$011$reset    = reset;
-  assign ctrlregs$012$clk      = clk;
-  assign ctrlregs$012$en       = wire_host_en[2];
-  assign ctrlregs$012$in_      = rf_wdata;
-  assign ctrlregs$012$reset    = reset;
-  assign ctrlregs$013$clk      = clk;
-  assign ctrlregs$013$reset    = reset;
-  assign ctrlregs$014$clk      = clk;
-  assign ctrlregs$014$reset    = reset;
-  assign ctrlregs$015$clk      = clk;
-  assign ctrlregs$015$reset    = reset;
-  assign cyclecounters_out$000 = ctrlregs$006$out;
-  assign cyclecounters_out$001 = ctrlregs$007$out;
-  assign cyclecounters_out$002 = ctrlregs$008$out;
-  assign cyclecounters_out$003 = ctrlregs$009$out;
-  assign debug                 = ctrlregs$001$out[0];
-  assign go[0]                 = ctrlregs$000$out[0];
-  assign go[1]                 = ctrlregs$000$out[0];
-  assign go[2]                 = ctrlregs$000$out[0];
-  assign go[3]                 = ctrlregs$000$out[0];
-  assign host_en[0]            = ctrlregs$010$out[0];
-  assign host_en[1]            = ctrlregs$011$out[0];
-  assign host_en[2]            = ctrlregs$012$out[0];
-  assign in_q$clk              = clk;
-  assign in_q$deq_rdy          = out_q$enq_rdy;
-  assign in_q$enq_msg          = req_msg;
-  assign in_q$enq_val          = req_val;
-  assign in_q$reset            = reset;
-  assign instcounters_out$000  = ctrlregs$002$out;
-  assign instcounters_out$001  = ctrlregs$003$out;
-  assign instcounters_out$002  = ctrlregs$004$out;
-  assign instcounters_out$003  = ctrlregs$005$out;
-  assign out_q$clk             = clk;
-  assign out_q$deq_rdy         = resp_rdy;
-  assign out_q$enq_val         = in_q$deq_val;
-  assign out_q$reset           = reset;
-  assign req_rdy               = in_q$enq_rdy;
-  assign resp_msg              = out_q$deq_msg;
-  assign resp_val              = out_q$deq_val;
+  assign ctrlregs$000$clk     = clk;
+  assign ctrlregs$000$en      = cr_go_en;
+  assign ctrlregs$000$in_     = cr_go_in;
+  assign ctrlregs$000$reset   = reset;
+  assign ctrlregs$001$clk     = clk;
+  assign ctrlregs$001$en      = cr_debug_en;
+  assign ctrlregs$001$in_     = cr_debug_in;
+  assign ctrlregs$001$reset   = reset;
+  assign ctrlregs$002$clk     = clk;
+  assign ctrlregs$002$en      = cyclecounters_en;
+  assign ctrlregs$002$in_     = cyclecounters_in;
+  assign ctrlregs$002$reset   = reset;
+  assign ctrlregs$003$clk     = clk;
+  assign ctrlregs$003$en      = instcounters_en[0];
+  assign ctrlregs$003$in_     = instcounters_in$000;
+  assign ctrlregs$003$reset   = reset;
+  assign ctrlregs$004$clk     = clk;
+  assign ctrlregs$004$en      = instcounters_en[1];
+  assign ctrlregs$004$in_     = instcounters_in$001;
+  assign ctrlregs$004$reset   = reset;
+  assign ctrlregs$005$clk     = clk;
+  assign ctrlregs$005$en      = instcounters_en[2];
+  assign ctrlregs$005$in_     = instcounters_in$002;
+  assign ctrlregs$005$reset   = reset;
+  assign ctrlregs$006$clk     = clk;
+  assign ctrlregs$006$en      = instcounters_en[3];
+  assign ctrlregs$006$in_     = instcounters_in$003;
+  assign ctrlregs$006$reset   = reset;
+  assign ctrlregs$007$clk     = clk;
+  assign ctrlregs$007$en      = wire_host_en[0];
+  assign ctrlregs$007$in_     = rf_wdata;
+  assign ctrlregs$007$reset   = reset;
+  assign ctrlregs$008$clk     = clk;
+  assign ctrlregs$008$en      = wire_host_en[1];
+  assign ctrlregs$008$in_     = rf_wdata;
+  assign ctrlregs$008$reset   = reset;
+  assign ctrlregs$009$clk     = clk;
+  assign ctrlregs$009$en      = wire_host_en[2];
+  assign ctrlregs$009$in_     = rf_wdata;
+  assign ctrlregs$009$reset   = reset;
+  assign ctrlregs$010$clk     = clk;
+  assign ctrlregs$010$reset   = reset;
+  assign ctrlregs$011$clk     = clk;
+  assign ctrlregs$011$reset   = reset;
+  assign ctrlregs$012$clk     = clk;
+  assign ctrlregs$012$reset   = reset;
+  assign ctrlregs$013$clk     = clk;
+  assign ctrlregs$013$reset   = reset;
+  assign ctrlregs$014$clk     = clk;
+  assign ctrlregs$014$reset   = reset;
+  assign ctrlregs$015$clk     = clk;
+  assign ctrlregs$015$reset   = reset;
+  assign cyclecounters_out    = ctrlregs$002$out;
+  assign debug                = ctrlregs$001$out[0];
+  assign go[0]                = ctrlregs$000$out[0];
+  assign go[1]                = ctrlregs$000$out[0];
+  assign go[2]                = ctrlregs$000$out[0];
+  assign go[3]                = ctrlregs$000$out[0];
+  assign host_en[0]           = ctrlregs$007$out[0];
+  assign host_en[1]           = ctrlregs$008$out[0];
+  assign host_en[2]           = ctrlregs$009$out[0];
+  assign in_q$clk             = clk;
+  assign in_q$deq_rdy         = out_q$enq_rdy;
+  assign in_q$enq_msg         = req_msg;
+  assign in_q$enq_val         = req_val;
+  assign in_q$reset           = reset;
+  assign instcounters_out$000 = ctrlregs$003$out;
+  assign instcounters_out$001 = ctrlregs$004$out;
+  assign instcounters_out$002 = ctrlregs$005$out;
+  assign instcounters_out$003 = ctrlregs$006$out;
+  assign out_q$clk            = clk;
+  assign out_q$deq_rdy        = resp_rdy;
+  assign out_q$enq_val        = in_q$deq_val;
+  assign out_q$reset          = reset;
+  assign req_rdy              = in_q$enq_rdy;
+  assign resp_msg             = out_q$deq_msg;
+  assign resp_val             = out_q$deq_val;
 
   // array declarations
   wire   [  31:0] ctrlregs$out[0:15];
@@ -25228,16 +25228,6 @@ module CtrlReg_0x2547fdfd5863c73b
   assign ctrlregs$out[ 13] = ctrlregs$013$out;
   assign ctrlregs$out[ 14] = ctrlregs$014$out;
   assign ctrlregs$out[ 15] = ctrlregs$015$out;
-  reg    [  31:0] cyclecounters_in[0:3];
-  assign cyclecounters_in$000 = cyclecounters_in[  0];
-  assign cyclecounters_in$001 = cyclecounters_in[  1];
-  assign cyclecounters_in$002 = cyclecounters_in[  2];
-  assign cyclecounters_in$003 = cyclecounters_in[  3];
-  wire   [  31:0] cyclecounters_out[0:3];
-  assign cyclecounters_out[  0] = cyclecounters_out$000;
-  assign cyclecounters_out[  1] = cyclecounters_out$001;
-  assign cyclecounters_out[  2] = cyclecounters_out$002;
-  assign cyclecounters_out[  3] = cyclecounters_out$003;
   reg    [  31:0] instcounters_in[0:3];
   assign instcounters_in$000 = instcounters_in[  0];
   assign instcounters_in$001 = instcounters_in[  1];
@@ -25325,17 +25315,13 @@ module CtrlReg_0x2547fdfd5863c73b
   //
   // @s.combinational
   // def comb_cr_cyclecounter_logic():
-  //       for core_idx in xrange(num_cores):
-  //         s.cyclecounters_en[core_idx].value = s.stats_en
-  //         s.cyclecounters_in[core_idx].value = s.cyclecounters_out[core_idx] + 1
+  //       s.cyclecounters_en.value = s.stats_en
+  //       s.cyclecounters_in.value = s.cyclecounters_out + 1
 
   // logic for comb_cr_cyclecounter_logic()
   always @ (*) begin
-    for (core_idx=0; core_idx < num_cores; core_idx=core_idx+1)
-    begin
-      cyclecounters_en[core_idx] = stats_en;
-      cyclecounters_in[core_idx] = (cyclecounters_out[core_idx]+1);
-    end
+    cyclecounters_en = stats_en;
+    cyclecounters_in = (cyclecounters_out+1);
   end
 
   // PYMTL SOURCE:
@@ -25779,8 +25765,8 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7ffa09a286d0>
-// req: <pymtl.model.signals.InPort object at 0x7ffa09a28390>
+// resp: <pymtl.model.signals.OutPort object at 0x7fb5bb955090>
+// req: <pymtl.model.signals.InPort object at 0x7fb5bb95db90>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none

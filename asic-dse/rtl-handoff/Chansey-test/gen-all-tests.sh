@@ -24,26 +24,25 @@ while read p; do # execute test one by one
   py.test ../CompChansey/test/${DESIGN_NAME}_test.py -k $p -v
 
   # add the case to the test case
-
-  q=$(echo $p | sed s/"\["/_/g | sed s/"-"/_/g | sed s/"]"//g | sed s/\\./_/g)
-
-  echo "task "$q";"            >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  echo "begin"                 >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  cat  Chansey_testcase_init.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  echo "end"                   >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  echo "endtask"               >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  echo ""                      >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
-  rm -f Chansey_testcase_init.v
+  echo "task "$p";"        >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "begin"             >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  cat  ${DESIGN_NAME}_testcase_init.v >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "end"               >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo "endtask"           >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  echo ""                  >> ${CURRENT_FOLDER}/${DESIGN_NAME}_all_tests.v
+  rm -f ${DESIGN_NAME}_testcase_init.v
 
   # add the task to dispatch function
 
+  q=$(echo $p | sed s/"\["/_/g | sed s/"-"/_/g | sed s/"]"//g)
+
   if [ ${flag} -eq 0 ]; then
-    echo "  if      (name == \"$p\") " $q" ();" >> temp_dispatch.v
+    echo "  if      (name == \"$p\") " $q"();" >> temp_dispatch.v
     flag=1
   else
-    echo "  else if (name == \"$p\") " $q" ();" >> temp_dispatch.v
+    echo "  else if (name == \"$p\") " $q"();" >> temp_dispatch.v
   fi
-
+  
 done < ${CURRENT_FOLDER}/list-test-case.txt
 
 # Append finale

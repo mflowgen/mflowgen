@@ -1,15 +1,15 @@
 //-----------------------------------------------------------------------------
 // SwShim
 //-----------------------------------------------------------------------------
-// dut: <CompButterfree.Butterfree.Butterfree object at 0x7f2d58c35c10>
-// dut_asynch: <CompButterfree.HostButterfree.HostButterfree object at 0x7f2d57a45c50>
+// dut: <CompChansey.Chansey.Chansey object at 0x7f2d4c5c4290>
+// dut_asynch: <CompChansey.HostChansey.HostChansey object at 0x7f2d4b2dba90>
 // asynch_bitwidth: 8
 // dump_vcd: 
 // translate: zeros
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module HostButterfree_SwShim
+module HostChansey_SwShim
 (
   input  wire [   0:0] clk,
   input  wire [  36:0] ctrlregreq_msg,
@@ -268,7 +268,7 @@ module HostButterfree_SwShim
   wire   [   0:0] dut$out_req;
   wire   [   0:0] dut$in__ack;
 
-  HostButterfree dut
+  HostChansey dut
   (
     .out_ack_io ( dut$out_ack ),
     .in__msg_io ( dut$in__msg ),
@@ -3649,7 +3649,7 @@ endmodule // RegisterFile_0x66d40fda46b4658e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// Butterfree
+// Chansey
 //-----------------------------------------------------------------------------
 // cacheline_nbits: 128
 // word_nbits: 32
@@ -3659,7 +3659,7 @@ endmodule // RegisterFile_0x66d40fda46b4658e
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module Butterfree
+module Chansey
 (
   input  wire [   0:0] clk,
   input  wire [  36:0] ctrlregreq_msg,
@@ -4496,7 +4496,7 @@ module Butterfree
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x1cbbbe62beab8149 xcel$000
+  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -4524,7 +4524,7 @@ module Butterfree
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x1cbbbe62beab8149 xcel$001
+  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -4552,7 +4552,7 @@ module Butterfree
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x1cbbbe62beab8149 xcel$002
+  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -4580,7 +4580,7 @@ module Butterfree
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x1cbbbe62beab8149 xcel$003
+  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5112,14 +5112,14 @@ module Butterfree
   end
 
 
-endmodule // Butterfree
+endmodule // Chansey
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d574a4fd0>
-// req: <pymtl.model.signals.InPort object at 0x7f2d574b3f10>
+// resp: <pymtl.model.signals.OutPort object at 0x7f2d4add14d0>
+// req: <pymtl.model.signals.InPort object at 0x7f2d4add1210>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -9878,13 +9878,13 @@ module SramWrapper28nmPRTL_0x79c097bc28415054
   assign mem$000$000$emaw      = 2'd1;
   assign mem$000$000$gwen      = gwen;
   assign mem$000$000$reset     = reset;
-  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$ret1n     = 1'd1;
   assign mem$000$000$se        = 1'd0;
   assign mem$000$000$si        = 2'd0;
   assign mem$000$000$ta        = 10'd0;
   assign mem$000$000$tcen      = 1'd0;
   assign mem$000$000$td        = 32'd0;
-  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$ten       = 1'd1;
   assign mem$000$000$tgwen     = 1'd0;
   assign mem$000$000$twen      = 32'd0;
   assign mem$000$000$wen       = wen[31:0];
@@ -12309,13 +12309,13 @@ module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
   assign mem$000$000$emaw      = 2'd1;
   assign mem$000$000$gwen      = gwen;
   assign mem$000$000$reset     = reset;
-  assign mem$000$000$ret1n     = 1'd0;
+  assign mem$000$000$ret1n     = 1'd1;
   assign mem$000$000$se        = 1'd0;
   assign mem$000$000$si        = 2'd0;
   assign mem$000$000$ta        = 10'd0;
   assign mem$000$000$tcen      = 1'd0;
   assign mem$000$000$td        = 128'd0;
-  assign mem$000$000$ten       = 1'd0;
+  assign mem$000$000$ten       = 1'd1;
   assign mem$000$000$tgwen     = 1'd0;
   assign mem$000$000$twen      = 128'd0;
   assign mem$000$000$wen       = wen[127:0];
@@ -26287,16 +26287,16 @@ endmodule // GenWriteDataPRTL_0x472c29e762348c17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x1cbbbe62beab8149
+// BloomFilterXcel_0x6f5f3c0dd798be25
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f2d579ca4d0>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f2d4b2e1310>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x1cbbbe62beab8149
+module BloomFilterXcel_0x6f5f3c0dd798be25
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -26739,7 +26739,7 @@ module BloomFilterXcel_0x1cbbbe62beab8149
   end
 
 
-endmodule // BloomFilterXcel_0x1cbbbe62beab8149
+endmodule // BloomFilterXcel_0x6f5f3c0dd798be25
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -28368,8 +28368,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d56f76fd0>
-// req: <pymtl.model.signals.InPort object at 0x7f2d56f0f6d0>
+// resp: <pymtl.model.signals.OutPort object at 0x7f2d4a824950>
+// req: <pymtl.model.signals.InPort object at 0x7f2d4a824390>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -29595,8 +29595,8 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d579e7050>
-// req: <pymtl.model.signals.InPort object at 0x7f2d579dfb50>
+// resp: <pymtl.model.signals.OutPort object at 0x7f2d4b2fc550>
+// req: <pymtl.model.signals.InPort object at 0x7f2d4b2fc210>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none

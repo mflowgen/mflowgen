@@ -125,7 +125,7 @@ module TestHarness
   // DUT instantiation
   //----------------------------------------------------------------------
 
-  HostButterfree_SwShim dut
+  HostChansey_SwShim dut
   (
     .clk                 (clk),
     .reset               (reset),
@@ -738,7 +738,7 @@ module top;
 
   logic [799:0] test_name;
 
-  `include "Butterfree_all_tests.v"
+  `include "Chansey_all_tests.v"
 
   initial begin
     if ( !$value$plusargs( "test=%s", test_name ) ) begin
@@ -785,7 +785,7 @@ module top;
 
     // call the dispatch function in the generated all_tests.v
 
-    Butterfree_testcase_dispatch( test_name );
+    Chansey_testcase_dispatch( test_name );
 
     while ( !th_done && total_cycles < 200000 ) begin
       // $display("%d:",total_cycles);

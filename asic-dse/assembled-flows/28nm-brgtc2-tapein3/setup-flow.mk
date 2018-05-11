@@ -12,6 +12,7 @@ steps = \
   gen-sram-cdl \
   gen-sram-db \
   dc-synthesis \
+  summarize-area-brgtc2 \
   innovus-flowsetup \
   innovus-init \
   innovus-place \
