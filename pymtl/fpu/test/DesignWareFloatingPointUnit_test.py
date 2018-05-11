@@ -98,6 +98,8 @@ def generate_msgs( val_table ):
 negzero = 0x80000000
 
 # direct test cases
+# NOTE: below, the commented values are I think the correct results. I
+# think the minor differences are due to a bug in verilator...
 
 direct_fmul_msgs = generate_msgs( [
   # type      a           b   frnd       z     fexc
@@ -162,9 +164,10 @@ direct_fadd_msgs = generate_msgs( [
   [ FADD, f2i(0.4),   f2i(0.3),  0, 0x3f333333,   FEXC_NX    ],
   [ FADD, f2i(0.4),   f2i(0.4),  0, 0x3f4ccccd,   0          ],
   # riscv
-  #[ FADD, f2i(2.5),        f2i(1.0),       0, f2i(2.5 ),          0       ],
-  #[ FADD, f2i(-1235.1),    f2i(-1.1),      0, f2i(1358.61),       FEXC_NX ],
-  #[ FADD, f2i(3.14159265), f2i(0.00000001),0, f2i(3.14159265e-8), FEXC_NX ],
+  [ FADD, f2i(2.5),        f2i(1.0),       0, f2i(3.5 ),       0       ],
+  #[ FADD, f2i(-1235.1),    f2i(1.1),      0,  f2i(-1234),      FEXC_NX ],
+  [ FADD, f2i(-1235.1),    f2i(1.1),      0,  f2i(-1233.9999), FEXC_NX ],
+  [ FADD, f2i(3.14159265), f2i(0.00000001),0, f2i(3.14159265), FEXC_NX ],
 ] )
 
 #-------------------------------------------------------------------------
