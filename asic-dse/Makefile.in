@@ -201,7 +201,12 @@ junk += .graph # hidden dir used by utils/graph.py
 # first line of the commit message for marking the step.
 
 githash_cmd = \
-	$(shell git log --oneline -1 | sed "s| |-|g" | sed "s|/|-|" | cut -c 1-80)
+	$(shell git log --oneline -1 | \
+	        sed "s| |-|g" | \
+	        sed "s|\[|-|g" | \
+	        sed "s|\]|-|g" | \
+	        sed "s|/|-|g" | \
+	        cut -c 1-80)
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -299,8 +304,8 @@ include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 
 $(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
 # Mark the git commit hash used for this step
-	@rm -f ./$$(githashes_dir)/$(1).*
-	@touch $$(githashes_dir)/$(1).$$(githash_cmd)
+	@rm -f ./$$(githashes_dir)/[$(1)]-*
+	@touch $$(githashes_dir)/[$(1)]-$$(githash_cmd)
 # Collect files from handoffs of dependencies
 	@rm -rf ./$$(collect_dir.$(1))
 	@mkdir -p $$(collect_dir.$(1))
