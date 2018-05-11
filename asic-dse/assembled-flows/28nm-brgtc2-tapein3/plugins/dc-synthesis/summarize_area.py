@@ -139,10 +139,6 @@ groups = {
     'out_serialize',
     ],
 
-  'design-nohost': [
-    'dut',
-    ],
-
   'ctrlreg': [
     'dut/ctrlreg',
     ],
