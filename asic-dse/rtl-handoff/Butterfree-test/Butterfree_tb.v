@@ -650,9 +650,9 @@ module top;
 
   task load_sink_proc1 ( input logic [31:0] msg );
   begin
-    th.sink_proc2.sink.m[th_sink_proc1_idx] = msg;
-    th_sink_proc2_idx = th_sink_proc1_idx + 1;
-    th.sink_proc2.sink.m[th_sink_proc1_idx] = {32{1'bx}};
+    th.sink_proc1.sink.m[th_sink_proc1_idx] = msg;
+    th_sink_proc1_idx = th_sink_proc1_idx + 1;
+    th.sink_proc1.sink.m[th_sink_proc1_idx] = {32{1'bx}};
   end
   endtask
 
