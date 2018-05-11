@@ -37,7 +37,6 @@ normalization_group = [
 # List of instances to grab from DC area report
 
 instances = [
-  'HostButterfree',
   'dut',
   'dut/ctrlreg',
   'dut/dcache',
@@ -116,10 +115,6 @@ instances = [
 # Groups of instances for summary report
 
 groups = {
-
-  'top': [
-    'HostButterfree',
-    ],
 
   'design': [
     'dut',
