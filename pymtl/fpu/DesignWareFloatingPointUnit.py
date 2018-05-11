@@ -124,6 +124,52 @@ class DW_fp_mult( VerilogModel ):
     })
 
 #-------------------------------------------------------------------------
+# DW_fp_div
+#-------------------------------------------------------------------------
+# Python wrapper for just the Verilog model with no extra logic used
+# to do the Verilog import.
+
+class DW_fp_div( VerilogModel ):
+
+  # Verilog module setup
+
+  vprefix    = ""
+  vlinetrace = False
+
+  # Constructor
+
+  def __init__( s, ieee_compliance ):
+
+    sig_width      = 23      # RANGE 2 TO 253
+    exp_width      = 8       # RANGE 3 TO 31
+    faithful_round = 0       # RANGE 0 TO 1
+
+    # Interface
+
+    s.a       = InPort ( exp_width + sig_width + 1 )
+    s.b       = InPort ( exp_width + sig_width + 1 )
+    s.z       = OutPort( exp_width + sig_width + 1 )
+    s.rnd     = InPort ( 3 )
+    s.status  = OutPort( 8 )
+
+    # Verilog parameters
+
+    s.set_params({
+      'ieee_compliance' : ieee_compliance,
+      'faithful_round'  : faithful_round,
+    })
+
+    # Verilog ports
+
+    s.set_ports({
+      'a'      : s.a,
+      'b'      : s.b,
+      'rnd'    : s.rnd,
+      'z'      : s.z,
+      'status' : s.status,
+    })
+
+#-------------------------------------------------------------------------
 # DW_fp_addsub
 #-------------------------------------------------------------------------
 # Python wrapper for just the Verilog model with no extra logic used
@@ -164,6 +210,143 @@ class DW_fp_addsub( VerilogModel ):
       'a'      : s.a,
       'b'      : s.b,
       'op'     : s.op,
+      'rnd'    : s.rnd,
+      'z'      : s.z,
+      'status' : s.status,
+    })
+
+#-------------------------------------------------------------------------
+# DW_fp_cmp
+#-------------------------------------------------------------------------
+# Python wrapper for just the Verilog model with no extra logic used
+# to do the Verilog import.
+
+class DW_fp_cmp( VerilogModel ):
+
+  # Verilog module setup
+
+  vprefix    = ""
+  vlinetrace = False
+
+  # Constructor
+
+  def __init__( s, ieee_compliance ):
+
+    sig_width = 23      # RANGE 2 TO 253
+    exp_width = 8       # RANGE 3 TO 31
+
+    # Interface
+
+    s.a       = InPort ( exp_width + sig_width + 1 )
+    s.b       = InPort ( exp_width + sig_width + 1 )
+    s.zctr    = InPort ( 1 )
+    s.aeqb    = OutPort ( 1 )
+    s.altb    = OutPort ( 1 )
+    s.agtb    = OutPort ( 1 )
+    s.unordered = OutPort ( 1 )
+    s.z0      = OutPort( exp_width + sig_width + 1 )
+    s.z1      = OutPort( exp_width + sig_width + 1 )
+    s.status0 = OutPort( 8 )
+    s.status1 = OutPort( 8 )
+
+    # Verilog parameters
+
+    s.set_params({
+      'ieee_compliance' : ieee_compliance,
+    })
+
+    # Verilog ports
+
+    s.set_ports({
+      'a'      : s.a,
+      'b'      : s.b,
+      'zctr'   : s.zctr,
+      'aeqb'   : s.aeqb,
+      'altb'   : s.altb,
+      'agtb'   : s.agtb,
+      'unordered' : s.unordered,
+      'z0'     : s.z0,
+      'z1'     : s.z1,
+      'status0': s.status0,
+      'status1': s.status1,
+    })
+
+#-------------------------------------------------------------------------
+# DW_fp_i2flt
+#-------------------------------------------------------------------------
+# Python wrapper for just the Verilog model with no extra logic used
+# to do the Verilog import.
+
+class DW_fp_i2flt( VerilogModel ):
+
+  # Verilog module setup
+
+  vprefix    = ""
+  vlinetrace = False
+
+  # Constructor
+
+  def __init__( s ):
+
+    sig_width = 23      # RANGE 2 TO 253
+    exp_width = 8       # RANGE 3 TO 31
+    isize     = 32      # RANGE 3 to 512
+    isign     = 1       # 0 : unsigned, 1 : signed
+
+    # Interface
+
+    s.a       = InPort ( isize )
+    s.z       = OutPort( exp_width + sig_width + 1 )
+    s.rnd     = InPort ( 3 )
+    s.status  = OutPort( 8 )
+
+    # Verilog ports
+
+    s.set_ports({
+      'a'      : s.a,
+      'rnd'    : s.rnd,
+      'z'      : s.z,
+      'status' : s.status,
+    })
+
+#-------------------------------------------------------------------------
+# DW_fp_flt2i
+#-------------------------------------------------------------------------
+# Python wrapper for just the Verilog model with no extra logic used
+# to do the Verilog import.
+
+class DW_fp_flt2i( VerilogModel ):
+
+  # Verilog module setup
+
+  vprefix    = ""
+  vlinetrace = False
+
+  # Constructor
+
+  def __init__( s, ieee_compliance ):
+
+    sig_width = 23      # RANGE 2 TO 253
+    exp_width = 8       # RANGE 3 TO 31
+    isize     = 32      # RANGE 3 to 512
+
+    # Interface
+
+    s.a       = InPort( exp_width + sig_width + 1 )
+    s.z       = OutPort ( isize )
+    s.rnd     = InPort ( 3 )
+    s.status  = OutPort( 8 )
+
+    # Verilog parameters
+
+    s.set_params({
+      'ieee_compliance' : ieee_compliance,
+    })
+
+    # Verilog ports
+
+    s.set_ports({
+      'a'      : s.a,
       'rnd'    : s.rnd,
       'z'      : s.z,
       'status' : s.status,
@@ -220,20 +403,46 @@ class DesignWareFloatingPointUnit( Model ):
 
     s.fp_mult   = DW_fp_mult( ieee_compliance = 1 );
     s.fp_addsub = DW_fp_addsub( ieee_compliance = 1 );
+    s.fp_div    = DW_fp_div( ieee_compliance = 1 );
+    s.fp_cmp    = DW_fp_cmp( ieee_compliance = 1 );
+    s.fp_flt2i  = DW_fp_flt2i( ieee_compliance = 1 );
+    s.fp_i2flt  = DW_fp_i2flt();
 
     @s.combinational
     def comb():
       s.fp_mult.a.value       = 0
       s.fp_mult.b.value       = 0
       s.fp_mult.rnd.value     = 0
+
+      s.fp_addsub.a.value     = 0
+      s.fp_addsub.b.value     = 0
+      s.fp_addsub.op.value    = 0
+      s.fp_addsub.rnd.value   = 0
+
+      s.fp_div.a.value        = 0
+      s.fp_div.b.value        = 0
+      s.fp_div.rnd.value      = 0
+
+      s.fp_cmp.a.value        = 0
+      s.fp_cmp.b.value        = 0
+      s.fp_cmp.zctr.value     = 0
+
+      s.fp_flt2i.a.value      = 0
+      s.fp_flt2i.rnd.value    = 0
+
+      s.fp_i2flt.a.value      = 0
+      s.fp_i2flt.rnd.value    = 0
+
       s.resp_q.enq.msg.opaque.value = 0
       s.resp_q.enq.msg.result.value = 0
-      s.dw_fexc.value         = 0
-      s.resp_q.enq.msg.fexc.value   = 0
-      s.dw_frnd.value = 0
-      s.riscv_fexc.value = 0
+
+      s.dw_fexc.value             = 0
+      s.resp_q.enq.msg.fexc.value = 0
+      s.dw_frnd.value             = 0
+      s.riscv_fexc.value          = 0
+
       s.req_q.deq.rdy.value   = 0
-      s.resp_q.enq.val.value        = 0
+      s.resp_q.enq.val.value  = 0
 
       # Because the rounding mode is encoded differently in DW and RISC-V,
       # we convert between the two here.
@@ -264,6 +473,74 @@ class DesignWareFloatingPointUnit( Model ):
           s.fp_addsub.rnd.value   = s.dw_frnd
           s.resp_q.enq.msg.result.value = s.fp_addsub.z
           s.dw_fexc.value         = s.fp_addsub.status
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FSUB:
+          s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
+          s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
+          s.fp_addsub.op.value    = s.DW_ADDSUB_SUB
+          s.fp_addsub.rnd.value   = s.dw_frnd
+          s.resp_q.enq.msg.result.value = s.fp_addsub.z
+          s.dw_fexc.value         = s.fp_addsub.status
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FDIV:
+          s.fp_div.a.value        = s.req_q.deq.msg.op_a
+          s.fp_div.b.value        = s.req_q.deq.msg.op_b
+          s.fp_div.rnd.value      = s.dw_frnd
+          s.resp_q.enq.msg.result.value = s.fp_div.z
+          s.dw_fexc.value         = s.fp_div.status
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMIN:
+          s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+          s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+          s.fp_cmp.zctr.value     = 0
+          s.resp_q.enq.msg.result.value = s.fp_cmp.z0
+          if s.fp_cmp.unordered:
+            s.dw_fexc.value       = s.DW_FEXC_NV
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMAX:
+          s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+          s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+          s.fp_cmp.zctr.value     = 1
+          s.resp_q.enq.msg.result.value = s.fp_cmp.z0
+          if s.fp_cmp.unordered:
+            s.dw_fexc.value       = s.DW_FEXC_NV
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCEQ:
+          s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+          s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+          s.fp_cmp.zctr.value     = 0
+          s.resp_q.enq.msg.result.value = s.fp_cmp.aeqb
+          if s.fp_cmp.unordered:
+            s.dw_fexc.value       = s.DW_FEXC_NV
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLT:
+          s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+          s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+          s.fp_cmp.zctr.value     = 0
+          s.resp_q.enq.msg.result.value = s.fp_cmp.altb
+          if s.fp_cmp.unordered:
+            s.dw_fexc.value       = s.DW_FEXC_NV
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLE:
+          s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+          s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+          s.fp_cmp.zctr.value     = 0
+          s.resp_q.enq.msg.result.value = s.fp_cmp.altb | s.fp_cmp.aeqb
+          if s.fp_cmp.unordered:
+            s.dw_fexc.value       = s.DW_FEXC_NV
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FF2I:
+          s.fp_flt2i.a.value      = s.req_q.deq.msg.op_a
+          s.fp_flt2i.rnd.value    = s.dw_frnd
+          s.resp_q.enq.msg.result.value = s.fp_flt2i.z
+          s.dw_fexc.value         = s.fp_flt2i.status
+
+        elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FI2F:
+          s.fp_i2flt.a.value      = s.req_q.deq.msg.op_a
+          s.fp_i2flt.rnd.value    = s.dw_frnd
+          s.resp_q.enq.msg.result.value = s.fp_i2flt.z
+          s.dw_fexc.value         = s.fp_i2flt.status
+
 
         s.resp_q.enq.msg.opaque.value = s.req_q.deq.msg.opaque
         s.req_q.deq.rdy.value = 1

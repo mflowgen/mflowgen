@@ -4,7 +4,16 @@ class FpuReqMsg( BitStructDefinition ):
 
   TYPE_FMUL    = 0
   TYPE_FADD    = 1
-  NUM_TYPES    = 2
+  TYPE_FSUB    = 2
+  TYPE_FDIV    = 3
+  TYPE_FMIN    = 4
+  TYPE_FMAX    = 5
+  TYPE_FI2F    = 6
+  TYPE_FF2I    = 7
+  TYPE_FCEQ    = 8
+  TYPE_FCLT    = 9
+  TYPE_FCLE    = 10
+  NUM_TYPES    = 11
 
   FRND_NE = 0b000  # Round to nearest, ties to even
   FRND_TZ = 0b001  # Round towards zero
@@ -15,6 +24,15 @@ class FpuReqMsg( BitStructDefinition ):
   type_str = {
     TYPE_FMUL  : "fmul",
     TYPE_FADD  : "fadd",
+    TYPE_FSUB  : "fsub",
+    TYPE_FDIV  : "fdiv",
+    TYPE_FMIN  : "fmin",
+    TYPE_FMAX  : "fmax",
+    TYPE_FI2F  : "fi2f",
+    TYPE_FF2I  : "ff2i",
+    TYPE_FCEQ  : "fceq",
+    TYPE_FCLT  : "fclt",
+    TYPE_FCLE  : "fcle",
   }
 
   def __init__( s ):
