@@ -115,9 +115,9 @@ list:
 	@echo "Available steps targets"
 	@echo "--------------------------------------------------------------------------"
 	@echo
-	@printf                          "%s %-20s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
+	@printf                          "%s %-21s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
 	@echo                            "  ------------------------------------------------------------------------"
-	@$(foreach step, $(steps),printf "%s %-20s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
+	@$(foreach step, $(steps),printf "%s %-21s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
 	@echo
 	@echo "Other useful targets"
 	@echo
@@ -172,13 +172,13 @@ runtimes:
       h=$$(( $$step_secs / 3600      )); \
       m=$$(( $$step_secs % 3600 / 60 )); \
       s=$$(( $$step_secs % 60        )); \
-      printf '%-20s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
+      printf '%-21s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
         sed "s/ 0 hr/     /; s/ 0 min/      /";) \
     echo "--------------------------------------------------------------------------"; \
     h=$$(( $$tot_secs / 3600      )); \
     m=$$(( $$tot_secs % 3600 / 60 )); \
     s=$$(( $$tot_secs % 60        )); \
-    printf '%-20s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
+    printf '%-21s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
 
 # graph
 #
