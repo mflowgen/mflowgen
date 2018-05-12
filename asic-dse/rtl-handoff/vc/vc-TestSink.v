@@ -27,7 +27,11 @@ module vc_TestSink
 
   // Goes high once all sink data has been received
 
-  output logic                   done
+  output logic                   done,
+
+  // Goes high if we recieved any wrong sink data
+
+  output logic                   failed
 );
 
   //----------------------------------------------------------------------
@@ -96,6 +100,7 @@ module vc_TestSink
   //----------------------------------------------------------------------
 
   logic        failed;
+  logic        fail_case;
   logic  [3:0] verbose;
 
   initial begin
@@ -109,28 +114,38 @@ module vc_TestSink
     end
     else if ( !reset && go ) begin
 
+      fail_case = 0;
+
       if ( verbose > 0 )
         $display( "                %m checking message number %0d", index );
 
       // Cut-and-paste from VC_TEST_NET in vc-test.v
 
-      if ( msg === 'hz ) begin
-        failed = 1;
-        $display( "     [ FAILED ] %s, expected = %x, actual = %x",
-                  "msg", m[index], msg );
-      end
+      if ( msg === 'hz )
+        fail_case = 1;
+
       else
         casez ( msg )
           m[index] :
             if ( verbose > 0 )
                $display( "     [ passed ] %s, expected = %x, actual = %x",
                          "msg", m[index], msg );
-          default : begin
-            failed = 1;
-            $display( "     [ FAILED ] %s, expected = %x, actual = %x",
-                      "msg", m[index], msg );
-          end
+
+          default :
+            fail_case = 1;
+
         endcase
+
+      if ( fail_case ) begin
+        $display( "     [ FAILED ] %s, expected = %x, actual = %x",
+                  "msg", m[index], msg );
+      end
+
+      // Update global failed flag
+
+      failed <= failed | fail_case;
+
+      // Terminate Simulation if needs be ...
 
       if ( p_sim_mode && (failed == 1) ) begin
         $display( "" );
