@@ -485,7 +485,7 @@ module TestHarness
   vc_TestRandDelayMemory_1i1d #(
     .p_mem_nbytes (p_mem_nbytes),
     .p_i_nbits    (128),
-    .p_d_nbits    (32)
+    .p_d_nbits    (128)
   )
   mem
   (
@@ -787,7 +787,7 @@ module top;
 
     Butterfree_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 200000 ) begin
+    while ( !th_done && total_cycles < 350000 ) begin
       // $display("%d:",total_cycles);
       // $display("  L0i valid    : %b", th.dut.l0i.inner.dpath.valid_array.out);
       // $display("  L0i tag check: %x %x %d", th.dut.l0i.inner.dpath.tag_compare.in0,

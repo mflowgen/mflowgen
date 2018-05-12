@@ -65,6 +65,28 @@ vcs_common_options += -timescale=1ns/1ps
 
 vcs_common_options += -error=CIRNU
 
+# Enable error-checking when ports and connections mismatch in bit-width
+#
+# This is very important to double-check on parameterized input and output
+# ports. Ignoring this warning caused bugs in every tests related to data
+# caches. We configured the test memory to have data interface with 32-bit
+# bit-width. This caused the memory to slice the wrong bits from incoming
+# requests. Since the very first bits are data and data is 128-bit for the
+# other end of the interface, the test memory was extracting the data as
+# different request fields. Since request for memory reads have X's in the
+# data and thus the memory read request will be all X's for all fields
+# including address. So we want to catch these warning:
+#
+# Lint-[CAWM-L] Width mismatch
+# ../rtl-handoff/vc/vc-TestMemory_1i1d.v, 94
+#   Continuous assignment width mismatch
+#   5 bits (lhs) versus 32 bits (rhs).
+#   Source info: assign imemreq0_msg_len_modified_M = ((imemreq0_msg[((p_i_nbits
+#   + $clog2((p_i_nbits / 8))) - 1):p_i_nbits] == 0) ? (p_i_nbits / 8) :
+#   imemreq0_msg[((p_i_nbits  ...
+
+vcs_common_options += -error=CAWM-L
+
 #-------------------------------------------------------------------------
 # Design-specific options
 #-------------------------------------------------------------------------

@@ -90,11 +90,16 @@ module vc_TestMemory_1i1d
   // Handle case where length is zero which actually represents a full
   // width access.
 
+  // Avoid width mismatch as parameters are integers
+
+  typedef logic [$clog2(p_i_nbits/8):0] TRUNCATE_TO_LEN_i;
+  typedef logic [$clog2(p_d_nbits/8):0] TRUNCATE_TO_LEN_d;
+
   logic [$clog2(p_i_nbits/8):0] imemreq0_msg_len_modified_M;
-  assign imemreq0_msg_len_modified_M = (imemreq0_msg[`REQ_LEN(p_i_nbits)] == 0) ? p_i_nbits/8 : imemreq0_msg[`REQ_LEN(p_i_nbits)];
+  assign imemreq0_msg_len_modified_M = (imemreq0_msg[`REQ_LEN(p_i_nbits)] == 0) ? TRUNCATE_TO_LEN_i'((p_i_nbits/8)) : imemreq0_msg[`REQ_LEN(p_i_nbits)];
 
   logic [$clog2(p_d_nbits/8):0] dmemreq0_msg_len_modified_M;
-  assign dmemreq0_msg_len_modified_M = (dmemreq0_msg[`REQ_LEN(p_d_nbits)] == 0) ? p_d_nbits/8 : dmemreq0_msg[`REQ_LEN(p_d_nbits)];
+  assign dmemreq0_msg_len_modified_M = (dmemreq0_msg[`REQ_LEN(p_d_nbits)] == 0) ? TRUNCATE_TO_LEN_d'((p_d_nbits/8)) : dmemreq0_msg[`REQ_LEN(p_d_nbits)];
 
   // Read the data, little-endian
   integer i0, i1;
