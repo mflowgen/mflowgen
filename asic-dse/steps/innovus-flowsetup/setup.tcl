@@ -27,19 +27,6 @@
 global vars
 
 #-------------------------------------------------------------------------
-# Design-specific overrides
-#-------------------------------------------------------------------------
-# FIXME: design-specific will override!!
-
-set vars(plug_dir)            $::env(innovus_plugins_dir)
-
-if {[file exists $vars(plug_dir)/setup.tcl]} {
-  source $vars(plug_dir)/setup.tcl
-  return
-}
-
-#-------------------------------------------------------------------------
-#-------------------------------------------------------------------------
 # ADK Setup
 #-------------------------------------------------------------------------
 
@@ -60,7 +47,7 @@ set vars(netlist)             $vars(dc_results_dir)/$vars(design).mapped.v
 #-------------------------------------------------------------------------
 
 set vars(script_root)         $::env(innovus_ff_script_root)
-#set vars(plug_dir)            $::env(innovus_plugins_dir) # Currently set up top
+set vars(plug_dir)            $::env(innovus_plugins_dir)
 set vars(log_dir)             $::env(innovus_logs_dir)
 set vars(rpt_dir)             $::env(innovus_reports_dir)
 set vars(results_dir)         $::env(innovus_results_dir)
@@ -69,21 +56,56 @@ set vars(dbs_dir)             $::env(innovus_handoffs_dir)
 #-------------------------------------------------------------------------
 # Libraries
 #-------------------------------------------------------------------------
+# Difference between library_sets, rc_corners, and delay_corners
+#
+# - A delay_corner is made by choosing an rc_corner and a library_set
+# - The rc_corner is the captable/qrcTechFile, which is the wire RC
+# - The library_set is the stdcell libs, etc.
+#
+# - Then an analysis view is made of a delay corner and a constraints mode
+# - The analysis view can focus on setup or hold, depending on which
+#   corner and which constraints mode is picked
 
 # Source the setup file for the stdcells
 
 source $adk_dir/stdcells.tcl
 
-# Should this be slow fast only? Or more like corners?
+# Library sets
 
-set vars(library_sets)        libs_typical
-#set vars(libs_typical,si)     libs/stdcells.cdb
+set vars(library_sets)        "libs_typical libs_bc libs_wc"
 
 set vars(libs_typical,timing) [join "
                                 $adk_dir/stdcells.lib
                                 $adk_dir/iocells.lib
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
                               "]
+#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*tt*.lib]
+
+# The best case is:
+#
+# - Process: ff
+# - Voltage: highest
+# - Temperature: highest (temperature inversion at 28nm and below)
+
+set vars(libs_bc,timing)      [join "
+                                $adk_dir/stdcells-bc.lib
+                                $adk_dir/iocells-bc.lib
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                              "]
+#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ff*.lib]
+
+# The worst case is:
+#
+# - Process: ss
+# - Voltage: lowest
+# - Temperature: lowest (temperature inversion at 28nm and below)
+
+set vars(libs_wc,timing)      [join "
+                                $adk_dir/stdcells-wc.lib
+                                $adk_dir/iocells-wc.lib
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                              "]
+#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ss*.lib]
 
 set vars(lef_files) [join "
                       $adk_dir/rtk-tech.lef
@@ -93,43 +115,41 @@ set vars(lef_files) [join "
                       [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lef]
                     " ]
 
-# Difference between library_sets, rc_corners, and delay_corners?
-#
-# - A delay_corner is made by choosing an rc_corner and a library_set
-# - The rc_corner is the qrcTechFile, which is the wire RC
-# - The library_set is the standard cells
-#
-# - Then an analysis view is made of a delay corner and a constraints mode
-# - The analysis view can focus on setup or hold, depending on which
-#   corner and which constraints mode you pick
-
 #-------------------------------------------------------------------------
 # RC Corners
 #-------------------------------------------------------------------------
 
-set vars(rc_corners)                        "typical"
+set vars(rc_corners)                        "typical rcbest rcworst"
 
 set vars(typical,cap_table)                 $adk_dir/rtk-typical.captable
-#set vars(typical,qx_tech_file)              $adk_dir/pdk-typical-qrcTechFile
+set vars(typical,qx_tech_file)              $adk_dir/pdk-typical-qrcTechFile
 set vars(typical,T)                         25
 
-#set vars(rcbest,qx_tech_file)               $adk_dir/pdk-rcbest-qrcTechFile
-#set vars(rcbest,T)                          0
+set vars(rcbest,cap_table)                  $adk_dir/rtk-rcbest.captable
+set vars(rcbest,qx_tech_file)               $adk_dir/pdk-rcbest-qrcTechFile
+set vars(rcbest,T)                          25
 
-#set vars(rcworst,qx_tech_file)              $adk_dir/pdk-rcworst-qrcTechFile
-#set vars(rcworst,T)                         125
+set vars(rcworst,cap_table)                 $adk_dir/rtk-rcworst.captable
+set vars(rcworst,qx_tech_file)              $adk_dir/pdk-rcworst-qrcTechFile
+set vars(rcworst,T)                         25
 
 #-------------------------------------------------------------------------
 # Delay Corners
 #-------------------------------------------------------------------------
 
-set vars(delay_corners)                     delay_typical
+set vars(delay_corners)                     "delay_typical delay_bc_typical delay_bc_rcbest delay_wc_rcworst"
+
 set vars(delay_typical,library_set)         libs_typical
 set vars(delay_typical,rc_corner)           typical
 
-# FIXME
-# There is some "early check" and "late check" options I'm not using...
-# also some setup derating and hold derating I'm not using
+set vars(delay_bc_typical,library_set)      libs_bc
+set vars(delay_bc_typical,rc_corner)        typical
+
+set vars(delay_bc_rcbest,library_set)       libs_bc
+set vars(delay_bc_rcbest,rc_corner)         rcbest
+
+set vars(delay_wc_rcworst,library_set)      libs_wc
+set vars(delay_wc_rcworst,rc_corner)        rcworst
 
 #-------------------------------------------------------------------------
 # Constraint Modes
@@ -144,25 +164,67 @@ set vars(constraints_default,post_cts_sdc)  $vars(dc_results_dir)/$vars(design).
 # Analysis Views
 #-------------------------------------------------------------------------
 
-set vars(analysis_views)                    analysis_default
-set vars(analysis_default,delay_corner)     delay_typical
-set vars(analysis_default,constraint_mode)  constraints_default
+set vars(analysis_views)                       "analysis_default analysis_bc_typical analysis_bc_rcbest analysis_wc_rcworst"
 
-set vars(setup_analysis_views)              analysis_default
-set vars(default_setup_view)                analysis_default
-set vars(active_setup_views)                analysis_default
+set vars(analysis_default,delay_corner)        delay_typical
+set vars(analysis_default,constraint_mode)     constraints_default
 
-set vars(hold_analysis_views)               analysis_default
-set vars(default_hold_view)                 analysis_default
-set vars(active_hold_views)                 analysis_default
+set vars(analysis_bc_typical,delay_corner)     delay_bc_typical
+set vars(analysis_bc_typical,constraint_mode)  constraints_default
 
-set vars(power_analysis_view)               analysis_default
+set vars(analysis_bc_rcbest,delay_corner)      delay_bc_rcbest
+set vars(analysis_bc_rcbest,constraint_mode)   constraints_default
+
+set vars(analysis_wc_rcworst,delay_corner)     delay_wc_rcworst
+set vars(analysis_wc_rcworst,constraint_mode)  constraints_default
+
+# Analysis views for setup and hold
+#
+# Notes:
+#
+# - P: We don't have much control over whether we get tt/ff/ss/fs/sf
+# - V: We expect to carefully control voltage in the lab testing setup
+# - T: Our research chips do not actually have to function at -40C and 125C
+#
+# - For our research chips, we don't worry too much about meeting any
+#   particular clock target
+#
+# With this in mind:
+#
+# - Setup: typical process is enough, and typical voltage/temp is
+#   expected, so we do _not_ turn on corners for setup views
+#
+# - Hold: typical + ff process, and then typical voltage/temp is expected,
+#   so we enable typical corner, and we enable best case process + typical
+#   voltage/temp corner (analysis_bc_typical).
+#
+# This basically means that our chip will not work perfectly for extreme
+# environments, but we will only run in a normal environment anyway, and
+# we will report our numbers for that case.
+
+set vars(default_setup_view)                   "analysis_default"
+set vars(setup_analysis_views)                 "analysis_default"
+set vars(active_setup_views)                   "analysis_default"
+
+set vars(default_hold_view)                    "analysis_default"
+set vars(hold_analysis_views)                  "analysis_default analysis_bc_typical"
+set vars(active_hold_views)                    "analysis_default analysis_bc_typical"
+
+# Misc
+
+set vars(power_analysis_view)                  analysis_default
 
 #-------------------------------------------------------------------------
-# Scripts
+# Power-related
 #-------------------------------------------------------------------------
 
-set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
+##set vars(cpf_file)                                 "$::env(FF_DESIGN_SCRIPTS_DIR)/power_intent.cpf"
+#set vars(cpf_keep_rows)                            TRUE
+#set vars(cpf_power_domain)                         FALSE
+#set vars(cpf_power_switch)                         FALSE
+#set vars(cpf_isolation)                            FALSE
+#set vars(cpf_state_retention)                      FALSE
+#set vars(cpf_level_shifter)                        FALSE
 
 #-------------------------------------------------------------------------
 # Process information
@@ -219,14 +281,31 @@ set vars(signoff,save_design,replace_tcl)         $vars(plug_dir)/save_design.tc
 #set vars(postroute,restore_design,replace_tcl)    $vars(plug_dir)/restore_design.tcl
 #set vars(signoff,restore_design,replace_tcl)      $vars(plug_dir)/restore_design.tcl
 
-## Skipping (see "Tags for Innovus Flow")
+# Floorplanning tcl
+
+set vars(fp_tcl_file)                       $vars(plug_dir)/floorplan.tcl
+
+# Custom GDS stream out tcl
+
+set vars(gds_layer_map)                  $adk_dir/rtk-stream-out.map
+set vars(signoff,stream_out,replace_tcl) $vars(plug_dir)/stream_out.tcl
+
+# Custom check design tcl
 #
-##  set vars(step,command,skip) true
-##  set vars(postroute,opt_design,skip) true
+# - Select text-only (non-HTML) report and change the output directory
+
+set vars(init,check_design,replace_tcl)  $vars(plug_dir)/check_design.tcl
+
+# Custom summary report tcl
 #
-##set vars(place,time_design_hold,skip) false
-##set vars(cts,time_design_setup,skip) false
+# - Select text-only (non-HTML) report and change the output directory
+
+set vars(signoff,summary_report,replace_tcl)  $vars(plug_dir)/summary_report.tcl
+
+# Skipping (see "Tags for Innovus Flow")
 #
+# set vars(step,command,skip) true
+
 #-------------------------------------------------------------------------
 # Misc
 #-------------------------------------------------------------------------
@@ -265,13 +344,11 @@ set vars(tie_cells,max_fanout)   8
 set vars(filler_cells) $STDCELLS_FILLER_CELLS
 
 # Welltaps
-# FIXME: need to check the DRC requirements for well tap max spacing
 
 set vars(welltaps)               $STDCELLS_WELL_TAP_CELL
 set vars(welltaps,checkerboard)  true
 set vars(welltaps,verify_rule)   30
 set vars(welltaps,cell_interval) 60
-#set vars(welltaps,max_gap) 60
 
 # Endcaps
 
@@ -284,116 +361,92 @@ set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
 
 # List of buffers to use during useful skew
 
-#set vars(useful_skew)  true
+set vars(useful_skew)  true
 #set vars(skew_buffers) ""
 
-# Verbosity
+# DFM
 
-#set vars(verbose) false
-
-# Multithreading and distributed processing
-# FIXME
-
-set vars(local_cpus) 16
-
-# Flow control
-# - Controls when hold optimization is enabled
-# - (false | postcts | postroute | postroute_si)
-
-set vars(fix_hold)                       postcts
-set vars(fix_hold_allow_tns_degradation) true
-
-set vars(postroute_spread_wires)  true
-
-# Extraction efforts
-
-set vars(congestion_effort)            medium
-set vars(postroute_extraction_effort)  low
-set vars(signoff_extraction_effort)    low
-#set vars(flow_effort)                  medium
-set vars(power_effort)                 high
-
-set vars(multi_cut_effort)             medium
-
-set vars(leakage_power_effort)         none
-set vars(dynamic_power_effort)         none
-
-# CTS variables
-
-set vars(ccopt_effort)                 medium
+set vars(postroute_spread_wires)       true
+set vars(litho_driven_routing)         true
 
 # Metal fill is performed using the Calibre fill utility
 # Disabling metal density check at signoff
 
 set vars(signoff,verify_metal_density,skip) true
 
-#-------------------------------------------------------------------------
-# Custom tcl
-#-------------------------------------------------------------------------
+# Multithreading (and maybe distributed processing)
 
-# Custom GDS stream out tcl
+set vars(local_cpus) 16
 
-set vars(gds_layer_map)                  $adk_dir/rtk-stream-out.map
-set vars(signoff,stream_out,replace_tcl) $vars(plug_dir)/stream_out.tcl
-
-# Custom check design tcl
+# Flow control
 #
-# - Select text-only (non-HTML) report and change the output directory
+# - Controls when hold optimization is enabled
+# - (false | postcts | postroute | postroute_si)
 
-set vars(init,check_design,replace_tcl)  $vars(plug_dir)/check_design.tcl
+set vars(fix_hold)                       postcts
+set vars(fix_hold_allow_tns_degradation) true
 
-# Custom summary report tcl
-#
-# - Select text-only (non-HTML) report and change the output directory
+# Flow efforts
 
-set vars(signoff,summary_report,replace_tcl)  $vars(plug_dir)/summary_report.tcl
+set vars(flow_effort)                  standard
+set vars(congestion_effort)            medium
+set vars(ccopt_effort)                 high
+set vars(power_effort)                 high
+set vars(multi_cut_effort)             high
+
+# Extraction efforts
+
+set vars(postroute_extraction_effort)  high
+set vars(signoff_extraction_effort)    high
+
+#set vars(leakage_power_effort)         none
+#set vars(dynamic_power_effort)         none
+
+# Verbosity
+
+#set vars(verbose) false
 
 #-------------------------------------------------------------------------
 # Design-specific overrides
 #-------------------------------------------------------------------------
-# Here we source the design-specific setup.tcl in the plugin directory,
-# which can overwrite any variable in this file.
+# Here we source the design-specific setup.tcl in the plugins directory,
+# which can overwrite any variable in this script.
 
-#if {[file exists $vars(plug_dir)/setup.tcl]} {
-#  source $vars(plug_dir)/setup.tcl
-#}
+if {[file exists $vars(plug_dir)/setup.tcl]} {
+  source $vars(plug_dir)/setup.tcl
+}
 
 #-------------------------------------------------------------------------
-# Unsure
+# Reduced-effort flow that sacrifices timing to iterate more quickly
 #-------------------------------------------------------------------------
 
-##set vars(cell_check_early) 1.0
-##set vars(cell_check_late)  1.0
-##set vars(critical_range)   ??
-#
-## There is a hier_flow_type: Enables the new two-pass hierarchical flow. The
-## valid types are 1pass (default) and 2pass.
-#
-#set vars(report_power)                          true
-#
-## Reduced effort flow. Sacrifices timing
-##if {[info exists vars(reduced_effort_flow)] && $vars(reduced_effort_flow)} {
-##  set vars(flow_effort) express
-##  #Place
-##  set vars(congestion_effort) low
-##  #CTS
-##  set vars(ccopt_effort) low
-##  #Route
-##  set vars(postroute_extraction_effort) medium
-##  #PostRoute: Skipping PostRoute setup and hold fixing
-##  set vars(postroute,opt_design,skip) true
-#
-##  set vars(skip_verify) true
-##}
-#
-## Skipping some verify steps at signoff that take too long
-##if {[info exists vars(skip_verify)] && $vars(skip_verify)} {
-##  # set vars(signoff,extract_rc,skip) true
-##  # set vars(signoff,dump_spef,skip) true
-##  # set vars(signoff,time_design_setup,skip) true
-##  # set vars(signoff,time_design_hold,skip) true
-##  set vars(signoff,verify_connectivity,skip) true
-##  set vars(signoff,verify_geometry,skip) true
-##  set vars(signoff,verify_process_antenna,skip) true
-##}
+if {[info exists vars(reduced_effort_flow)] && $vars(reduced_effort_flow)} {
+  set vars(flow_effort)       express
+  set vars(congestion_effort) low
+  set vars(ccopt_effort)      low
+  set vars(power_effort)      low
+  set vars(multi_cut_effort)  low
+
+  set vars(postroute_extraction_effort) medium
+
+  # Route: Skip routing because express flow does not require route
+
+  set vars(route,route_design,skip) true
+  set vars(route,spread_wires,skip) true
+
+  # PostRoute: Skip postroute setup and hold fixing
+
+  set vars(postroute,opt_design,skip) true
+
+  # Signoff: Skip verification steps
+
+  set vars(signoff,verify_connectivity,skip) true
+  set vars(signoff,verify_geometry,skip) true
+  set vars(signoff,verify_process_antenna,skip) true
+
+#  set vars(signoff,extract_rc,skip) true
+#  set vars(signoff,dump_spef,skip) true
+#  set vars(signoff,time_design_setup,skip) true
+#  set vars(signoff,time_design_hold,skip) true
+}
 
