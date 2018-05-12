@@ -3,6 +3,8 @@
 #=========================================================================
 # Includes the run_test needed by the composition
 
+import os
+
 from pymtl import *
 
 # Import designs
@@ -84,8 +86,9 @@ def run_test( test, dump_vcd, test_verilog,
         # For all other sections, simply copy them into the memory
 
         else:
+          base_addr = section.addr
           for j in xrange(len(section.data)):
-            f.write( "  load_mem( %d, 8'h%s );\n" % (j, Bits(8,section.data[j])) );
+            f.write( "  load_mem( %d, 8'h%s );\n" % (j + base_addr, Bits(8,section.data[j])) );
 
     if test[2]:
       # dump mdumsg
@@ -96,6 +99,7 @@ def run_test( test, dump_vcd, test_verilog,
 
     # TODO test[3] and [4] for icache/dcache
 
-  run( Butterfree( num_cores ), test, num_cores, cacheline_nbits,
-       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
-       mem_latency, only_one_core=only_one_core )
+  if not os.environ.get('PYTEST_DRYRUN'):
+    run( Butterfree( num_cores ), test, num_cores, cacheline_nbits,
+         dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
+         mem_latency, only_one_core=only_one_core )

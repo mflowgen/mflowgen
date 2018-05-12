@@ -29,7 +29,11 @@ module vc_TestRandDelaySink
 
   // Goes high once all sink data has been received
 
-  output logic                   done
+  output logic                   done,
+
+  // Goes high if we recieved any wrong sink data
+
+  output logic                   failed
 );
 
   //----------------------------------------------------------------------
@@ -69,7 +73,9 @@ module vc_TestRandDelaySink
     .rdy        (sink_rdy),
     .msg        (sink_msg),
 
-    .done       (done)
+    .done       (done),
+
+    .failed     (failed)
   );
 
   //----------------------------------------------------------------------

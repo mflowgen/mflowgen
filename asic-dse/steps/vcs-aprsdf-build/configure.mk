@@ -59,11 +59,6 @@ vcs_aprsdf_compile_dir = $(handoff_dir.vcs-aprsdf-build)/csrc
 vcs_aprsdf_structural_options += -o $(vcs_aprsdf_build_simv)
 vcs_aprsdf_structural_options += -Mdir=$(vcs_aprsdf_compile_dir)
 
-# Library files -- Any collected verilog (e.g., SRAMs)
-
-vcs_aprsdf_structural_options += \
-	$(foreach f, $(wildcard $(collect_dir.sim-aprsdf-build)/*.v),-v $f)
-
 # Include directory -- Any collected includes are made available
 
 vcs_aprsdf_structural_options += +incdir+$(collect_dir.vcs-aprsdf-build)
@@ -80,12 +75,17 @@ vcs_aprsdf_structural_options += -bfl $(logs_dir.vcs-aprsdf-build)/vcs_filelist
 # Gate-level model (magically reach into innovus results dir)
 
 vcs_aprsdf_gl_model        = $(wildcard $(innovus_results_dir)/*.vcs.v)
-vcs_aprsdf_custom_options += $(vcs_aprsdf_gl_model)
+vcs_aprsdf_custom_options += -v $(vcs_aprsdf_gl_model)
 
 # Library files -- IO cells and stdcells
 
 vcs_aprsdf_custom_options += -v $(adk_dir)/iocells.v
 vcs_aprsdf_custom_options += -v $(adk_dir)/stdcells.v
+
+# Library files -- SRAMs (magically reach into handoff dir)
+
+vcs_aprsdf_srams = $(wildcard $(PWD)/$(handoff_dir.gen-sram-verilog)/*.v)
+vcs_aprsdf_custom_options += $(foreach f, $(vcs_aprsdf_srams),-v $f)
 
 # Performance options for post-APR SDF simulation
 

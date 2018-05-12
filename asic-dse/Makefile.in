@@ -79,6 +79,8 @@ export collect_dir    = collect
 export handoff_dir    = handoff
 export timestamps_dir = timestamps
 
+export githashes_dir  = githashes
+
 #-------------------------------------------------------------------------
 # Step management
 #-------------------------------------------------------------------------
@@ -115,9 +117,9 @@ list:
 	@echo "Available steps targets"
 	@echo "--------------------------------------------------------------------------"
 	@echo
-	@printf                          "%s %-20s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
+	@printf                          "%s %-21s   %-15s   %s\n" ' ' "(Long Name)"  "(Short Name)"     "(Description)"
 	@echo                            "  ------------------------------------------------------------------------"
-	@$(foreach step, $(steps),printf "%s %-20s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
+	@$(foreach step, $(steps),printf "%s %-21s   %-15s   %s\n" '-' "$(step)"      "$(abbr.$(step))"  $(descriptions.$(step)) ;)
 	@echo
 	@echo "Other useful targets"
 	@echo
@@ -172,13 +174,13 @@ runtimes:
       h=$$(( $$step_secs / 3600      )); \
       m=$$(( $$step_secs % 3600 / 60 )); \
       s=$$(( $$step_secs % 60        )); \
-      printf '%-20s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
+      printf '%-21s -- %2d hr %2d min %2d sec%s\n' $(step) $$h $$m $$s "$$flag"| \
         sed "s/ 0 hr/     /; s/ 0 min/      /";) \
     echo "--------------------------------------------------------------------------"; \
     h=$$(( $$tot_secs / 3600      )); \
     m=$$(( $$tot_secs % 3600 / 60 )); \
     s=$$(( $$tot_secs % 60        )); \
-    printf '%-20s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
+    printf '%-21s -- %2d hr %2d min %2d sec\n' "Total" $$h $$m $$s; )
 
 # graph
 #
@@ -188,6 +190,23 @@ graph:
 	@python $(base_dir)/utils/graph.py -f setup-flow.mk
 
 junk += .graph # hidden dir used by utils/graph.py
+
+# git hashes
+#
+# Each step that runs will mark the $(githashes_dir) with the commit hash
+# at the time of running it. This can be useful to see which commit a
+# build was on or which branch was being tracked over time.
+#
+# The following command generates a short hash and the dash-separated
+# first line of the commit message for marking the step.
+
+githash_cmd = \
+	$(shell git log --oneline -1 | \
+	        sed "s| |-|g" | \
+	        sed "s|\[|-|g" | \
+	        sed "s|\]|-|g" | \
+	        sed "s|/|-|g" | \
+	        cut -c 1-80)
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -202,6 +221,7 @@ seed:
 	@mkdir -p $(VPATH) $(flow_dir) $(plugins_dir)
 	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
 	@mkdir -p $(collect_dir) $(handoff_dir) $(timestamps_dir)
+	@mkdir -p $(githashes_dir)
 # Seed links to the master steps into the flow directory
 	@$(foreach x, $(steps), \
       ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir);)
@@ -213,6 +233,7 @@ seed:
 junk += $(flow_dir) $(plugins_dir)
 junk += $(logs_dir) $(reports_dir) $(results_dir)
 junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
+junk += $(githashes_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
@@ -282,6 +303,9 @@ include $$(relative_base_dir)/$$(master_steps_dir)/$(1)/configure.mk
 # Primary command target for this step
 
 $(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
+# Mark the git commit hash used for this step
+	@rm -f ./$$(githashes_dir)/[$(1)]-*
+	@touch $$(githashes_dir)/[$(1)]-$$(githash_cmd)
 # Collect files from handoffs of dependencies
 	@rm -rf ./$$(collect_dir.$(1))
 	@mkdir -p $$(collect_dir.$(1))

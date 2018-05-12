@@ -123,7 +123,7 @@ define commands.sim-prep
 # Convert the YAML dump to txt
 	grep -v ":" < $(test_cases_yaml) | sed "s/^- //" > $(test_cases_txt)
 # Generate verilog test cases from test case txt
-	cd $(handoff_dir.sim-prep) && ../../$(gen_all_tests_sh)
+	cd $(handoff_dir.sim-prep) && PYTEST_DRYRUN=y ../../$(gen_all_tests_sh)
 endef
 
 #-------------------------------------------------------------------------

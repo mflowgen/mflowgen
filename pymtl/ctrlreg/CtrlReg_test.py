@@ -147,21 +147,18 @@ def test_generic( test_params, dump_vcd, test_verilog ):
   # Register Space:
   #  0 --- Go
   #  1 --- Debug
-  #  2 --- <--+
-  #  3 ---    |\ 32-bit instruction counters
-  #  4 ---    |/      for four cores
-  #  5 --- <--+
+  #  2 --- 32-bit cycle counters
+  #  3 --- <--+
+  #  4 ---    |\ 32-bit instruction counters
+  #  5 ---    |/      for four cores
   #  6 --- <--+
-  #  7 ---    |\ 32-bit cycle counters 
-  #  8 ---    |/     for four cores
+  #  7 --- <--+
+  #  8 ---    |- host_en interface
   #  9 --- <--+
-  # 10 --- <--+
-  # 11 ---    |- host_en interface
-  # 12 --- <--+
 
   dut = CtrlReg( num_cores, valrdy_ifcs )
 
-  writable_regs = [ 0, 1, 10, 11, 12 ]  # Only two registers are writable right now
+  writable_regs = [ 0, 1, 7, 8, 9 ]  # Only two registers are writable right now
   num_msgs = 100
   msgs     = test_params.msg_func( writable_regs, num_msgs )
 

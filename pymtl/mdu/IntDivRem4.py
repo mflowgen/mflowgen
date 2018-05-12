@@ -273,7 +273,7 @@ class IntDivRem4Ctrl( Model ):
 
     s.sub_negative1 = InPort( 1 )
     s.sub_negative2 = InPort( 1 )
-    
+
     # Control signals
 
     s.quotient_mux_sel  = OutPort( 1 )
@@ -284,9 +284,9 @@ class IntDivRem4Ctrl( Model ):
 
     s.divisor_mux_sel   = OutPort( 1 )
 
-    s.is_div            = OutPort  (1)
-    s.buffers_en        = OutPort  (1)
-    s.is_signed         = OutPort  (1)
+    s.is_div            = OutPort( 1 )
+    s.buffers_en        = OutPort( 1 )
+    s.is_signed         = OutPort( 1 )
 
     s.STATE_IDLE = 0
     s.STATE_DONE = 1
@@ -302,11 +302,11 @@ class IntDivRem4Ctrl( Model ):
       s.state.in_.value = s.state.out
 
       if   curr_state == s.STATE_IDLE:
-        if s.req_val and s.req_rdy:
+        if s.req_val:
           s.state.in_.value = s.STATE_CALC
 
       elif curr_state == s.STATE_DONE:
-        if s.resp_val and s.resp_rdy:
+        if s.resp_rdy:
           s.state.in_.value = s.STATE_IDLE
 
       else:
@@ -317,13 +317,15 @@ class IntDivRem4Ctrl( Model ):
 
       curr_state = s.state.out
 
-      s.buffers_en.value = 0
-      s.is_div.value     = 0
-      s.is_signed.value  = 0
+      s.req_rdy.value  = 0
+      s.resp_val.value = 0
+
+      s.buffers_en.value   = 0
+      s.is_div.value       = 0
+      s.is_signed.value    = 0
 
       if   curr_state == s.STATE_IDLE:
         s.req_rdy.value     = 1
-        s.resp_val.value    = 0
 
         s.remainder_mux_sel.value = R_MUX_SEL_IN
         s.remainder_reg_en.value  = 1
@@ -338,20 +340,17 @@ class IntDivRem4Ctrl( Model ):
         s.is_signed.value         = (s.req_type[0] == 0) # div/rem = 0b100, 0b110
 
       elif curr_state == s.STATE_DONE:
-        s.req_rdy.value     = 0
         s.resp_val.value    = 1
-
-        s.quotient_mux_sel.value  = Q_MUX_SEL_0
-        s.quotient_reg_en.value   = 0
 
         s.remainder_mux_sel.value = R_MUX_SEL_IN
         s.remainder_reg_en.value  = 0
 
+        s.quotient_mux_sel.value  = Q_MUX_SEL_0
+        s.quotient_reg_en.value   = 0
+
         s.divisor_mux_sel.value   = D_MUX_SEL_IN
 
       else: # calculating
-        s.req_rdy.value     = 0
-        s.resp_val.value    = 0
 
         s.remainder_reg_en.value = ~(s.sub_negative1 & s.sub_negative2)
         if s.sub_negative2:

@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 #=========================================================================
-# isa-sim [options] <elf-binary>
+# butterfree-sim [options] <elf-binary>
 #=========================================================================
 #
 #  -h --help           Display this message
 #
 #  --host              Test HostButterfree instead of Butterfree
 #  --trace             Display line tracing
-#  --limit             Set max number of "steps", default=10000
+#  --limit             Set max number of "steps", default=10000000
+#  --dump-vcd          Dump vcd
+#  --translate         Translate
 #
 #  <elf-binary>        TinyRV2 elf binary file
 #
@@ -39,17 +41,134 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 
 # Use BRGTC2 special message types
 
-from ifcs import MemMsg
+from ifcs import MemMsg, CtrlRegReqMsg
 from test import TestMemory
 
 from proc.SparseMemoryImage import SparseMemoryImage
 from proc.tinyrv2_encoding  import assemble
 from proc import elf
 
-from CompButterfree.test.Butterfree_harness import TestHarness
+from CompButterfree.test.Butterfree_harness import TestHarness, req_cr, resp_cr, ID_GO
 from CompButterfree.Butterfree import Butterfree
 from CompButterfree.HostButterfree import HostButterfree
 
+from ifcs       import CtrlRegMsg, MemMsg, MduMsg
+from pclib.test import TestSource, TestSink, TestNetSink
+from fpga       import SwShim
+
+class SimHarness( TestHarness ):
+
+  #-----------------------------------------------------------------------
+  # constructor
+  #-----------------------------------------------------------------------
+
+  def __init__( s, model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
+                src_delay, sink_delay, mem_stall_prob, mem_latency ):
+
+    num_memports = 2   # 1 dmem, 1 imem
+    s.num_cores  = num_cores
+
+    # Interface types
+    mopaque_nbits = 8
+    addr_nbits    = 32
+    word_nbits    = 32
+
+    s.ctrlregifc     = CtrlRegMsg()
+    s.proc_cache_ifc = MemMsg( mopaque_nbits, addr_nbits, word_nbits )
+    s.cache_mem_ifc  = MemMsg( mopaque_nbits, addr_nbits, cacheline_nbits )
+    s.proc_mdu_ifc   = MduMsg( 32, 8 )
+
+    # input to select ctrl reg source/sink
+
+    s.ctrlreg_sel = InPort( 1 )
+    s.sink_hook   = OutValRdyBundle( s.ctrlregifc.resp )
+
+    s.ctrlregsrc  = TestSource ( s.ctrlregifc.req , [], src_delay  )
+    s.ctrlregsink = TestSink   ( s.ctrlregifc.resp, [], sink_delay )
+
+    s.ctrlregsrc2 = TestSource ( s.ctrlregifc.req , [], src_delay  )
+
+    @s.combinational
+    def ctrlreg_select():
+      if s.ctrlreg_sel:
+        # mute src/sink
+        s.ctrlregsrc.out.rdy.value  = 0
+        s.ctrlregsink.in_.val.value = 0
+        s.ctrlregsink.in_.msg.value = 0
+
+        # redirect src2 messages to model.ctrlregreq
+        s.model.ctrlregreq.val.value  = s.ctrlregsrc2.out.val
+        s.model.ctrlregreq.msg.value  = s.ctrlregsrc2.out.msg
+        s.ctrlregsrc2.out.rdy.value   = s.model.ctrlregreq.rdy
+
+        # redirect model.ctrlregresp to sink_hook
+        s.sink_hook.val.value         = s.model.ctrlregresp.val
+        s.sink_hook.msg.value         = s.model.ctrlregresp.msg
+        s.model.ctrlregresp.rdy.value = s.sink_hook.rdy
+      else:
+        # mute src2/sink_hook
+        s.ctrlregsrc2.out.rdy.value = 0
+        s.sink_hook.val.value       = 0
+        s.sink_hook.msg.value       = 0
+
+        # redirect src messages to model.ctrlregreq
+        s.model.ctrlregreq.val.value  = s.ctrlregsrc.out.val
+        s.model.ctrlregreq.msg.value  = s.ctrlregsrc.out.msg
+        s.ctrlregsrc.out.rdy.value    = s.model.ctrlregreq.rdy
+
+        # redirect model.ctrlregresp to sink messages
+        s.ctrlregsink.in_.val.value  = s.model.ctrlregresp.val
+        s.ctrlregsink.in_.msg.value  = s.model.ctrlregresp.msg
+        s.model.ctrlregresp.rdy.value = s.ctrlregsink.in_.rdy
+
+    s.host_mdu_src     = TestSource ( s.proc_mdu_ifc.req , [], src_delay  )
+    s.host_mdu_sink    = TestNetSink( s.proc_mdu_ifc.resp, [], sink_delay )
+
+    s.host_icache_src  = TestSource( s.cache_mem_ifc.req , [], src_delay  )
+    s.host_icache_sink = TestSink  ( s.cache_mem_ifc.resp, [], sink_delay )
+
+    s.host_dcache_src  = TestSource( s.proc_cache_ifc.req , [], src_delay  )
+    s.host_dcache_sink = TestSink  ( s.proc_cache_ifc.resp, [], sink_delay )
+
+    s.mem = TestMemory( MemMsg(8,32,cacheline_nbits),
+                        num_memports, mem_stall_prob, mem_latency, 2**28 ) # 256MB
+
+    # model
+
+    s.model = model
+
+    # Dump VCD
+
+    if dump_vcd:
+      s.model.vcd_file = dump_vcd
+
+    if test_verilog:
+      cls_name = s.model.__class__.__name__
+      if ( cls_name != 'SwShim' ) and ( not hasattr( s.model, 'dut' ) ):
+        s.model = TranslationTool( s.model, enable_blackbox = True, verilator_xinit=test_verilog )
+
+    # Composition <-> Memory
+
+    s.connect( s.model.imemreq,  s.mem.reqs[0]     )
+    s.connect( s.model.imemresp, s.mem.resps[0]    )
+    s.connect( s.model.dmemreq,  s.mem.reqs[1]     )
+    s.connect( s.model.dmemresp, s.mem.resps[1]    )
+
+    s.connect_pairs(
+      s.model.host_mdureq,  s.host_mdu_src.out,
+      s.model.host_mduresp, s.host_mdu_sink.in_,
+
+      s.model.host_icachereq,  s.host_icache_src.out,
+      s.model.host_icacheresp, s.host_icache_sink.in_,
+
+      s.model.host_dcachereq,  s.host_dcache_src.out,
+      s.model.host_dcacheresp, s.host_dcache_sink.in_,
+    )
+
+  def line_trace( s ):
+    return s.ctrlregsrc.line_trace()  + " > " + \
+           s.ctrlregsink.line_trace() + " > " + \
+           s.model.line_trace()
 
 #=========================================================================
 # Command line processing
@@ -75,7 +194,9 @@ def parse_cmdline():
 
   p.add_argument( "--host",                 action="store_true"    )
   p.add_argument( "--trace",                action="store_true"    )
-  p.add_argument( "--limit", default=10000, type=int               )
+  p.add_argument( "--limit", default=10000000, type=int               )
+  p.add_argument( "--dump-vcd",             action="store_true"    )
+  p.add_argument( "--translate",            action="store_true"    )
 
   p.add_argument( "elf_file" )
 
@@ -111,16 +232,17 @@ def main():
   # Create test harness and elaborate
 
   if opts.host:
+    asynch_bitwidth = 8
     hwshim_and_dut = HostButterfree( asynch_bitwidth )
     model          = SwShim( Butterfree(), hwshim_and_dut, asynch_bitwidth,
-                                           dump_vcd, test_verilog )
+                                           opts.dump_vcd, opts.translate )
     # Set explicit name
     model.explicit_modulename = model.__class__.__name__
   else:
     model = Butterfree()
 
-  th = TestHarness( model, dump_vcd, test_verilog, num_cores, cacheline_nbits,
-                    0, 0, 0, 0 ) # TODO add mem_stall_prob, mem_latency as command line option
+  th = SimHarness( model, opts.dump_vcd, opts.translate, num_cores, cacheline_nbits,
+                   0, 0, 0, 0 ) # TODO add mem_stall_prob, mem_latency as command line option
 
   th.elaborate()
 
@@ -129,15 +251,17 @@ def main():
   th.load_ctrlreg( "asm" )
   th.load_asm( mem_image )
 
-  assert False
-
   # Create a simulator using the simulation tool
 
   sim = SimulationTool( th )
 
   # We are always ready to accept a proc2mngr message
 
-  th.proc2mngr.rdy.value = 1
+  th.model.proc2mngr_0.rdy.value = 1
+
+  # use the first source first
+
+  th.ctrlreg_sel.value = 0
 
   #-----------------------------------------------------------------------
   # Run the simulation
@@ -154,8 +278,6 @@ def main():
   app_fail_xtra_count = 0
   app_fail_xtra_msgs  = [ None, None, None ]
 
-  commit_inst = [0]*4
-
   # Storage for print
 
   app_print           = False
@@ -171,15 +293,15 @@ def main():
 
     # Check the proc2mngr interface
 
-    if th.proc2mngr.val:
+    if th.model.proc2mngr_0.val:
 
-      msg_type = th.proc2mngr.msg[16:32]
-      msg_xtra = th.proc2mngr.msg[ 0:16]
+      msg_type = th.model.proc2mngr_0.msg[16:32]
+      msg_xtra = th.model.proc2mngr_0.msg[ 0:16]
 
       # First we check if we are gathering app_fail_xtra_msgs
 
       if app_fail_xtra:
-        app_fail_xtra_msgs[ app_fail_xtra_count ] = th.proc2mngr.msg[:]
+        app_fail_xtra_msgs[ app_fail_xtra_count ] = th.model.proc2mngr_0.msg[:]
         app_fail_xtra_count += 1
         if app_fail_xtra_count == 3:
           print( "" )
@@ -197,15 +319,15 @@ def main():
         # Print int
 
         if app_print_type == 0:
-          print( th.proc2mngr.msg[:].uint(), end='' )
+          print( th.model.proc2mngr_0.msg[:].uint(), end='' )
           app_print = False
 
         if app_print_type == 1:
-          print( chr(th.proc2mngr.msg[:].uint()), end='' )
+          print( chr(th.model.proc2mngr_0.msg[:].uint()), end='' )
           app_print = False
 
         if app_print_type == 2:
-          char_as_num = th.proc2mngr.msg[:].uint()
+          char_as_num = th.model.proc2mngr_0.msg[:].uint()
           if char_as_num > 0:
             print( chr(char_as_num), end='' )
           else:
@@ -244,14 +366,7 @@ def main():
           print( "" )
           print( "  [ passed ]" )
           print( "" )
-          print("In stats_en region:")
-          print(  "  total_committed_inst   = {}".format( reduce(lambda x,y:x+y, commit_inst) ))
-          if opts.mcore:
-            print( "" )
-            for i in xrange(4):
-              print("  core{}_committed_inst   = {}".format( i, commit_inst[i] ))
           break
-
         else:
           app_fail_xtra = True
 
@@ -267,6 +382,7 @@ def main():
     # Tick the simulator
 
     sim.cycle()
+    count += 1
 
   #-----------------------------------------------------------------------
   # Post processing
@@ -281,6 +397,56 @@ def main():
    --limit command line option to increase the limit.
     """.format(opts.limit))
     exit(1)
+
+  # Read out inst/cycle count by switching to another ctrlreg source
+
+  rd = CtrlRegReqMsg.TYPE_READ
+  wr = CtrlRegReqMsg.TYPE_WRITE
+
+  th.ctrlregsrc2.src.msgs = [
+    req_cr( wr,  ID_GO, 0 ), # stop
+    req_cr( rd,  2,     0 ), # cycle
+    req_cr( rd,  3,     0 ), # core 0 inst
+    req_cr( rd,  4,     0 ), # core 1 inst
+    req_cr( rd,  5,     0 ), # core 2 inst
+    req_cr( rd,  6,     0 ), # core 3 cycl
+  ]
+
+  th.ctrlreg_sel.value = 1
+  th.sink_hook.rdy.value = 1
+
+  received    = 0
+  exec_cycle  = 0
+  commit_inst = [0] * 4
+
+  while received < 6:
+
+    if opts.trace:
+      sim.print_line_trace()
+
+    if th.sink_hook.val:
+      msg = th.sink_hook.msg
+
+      if   received < 1:  pass # go is low
+      if   received < 2:  exec_cycle = msg.data.uint()
+      else:               commit_inst[ received-2 ] = msg.data.uint() 
+
+      received += 1
+
+    sim.cycle()
+    count += 1
+
+  print("")
+  print("Total cycle executed: {} cycles".format( count ))
+  print("")
+  print("In stats_en region:")
+  print("  total_committed_inst = {}".format( reduce(lambda x,y:x+y, commit_inst) ))
+  print("  total_executed_cycle = {}".format( exec_cycle ))
+  print("  total_cpi            = {:.2f}".format( 1.0*exec_cycle/reduce(lambda x,y:x+y, commit_inst) ))
+  print( "" )
+  for i in xrange(4):
+    print("  core{} - committed_inst = {}".format( i, commit_inst[i] ))
+    print("        - cpi            = {:.2f}".format( 1.0*exec_cycle/commit_inst[i] ))
 
   exit(0)
 

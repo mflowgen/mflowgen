@@ -23,6 +23,14 @@ vcs_common_options += -full64 -sverilog +v2k +vc -notice -V
 vcs_common_options += +libext+.v
 vcs_common_options += +noportcoerce
 
+# Enable dumping waveforms
+
+vcs_common_options += -debug_pp
+
+# Dump info about how registers were initialized with +vcs+initreg
+
+export VCS_PRINT_INITREG_INITIALIZATION=1
+
 # Useful diagnostics
 #
 # - timescale : shows timescales for all modules to check for consistency
@@ -31,19 +39,6 @@ vcs_common_options += +noportcoerce
 vcs_common_options += -diag timescale
 vcs_common_options += -diag env
 
-# Enable dumping waveforms
-
-vcs_common_options += -debug_pp
-
-# The timescale may need to be tweaked so that the timescales in all IP
-# verilog match and use consistent units for their "pound-delays"
-
-vcs_common_options += -timescale=1ns/1ps
-
-# Dump info about how registers were initialized with +vcs+initreg
-
-export VCS_PRINT_INITREG_INITIALIZATION=1
-
 # Libconfig logs are useful to see what source code VCS is using for each
 # instance. The dump is large, so this can be turned on with LIBCONFIG=yes
 # when running make. Highly recommend dumping this to a file.
@@ -51,6 +46,46 @@ export VCS_PRINT_INITREG_INITIALIZATION=1
 ifdef LIBCONFIG
 vcs_common_options += -diag libconfig
 endif
+
+# The timescale may need to be tweaked so that the timescales in all IP
+# verilog match and use consistent units for their "pound-delays"
+
+vcs_common_options += -timescale=1ns/1ps
+
+# Enable certain error-checking cases
+#
+# If there are problems with the verilog config, modules will be mapped to
+# the wrong verilog source definitions. They are warnings by default, but
+# they should be errors, so we enable errors for these cases here:
+#
+# - Warning-[CIRNU] Config instance rule not used
+#   Instance 'top.th.swshim.dut' may not exist in the scope of the sign
+#   for which the configuration was attempted.
+#
+
+vcs_common_options += -error=CIRNU
+
+# Enable error-checking when ports and connections mismatch in bit-width
+#
+# This is very important to double-check on parameterized input and output
+# ports. Ignoring this warning caused bugs in every tests related to data
+# caches. We configured the test memory to have data interface with 32-bit
+# bit-width. This caused the memory to slice the wrong bits from incoming
+# requests. Since the very first bits are data and data is 128-bit for the
+# other end of the interface, the test memory was extracting the data as
+# different request fields. Since request for memory reads have X's in the
+# data and thus the memory read request will be all X's for all fields
+# including address. So we want to catch these warning:
+#
+# Lint-[CAWM-L] Width mismatch
+# ../rtl-handoff/vc/vc-TestMemory_1i1d.v, 94
+#   Continuous assignment width mismatch
+#   5 bits (lhs) versus 32 bits (rhs).
+#   Source info: assign imemreq0_msg_len_modified_M = ((imemreq0_msg[((p_i_nbits
+#   + $clog2((p_i_nbits / 8))) - 1):p_i_nbits] == 0) ? (p_i_nbits / 8) :
+#   imemreq0_msg[((p_i_nbits  ...
+
+vcs_common_options += -error=CAWM-L
 
 #-------------------------------------------------------------------------
 # Design-specific options
