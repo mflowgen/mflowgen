@@ -97,6 +97,7 @@ def run_test( test, dump_vcd, test_verilog,
 
     # TODO test[3] and [4] for icache/dcache
 
-  run( Chansey( num_cores ), test, num_cores, cacheline_nbits,
-       dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
-       mem_latency, only_one_core=only_one_core )
+  if not os.environ.get('PYTEST_DRYRUN'):
+    run( Chansey( num_cores ), test, num_cores, cacheline_nbits,
+         dump_vcd, test_verilog, src_delay, sink_delay, mem_stall_prob,
+         mem_latency, only_one_core=only_one_core )
