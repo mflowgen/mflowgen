@@ -170,6 +170,95 @@ class DW_fp_div( VerilogModel ):
     })
 
 #-------------------------------------------------------------------------
+# DW_fp_div_pipelined
+#-------------------------------------------------------------------------
+# Add pipelining to DW_fp_div.
+
+class DW_fp_div_pipelined( Model ):
+
+  def __init__( s, ieee_compliance, num_stages=3 ):
+
+    sig_width      = 23      # RANGE 2 TO 253
+    exp_width      = 8       # RANGE 3 TO 31
+    fp_width       = exp_width + sig_width + 1
+
+    # Explicit module name
+
+    s.explicit_modulename = "DW_fp_div_pipelined"
+
+    # Interface
+
+    s.a       = InPort ( fp_width )
+    s.b       = InPort ( fp_width )
+    s.z       = OutPort( fp_width )
+    s.rnd     = InPort ( 3 )
+    s.status  = OutPort( 8 )
+    s.in_val  = InPort ( 1 )
+    s.out_val = OutPort( 1 )
+    s.busy    = OutPort( 1 )
+
+    # Input registers
+
+    s.a_reg   = Wire( fp_width )
+    s.b_reg   = Wire( fp_width )
+    s.rnd_reg = Wire( 3 )
+    s.in_val_reg = Wire( 1 )
+
+    # Pipeline registers
+
+    s.pipe_val = [ Wire( 1 ) for i in range( num_stages ) ]
+    s.pipe_z   = [ Wire( fp_width ) for i in range( num_stages ) ]
+    s.pipe_status = [ Wire( 8 ) for i in range( num_stages ) ]
+
+    # The div unit
+
+    s.dw_fp_div = DW_fp_div( ieee_compliance )
+
+    s.connect( s.a_reg,   s.dw_fp_div.a   )
+    s.connect( s.b_reg,   s.dw_fp_div.b   )
+    s.connect( s.rnd_reg, s.dw_fp_div.rnd )
+
+    # Output
+
+    s.connect( s.pipe_val[num_stages-1],    s.out_val )
+    s.connect( s.pipe_z[num_stages-1],      s.z       )
+    s.connect( s.pipe_status[num_stages-1], s.status  )
+
+    # Busy signal
+
+    @s.combinational
+    def comb_busy():
+      s.busy.value = s.in_val_reg
+      for i in xrange( num_stages ):
+        s.busy.value = s.busy | s.pipe_val[i]
+
+    # Sequential logic
+
+    @s.posedge_clk
+    def posedge():
+      if s.reset:
+        # Only need to reset the valid registers.
+        s.in_val_reg.next = 0
+
+        for i in xrange( num_stages ):
+          s.pipe_val[i].next = 0
+
+      else:
+        s.a_reg.next = s.a
+        s.b_reg.next = s.b
+        s.rnd_reg.next = s.rnd
+        s.in_val_reg.next = s.in_val
+
+        s.pipe_val[0].next     = s.in_val_reg
+        s.pipe_z[0].next       = s.dw_fp_div.z
+        s.pipe_status[0].next  = s.dw_fp_div.status
+
+        for i in xrange( 1, num_stages ):
+          s.pipe_val[i].next    = s.pipe_val[i-1]
+          s.pipe_z[i].next      = s.pipe_z[i-1]
+          s.pipe_status[i].next = s.pipe_status[i-1]
+
+#-------------------------------------------------------------------------
 # DW_fp_addsub
 #-------------------------------------------------------------------------
 # Python wrapper for just the Verilog model with no extra logic used
@@ -214,6 +303,99 @@ class DW_fp_addsub( VerilogModel ):
       'z'      : s.z,
       'status' : s.status,
     })
+
+#-------------------------------------------------------------------------
+# DW_fp_addsub_pipelined
+#-------------------------------------------------------------------------
+# Add pipelining to DW_fp_addsub.
+
+class DW_fp_addsub_pipelined( Model ):
+
+  def __init__( s, ieee_compliance, num_stages=2 ):
+
+    sig_width      = 23      # RANGE 2 TO 253
+    exp_width      = 8       # RANGE 3 TO 31
+    fp_width       = exp_width + sig_width + 1
+
+    # Explicit module name
+
+    s.explicit_modulename = "DW_fp_addsub_pipelined"
+
+    # Interface
+
+    s.a       = InPort ( fp_width )
+    s.b       = InPort ( fp_width )
+    s.op      = InPort ( 1 )
+    s.z       = OutPort( fp_width )
+    s.rnd     = InPort ( 3 )
+    s.status  = OutPort( 8 )
+    s.in_val  = InPort ( 1 )
+    s.out_val = OutPort( 1 )
+    s.busy    = OutPort( 1 )
+
+    # Input registers
+
+    s.a_reg   = Wire( fp_width )
+    s.b_reg   = Wire( fp_width )
+    s.op_reg  = Wire( 1 )
+    s.rnd_reg = Wire( 3 )
+    s.in_val_reg = Wire( 1 )
+
+    # Pipeline registers
+
+    s.pipe_val = [ Wire( 1 ) for i in range( num_stages ) ]
+    s.pipe_z   = [ Wire( fp_width ) for i in range( num_stages ) ]
+    s.pipe_status = [ Wire( 8 ) for i in range( num_stages ) ]
+
+    # The addsub unit
+
+    s.dw_fp_addsub = DW_fp_addsub( ieee_compliance )
+
+    s.connect( s.a_reg,   s.dw_fp_addsub.a   )
+    s.connect( s.b_reg,   s.dw_fp_addsub.b   )
+    s.connect( s.op_reg,  s.dw_fp_addsub.op  )
+    s.connect( s.rnd_reg, s.dw_fp_addsub.rnd )
+
+    # Output
+
+    s.connect( s.pipe_val[num_stages-1],    s.out_val )
+    s.connect( s.pipe_z[num_stages-1],      s.z       )
+    s.connect( s.pipe_status[num_stages-1], s.status  )
+
+    # Busy signal
+
+    @s.combinational
+    def comb_busy():
+      s.busy.value = s.in_val_reg
+      for i in xrange( num_stages ):
+        s.busy.value = s.busy | s.pipe_val[i]
+
+    # Sequential logic
+
+    @s.posedge_clk
+    def posedge():
+      if s.reset:
+        # Only need to reset the valid registers.
+        s.in_val_reg.next = 0
+
+        for i in xrange( num_stages ):
+          s.pipe_val[i].next = 0
+
+      else:
+        s.a_reg.next = s.a
+        s.b_reg.next = s.b
+        s.op_reg.next = s.op
+        s.rnd_reg.next = s.rnd
+        s.in_val_reg.next = s.in_val
+
+        s.pipe_val[0].next     = s.in_val_reg
+        s.pipe_z[0].next       = s.dw_fp_addsub.z
+        s.pipe_status[0].next  = s.dw_fp_addsub.status
+
+        for i in xrange( 1, num_stages ):
+          s.pipe_val[i].next    = s.pipe_val[i-1]
+          s.pipe_z[i].next      = s.pipe_z[i-1]
+          s.pipe_status[i].next = s.pipe_status[i-1]
 
 #-------------------------------------------------------------------------
 # DW_fp_cmp
@@ -390,6 +572,7 @@ class DesignWareFloatingPointUnit( Model ):
 
     #
 
+    s.resp_go = Wire( 1 )
     s.dw_frnd = Wire( 3 )
     s.riscv_fexc = Wire( 5 )
     s.dw_fexc = Wire( 8 )
@@ -402,8 +585,8 @@ class DesignWareFloatingPointUnit( Model ):
     # Instantiate inner models
 
     s.fp_mult   = DW_fp_mult( ieee_compliance = 1 );
-    s.fp_addsub = DW_fp_addsub( ieee_compliance = 1 );
-    s.fp_div    = DW_fp_div( ieee_compliance = 1 );
+    s.fp_addsub = DW_fp_addsub_pipelined( ieee_compliance = 1, num_stages = 2 );
+    s.fp_div    = DW_fp_div_pipelined( ieee_compliance = 1, num_stages = 3 );
     s.fp_cmp    = DW_fp_cmp( ieee_compliance = 1 );
     s.fp_flt2i  = DW_fp_flt2i( ieee_compliance = 1 );
     s.fp_i2flt  = DW_fp_i2flt();
@@ -418,10 +601,12 @@ class DesignWareFloatingPointUnit( Model ):
       s.fp_addsub.b.value     = 0
       s.fp_addsub.op.value    = 0
       s.fp_addsub.rnd.value   = 0
+      s.fp_addsub.in_val.value= 0
 
       s.fp_div.a.value        = 0
       s.fp_div.b.value        = 0
       s.fp_div.rnd.value      = 0
+      s.fp_div.in_val.value   = 0
 
       s.fp_cmp.a.value        = 0
       s.fp_cmp.b.value        = 0
@@ -443,6 +628,7 @@ class DesignWareFloatingPointUnit( Model ):
 
       s.req_q.deq.rdy.value   = 0
       s.resp_q.enq.val.value  = 0
+      s.resp_go.value         = 0
 
       # Because the rounding mode is encoded differently in DW and RISC-V,
       # we convert between the two here.
@@ -459,6 +645,8 @@ class DesignWareFloatingPointUnit( Model ):
         s.dw_frnd.value = s.DW_FRND_MM
 
       if s.req_q.deq.val and s.resp_q.enq.rdy:
+        s.resp_go.value        = 1
+
         if s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMUL:
           s.fp_mult.a.value       = s.req_q.deq.msg.op_a
           s.fp_mult.b.value       = s.req_q.deq.msg.op_b
@@ -471,23 +659,29 @@ class DesignWareFloatingPointUnit( Model ):
           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
           s.fp_addsub.op.value    = s.DW_ADDSUB_ADD
           s.fp_addsub.rnd.value   = s.dw_frnd
+          s.fp_addsub.in_val.value= not s.fp_addsub.busy
           s.resp_q.enq.msg.result.value = s.fp_addsub.z
           s.dw_fexc.value         = s.fp_addsub.status
+          s.resp_go.value        = s.fp_addsub.out_val
 
         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FSUB:
           s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
           s.fp_addsub.op.value    = s.DW_ADDSUB_SUB
           s.fp_addsub.rnd.value   = s.dw_frnd
+          s.fp_addsub.in_val.value= not s.fp_addsub.busy
           s.resp_q.enq.msg.result.value = s.fp_addsub.z
           s.dw_fexc.value         = s.fp_addsub.status
+          s.resp_go.value         = s.fp_addsub.out_val
 
         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FDIV:
           s.fp_div.a.value        = s.req_q.deq.msg.op_a
           s.fp_div.b.value        = s.req_q.deq.msg.op_b
           s.fp_div.rnd.value      = s.dw_frnd
+          s.fp_div.in_val.value   = not s.fp_div.busy
           s.resp_q.enq.msg.result.value = s.fp_div.z
           s.dw_fexc.value         = s.fp_div.status
+          s.resp_go.value         = s.fp_div.out_val
 
         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMIN:
           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
@@ -543,8 +737,8 @@ class DesignWareFloatingPointUnit( Model ):
 
 
         s.resp_q.enq.msg.opaque.value = s.req_q.deq.msg.opaque
-        s.req_q.deq.rdy.value = 1
-        s.resp_q.enq.val.value = 1
+        s.req_q.deq.rdy.value = s.resp_go
+        s.resp_q.enq.val.value = s.resp_go
 
       # Because the exceptions are encoded differently in DW and RISC-V,
       # we convert between the two here.
@@ -562,4 +756,7 @@ class DesignWareFloatingPointUnit( Model ):
 
       s.resp_q.enq.msg.fexc.value   = s.riscv_fexc
 
+  def line_trace( s ):
+    return "{} {} {}".format( s.fp_div.busy, s.fp_div.in_val,
+                           s.fp_div.out_val )
 
