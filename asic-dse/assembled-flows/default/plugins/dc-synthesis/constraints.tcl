@@ -50,10 +50,3 @@ set_max_transition [expr 0.25*${dc_clock_period}] ${DESIGN_NAME}
 
 #set_input_transition 1 [all_inputs]
 #set_max_transition 10 [all_outputs]
-
-# Register retiming for the fp div
-set_optimize_registers true -design DW_fp_div_pipelined -clock ideal_clock \
-  -check_design -verbose -print_critical_loop -delay_threshold ${dc_clock_period}
-
-set_optimize_registers true -design DW_fp_addsub_pipelined -clock ideal_clock \
-  -check_design -verbose -print_critical_loop -delay_threshold ${dc_clock_period}
