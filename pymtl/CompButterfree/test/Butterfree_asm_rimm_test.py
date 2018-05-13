@@ -295,8 +295,6 @@ from proc.test import inst_lui
     [
       asm_test( inst_lui.gen_basic_test     , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_lui.gen_dest_dep_test  , 0        , 0         , 0             , 0           )    ,
-      asm_test( inst_lui.gen_src_dep_test   , 0        , 0         , 0             , 0           )    ,
-      asm_test( inst_lui.gen_srcs_dest_test , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_lui.gen_value_test     , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_lui.gen_random_test    , 0        , 0         , 0             , 0           )    ,
     ]
@@ -324,8 +322,6 @@ from proc.test import inst_auipc
     [
       asm_test( inst_auipc.gen_basic_test     , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_auipc.gen_dest_dep_test  , 0        , 0         , 0             , 0           )    ,
-      asm_test( inst_auipc.gen_src_dep_test   , 0        , 0         , 0             , 0           )    ,
-      asm_test( inst_auipc.gen_srcs_dest_test , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_auipc.gen_value_test     , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_auipc.gen_random_test    , 0        , 0         , 0             , 0           )    ,
     ]
