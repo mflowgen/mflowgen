@@ -625,6 +625,105 @@ module top;
     .failed         (th_failed)
   );
 
+  // Avoid initialization issues
+  // hawajkm: Explicitly initialize the sources and sinks so they don't fire
+
+  task init_src_ctrlreg ();
+  begin
+    th.src_ctrlreg.src.m[th_src_ctrlreg_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_ctrlreg ();
+  begin
+    th.sink_ctrlreg.sink.m[th_sink_ctrlreg_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc0 ();
+  begin
+    th.src_proc0.src.m[th_src_proc0_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc0 ();
+  begin
+    th.sink_proc0.sink.m[th_sink_proc0_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc1 ();
+  begin
+    th.src_proc1.src.m[th_src_proc1_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc1 ();
+  begin
+    th.sink_proc1.sink.m[th_sink_proc1_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc2 ();
+  begin
+    th.src_proc2.src.m[th_src_proc2_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc2 ();
+  begin
+    th.sink_proc2.sink.m[th_sink_proc2_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc3 ();
+  begin
+    th.src_proc3.src.m[th_src_proc3_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc3 ();
+  begin
+    th.sink_proc3.sink.m[th_sink_proc3_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_mdu ();
+  begin
+    th.src_mdu.src.m[th_src_mdu_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_mdu ();
+  begin
+    th.sink_mdu.sink.m[th_sink_mdu_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_icache ();
+  begin
+    th.src_icache.src.m[th_src_icache_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_icache ();
+  begin
+    th.sink_icache.sink.m[th_sink_icache_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_dcache ();
+  begin
+    th.src_dcache.src.m[th_src_dcache_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_dcache ();
+  begin
+    th.sink_dcache.sink.m[th_sink_dcache_idx] = 'bx;
+  end
+  endtask
+
   // Shunning: Helper tasks for loading messages to 8 srcs, 8 sink, and memory
 
   task load_mem( input logic [31:0] addr, input logic [31:0] data);
@@ -761,6 +860,46 @@ module top;
   end
   endtask
 
+  // Global initialization task
+
+  task initialize ();
+  begin
+
+    // Initalize the ctrlreg src/sink
+
+    init_src_ctrlreg ();
+    init_sink_ctrlreg ();
+
+    // Initialize the proc's src/sink
+
+    init_src_proc0 ();
+    init_src_proc1 ();
+    init_src_proc2 ();
+    init_src_proc3 ();
+
+    init_sink_proc0 ();
+    init_sink_proc1 ();
+    init_sink_proc2 ();
+    init_sink_proc3 ();
+
+    // Initialize the MDU src/sink
+
+    init_src_mdu ();
+    init_sink_mdu ();
+
+    // Initialize icaches src/sink
+
+    init_src_icache ();
+    init_sink_icache ();
+
+    // Initialize the dcaches src/sink
+
+    init_src_dcache ();
+    init_sink_dcache ();
+
+  end
+  endtask
+
   logic [799:0] test_name;
   logic [ 63:0] max_cycles;
 
@@ -811,6 +950,10 @@ module top;
     th_sink_icache_idx = 0;
     th_src_dcache_idx = 0;
     th_sink_dcache_idx = 0;
+
+    // Initialize the sources and sinks
+
+    initialize();
 
     // call the dispatch function in the generated all_tests.v
 
