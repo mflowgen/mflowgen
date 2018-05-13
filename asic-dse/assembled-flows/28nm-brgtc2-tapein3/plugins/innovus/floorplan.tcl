@@ -24,45 +24,61 @@ addInst -physical -cell PCORNERE_G -inst PCORNER_TOPRIGHT
 addInst -physical -cell PCORNERE_G -inst PCORNER_BOTTOMLEFT
 addInst -physical -cell PCORNERE_G -inst PCORNER_BOTTOMRIGHT
 
-# Core VDD and VSS iocells
+# Core VDD iocells
 
-addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_0_iocell; # vertical
-addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_1_iocell; # vertical
-addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_2_iocell; # vertical
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_3_iocell; # horizontal
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_4_iocell; # horizontal
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_5_iocell; # horizontal
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_6_iocell; # horizontal
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_7_iocell; # horizontal
-addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_8_iocell; # horizontal
+addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_west_0_iocell; # W, horizontal
+addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_west_1_iocell; # W, horizontal
 
-addInst -physical -cell PVSS1CDE_V_G -inst vss_core_0_iocell; # vertical
-addInst -physical -cell PVSS1CDE_V_G -inst vss_core_1_iocell; # vertical
-addInst -physical -cell PVSS1CDE_V_G -inst vss_core_2_iocell; # vertical
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_3_iocell; # horizontal
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_4_iocell; # horizontal
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_5_iocell; # horizontal
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_6_iocell; # horizontal
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_7_iocell; # horizontal
-addInst -physical -cell PVSS1CDE_H_G -inst vss_core_8_iocell; # horizontal
+addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_north_0_iocell; # N, vertical
+addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_north_1_iocell; # N, vertical
+addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_north_2_iocell; # N, vertical
 
-# IO VDD and VSS iocells
+addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_east_0_iocell; # E, horizontal
+addInst -physical -cell PVDD1CDE_H_G -inst vdd_core_east_1_iocell; # E, horizontal
 
-addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_0_iocell; # vertical
-addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_1_iocell; # vertical
-addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_2_iocell; # vertical
-addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_3_iocell; # vertical
+addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_south_0_iocell; # S, vertical
+addInst -physical -cell PVDD1CDE_V_G -inst vdd_core_south_1_iocell; # S, vertical
 
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_0_iocell; # vertical
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_1_iocell; # vertical
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_2_iocell; # vertical
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_3_iocell; # vertical
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_4_iocell; # vertical
-addInst -physical -cell PVSS2CDE_V_G -inst vss_io_5_iocell; # vertical
+# Core VSS iocells
 
-# POC iocells
+addInst -physical -cell PVSS1CDE_H_G -inst vss_core_west_0_iocell; # W, horizontal
+addInst -physical -cell PVSS1CDE_H_G -inst vss_core_west_1_iocell; # W, horizontal
 
-addInst -physical -cell PVDD2POCE_H_G -inst vdd_poc_0_iocell; # horizontal
+addInst -physical -cell PVSS1CDE_V_G -inst vss_core_north_0_iocell; # N, vertical
+addInst -physical -cell PVSS1CDE_V_G -inst vss_core_north_1_iocell; # N, vertical
+addInst -physical -cell PVSS1CDE_V_G -inst vss_core_north_2_iocell; # N, vertical
+
+addInst -physical -cell PVSS1CDE_H_G -inst vss_core_east_0_iocell; # E, horizontal
+addInst -physical -cell PVSS1CDE_H_G -inst vss_core_east_1_iocell; # E, horizontal
+
+addInst -physical -cell PVSS1CDE_V_G -inst vss_core_south_0_iocell; # S, vertical
+addInst -physical -cell PVSS1CDE_V_G -inst vss_core_south_1_iocell; # S, vertical
+
+# IO VDD iocells
+
+addInst -physical -cell PVDD2CDE_H_G -inst vdd_io_west_0_iocell; # W, horizontal
+
+addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_north_0_iocell; # N, vertical
+addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_north_1_iocell; # N, vertical
+
+addInst -physical -cell PVDD2POCE_H_G -inst vdd_poc_east_0_iocell; # E, POC horizontal
+addInst -physical -cell PVDD2CDE_H_G -inst vdd_io_east_0_iocell;   # E, horizontal
+
+addInst -physical -cell PVDD2CDE_V_G -inst vdd_io_south_0_iocell; # S, vertical
+
+# IO VSS iocells
+
+addInst -physical -cell PVSS2CDE_H_G -inst vss_io_west_0_iocell; # W, horizontal
+
+addInst -physical -cell PVSS2CDE_V_G -inst vss_io_north_0_iocell; # N, vertical
+addInst -physical -cell PVSS2CDE_V_G -inst vss_io_north_1_iocell; # N, vertical
+addInst -physical -cell PVSS2CDE_V_G -inst vss_io_north_2_iocell; # N, vertical
+
+addInst -physical -cell PVSS2CDE_H_G -inst vss_io_east_0_iocell; # E, horizontal
+addInst -physical -cell PVSS2CDE_H_G -inst vss_io_east_1_iocell; # E, horizontal
+
+addInst -physical -cell PVSS2CDE_V_G -inst vss_io_south_0_iocell; # S, vertical
+addInst -physical -cell PVSS2CDE_V_G -inst vss_io_south_1_iocell; # S, vertical
 
 # Dummy cells
 
@@ -75,10 +91,10 @@ addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_5_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_6_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_7_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_9_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_10_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_11_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_12_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_9_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_10_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_11_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_12_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_13_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_14_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_15_iocell; # horizontal
@@ -86,6 +102,8 @@ addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_12_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_17_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_18_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_19_iocell; # horizontal
+
+addInst -physical -cell PVDD2CDE_V_G -inst  vss_dummy_v_0_iocell; # horizontal
 
 #-------------------------------------------------------------------------
 # Bond pads
