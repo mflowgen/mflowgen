@@ -26,8 +26,8 @@ set r_pitch 0.90; # Pitch between power rails (standard cell height)
 #
 # - Julian's original 16nm design was 67.2um x 67.2um
 
-set core_width  110
-set core_height 110
+set core_width   75
+set core_height 158
 
 # Power ring
 
