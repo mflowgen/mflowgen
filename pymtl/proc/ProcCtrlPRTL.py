@@ -658,22 +658,34 @@ class ProcCtrlPRTL( Model ):
 
       if s.rs1_en_D:
 
-        if   s.val_X & ( s.inst_D[ RS1 ] == s.rf_waddr_X ) & ( s.rf_waddr_X != 0 ) \
+        if   s.val_X & ( s.inst_D[ RS1 ] == s.rf_waddr_X ) \
+                     & ( s.rs1_fprf_D | s.rf_waddr_X != 0 ) \
+                     & ( s.rs1_fprf_D == s.rd_fprf_X ) \
                      & s.rf_wen_pending_X:    s.op1_byp_sel_D.value = byp_x
-        elif s.val_M & ( s.inst_D[ RS1 ] == s.rf_waddr_M ) & ( s.rf_waddr_M != 0 ) \
+        elif s.val_M & ( s.inst_D[ RS1 ] == s.rf_waddr_M ) \
+                     & ( s.rs1_fprf_D | s.rf_waddr_M != 0 ) \
+                     & ( s.rs1_fprf_D == s.rd_fprf_M ) \
                      & s.rf_wen_pending_M:    s.op1_byp_sel_D.value = byp_m
-        elif s.val_W & ( s.inst_D[ RS1 ] == s.rf_waddr_W ) & ( s.rf_waddr_W != 0 ) \
+        elif s.val_W & ( s.inst_D[ RS1 ] == s.rf_waddr_W ) \
+                     & ( s.rs1_fprf_D | s.rf_waddr_W != 0 ) \
+                     & ( s.rs1_fprf_D == s.rd_fprf_W ) \
                      & s.rf_wen_pending_W:    s.op1_byp_sel_D.value = byp_w
 
       s.op2_byp_sel_D.value = byp_d
 
       if s.rs2_en_D:
 
-        if   s.val_X & ( s.inst_D[ RS2 ] == s.rf_waddr_X ) & ( s.rf_waddr_X != 0 ) \
+        if   s.val_X & ( s.inst_D[ RS2 ] == s.rf_waddr_X ) \
+                     & ( s.rs2_fprf_D | s.rf_waddr_X != 0 ) \
+                     & ( s.rs2_fprf_D == s.rd_fprf_X ) \
                      & s.rf_wen_pending_X:    s.op2_byp_sel_D.value = byp_x
-        elif s.val_M & ( s.inst_D[ RS2 ] == s.rf_waddr_M ) & ( s.rf_waddr_M != 0 ) \
+        elif s.val_M & ( s.inst_D[ RS2 ] == s.rf_waddr_M ) \
+                     & ( s.rs2_fprf_D | s.rf_waddr_M != 0 ) \
+                     & ( s.rs2_fprf_D == s.rd_fprf_M ) \
                      & s.rf_wen_pending_M:    s.op2_byp_sel_D.value = byp_m
-        elif s.val_W & ( s.inst_D[ RS2 ] == s.rf_waddr_W ) & ( s.rf_waddr_W != 0 ) \
+        elif s.val_W & ( s.inst_D[ RS2 ] == s.rf_waddr_W ) \
+                     & ( s.rs2_fprf_D | s.rf_waddr_W != 0 ) \
+                     & ( s.rs2_fprf_D == s.rd_fprf_W ) \
                      & s.rf_wen_pending_W:    s.op2_byp_sel_D.value = byp_w
 
     # hazards checking logic

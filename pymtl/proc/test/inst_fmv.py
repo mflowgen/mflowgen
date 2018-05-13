@@ -74,7 +74,8 @@ def gen_basic_test():
 # gen_fmv_template
 #-------------------------------------------------------------------------
 
-def gen_fmv_template( num_nops_src, num_nops_fp, num_nops_dest, val ):
+def gen_fmv_template( num_nops_src, num_nops_fp, num_nops_dest, val,
+                      fp_reg="f2" ):
   return """
 
     # Move some junk into x2 to ensure f2 doesn't alias into x2.
@@ -83,10 +84,10 @@ def gen_fmv_template( num_nops_src, num_nops_fp, num_nops_dest, val ):
     csrr x1, mngr2proc < {val}
     {nops_src}
     # Move the value to fp reg.
-    fmv.w.x f2, x1
+    fmv.w.x {fp_reg}, x1
     {nops_fp}
     # Move the value back to int reg.
-    fmv.x.w x3, f2
+    fmv.x.w x3, {fp_reg}
     {nops_dest}
     csrw proc2mngr, x3 > {val}
     csrw proc2mngr, x2 > 0xdeadf00d
@@ -148,5 +149,7 @@ def gen_random_test():
   asm_code = []
   for i in xrange(100):
     src  = Bits( 32, random.randint(0,0xffffffff) )
-    asm_code.append( gen_fmv_template( 0, 0, 0, src.uint() ) )
+    # Include f0 too since it's a valid reg unlike x0!
+    asm_code.append( gen_fmv_template( 0, 0, 0, src.uint(),
+                                       fp_reg="f{}".format( (i + 1) % 32 ) ) )
   return asm_code
