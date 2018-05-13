@@ -1173,6 +1173,72 @@ def gen_fp_rr_value_test( inst, src0, src1, result, fprf_dest=True ):
   return gen_fp_rr_template( 0, 0, 0, "f1", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
+#-------------------------------------------------------------------------
+# gen_fp_cvt_template
+#-------------------------------------------------------------------------
+
+def gen_fp_cvt_template( num_nops_src, num_nops_dest, flt2int,
+                         inst, src, result ):
+
+  nops_src   = gen_nops(num_nops_src)
+  nops_dest  = gen_nops(num_nops_dest)
+  inst_and_copy = """
+    fmv.w.x f2, x1
+    {nops_src}
+    {inst}  x3, f2
+    {nops_dest}
+  """.format( **locals() ) if flt2int else """
+    {nops_src}
+    {inst} f2, x1
+    {nops_dest}
+    fmv.x.w x3, f2
+  """.format( **locals() )
+
+  return """
+
+    # Move src value into register
+    csrr x1, mngr2proc < {src}
+
+    # Instruction under test
+    {inst_and_copy}
+
+    # Check the result
+    csrw proc2mngr, x3 > {result}
+
+  """.format( **locals() )
+
+#-------------------------------------------------------------------------
+# gen_fp_cvt_dest_dep_test
+#-------------------------------------------------------------------------
+# Test the destination bypass path by varying how many nops are
+# inserted between the instruction under test and reading the destination
+# register with a csrr instruction.
+
+def gen_fp_cvt_dest_dep_test( num_nops, inst, src, result, flt2int=True ):
+  return gen_fp_cvt_template( 8, num_nops, flt2int,
+                              inst, src, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_cvt_src_dep_test
+#-------------------------------------------------------------------------
+# Test the source bypass paths by varying how many nops are inserted
+# between writing the src register and reading this register in the
+# instruction under test.
+
+def gen_fp_cvt_src_dep_test( num_nops, inst, src, result, flt2int=True ):
+  return gen_fp_cvt_template( num_nops, 0, flt2int,
+                              inst, src, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_cvt_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of a register-immediate instruction under
+# test. We assume that bypassing has already been tested.
+
+def gen_fp_cvt_value_test( inst, src, result, flt2int=True ):
+  return gen_fp_cvt_template( 0, 0, flt2int,
+                              inst, src, result )
+
 
 #=========================================================================
 # TestHarness
