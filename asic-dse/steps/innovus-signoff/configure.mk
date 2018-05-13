@@ -69,8 +69,8 @@ define commands.innovus-signoff
 # Hand off results
 	ln -srf $(innovus_results_dir)/* $(handoff_dir.innovus-signoff)
 # Clean up
-	mv *.spef.gz $(innovus_results_dir)
-	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir)
+	mv *.spef.gz $(innovus_results_dir) || true
+	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir) || true
 # Clean up extraction reports
 	mkdir -p $(innovus_logs_dir)/extLogDir
 	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true

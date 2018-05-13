@@ -3457,7 +3457,7 @@ module pll_loop (
         in_param_N,
         in_param_alpha,
         in_param_sel_width_of_vdiv,
-	in_param_sel_width_of_rst,                  // <-- not in celerity
+	in_param_sel_width_of_rst,
 	in_param_sel_time_ctrl_clk_alpha_and_accum,
 	in_param_sel_time_ctrl_clk_dlc,
 	in_param_sel_time_ctrl_clk_dco_drift,
@@ -3507,22 +3507,22 @@ module pll_loop (
 	in_param_enable_n10,
 	in_param_enable_n11,
 	in_param_enable_n12,
-	in_param_enable_n13,            // <-- not in celerity
-	in_param_enable_n14,            // <-- not in celerity
-	in_param_enable_n15,            // <-- not in celerity
-	in_param_enable_n16,            // <-- not in celerity
+	in_param_enable_n13,
+	in_param_enable_n14,
+	in_param_enable_n15,
+	in_param_enable_n16,
 	in_param_sel_ring,
 	in_param_sel_divider_modulus,
         in_param_sel_re_time_version,
 	in_param_additional_freq_ctrl,
-	in_param_read_p_of_n,           // <-- not in celerity
-	in_param_read_iba_to_therm_enc, // <-- not in celerity
-	in_param_read_iba_to_dsm,       // <-- not in celerity
-	in_param_read_y_of_n,           // <-- not in celerity
-	out_to_spi_p_of_n,              // <-- not in celerity
-	out_to_spi_iba_to_therm_encod,  // <-- not in celerity
-	out_to_spi_iba_to_dsm,          // <-- not in celerity
-	out_to_spi_y_of_n,              // <-- not in celerity
+	in_param_read_p_of_n,
+	in_param_read_iba_to_therm_enc,
+	in_param_read_iba_to_dsm,
+	in_param_read_y_of_n,
+	out_to_spi_p_of_n,
+	out_to_spi_iba_to_therm_encod,
+	out_to_spi_iba_to_dsm,
+	out_to_spi_y_of_n,
         out_clk
         );
 
@@ -4209,7 +4209,7 @@ module inv_logic_n10 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 8;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4242,7 +4242,7 @@ module nand2_stage_ring_n10 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_1, in_2;
@@ -4276,8 +4276,8 @@ module ring_oscillator_top_n10 (
         out
         );
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_DELAY_STAGE = 9;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_enable;
@@ -4344,7 +4344,7 @@ module inv_logic_n11 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 12;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4377,7 +4377,7 @@ module nand2_stage_ring_n11 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 12;
 
 
 input in_1, in_2;
@@ -4411,8 +4411,8 @@ module ring_oscillator_top_n11 (
         out
         );
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_DELAY_STAGE = 9;
+parameter N_LOADS_PER_STAGE = 12;
 
 
 input in_enable;
@@ -4481,7 +4481,7 @@ module inv_logic_n12 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 7;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4514,7 +4514,7 @@ module nand2_stage_ring_n12 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 7;
 
 
 input in_1, in_2;
@@ -4548,8 +4548,8 @@ module ring_oscillator_top_n12 (
         out
         );
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_DELAY_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 7;
 
 
 input in_enable;
@@ -4619,7 +4619,7 @@ module inv_logic_n13 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 15;
+parameter N_LOADS_PER_STAGE = 9;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4652,7 +4652,7 @@ module nand2_stage_ring_n13 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 15;
+parameter N_LOADS_PER_STAGE = 9;
 
 
 input in_1, in_2;
@@ -4686,8 +4686,8 @@ module ring_oscillator_top_n13 (
         out
         );
 
-parameter N_DELAY_STAGE = 5;
-parameter N_LOADS_PER_STAGE = 15;
+parameter N_DELAY_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 9;
 
 
 input in_enable;
@@ -4757,7 +4757,7 @@ module inv_logic_n14 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 8;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4790,7 +4790,7 @@ module nand2_stage_ring_n14 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_1, in_2;
@@ -4824,8 +4824,8 @@ module ring_oscillator_top_n14 (
         out
         );
 
-parameter N_DELAY_STAGE = 7;
-parameter N_LOADS_PER_STAGE = 11;
+parameter N_DELAY_STAGE = 13;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_enable;
@@ -4894,7 +4894,7 @@ module inv_logic_n15 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 8;
+parameter N_LOADS_PER_STAGE = 6;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4927,7 +4927,7 @@ module nand2_stage_ring_n15 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 8;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_1, in_2;
@@ -4962,8 +4962,8 @@ module ring_oscillator_top_n15 (
         out
         );
 
-parameter N_DELAY_STAGE = 9;
-parameter N_LOADS_PER_STAGE = 8;
+parameter N_DELAY_STAGE = 15;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_enable;
@@ -5032,7 +5032,7 @@ module inv_logic_n16 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 6;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5065,7 +5065,7 @@ module nand2_stage_ring_n16 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_1, in_2;
@@ -5099,8 +5099,8 @@ module ring_oscillator_top_n16 (
         out
         );
 
-parameter N_DELAY_STAGE = 11;
-parameter N_LOADS_PER_STAGE = 7;
+parameter N_DELAY_STAGE = 17;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_enable;
@@ -5304,7 +5304,7 @@ module inv_logic_n3 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 30;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5337,7 +5337,7 @@ module nand2_stage_ring_n3 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 30;
 
 
 input in_1, in_2;
@@ -5372,7 +5372,7 @@ module ring_oscillator_top_n3 (
         );
 
 parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 30;
 
 
 input in_enable;
@@ -5441,7 +5441,7 @@ module inv_logic_n4 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 32;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5474,7 +5474,7 @@ module nand2_stage_ring_n4 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 32;
 
 
 input in_1, in_2;
@@ -5509,7 +5509,7 @@ module ring_oscillator_top_n4 (
         );
 
 parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 32;
 
 
 input in_enable;
@@ -5577,7 +5577,7 @@ module inv_logic_n5 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 36;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5610,7 +5610,7 @@ module nand2_stage_ring_n5 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 36;
 
 
 input in_1, in_2;
@@ -5645,7 +5645,7 @@ module ring_oscillator_top_n5 (
         );
 
 parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 36;
 
 
 input in_enable;
@@ -5712,7 +5712,7 @@ module inv_logic_n6 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 15;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5745,7 +5745,7 @@ module nand2_stage_ring_n6 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_1, in_2;
@@ -5779,8 +5779,8 @@ module ring_oscillator_top_n6 (
         out
         );
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_DELAY_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_enable;
@@ -5847,7 +5847,7 @@ module inv_logic_n7 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 6;
+parameter N_LOADS_PER_STAGE = 21;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5880,7 +5880,7 @@ module nand2_stage_ring_n7 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 6;
+parameter N_LOADS_PER_STAGE = 21;
 
 
 input in_1, in_2;
@@ -5914,8 +5914,8 @@ module ring_oscillator_top_n7 (
         out
         );
 
-parameter N_DELAY_STAGE = 15;
-parameter N_LOADS_PER_STAGE = 6;
+parameter N_DELAY_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 21;
 
 
 input in_enable;
@@ -5985,7 +5985,7 @@ module inv_logic_n8 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 11;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -6018,7 +6018,7 @@ module nand2_stage_ring_n8 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 11;
 
 
 input in_1, in_2;
@@ -6052,8 +6052,8 @@ module ring_oscillator_top_n8 (
         out
         );
 
-parameter N_DELAY_STAGE = 17;
-parameter N_LOADS_PER_STAGE = 5;
+parameter N_DELAY_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 11;
 
 
 input in_enable;
@@ -6121,7 +6121,7 @@ module inv_logic_n9 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 15;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -6154,7 +6154,7 @@ module nand2_stage_ring_n9 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_1, in_2;
@@ -6188,8 +6188,8 @@ module ring_oscillator_top_n9 (
         out
         );
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_DELAY_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_enable;
@@ -6254,9 +6254,6 @@ inv_logic inv_at_out_n2(
 endmodule
 
 module ring_oscillator_top (
-//  clk,    // <-- ctorng
-//  ct_in,  // <-- ctorng
-//  ct_out, // <-- ctorng
 	in_param_enable_n1,
 	in_param_enable_n2,
 	in_param_enable_n3,
@@ -6313,20 +6310,6 @@ input [36:0] in_param_FCE_additional_ctrl;
 output out_pll_clk;
 output out_clk;
 
-//------------------------------------------------------------------------
-// ctorng little section to insert a little dummy clocked region so we can
-// push this module (which has no clk) through CTS
-//------------------------------------------------------------------------
-
-//input  wire clk;
-//input  wire ct_in;
-//output reg  ct_out;
-//always @ (posedge clk) begin
-//  ct_out <= ct_in;
-//end
-
-//------------------------------------------------------------------------
-
 wire ro_out_n1;
 wire ro_out_n2;
 wire ro_out_n3;
@@ -6344,23 +6327,22 @@ wire ro_out_n14;
 wire ro_out_n15;
 wire ro_out_n16;
 
-
-wire [71:0] ctrl_n1;
-wire [71:0] ctrl_n2;
-wire [80:0] ctrl_n3;
-wire [80:0] ctrl_n4;
-wire [86:0] ctrl_n5;
-wire [86:0] ctrl_n6;
-wire [89:0] ctrl_n7;
-wire [84:0] ctrl_n8;
-wire [98:0] ctrl_n9;
-wire [98:0] ctrl_n10;
-wire [107:0] ctrl_n11;
-wire [107:0] ctrl_n12;
-wire [74:0] ctrl_n13;
-wire [76:0] ctrl_n14;
-wire [71:0] ctrl_n15;
-wire [76:0] ctrl_n16;
+wire [71 :0] ctrl_n1  ;
+wire [71 :0] ctrl_n2  ;
+wire [89 :0] ctrl_n3  ;
+wire [95 :0] ctrl_n4  ;
+wire [107:0] ctrl_n5  ;
+wire [74 :0] ctrl_n6  ;
+wire [104:0] ctrl_n7  ;
+wire [76 :0] ctrl_n8  ;
+wire [104:0] ctrl_n9  ;
+wire [71 :0] ctrl_n10 ;
+wire [107:0] ctrl_n11 ;
+wire [76 :0] ctrl_n12 ;
+wire [98 :0] ctrl_n13 ;
+wire [103:0] ctrl_n14 ;
+wire [89 :0] ctrl_n15 ;
+wire [101:0] ctrl_n16 ;
 
 
 assign ctrl_n1[63:0] = in_ctrl_FCE_integer;
@@ -6397,25 +6379,22 @@ assign ctrl_n14[71:64] = in_ctrl_FCE_frac;
 assign ctrl_n15[71:64] = in_ctrl_FCE_frac;
 assign ctrl_n16[71:64] = in_ctrl_FCE_frac;
 
-
-
-//assign ctrl_n1[65:41] = in_param_FCE_additional_ctrl[24:0];
-//assign ctrl_n2[65:41] = in_param_FCE_additional_ctrl[24:0];
-assign ctrl_n3[80:72] = in_param_FCE_additional_ctrl[8:0];
-assign ctrl_n4[80:72] = in_param_FCE_additional_ctrl[8:0];
-assign ctrl_n5[86:72] = in_param_FCE_additional_ctrl[14:0];
-assign ctrl_n6[86:72] = in_param_FCE_additional_ctrl[14:0];
-assign ctrl_n7[89:72] = in_param_FCE_additional_ctrl[20:0];
-assign ctrl_n8[84:72] = in_param_FCE_additional_ctrl[20:0];
-assign ctrl_n9[98:72] = in_param_FCE_additional_ctrl[26:0];
-assign ctrl_n10[98:72] = in_param_FCE_additional_ctrl[26:0];
-assign ctrl_n11[107:72] = in_param_FCE_additional_ctrl[35:0];
-assign ctrl_n12[107:72] = in_param_FCE_additional_ctrl[35:0];
-assign ctrl_n13[74:72] = in_param_FCE_additional_ctrl[2:0];
-assign ctrl_n14[76:72] = in_param_FCE_additional_ctrl[4:0];
-//assign ctrl_n15[76:72] = in_param_FCE_additional_ctrl[4:0];
-assign ctrl_n16[76:72] = in_param_FCE_additional_ctrl[4:0];
-
+//assign ctrl_n1  [71 :72] = in_param_FCE_additional_ctrl[-1:0];
+//assign ctrl_n2  [71 :72] = in_param_FCE_additional_ctrl[-1:0];
+assign ctrl_n3  [89 :72] = in_param_FCE_additional_ctrl[17:0];
+assign ctrl_n4  [95 :72] = in_param_FCE_additional_ctrl[23:0];
+assign ctrl_n5  [107:72] = in_param_FCE_additional_ctrl[35:0];
+assign ctrl_n6  [74 :72] = in_param_FCE_additional_ctrl[2 :0];
+assign ctrl_n7  [104:72] = in_param_FCE_additional_ctrl[32:0];
+assign ctrl_n8  [76 :72] = in_param_FCE_additional_ctrl[4 :0];
+assign ctrl_n9  [104:72] = in_param_FCE_additional_ctrl[32:0];
+//assign ctrl_n10 [71 :72] = in_param_FCE_additional_ctrl[-1:0];
+assign ctrl_n11 [107:72] = in_param_FCE_additional_ctrl[35:0];
+assign ctrl_n12 [76 :72] = in_param_FCE_additional_ctrl[4 :0];
+assign ctrl_n13 [98 :72] = in_param_FCE_additional_ctrl[26:0];
+assign ctrl_n14 [103:72] = in_param_FCE_additional_ctrl[31:0];
+assign ctrl_n15 [89 :72] = in_param_FCE_additional_ctrl[17:0];
+assign ctrl_n16 [101:72] = in_param_FCE_additional_ctrl[29:0];
 
 ring_oscillator_top_n1 ring_oscillator_top_n1 (   //3*24=72
         .in_enable(in_param_enable_n1),
@@ -6429,85 +6408,85 @@ ring_oscillator_top_n2 ring_oscillator_top_n2 (   //3*24=72
         .out(ro_out_n2)
         );
 
-ring_oscillator_top_n3 ring_oscillator_top_n3 (  //3*27=81
+ring_oscillator_top_n3 ring_oscillator_top_n3 (  //3*30=90
         .in_enable(in_param_enable_n3),
         .in_ctrl(ctrl_n3),
         .out(ro_out_n3)
         );
 
-ring_oscillator_top_n4 ring_oscillator_top_n4 (  //3*27=81
+ring_oscillator_top_n4 ring_oscillator_top_n4 (  //3*32=96
         .in_enable(in_param_enable_n4),
         .in_ctrl(ctrl_n4),
         .out(ro_out_n4)
         );
 
-ring_oscillator_top_n5 ring_oscillator_top_n5 (  //3*29=87
+ring_oscillator_top_n5 ring_oscillator_top_n5 (  //3*36=108
         .in_enable(in_param_enable_n5),
         .in_ctrl(ctrl_n5),
         .out(ro_out_n5)
         );
 
-ring_oscillator_top_n6 ring_oscillator_top_n6 (  //3*29=87
+ring_oscillator_top_n6 ring_oscillator_top_n6 (  //5*15=75
         .in_enable(in_param_enable_n6),
         .in_ctrl(ctrl_n6),
         .out(ro_out_n6)
         );
 	
-ring_oscillator_top_n7 ring_oscillator_top_n7 (  //15*6=90
+ring_oscillator_top_n7 ring_oscillator_top_n7 (  //5*21=105
         .in_enable(in_param_enable_n7),
         .in_ctrl(ctrl_n7),
         .out(ro_out_n7)
         );
 
-ring_oscillator_top_n8 ring_oscillator_top_n8 (  //17*5=85
+ring_oscillator_top_n8 ring_oscillator_top_n8 (  //7*11=77
         .in_enable(in_param_enable_n8),
         .in_ctrl(ctrl_n8),
         .out(ro_out_n8)
         );
 
-ring_oscillator_top_n9 ring_oscillator_top_n9 (  //3*33=99
+ring_oscillator_top_n9 ring_oscillator_top_n9 (  //7*15=105
         .in_enable(in_param_enable_n9),
         .in_ctrl(ctrl_n9),
         .out(ro_out_n9)
         );
 
-ring_oscillator_top_n10 ring_oscillator_top_n10 (  //3*33=99
+ring_oscillator_top_n10 ring_oscillator_top_n10 (  //9*8=72
         .in_enable(in_param_enable_n10),
         .in_ctrl(ctrl_n10),
         .out(ro_out_n10)
         );
 
-ring_oscillator_top_n11 ring_oscillator_top_n11 (  //3*36=108
+ring_oscillator_top_n11 ring_oscillator_top_n11 (  //9*12=108
         .in_enable(in_param_enable_n11),
         .in_ctrl(ctrl_n11),
         .out(ro_out_n11)
         );
 
-ring_oscillator_top_n12 ring_oscillator_top_n12 (  //3*36=108
+ring_oscillator_top_n12 ring_oscillator_top_n12 (  //11*7=77
         .in_enable(in_param_enable_n12),
         .in_ctrl(ctrl_n12),
         .out(ro_out_n12)
         );
 
-ring_oscillator_top_n13 ring_oscillator_top_n13 (  //5*15=75
+ring_oscillator_top_n13 ring_oscillator_top_n13 (  //11*9=99
         .in_enable(in_param_enable_n13),
         .in_ctrl(ctrl_n13),
         .out(ro_out_n13)
         );
 
-ring_oscillator_top_n14 ring_oscillator_top_n14 (  //7*11=77
+ring_oscillator_top_n14 ring_oscillator_top_n14 (  //13*8=104
         .in_enable(in_param_enable_n14),
         .in_ctrl(ctrl_n14),
         .out(ro_out_n14)
         );
 
-ring_oscillator_top_n15 ring_oscillator_top_n15 (  //9*8=72
+ring_oscillator_top_n15 ring_oscillator_top_n15 (  //15*6=90
         .in_enable(in_param_enable_n15),
         .in_ctrl(ctrl_n15),
         .out(ro_out_n15)
         );
 
-ring_oscillator_top_n16 ring_oscillator_top_n16 (  //11*7=77
+ring_oscillator_top_n16 ring_oscillator_top_n16 (  //17*6=102
         .in_enable(in_param_enable_n16),
         .in_ctrl(ctrl_n16),
         .out(ro_out_n16)

@@ -90,7 +90,17 @@ vcs_aprff_custom_options += $(foreach f, $(vcs_aprff_srams),-v $f)
 
 # Performance options for post-APR FF simulation
 
-vcs_aprff_custom_options += -hsopt=gates
+
+# hawajkm:
+#   We cannot have -hsopt=gates or -hsopt=udp when using +vcs+initreg+config.
+#   vcs spits out the following messages
+#
+#        Error-[UNSUPP-W-HSGATES] Unsupported option combination used.
+#          Option '+vcs+initreg+config' is not supported with '-hsopt=gates or 
+#          -hsopt=udp'.
+#
+#
+#vcs_aprff_custom_options += -hsopt=gates
 vcs_aprff_custom_options += -rad
 
 # Disable timing checks
@@ -129,8 +139,10 @@ vcs_aprff_custom_options += +define+ARM_UD_MODEL
 vcs_aprff_custom_options += +define+ARM_EN_X_SQUASH
 
 # Register initialization
+# hawajkm: We need to scope the register initialization
 
-vcs_aprff_custom_options += +vcs+initreg+random
+vcs_aprff_initreg_config  = $(handoff_dir.vcs-aprff-build)/initreg.config
+vcs_aprff_custom_options += +vcs+initreg+config+$(vcs_aprff_initreg_config)
 
 # ARM memory initialization
 #
@@ -157,6 +169,10 @@ define commands.vcs-aprff-build
 
 	mkdir -p $(logs_dir.vcs-aprff-build)
 	mkdir -p $(handoff_dir.vcs-aprff-build)
+
+# initreg configuration
+
+	echo "modtree $(design_name) 0 random" > $(vcs_aprff_initreg_config)
 
 # Build the testing library map
 

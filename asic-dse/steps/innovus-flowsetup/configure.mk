@@ -58,15 +58,7 @@ innovus_exec_gui = innovus -overwrite -64
 # Innovus foundation flow setup
 #-------------------------------------------------------------------------
 
-# FIXME: For now, have the plugins setup tcl override the global one, but
-# we should later make plugin version just be sourced at the end of the
-# global one.
-
-ifneq ("$(wildcard $(innovus_plugins_dir)/setup.tcl)","")
-innovus_ff_setup_dir = $(innovus_plugins_dir)
-else
 innovus_ff_setup_dir = $(flow_dir.innovus-flowsetup)
-endif
 
 # The setup tcl needs to know where the script root is
 
