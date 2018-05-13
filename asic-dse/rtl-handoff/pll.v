@@ -4242,7 +4242,7 @@ module nand2_stage_ring_n10 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_1, in_2;
@@ -4377,7 +4377,7 @@ module nand2_stage_ring_n11 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 12;
 
 
 input in_1, in_2;
@@ -4514,7 +4514,7 @@ module nand2_stage_ring_n12 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 7;
 
 
 input in_1, in_2;
@@ -4652,7 +4652,7 @@ module nand2_stage_ring_n13 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 15;
+parameter N_LOADS_PER_STAGE = 9;
 
 
 input in_1, in_2;
@@ -4790,7 +4790,7 @@ module nand2_stage_ring_n14 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 8;
 
 
 input in_1, in_2;
@@ -4927,7 +4927,7 @@ module nand2_stage_ring_n15 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 8;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_1, in_2;
@@ -5065,7 +5065,7 @@ module nand2_stage_ring_n16 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 6;
 
 
 input in_1, in_2;
@@ -5337,7 +5337,7 @@ module nand2_stage_ring_n3 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 30;
 
 
 input in_1, in_2;
@@ -5474,7 +5474,7 @@ module nand2_stage_ring_n4 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 32;
 
 
 input in_1, in_2;
@@ -5610,7 +5610,7 @@ module nand2_stage_ring_n5 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 36;
 
 
 input in_1, in_2;
@@ -5745,7 +5745,7 @@ module nand2_stage_ring_n6 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_1, in_2;
@@ -5880,7 +5880,7 @@ module nand2_stage_ring_n7 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 6;
+parameter N_LOADS_PER_STAGE = 21;
 
 
 input in_1, in_2;
@@ -6018,7 +6018,7 @@ module nand2_stage_ring_n8 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 11;
 
 
 input in_1, in_2;
@@ -6154,7 +6154,7 @@ module nand2_stage_ring_n9 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 15;
 
 
 input in_1, in_2;
