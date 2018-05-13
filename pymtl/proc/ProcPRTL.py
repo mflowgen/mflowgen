@@ -18,6 +18,7 @@ from XcelMsg import XcelReqMsg, XcelRespMsg
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
 from ifcs import MemReqMsg4B, MemRespMsg4B, MduReqMsg, MduRespMsg
+from ifcs.FpuMsg import FpuReqMsg, FpuRespMsg
 
 # Shunning: Need to hook up all unused ports ...
 
@@ -43,6 +44,11 @@ class ProcPRTL( Model ):
 
     s.mdureq    = OutValRdyBundle( MduReqMsg(32, 8) )
     s.mduresp   = InValRdyBundle( MduRespMsg(32) )
+
+    # FPU Interface
+
+    s.fpureq    = OutValRdyBundle( FpuReqMsg() )
+    s.fpuresp   = InValRdyBundle( FpuRespMsg() )
 
     # Instruction Memory Request/Response Interface
 
@@ -91,13 +97,15 @@ class ProcPRTL( Model ):
     s.proc2mngr_queue = SingleElementBypassQueue( 32 )
     s.xcelreq_queue   = SingleElementBypassQueue( XcelReqMsg() )
     s.mdureq_queue    = SingleElementBypassQueue( MduReqMsg(32, 8) )
+    s.fpureq_queue    = SingleElementBypassQueue( FpuReqMsg() )
 
     s.connect_pairs(
       s.imemreq_queue.deq,   s.imemreq,
       s.dmemreq_queue.deq,   s.dmemreq,
       s.proc2mngr_queue.deq, s.proc2mngr,
       s.xcelreq_queue.deq,   s.xcelreq,
-      s.mdureq_queue.deq,    s.mdureq
+      s.mdureq_queue.deq,    s.mdureq,
+      s.fpureq_queue.deq,    s.fpureq
     )
 
     # imem drop unit
@@ -112,6 +120,9 @@ class ProcPRTL( Model ):
       m.in_.rdy, s.imemresp.rdy,
       m.in_.msg, s.imemresp.msg.data,
     )
+
+    # FPU: hard-wire the rounding mode to nearest for now.
+    s.connect( s.fpureq_queue.enq.msg.frnd, 0 )
 
     # Control
 
@@ -130,6 +141,15 @@ class ProcPRTL( Model ):
 
       s.ctrl.mduresp_val,      s.mduresp.val,
       s.ctrl.mduresp_rdy,      s.mduresp.rdy,
+
+      # fpu
+
+      s.ctrl.fpureq_val,       s.fpureq_queue.enq.val,
+      s.ctrl.fpureq_rdy,       s.fpureq_queue.enq.rdy,
+      s.ctrl.fpureq_msg_type,  s.fpureq_queue.enq.msg.type_,
+
+      s.ctrl.fpuresp_val,      s.fpuresp.val,
+      s.ctrl.fpuresp_rdy,      s.fpuresp.rdy,
 
       # imem ports
 
@@ -186,6 +206,13 @@ class ProcPRTL( Model ):
       s.dpath.mdureq_msg_op_b, s.mdureq_queue.enq.msg.op_b,
 
       s.dpath.mduresp_msg, s.mduresp.msg.result,
+
+      # fpu
+
+      s.dpath.fpureq_msg_op_a, s.fpureq_queue.enq.msg.op_a,
+      s.dpath.fpureq_msg_op_b, s.fpureq_queue.enq.msg.op_b,
+
+      s.dpath.fpuresp_msg, s.fpuresp.msg.result,
 
       # imem ports
 
@@ -249,6 +276,9 @@ class ProcPRTL( Model ):
       D_str = "{:<25s}".format( '#' )
     else:
       D_str = "{:<25s}".format( disassemble_inst(s.ctrl.inst_D.value) )
+    D_str += "{:>3}".format( s.dpath.rf.rd_addr[0] )
+    from TinyRV2InstPRTL import RS1
+    D_str += "{:>3}".format( s.dpath.inst_D[ RS1 ] )
 
     # X stage
 
@@ -276,6 +306,7 @@ class ProcPRTL( Model ):
       W_str = "{:<7s}".format( '#' )
     else:
       W_str = "{:<7s}".format( inst_dict[s.ctrl.inst_type_W.value.uint()] )
+    D_str += "{:>3}".format( s.dpath.rf.wr_addr )
 
     pipeline_str = ( F_str + "|" + D_str + "|" + X_str + "|" + M_str + "|" + W_str )
 

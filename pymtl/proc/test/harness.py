@@ -15,6 +15,8 @@ from proc.tinyrv2_encoding import assemble
 
 from mdu import IntMulDivUnit
 
+from fpu.DesignWareFloatingPointUnit import DesignWareFloatingPointUnit
+
 # BRGTC2 custom TestMemory modified for RISC-V 32
 
 from test import TestMemory
@@ -66,6 +68,7 @@ class TestHarness (Model):
     s.sink   = TestSink      ( 32, [], sink_delay )
     s.proc   = ProcModel     ()
     s.mdu    = IntMulDivUnit ( 32, 8 )
+    s.fpu    = DesignWareFloatingPointUnit ()
     s.xcel   = NullXcelRTL   ()
     s.mem    = TestMemory    ( MemMsg4B(), 2, mem_stall_prob, mem_latency )
 
@@ -79,6 +82,7 @@ class TestHarness (Model):
     if test_verilog:
       s.proc = TranslationTool( s.proc, verilator_xinit=test_verilog )
       s.mdu  = TranslationTool( s.mdu , verilator_xinit=test_verilog )
+      s.fpu  = TranslationTool( s.fpu , verilator_xinit=test_verilog )
 
     # Processor <-> Proc/Mngr
 
@@ -91,6 +95,8 @@ class TestHarness (Model):
     try:
       s.connect( s.proc.mdureq,  s.mdu.req )
       s.connect( s.proc.mduresp, s.mdu.resp )
+      s.connect( s.proc.fpureq,  s.fpu.req )
+      s.connect( s.proc.fpuresp, s.fpu.resp )
     except AttributeError:
       pass
 

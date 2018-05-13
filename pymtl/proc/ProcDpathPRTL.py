@@ -59,6 +59,12 @@ class ProcDpathPRTL( Model ):
     s.mdureq_msg_op_b   = OutPort( 32 )
     s.mduresp_msg       = InPort ( 32 )
 
+    # fpu ports
+
+    s.fpureq_msg_op_a   = OutPort( 32 )
+    s.fpureq_msg_op_b   = OutPort( 32 )
+    s.fpuresp_msg       = InPort ( 32 )
+
     # xcel ports
 
     s.xcelreq_msg_data  = OutPort( 32 )
@@ -78,6 +84,8 @@ class ProcDpathPRTL( Model ):
     s.op2_sel_D         = InPort ( 2 )
     s.csrr_sel_D        = InPort ( 2 )
     s.imm_type_D        = InPort ( 3 )
+    s.rs1_fprf_D        = InPort ( 1 )
+    s.rs2_fprf_D        = InPort ( 1 )
 
     s.reg_en_X          = InPort ( 1 )
     s.alu_fn_X          = InPort ( 4 )
@@ -91,6 +99,7 @@ class ProcDpathPRTL( Model ):
     s.rf_waddr_W        = InPort ( 5 )
     s.rf_wen_W          = InPort ( 1 )
     s.stats_en_wen_W    = InPort ( 1 )
+    s.rd_fprf_W         = InPort ( 1 )
 
     # Status signals (dpath->Ctrl)
 
@@ -184,16 +193,34 @@ class ProcDpathPRTL( Model ):
 
     s.rf_wdata_W  = Wire( 32 )
 
-    s.rf = m = RegisterFile( dtype = 32, nregs = 32, rd_ports = 2, const_zero = True )
+    # Use the upper 32 registers as the fp registers.
+    s.rf = m = RegisterFile( dtype = 32, nregs = 64, rd_ports = 2, const_zero = True )
+
+    # Use the fp rf bit to concatenate to the reg specifier to switch
+    # between integer and float register files.
+    s.rf_rd_addr0 = Wire( 6 )
+    s.rf_rd_addr1 = Wire( 6 )
+    s.rf_wr_addr = Wire( 6 )
+
+    @s.combinational
+    def comb_rf():
+      s.rf_rd_addr0[0:5].value = s.inst_D[ RS1 ]
+      s.rf_rd_addr0[5:6].value = s.rs1_fprf_D
+      s.rf_rd_addr1[0:5].value = s.inst_D[ RS2 ]
+      s.rf_rd_addr1[5:6].value = s.rs2_fprf_D
+      s.rf_wr_addr[0:5].value = s.rf_waddr_W
+      s.rf_wr_addr[5:6].value = s.rd_fprf_W
+
+
     s.connect_pairs(
-      m.rd_addr[0], s.inst_D[ RS1 ],
-      m.rd_addr[1], s.inst_D[ RS2 ],
+      m.rd_addr[0], s.rf_rd_addr0,
+      m.rd_addr[1], s.rf_rd_addr1,
 
       m.rd_data[0], s.rf_rdata0_D,
       m.rd_data[1], s.rf_rdata1_D,
 
       m.wr_en,      s.rf_wen_W,
-      m.wr_addr,    s.rf_waddr_W,
+      m.wr_addr,    s.rf_wr_addr,
       m.wr_data,    s.rf_wdata_W
     )
 
@@ -266,6 +293,11 @@ class ProcDpathPRTL( Model ):
 
     s.connect( s.mdureq_msg_op_a, s.op1_sel_mux_D.out )
     s.connect( s.mdureq_msg_op_b, s.op2_sel_mux_D.out )
+
+    # send out fpu operands at D stage
+
+    s.connect( s.fpureq_msg_op_a, s.op1_sel_mux_D.out )
+    s.connect( s.fpureq_msg_op_b, s.op2_sel_mux_D.out )
 
     # Risc-V always calcs branch/jal target by adding imm(generated above) to PC
 
@@ -351,11 +383,12 @@ class ProcDpathPRTL( Model ):
 
     # X result sel mux
 
-    s.ex_result_sel_mux_X = m = Mux( dtype = 32, nports = 3 )
+    s.ex_result_sel_mux_X = m = Mux( dtype = 32, nports = 4 )
     s.connect_pairs(
       m.in_[0], s.alu_X.out,
       m.in_[1], s.mduresp_msg,
       m.in_[2], s.pc_incr_X.out,
+      m.in_[3], s.fpuresp_msg,
       m.sel,    s.ex_result_sel_X,
     )
 
