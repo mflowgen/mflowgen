@@ -124,3 +124,48 @@ def test_fdivs_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_fdivs.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
 
+#-------------------------------------------------------------------------
+# fmin.s
+#-------------------------------------------------------------------------
+
+import inst_fmins
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_fmins.gen_basic_test            ),
+  asm_test( inst_fmins.gen_dest_dep_test         ),
+  asm_test( inst_fmins.gen_src0_dep_test         ),
+  asm_test( inst_fmins.gen_src1_dep_test         ),
+  asm_test( inst_fmins.gen_srcs_dep_test         ),
+  asm_test( inst_fmins.gen_srcs_dest_test        ),
+  asm_test( inst_fmins.gen_value_test            ),
+  asm_test( inst_fmins.gen_random_test           ),
+])
+def test_fmins( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_fmins_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_fmins.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# fmax.s
+#-------------------------------------------------------------------------
+
+import inst_fmaxs
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_fmaxs.gen_basic_test            ),
+  asm_test( inst_fmaxs.gen_dest_dep_test         ),
+  asm_test( inst_fmaxs.gen_src0_dep_test         ),
+  asm_test( inst_fmaxs.gen_src1_dep_test         ),
+  asm_test( inst_fmaxs.gen_srcs_dep_test         ),
+  asm_test( inst_fmaxs.gen_srcs_dest_test        ),
+  asm_test( inst_fmaxs.gen_value_test            ),
+  asm_test( inst_fmaxs.gen_random_test           ),
+])
+def test_fmaxs( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_fmaxs_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_fmaxs.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
