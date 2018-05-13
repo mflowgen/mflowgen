@@ -99,7 +99,6 @@ module vc_TestSink
   // Verification logic
   //----------------------------------------------------------------------
 
-  logic        failed;
   logic        fail_case;
   logic  [3:0] verbose;
 
