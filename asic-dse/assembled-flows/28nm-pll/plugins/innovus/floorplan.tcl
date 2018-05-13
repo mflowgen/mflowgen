@@ -8,22 +8,29 @@ floorPlan -s $core_width $core_height \
 
 setFlipping s
 
-# Take all ports and split into halves
-
-set all_ports       [dbGet top.terms.name]
-
-set num_ports       [llength $all_ports]
-set half_ports_idx  [expr $num_ports / 2]
-
-set pins_left_half  [lrange $all_ports 0               [expr $half_ports_idx - 1]]
-set pins_right_half [lrange $all_ports $half_ports_idx [expr $num_ports - 1]     ]
-
-# Spread the pins evenly across the left and right sides of the block
+# Arrange the pins so that inputs are on the left, spread around the
+# center with 10um spacing between pins. This was done in the GUI pin
+# editor and then the command was roughly copied here.
 
 set ports_layer M4
 
-editPin -layer $ports_layer -pin $pins_left_half  -side LEFT  -spreadType SIDE
-editPin -layer $ports_layer -pin $pins_right_half -side RIGHT -spreadType SIDE
+setPinAssignMode -pinEditInBatch true
+editPin -pin {in_chip_select in_clk_ref in_rstb in_scn_clk in_sdi} \
+        -fixOverlap 1 -unit MICRON \
+        -side Left \
+        -spreadType center \
+        -spreadDirection clockwise \
+        -layer $ports_layer \
+        -spacing 10
+
+setPinAssignMode -pinEditInBatch true
+editPin -pin {out_clk out_clk_tst out_sdo} \
+        -fixOverlap 1 -unit MICRON \
+        -side Right \
+        -spreadType center \
+        -spreadDirection clockwise \
+        -layer $ports_layer \
+        -spacing 10
 
 #-------------------------------------------------------------------------
 # Fences and regions
@@ -60,19 +67,19 @@ editPin -layer $ports_layer -pin $pins_right_half -side RIGHT -spreadType SIDE
 #     | +----++----++----++----++----++----++----++----++----+       |
 #     +--------------------------------------------------------------+
 #
-# This is how Julian's floorplan looked, so that is how we are doing it.
+# This is how Julian's floorplan looked as well.
 
 # Ring oscillators
 #
 # The ring oscillators will be placed in a long line of fences. The first
-# ring oscillator on the bottom left will be placed ~6 row heights inset
-# into the core area
+# ring oscillator on the bottom left will be placed a few row heights
+# inset into the core area.
 
-set ro_inset_x [expr $core_margin_b + 6]; # 6um inset to core area
-set ro_inset_y [expr $core_margin_b + 6]; # 6um inset to core area
+set ro_inset_x [expr $core_margin_b + 2]; # N um inset to core area
+set ro_inset_y [expr $core_margin_b + 4]; # N um inset to core area
 
-set ro_width   7; #  9um  width
-set ro_height 30; # 30um height
+set ro_width   6.0; # width  in um
+set ro_height 20.0; # height in um
 
 set ro_gap_x  0.2; # Gap between ring oscillator fences
 
@@ -220,4 +227,11 @@ createRegion pll_loop/dco_top     $main_llx $main_lly $main_urx $main_ury
 createRegion pll_loop/timing_ctrl $main_llx $main_lly $main_urx $main_ury
 createRegion pll_loop/lfsr_25b    $main_llx $main_lly $main_urx $main_ury
 createRegion pll_loop/lfsr_31b    $main_llx $main_lly $main_urx $main_ury
+
+# By default, fences are not honored by CTS or optDesign, so make sure
+# that these are honored
+
+setPlaceMode -hardFence  true
+setCTSMode   -honorFence true
+setOptMode   -honorFence true
 
