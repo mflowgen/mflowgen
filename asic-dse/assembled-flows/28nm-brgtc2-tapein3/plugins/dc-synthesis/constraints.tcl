@@ -106,3 +106,25 @@ set_optimize_registers true \
                        -verbose \
                        -print_critical_loop
 
+
+# Register retiming for the fp div
+
+set_optimize_registers true \
+                       -design DW_fp_div_pipelined \
+                       -clock $core_clk_name \
+                       -delay_threshold $core_clk_period \
+                       -check_design \
+                       -verbose \
+                       -print_critical_loop
+
+# Register retiming for the fp addsub
+
+
+set_optimize_registers true \
+                       -design DW_fp_addsub_pipelined \
+                       -clock $core_clk_name \
+                       -delay_threshold $core_clk_period \
+                       -check_design \
+                       -verbose \
+                       -print_critical_loop
+

@@ -137,15 +137,33 @@ AMOMAX  = 52 # 10100????????????010?????0101111
 AMOMINU = 53 # 11000????????????010?????0101111
 AMOMAXU = 54 # 11100????????????010?????0101111
 
+# RV32F (subset)
+
+FLW     = 55
+FSW     = 56
+FADDS   = 57
+FSUBS   = 58
+FMULS   = 59
+FDIVS   = 60
+FMINS   = 61
+FMAXS   = 62
+FCVTWS  = 63
+FMVXW   = 64
+FEQS    = 65
+FLTS    = 66
+FLES    = 67
+FCVTSW  = 68
+FMVWX   = 69
+
 # Privileged
-CSRR    = 55 # ????????????00000010?????1110011
-CSRW    = 56 # ?????????????????001000001110011
+CSRR    = 70 # ????????????00000010?????1110011
+CSRW    = 71 # ?????????????????001000001110011
 
 # ZERO inst
-ZERO    = 57
+ZERO    = 72
 
 # CSRRX for accelerator
-CSRRX   = 58 # 0111111?????00000010?????1110011
+CSRRX   = 73 # 0111111?????00000010?????1110011
 
 #-------------------------------------------------------------------------
 # TinyRV2 Instruction Disassembler
@@ -207,6 +225,21 @@ inst_dict = {
   AMOMAX  : "amomax",
   AMOMINU : "amominu",
   AMOMAXU : "amomaxu",
+  FLW     : "flw",
+  FSW     : "fsw",
+  FADDS   : "fadd.s",
+  FSUBS   : "fsub.s",
+  FMULS   : "fmul.s",
+  FDIVS   : "fdiv.s",
+  FMINS   : "fmin.s",
+  FMAXS   : "fmax.s",
+  FCVTWS  : "fcvt.ws",
+  FMVXW   : "fmv.x.w",
+  FEQS    : "feq.s",
+  FLTS    : "flt.s",
+  FLES    : "fle.s",
+  FCVTSW  : "fcvt.sw",
+  FMVWX   : "fmv.w.x",
   CSRR    : "csrr",
   CSRW    : "csrw",
   CSRRX   : "csrrx",
@@ -327,4 +360,33 @@ class DecodeInstType( Model ):
           elif s.in_[FUNCT5] == 0b10100:     s.out.value = AMOMAX
           elif s.in_[FUNCT5] == 0b11000:     s.out.value = AMOMINU
           elif s.in_[FUNCT5] == 0b11100:     s.out.value = AMOMAXU
+
+      elif s.in_[OPCODE] == 0b0000111:
+        if   s.in_[FUNCT3] == 0b010:         s.out.value = FLW
+
+      elif s.in_[OPCODE] == 0b0100111:
+        if   s.in_[FUNCT3] == 0b010:         s.out.value = FSW
+
+      elif s.in_[OPCODE] == 0b1010011:
+        if   s.in_[FUNCT7] == 0b0000000:     s.out.value = FADDS
+        elif s.in_[FUNCT7] == 0b0000100:     s.out.value = FSUBS
+        elif s.in_[FUNCT7] == 0b0001000:     s.out.value = FMULS
+        elif s.in_[FUNCT7] == 0b0001100:     s.out.value = FDIVS
+        elif s.in_[FUNCT7] == 0b0010100:
+          if   s.in_[FUNCT3] == 0b000:       s.out.value = FMINS
+          elif s.in_[FUNCT3] == 0b001:       s.out.value = FMAXS
+        elif s.in_[FUNCT7] == 0b1100000:
+          if   s.in_[RS2] == 0b00000:        s.out.value = FCVTWS
+        elif s.in_[FUNCT7] == 0b1110000:
+          if   s.in_[RS2] == 0b00000:
+            if   s.in_[FUNCT3] == 0b000:     s.out.value = FMVXW
+        elif s.in_[FUNCT7] == 0b1010000:
+          if   s.in_[FUNCT3] == 0b010:       s.out.value = FEQS
+          elif s.in_[FUNCT3] == 0b001:       s.out.value = FLTS
+          elif s.in_[FUNCT3] == 0b000:       s.out.value = FLES
+        elif s.in_[FUNCT7] == 0b1101000:
+          if   s.in_[RS2] == 0b00000:        s.out.value = FCVTSW
+        elif s.in_[FUNCT7] == 0b1111000:
+          if   s.in_[RS2] == 0b00000:
+            if   s.in_[FUNCT3] == 0b000:     s.out.value = FMVWX
 

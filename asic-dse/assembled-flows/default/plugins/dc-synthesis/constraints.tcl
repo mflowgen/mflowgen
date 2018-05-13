@@ -50,4 +50,3 @@ set_max_transition [expr 0.25*${dc_clock_period}] ${DESIGN_NAME}
 
 #set_input_transition 1 [all_inputs]
 #set_max_transition 10 [all_outputs]
-

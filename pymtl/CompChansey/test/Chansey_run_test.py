@@ -3,6 +3,7 @@
 #=========================================================================
 # Includes the run_test needed by the composition
 
+import os
 from pymtl import *
 
 # Import designs
