@@ -1032,7 +1032,7 @@ def f2i( f ):
 #-------------------------------------------------------------------------
 
 def gen_fp_rr_template( num_nops_src0, num_nops_src1, num_nops_dest,
-                        reg_src0, reg_src1, src_order,
+                        reg_src0, reg_src1, src_order, fprf_dest,
                         inst, src0, src1, result ):
 
   nops_src0    = gen_nops(num_nops_src0)
@@ -1050,6 +1050,20 @@ def gen_fp_rr_template( num_nops_src0, num_nops_src1, num_nops_dest,
     {nops_src0}
 """.format( **locals() )
 
+  inst_and_copy = """
+    # The destination is in the FP register file.
+    {inst} f3, {reg_src0}, {reg_src1}
+    {nops_dest}
+
+    # Move the value back to int reg.
+    fmv.x.w x3, f3
+  """.format( **locals() ) if fprf_dest else """
+    # The destination is in the int register file. So no need to copy it
+    # back.
+    {inst} x3, {reg_src0}, {reg_src1}
+    {nops_dest}
+  """.format( **locals() )
+
   return """
 
     # Move src0 into int reg.
@@ -1061,11 +1075,8 @@ def gen_fp_rr_template( num_nops_src0, num_nops_src1, num_nops_dest,
     {mv_to_srcs}
 
     # Instruction under test
-    {inst} f3, {reg_src0}, {reg_src1}
-    {nops_dest}
+    {inst_and_copy}
 
-    # Move the value back to int reg.
-    fmv.x.w x3, f3
     csrw proc2mngr, x3 > {result}
 
   """.format( **locals() )
@@ -1077,8 +1088,8 @@ def gen_fp_rr_template( num_nops_src0, num_nops_src1, num_nops_dest,
 # inserted between the instruction under test and reading the destination
 # register with a csrr instruction.
 
-def gen_fp_rr_dest_dep_test( num_nops, inst, src0, src1, result ):
-  return gen_fp_rr_template( 0, 8, num_nops, "f1", "f2", "01",
+def gen_fp_rr_dest_dep_test( num_nops, inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 8, num_nops, "f1", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1088,8 +1099,8 @@ def gen_fp_rr_dest_dep_test( num_nops, inst, src0, src1, result ):
 # between writing the src1 register and reading this register in the
 # instruction under test.
 
-def gen_fp_rr_src1_dep_test( num_nops, inst, src0, src1, result ):
-  return gen_fp_rr_template( 8-num_nops, num_nops, 0, "f1", "f2", "01",
+def gen_fp_rr_src1_dep_test( num_nops, inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 8-num_nops, num_nops, 0, "f1", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1099,8 +1110,8 @@ def gen_fp_rr_src1_dep_test( num_nops, inst, src0, src1, result ):
 # between writing the src0 register and reading this register in the
 # instruction under test.
 
-def gen_fp_rr_src0_dep_test( num_nops, inst, src0, src1, result ):
-  return gen_fp_rr_template( num_nops, 8-num_nops, 0, "f1", "f2", "10",
+def gen_fp_rr_src0_dep_test( num_nops, inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( num_nops, 8-num_nops, 0, "f1", "f2", "10", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1110,8 +1121,8 @@ def gen_fp_rr_src0_dep_test( num_nops, inst, src0, src1, result ):
 # are inserted between writing both src registers and reading both
 # registers in the instruction under test.
 
-def gen_fp_rr_srcs_dep_test( num_nops, inst, src0, src1, result ):
-  return gen_fp_rr_template( 0, num_nops, 0, "f1", "f2", "01",
+def gen_fp_rr_srcs_dep_test( num_nops, inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, num_nops, 0, "f1", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1120,8 +1131,8 @@ def gen_fp_rr_srcs_dep_test( num_nops, inst, src0, src1, result ):
 # Test situation where the src0 register specifier is the same as the
 # destination register specifier.
 
-def gen_fp_rr_src0_eq_dest_test( inst, src0, src1, result ):
-  return gen_fp_rr_template( 0, 0, 0, "f3", "f2", "01",
+def gen_fp_rr_src0_eq_dest_test( inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 0, 0, "f3", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1130,8 +1141,8 @@ def gen_fp_rr_src0_eq_dest_test( inst, src0, src1, result ):
 # Test situation where the src1 register specifier is the same as the
 # destination register specifier.
 
-def gen_fp_rr_src1_eq_dest_test( inst, src0, src1, result ):
-  return gen_fp_rr_template( 0, 0, 0, "f1", "f3", "01",
+def gen_fp_rr_src1_eq_dest_test( inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f3", "01", fprf_dest,
                              inst, src0, src1, result )
 
 #-------------------------------------------------------------------------
@@ -1139,8 +1150,8 @@ def gen_fp_rr_src1_eq_dest_test( inst, src0, src1, result ):
 #-------------------------------------------------------------------------
 # Test situation where the src register specifiers are the same.
 
-def gen_fp_rr_src0_eq_src1_test( inst, src, result ):
-  return gen_fp_rr_template( 0, 0, 0, "f1", "f1", "01",
+def gen_fp_rr_src0_eq_src1_test( inst, src, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f1", "01", fprf_dest,
                              inst, src, src, result )
 
 #-------------------------------------------------------------------------
@@ -1148,8 +1159,8 @@ def gen_fp_rr_src0_eq_src1_test( inst, src, result ):
 #-------------------------------------------------------------------------
 # Test situation where all three register specifiers are the same.
 
-def gen_fp_rr_srcs_eq_dest_test( inst, src, result ):
-  return gen_fp_rr_template( 0, 0, 0, "f3", "f3", "01",
+def gen_fp_rr_srcs_eq_dest_test( inst, src, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 0, 0, "f3", "f3", "01", fprf_dest,
                              inst, src, src, result )
 
 #-------------------------------------------------------------------------
@@ -1158,8 +1169,8 @@ def gen_fp_rr_srcs_eq_dest_test( inst, src, result ):
 # Test the actual operation of a register-register instruction under
 # test. We assume that bypassing has already been tested.
 
-def gen_fp_rr_value_test( inst, src0, src1, result ):
-  return gen_fp_rr_template( 0, 0, 0, "f1", "f2", "01",
+def gen_fp_rr_value_test( inst, src0, src1, result, fprf_dest=True ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f2", "01", fprf_dest,
                              inst, src0, src1, result )
 
 

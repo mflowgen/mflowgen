@@ -169,3 +169,72 @@ def test_fmaxs( name, test, dump_vcd, test_verilog ):
 def test_fmaxs_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_fmaxs.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# feq.s
+#-------------------------------------------------------------------------
+
+import inst_feqs
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_feqs.gen_basic_test            ),
+  asm_test( inst_feqs.gen_dest_dep_test         ),
+  asm_test( inst_feqs.gen_src0_dep_test         ),
+  asm_test( inst_feqs.gen_src1_dep_test         ),
+  asm_test( inst_feqs.gen_srcs_dep_test         ),
+  asm_test( inst_feqs.gen_srcs_dest_test        ),
+  asm_test( inst_feqs.gen_value_test            ),
+  asm_test( inst_feqs.gen_random_test           ),
+])
+def test_feqs( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_feqs_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_feqs.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# flt.s
+#-------------------------------------------------------------------------
+
+import inst_flts
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_flts.gen_basic_test            ),
+  asm_test( inst_flts.gen_dest_dep_test         ),
+  asm_test( inst_flts.gen_src0_dep_test         ),
+  asm_test( inst_flts.gen_src1_dep_test         ),
+  asm_test( inst_flts.gen_srcs_dep_test         ),
+  asm_test( inst_flts.gen_srcs_dest_test        ),
+  asm_test( inst_flts.gen_value_test            ),
+  asm_test( inst_flts.gen_random_test           ),
+])
+def test_flts( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_flts_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_flts.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# fle.s
+#-------------------------------------------------------------------------
+
+import inst_fles
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_fles.gen_basic_test            ),
+  asm_test( inst_fles.gen_dest_dep_test         ),
+  asm_test( inst_fles.gen_src0_dep_test         ),
+  asm_test( inst_fles.gen_src1_dep_test         ),
+  asm_test( inst_fles.gen_srcs_dep_test         ),
+  asm_test( inst_fles.gen_srcs_dest_test        ),
+  asm_test( inst_fles.gen_value_test            ),
+  asm_test( inst_fles.gen_random_test           ),
+])
+def test_fles( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_fles_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_fles.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
