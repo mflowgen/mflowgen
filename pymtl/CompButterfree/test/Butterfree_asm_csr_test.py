@@ -36,7 +36,7 @@ from proc.test import inst_csr
       asm_test( inst_csr.gen_bypass_test     , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_csr.gen_value_test      , 0        , 0         , 0             , 0           )    ,
       asm_test( inst_csr.gen_random_test     , 0        , 0         , 0             , 0           )    ,
-      asm_test( inst_csr.gen_core_stats_test , 0        , 0         , 0             , 0           )    ,
+      asm_test( inst_csr.gen_multicore_test  , 0        , 0         , 0             , 0           )    ,
     ]
   )
 )
