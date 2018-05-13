@@ -102,9 +102,9 @@ define commands.dc-synthesis
 
 # Clean up
 
-	mv command.log             $(logs_dir.dc-synthesis)
-	mv lc_shell_command.log    $(logs_dir.dc-synthesis)
-	mv *_LIB                   $(logs_dir.dc-synthesis)
+	mv command.log          $(logs_dir.dc-synthesis) || true
+	mv lc_shell_command.log $(logs_dir.dc-synthesis) || true
+	mv *_LIB                $(logs_dir.dc-synthesis) || true
 
 # Prepare handoffs
 

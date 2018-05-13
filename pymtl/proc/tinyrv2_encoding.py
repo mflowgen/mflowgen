@@ -133,6 +133,26 @@ tinyrv2_encoding_table = \
   [ "amomaxu rd, rs1, rs2",     0b11111000000000000111000001111111, 0b11100000000000000010000000101111 ], # R-type
 
   #-----------------------------------------------------------------------
+  # RV32F (subset)
+  #-----------------------------------------------------------------------
+
+  [ "flw     frd, i_imm(rs1)",  0b00000000000000000111000001111111, 0b00000000000000000010000000000111 ], # I-type
+  [ "fsw     frs2, s_imm(rs1)", 0b00000000000000000111000001111111, 0b00000000000000000010000000100111 ], # S-type
+  [ "fadd.s  frd, frs1, frs2",  0b11111110000000000000000001111111, 0b00000000000000000000000001010011 ], # R-type
+  [ "fsub.s  frd, frs1, frs2",  0b11111110000000000000000001111111, 0b00001000000000000000000001010011 ], # R-type
+  [ "fmul.s  frd, frs1, frs2",  0b11111110000000000000000001111111, 0b00010000000000000000000001010011 ], # R-type
+  [ "fdiv.s  frd, frs1, frs2",  0b11111110000000000000000001111111, 0b00011000000000000000000001010011 ], # R-type
+  [ "fmin.s  frd, frs1, frs2",  0b11111110000000000111000001111111, 0b00101000000000000000000001010011 ], # R-type
+  [ "fmax.s  frd, frs1, frs2",  0b11111110000000000111000001111111, 0b00101000000000000001000001010011 ], # R-type
+  [ "fcvt.w.s rd, frs1",        0b11111111111100000000000001111111, 0b11000000000000000000000001010011 ], # R-type
+  [ "fmv.x.w rd, frs1",         0b11111111111100000111000001111111, 0b11100000000000000000000001010011 ], # R-type
+  [ "feq.s   rd, frs1, frs2",   0b11111110000000000111000001111111, 0b10100000000000000010000001010011 ], # R-type
+  [ "flt.s   rd, frs1, frs2",   0b11111110000000000111000001111111, 0b10100000000000000001000001010011 ], # R-type
+  [ "fle.s   rd, frs1, frs2",   0b11111110000000000111000001111111, 0b10100000000000000000000001010011 ], # R-type
+  [ "fcvt.s.w frd, rs1",        0b11111111111100000000000001111111, 0b11010000000000000000000001010011 ], # R-type
+  [ "fmv.w.x frd, rs1",         0b11111111111100000111000001111111, 0b11110000000000000000000001010011 ], # R-type
+
+  #-----------------------------------------------------------------------
   # RV Privileged
   #-----------------------------------------------------------------------
   # See "The RISC-V Instruction Set Manual Volume II Privileged Architecture.pdf" pp.13-21
@@ -223,37 +243,49 @@ tinyrv2_field_slice_j_imm3 = slice( 31, 32 )
 # "Programmers" Model for Base Integer Subset" for register specifiers
 # x0 .. x31
 
-def assemble_field_rs1( bits, sym, pc, field_str ):
+def assemble_field_rs1( bits, sym, pc, field_str, reg_char="x" ):
 
-  # Register specifiers must begin with an "x"
-  assert field_str[0] == "x"
+  # Register specifiers must begin with the specified char.
+  assert field_str[0] == reg_char
 
   # Register specifier must be between 0 and 31
-  reg_specifier = int(field_str.lstrip("x"))
+  reg_specifier = int(field_str.lstrip(reg_char))
   assert 0 <= reg_specifier <= 31
 
   bits[ tinyrv2_field_slice_rs1 ] = reg_specifier
 
+def assemble_field_frs1( bits, sym, pc, field_str ):
+  assemble_field_rs1( bits, sym, pc, field_str, "f" )
+
 def disassemble_field_rs1( bits ):
   return "x{:0>2}".format( bits[ tinyrv2_field_slice_rs1 ].uint() )
+
+def disassemble_field_frs1( bits ):
+  return "f{:0>2}".format( bits[ tinyrv2_field_slice_rs1 ].uint() )
 
 #-------------------------------------------------------------------------
 # rs2 assembly/disassembly functions
 #-------------------------------------------------------------------------
 
-def assemble_field_rs2( bits, sym, pc, field_str ):
+def assemble_field_rs2( bits, sym, pc, field_str, reg_char="x" ):
 
-  # Register specifiers must begin with an "x"
-  assert field_str[0] == "x"
+  # Register specifiers must begin with the specified char.
+  assert field_str[0] == reg_char
 
   # Register specifier must be between 0 and 31
-  reg_specifier = int(field_str.lstrip("x"))
+  reg_specifier = int(field_str.lstrip(reg_char))
   assert 0 <= reg_specifier <= 31
 
   bits[ tinyrv2_field_slice_rs2 ] = reg_specifier
 
+def assemble_field_frs2( bits, sym, pc, field_str ):
+  assemble_field_rs2( bits, sym, pc, field_str, "f" )
+
 def disassemble_field_rs2( bits ):
   return "x{:0>2}".format( bits[ tinyrv2_field_slice_rs2 ].uint() )
+
+def disassemble_field_frs2( bits ):
+  return "f{:0>2}".format( bits[ tinyrv2_field_slice_rs2 ].uint() )
 
 #-------------------------------------------------------------------------
 # shamt assembly/disassembly functions
@@ -273,19 +305,25 @@ def disassemble_field_shamt( bits ):
 # rd assembly/disassembly functions
 #-------------------------------------------------------------------------
 
-def assemble_field_rd( bits, sym, pc, field_str ):
+def assemble_field_rd( bits, sym, pc, field_str, reg_char="x" ):
 
-  # Register specifiers must begin with an "x"
-  assert field_str[0] == "x"
+  # Register specifiers must begin with the specified char.
+  assert field_str[0] == reg_char
 
   # Register specifier must be between 0 and 31
-  reg_specifier = int(field_str.lstrip("x"))
+  reg_specifier = int(field_str.lstrip(reg_char))
   assert 0 <= reg_specifier <= 31
 
   bits[ tinyrv2_field_slice_rd ] = reg_specifier
 
+def assemble_field_frd( bits, sym, pc, field_str ):
+  assemble_field_rd( bits, sym, pc, field_str, "f" )
+
 def disassemble_field_rd( bits ):
   return "x{:0>2}".format( bits[ tinyrv2_field_slice_rd ].uint() )
+
+def disassemble_field_frd( bits ):
+  return "f{:0>2}".format( bits[ tinyrv2_field_slice_rd ].uint() )
 
 #-------------------------------------------------------------------------
 # funct7 assembly/disassembly functions
@@ -460,8 +498,11 @@ tinyrv2_fields = \
 {
   "rs1"    : [ assemble_field_rs1,    disassemble_field_rs1    ],
   "rs2"    : [ assemble_field_rs2,    disassemble_field_rs2    ],
+  "frs1"   : [ assemble_field_frs1,   disassemble_field_frs1   ],
+  "frs2"   : [ assemble_field_frs2,   disassemble_field_frs2   ],
   "shamt"  : [ assemble_field_shamt,  disassemble_field_shamt  ],
   "rd"     : [ assemble_field_rd,     disassemble_field_rd     ],
+  "frd"    : [ assemble_field_frd,    disassemble_field_frd    ],
   "funct7" : [ assemble_field_funct7, disassemble_field_funct7 ],
   "i_imm"  : [ assemble_field_i_imm,  disassemble_field_i_imm  ],
   "csrnum" : [ assemble_field_csrnum, disassemble_field_csrnum ],

@@ -8,6 +8,7 @@ from pclib.ifcs                 import InValRdyBundle, OutValRdyBundle
 # BRGTC2 custom MemMsg modified for RISC-V 32
 
 from ifcs                       import CtrlRegMsg, MemMsg, MduMsg
+from ifcs.FpuMsg                import FpuReqMsg, FpuRespMsg
 
 from ctrlreg.CtrlReg            import CtrlReg
 from proc.ProcPRTL              import ProcPRTL
@@ -23,6 +24,8 @@ from adapters.HostAdapter       import HostAdapter
 
 from bloom.BloomFilterXcel      import BloomFilterXcel
 from mem_coalescer.MemCoalescer import MemCoalescer
+
+from fpu.DesignWareFloatingPointUnit import DesignWareFloatingPointUnit
 
 class Chansey( Model ):
 
@@ -116,6 +119,13 @@ class Chansey( Model ):
 
     s.net_mdureq  = Funnel( num_cores, s.proc_mdu_ifc.req )   # N cores - to - 1 cache
     s.net_mduresp = Router( num_cores, s.proc_mdu_ifc.resp )  # 1 cache - to - N cores
+
+    # Shared FPU
+
+    s.fpu         = DesignWareFloatingPointUnit()
+
+    s.net_fpureq  = Funnel( num_cores, FpuReqMsg() )
+    s.net_fpuresp = Router( num_cores, FpuRespMsg() )
 
     # Control Register
 
@@ -266,6 +276,20 @@ class Chansey( Model ):
 
       s.mdu_adapter.req,  s.mdu.req,
       s.mdu_adapter.resp, s.mdu.resp,
+    )
+
+    # FPU connections
+
+    for i in xrange( num_cores ):
+      # proc -> net_fpureq
+      s.connect( s.proc[i].fpureq,  s.net_fpureq.in_[i] )
+
+      # net_fpuresp -> proc
+      s.connect( s.net_fpuresp.out[i], s.proc[i].fpuresp )
+
+    s.connect_pairs(
+      s.net_fpureq.out,  s.fpu.req,
+      s.net_fpuresp.in_, s.fpu.resp,
     )
 
     # Turn off host_en signals in the adapters

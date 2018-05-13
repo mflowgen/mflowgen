@@ -94,10 +94,13 @@ int main( int argc, char* argv[] )
   int idx = 0;
   for(idx=0;idx<size;idx++)
       dest[idx] = 0;
-  // Stop counting stats
+
+  test_stats_on();
 
   vvadd_wsrt( dest, src0, src1, size );
   // Core 0 will verify the results.
+
+  test_stats_off();
 
   if ( bthread_get_core_id() == 0 )
     verify_results( dest, ref, size );

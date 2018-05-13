@@ -36,15 +36,15 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name        = HostButterfree
+design_name        = HostChansey
 clock_period       = 3.0
-design_v           = rtl-handoff/HostButterfree_blackbox.v
+design_v           = rtl-handoff/HostChansey_blackbox.v
 
 # For simulation
 
-pytest_target_str  = ../pymtl/CompButterfree/test/Butterfree_test*
-testing_files      = rtl-handoff/Butterfree-test/Butterfree_tb.v
-testing_files     += rtl-handoff/HostButterfree.swshim.v
+pytest_target_str  = ../pymtl/CompChansey/test/Chansey_test*
+testing_files      = rtl-handoff/Chansey-test/Chansey_tb.v
+testing_files     += rtl-handoff/HostChansey.swshim.v
 
 #-------------------------------------------------------------------------
 # Export

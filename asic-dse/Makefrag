@@ -133,6 +133,18 @@ ifeq ($(design_select),pymtl-procl0mdu)
   clock_period = 0.8
   design_v     = ../pymtl/build/ProcL0Mdu.v
 endif
+
+#-------------------------------------------------------------------------
+# DesignWare FPU
+#-------------------------------------------------------------------------
+
+
+ifeq ($(design_select),pymtl-dw-fpu)
+  design_name  = DesignWareFloatingPointUnit
+  clock_period = 1.0
+  design_v     = ../pymtl/build/DesignWareFloatingPointUnit.v
+endif
+
 #-------------------------------------------------------------------------
 # Synthesizable PLL
 #-------------------------------------------------------------------------

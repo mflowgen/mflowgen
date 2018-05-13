@@ -22,7 +22,8 @@ module TestHarness
   input  logic [31:0] src_max_delay,
   input  logic [31:0] mem_max_delay,
   input  logic [31:0] sink_max_delay,
-  output logic        done
+  output logic        done,
+  output logic        failed
 );
 
   //----------------------------------------------------------------------
@@ -113,13 +114,22 @@ module TestHarness
   //----------------------------------------------------------------------
 
   logic src_ctrlreg_done, sink_ctrlreg_done;
-  logic src_proc0_done, sink_proc0_done;
-  logic src_proc1_done, sink_proc1_done;
-  logic src_proc2_done, sink_proc2_done;
-  logic src_proc3_done, sink_proc3_done;
-  logic src_mdu_done, sink_mdu_done;
-  logic src_icache_done, sink_icache_done;
-  logic src_dcache_done, sink_dcache_done;
+  logic src_proc0_done  , sink_proc0_done  ;
+  logic src_proc1_done  , sink_proc1_done  ;
+  logic src_proc2_done  , sink_proc2_done  ;
+  logic src_proc3_done  , sink_proc3_done  ;
+  logic src_mdu_done    , sink_mdu_done    ;
+  logic src_icache_done , sink_icache_done ;
+  logic src_dcache_done , sink_dcache_done ;
+
+  logic sink_ctrlreg_failed;
+  logic sink_proc0_failed  ;
+  logic sink_proc1_failed  ;
+  logic sink_proc2_failed  ;
+  logic sink_proc3_failed  ;
+  logic sink_mdu_failed    ;
+  logic sink_icache_failed ;
+  logic sink_dcache_failed ;
 
   //----------------------------------------------------------------------
   // DUT instantiation
@@ -228,7 +238,8 @@ module TestHarness
     .val       (ctrlregresp_val),
     .rdy       (ctrlregresp_rdy),
     .msg       (ctrlregresp_msg),
-    .done      (sink_ctrlreg_done)
+    .done      (sink_ctrlreg_done),
+    .failed    (sink_ctrlreg_failed)
   );
 
   //----------------------------------------------------------------------
@@ -263,7 +274,8 @@ module TestHarness
     .val       (proc2mngr_0_val),
     .rdy       (proc2mngr_0_rdy),
     .msg       (proc2mngr_0_msg),
-    .done      (sink_proc0_done)
+    .done      (sink_proc0_done),
+    .failed    (sink_proc0_failed)
   );
 
   //----------------------------------------------------------------------
@@ -298,7 +310,8 @@ module TestHarness
     .val       (proc2mngr_1_val),
     .rdy       (proc2mngr_1_rdy),
     .msg       (proc2mngr_1_msg),
-    .done      (sink_proc1_done)
+    .done      (sink_proc1_done),
+    .failed    (sink_proc1_failed)
   );
 
   //----------------------------------------------------------------------
@@ -333,7 +346,8 @@ module TestHarness
     .val       (proc2mngr_2_val),
     .rdy       (proc2mngr_2_rdy),
     .msg       (proc2mngr_2_msg),
-    .done      (sink_proc2_done)
+    .done      (sink_proc2_done),
+    .failed    (sink_proc2_failed)
   );
 
   //----------------------------------------------------------------------
@@ -368,7 +382,8 @@ module TestHarness
     .val       (proc2mngr_3_val),
     .rdy       (proc2mngr_3_rdy),
     .msg       (proc2mngr_3_msg),
-    .done      (sink_proc3_done)
+    .done      (sink_proc3_done),
+    .failed    (sink_proc3_failed)
   );
 
   //----------------------------------------------------------------------
@@ -403,7 +418,8 @@ module TestHarness
     .val       (host_mduresp_val),
     .rdy       (host_mduresp_rdy),
     .msg       (host_mduresp_msg),
-    .done      (sink_mdu_done)
+    .done      (sink_mdu_done),
+    .failed    (sink_mdu_failed)
   );
 
   //----------------------------------------------------------------------
@@ -438,7 +454,8 @@ module TestHarness
     .val       (host_icacheresp_val),
     .rdy       (host_icacheresp_rdy),
     .msg       (host_icacheresp_msg),
-    .done      (sink_icache_done)
+    .done      (sink_icache_done),
+    .failed    (sink_icache_failed)
   );
 
   //----------------------------------------------------------------------
@@ -473,19 +490,25 @@ module TestHarness
     .val       (host_dcacheresp_val),
     .rdy       (host_dcacheresp_rdy),
     .msg       (host_dcacheresp_msg),
-    .done      (sink_dcache_done)
+    .done      (sink_dcache_done),
+    .failed    (sink_dcache_failed)
   );
 
-  assign done = src_ctrlreg_done && sink_ctrlreg_done &&
-                src_proc0_done && sink_proc0_done && src_proc1_done && sink_proc1_done &&
-                src_proc2_done && sink_proc2_done && src_proc3_done && sink_proc3_done &&
-                src_mdu_done && sink_mdu_done && src_icache_done && sink_icache_done &&
-                src_dcache_done && sink_dcache_done;
+  assign done   = src_ctrlreg_done    & sink_ctrlreg_done  & src_proc0_done    & 
+                  sink_proc0_done     & src_proc1_done     & sink_proc1_done   &
+                  src_proc2_done      & sink_proc2_done    & src_proc3_done    &
+                  sink_proc3_done     & src_mdu_done       & sink_mdu_done     &
+                  src_icache_done     & sink_icache_done   & src_dcache_done   &
+                  sink_dcache_done    ;
+
+  assign failed = sink_ctrlreg_failed | sink_proc0_failed  | sink_proc1_failed |
+                  sink_proc2_failed   | sink_proc3_failed  | sink_mdu_failed   |
+                  sink_icache_failed  | sink_dcache_failed;
 
   vc_TestRandDelayMemory_1i1d #(
     .p_mem_nbytes (p_mem_nbytes),
     .p_i_nbits    (128),
-    .p_d_nbits    (32)
+    .p_d_nbits    (128)
   )
   mem
   (
@@ -571,6 +594,7 @@ module top;
   logic [31:0] th_mem_max_delay;
   logic [31:0] th_sink_max_delay;
   logic        th_done;
+  logic        th_failed;
 
   logic [31:0] th_src_ctrlreg_idx;
   logic [31:0] th_sink_ctrlreg_idx;
@@ -597,8 +621,108 @@ module top;
     .src_max_delay  (th_src_max_delay),
     .mem_max_delay  (th_mem_max_delay),
     .sink_max_delay (th_sink_max_delay),
-    .done           (th_done)
+    .done           (th_done),
+    .failed         (th_failed)
   );
+
+  // Avoid initialization issues
+  // hawajkm: Explicitly initialize the sources and sinks so they don't fire
+
+  task init_src_ctrlreg ();
+  begin
+    th.src_ctrlreg.src.m[th_src_ctrlreg_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_ctrlreg ();
+  begin
+    th.sink_ctrlreg.sink.m[th_sink_ctrlreg_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc0 ();
+  begin
+    th.src_proc0.src.m[th_src_proc0_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc0 ();
+  begin
+    th.sink_proc0.sink.m[th_sink_proc0_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc1 ();
+  begin
+    th.src_proc1.src.m[th_src_proc1_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc1 ();
+  begin
+    th.sink_proc1.sink.m[th_sink_proc1_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc2 ();
+  begin
+    th.src_proc2.src.m[th_src_proc2_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc2 ();
+  begin
+    th.sink_proc2.sink.m[th_sink_proc2_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_proc3 ();
+  begin
+    th.src_proc3.src.m[th_src_proc3_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_proc3 ();
+  begin
+    th.sink_proc3.sink.m[th_sink_proc3_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_mdu ();
+  begin
+    th.src_mdu.src.m[th_src_mdu_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_mdu ();
+  begin
+    th.sink_mdu.sink.m[th_sink_mdu_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_icache ();
+  begin
+    th.src_icache.src.m[th_src_icache_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_icache ();
+  begin
+    th.sink_icache.sink.m[th_sink_icache_idx] = 'bx;
+  end
+  endtask
+
+  task init_src_dcache ();
+  begin
+    th.src_dcache.src.m[th_src_dcache_idx] = 'bx;
+  end
+  endtask
+
+  task init_sink_dcache ();
+  begin
+    th.sink_dcache.sink.m[th_sink_dcache_idx] = 'bx;
+  end
+  endtask
 
   // Shunning: Helper tasks for loading messages to 8 srcs, 8 sink, and memory
 
@@ -736,16 +860,60 @@ module top;
   end
   endtask
 
+  // Global initialization task
+
+  task initialize ();
+  begin
+
+    // Initalize the ctrlreg src/sink
+
+    init_src_ctrlreg ();
+    init_sink_ctrlreg ();
+
+    // Initialize the proc's src/sink
+
+    init_src_proc0 ();
+    init_src_proc1 ();
+    init_src_proc2 ();
+    init_src_proc3 ();
+
+    init_sink_proc0 ();
+    init_sink_proc1 ();
+    init_sink_proc2 ();
+    init_sink_proc3 ();
+
+    // Initialize the MDU src/sink
+
+    init_src_mdu ();
+    init_sink_mdu ();
+
+    // Initialize icaches src/sink
+
+    init_src_icache ();
+    init_sink_icache ();
+
+    // Initialize the dcaches src/sink
+
+    init_src_dcache ();
+    init_sink_dcache ();
+
+  end
+  endtask
+
   logic [799:0] test_name;
+  logic [ 63:0] max_cycles;
 
   `include "Butterfree_all_tests.v"
 
   initial begin
-    if ( !$value$plusargs( "test=%s", test_name ) ) begin
+    if ( !$value$plusargs( "test=%s"      , test_name  ) ) begin
       $display( "" );
       $display( "    [BRG] ERROR: No test specified" );
       $display( "" );
       $finish(1);
+    end
+    if ( !$value$plusargs( "max_cycles=%d", max_cycles ) ) begin
+      max_cycles = 350000;
     end
   end
   //----------------------------------------------------------------------
@@ -783,11 +951,15 @@ module top;
     th_src_dcache_idx = 0;
     th_sink_dcache_idx = 0;
 
+    // Initialize the sources and sinks
+
+    initialize();
+
     // call the dispatch function in the generated all_tests.v
 
     Butterfree_testcase_dispatch( test_name );
 
-    while ( !th_done && total_cycles < 200000 ) begin
+    while ( !th_done && total_cycles < max_cycles ) begin
       // $display("%d:",total_cycles);
       // $display("  L0i valid    : %b", th.dut.l0i.inner.dpath.valid_array.out);
       // $display("  L0i tag check: %x %x %d", th.dut.l0i.inner.dpath.tag_compare.in0,
@@ -865,17 +1037,27 @@ module top;
     $vcdplusoff;
     // Check that the simulation actually finished
 
-    if ( !th_done ) begin
+    if ((!th_done) && (!th_failed )) begin
       $display( "" );
-      $display( "    [BRG] ERROR: Test did not finish in 200000 cycles." );
+      $display( "    [BRG] ERROR: Test timed-out after %0d cycles.", max_cycles );
       $display( "" );
       $finish(1);
     end
-
-
-    if ( th_done ) begin
+    else if ((!th_done) && (th_failed)) begin
       $display( "" );
-      $display( "    [BRG] Passed test in %d cycles ", total_cycles );
+      $display( "    [BRG] ERROR: Test timed-out with errors after %0d cycles.", max_cycles );
+      $display( "" );
+      $finish(1);
+    end
+    else if (th_failed) begin
+      $display( "" );
+      $display( "    [BRG] ERROR: Test failed in %0d cycles.", max_cycles );
+      $display( "" );
+      $finish(1);
+    end
+    else begin
+      $display( "" );
+      $display( "    [BRG] Passed test in %0d cycles.", total_cycles );
       $display( "" );
       $finish(0);
     end
