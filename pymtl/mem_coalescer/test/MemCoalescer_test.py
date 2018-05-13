@@ -88,10 +88,10 @@ class TestHarness( Model ):
     # srcs
     for i in range( s.nports ):
       trace = trace + s.srcs[i].line_trace() + ' : '
-    trace = trace + ' || '
+    trace = trace + ' '
 
-#    # mem_coalescer
-#    trace = trace + s.mem_coalescer.line_trace() + ' || '
+    # mem_coalescer
+    trace = trace + s.mem_coalescer.line_trace() + ' : '
 
 #    # mem
 #    trace = trace + s.mem.line_trace() + " "
@@ -220,7 +220,7 @@ def basic_4_ports_rand( base_addr ):
   ref_data  = mem_data(0)
 
   for i in range(256):
-    rand_idx = random.randint(0, 3) 
+    rand_idx = random.randint(0, 3)
     test_list = test_list + [ req( 'rd', i, ref_data[rand_idx * 2], 0, 0 ), resp('rd', i, 0, ref_data[rand_idx * 2 + 1] ) ]
 
   return test_list

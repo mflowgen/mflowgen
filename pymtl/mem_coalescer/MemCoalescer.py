@@ -15,6 +15,8 @@ class MemCoalescer( Model ):
   def __init__( s, nports, MsgType,
                 addr_nbits = 32, data_nbits = 32, opaque_nbits = 8 ):
 
+    s.nports = nports
+
     #---------------------------------------------------------------------
     # Requesters <-> MemCoalescer
     #---------------------------------------------------------------------
@@ -278,7 +280,18 @@ class MemCoalescer( Model ):
       s.granted_addr_sel_mux.sel.value = s.encoded_arb_grant
 
   def line_trace(s):
-    req_str   = '{' + '|'.join(map(str,s.reqs)) + '}'
-    resp_str  = '{' + '|'.join(map(str,s.resps)) + '}'
+    trace = '['
+    for i in range( s.nports ):
+      if ( s.reqs[i].val and s.reqs[i].rdy ):
+        trace += '>'
+      elif ( s.resps[i].val and s.resps[i].rdy ):
+        trace += 'r'
+      else:
+        trace += ' '
 
-    return req_str + ' ' + resp_str
+      if i != s.nports - 1:
+        trace += '|'
+
+    trace += ']'
+
+    return trace
