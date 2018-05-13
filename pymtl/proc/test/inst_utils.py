@@ -4,6 +4,7 @@
 # Includes helper functions to simplify creating assembly tests.
 
 from pymtl import *
+import struct
 
 #-------------------------------------------------------------------------
 # print_asm
@@ -1022,6 +1023,145 @@ def gen_amo_value_test( inst, src0, src1, result_pre, result_post ):
   return gen_amo_src01_template( 0, 0, 0, "x1", "x2",
                                 inst, src0, src1,
                                 result_pre, result_post )
+
+def f2i( f ):
+  return struct.unpack('<I', struct.pack('<f', f))[0]
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_template
+#-------------------------------------------------------------------------
+
+def gen_fp_rr_template( num_nops_src0, num_nops_src1, num_nops_dest,
+                        reg_src0, reg_src1, src_order,
+                        inst, src0, src1, result ):
+
+  nops_src0    = gen_nops(num_nops_src0)
+  nops_src1    = gen_nops(num_nops_src1)
+  nops_dest    = gen_nops(num_nops_dest)
+  mv_to_srcs   = """
+    fmv.w.x {reg_src0}, x1
+    {nops_src0}
+    fmv.w.x {reg_src1}, x2
+    {nops_src1}
+""".format( **locals() ) if src_order=="01" else """
+    fmv.w.x {reg_src1}, x2
+    {nops_src1}
+    fmv.w.x {reg_src0}, x1
+    {nops_src0}
+""".format( **locals() )
+
+  return """
+
+    # Move src0 into int reg.
+    csrr x1, mngr2proc < {src0}
+    # Move val into int reg.
+    csrr x2, mngr2proc < {src1}
+
+    # Move the values into the fp reg file.
+    {mv_to_srcs}
+
+    # Instruction under test
+    {inst} f3, {reg_src0}, {reg_src1}
+    {nops_dest}
+
+    # Move the value back to int reg.
+    fmv.x.w x3, f3
+    csrw proc2mngr, x3 > {result}
+
+  """.format( **locals() )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_dest_dep_test
+#-------------------------------------------------------------------------
+# Test the destination bypass path by varying how many nops are
+# inserted between the instruction under test and reading the destination
+# register with a csrr instruction.
+
+def gen_fp_rr_dest_dep_test( num_nops, inst, src0, src1, result ):
+  return gen_fp_rr_template( 0, 8, num_nops, "f1", "f2", "01",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_src1_dep_test
+#-------------------------------------------------------------------------
+# Test the source 1 bypass paths by varying how many nops are inserted
+# between writing the src1 register and reading this register in the
+# instruction under test.
+
+def gen_fp_rr_src1_dep_test( num_nops, inst, src0, src1, result ):
+  return gen_fp_rr_template( 8-num_nops, num_nops, 0, "f1", "f2", "01",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_src0_dep_test
+#-------------------------------------------------------------------------
+# Test the source 0 bypass paths by varying how many nops are inserted
+# between writing the src0 register and reading this register in the
+# instruction under test.
+
+def gen_fp_rr_src0_dep_test( num_nops, inst, src0, src1, result ):
+  return gen_fp_rr_template( num_nops, 8-num_nops, 0, "f1", "f2", "10",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_srcs_dep_test
+#-------------------------------------------------------------------------
+# Test both source bypass paths at the same time by varying how many nops
+# are inserted between writing both src registers and reading both
+# registers in the instruction under test.
+
+def gen_fp_rr_srcs_dep_test( num_nops, inst, src0, src1, result ):
+  return gen_fp_rr_template( 0, num_nops, 0, "f1", "f2", "01",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_src0_eq_dest_test
+#-------------------------------------------------------------------------
+# Test situation where the src0 register specifier is the same as the
+# destination register specifier.
+
+def gen_fp_rr_src0_eq_dest_test( inst, src0, src1, result ):
+  return gen_fp_rr_template( 0, 0, 0, "f3", "f2", "01",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_src1_eq_dest_test
+#-------------------------------------------------------------------------
+# Test situation where the src1 register specifier is the same as the
+# destination register specifier.
+
+def gen_fp_rr_src1_eq_dest_test( inst, src0, src1, result ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f3", "01",
+                             inst, src0, src1, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_src0_eq_src1_test
+#-------------------------------------------------------------------------
+# Test situation where the src register specifiers are the same.
+
+def gen_fp_rr_src0_eq_src1_test( inst, src, result ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f1", "01",
+                             inst, src, src, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_srcs_eq_dest_test
+#-------------------------------------------------------------------------
+# Test situation where all three register specifiers are the same.
+
+def gen_fp_rr_srcs_eq_dest_test( inst, src, result ):
+  return gen_fp_rr_template( 0, 0, 0, "f3", "f3", "01",
+                             inst, src, src, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_rr_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of a register-register instruction under
+# test. We assume that bypassing has already been tested.
+
+def gen_fp_rr_value_test( inst, src0, src1, result ):
+  return gen_fp_rr_template( 0, 0, 0, "f1", "f2", "01",
+                             inst, src0, src1, result )
+
 
 #=========================================================================
 # TestHarness

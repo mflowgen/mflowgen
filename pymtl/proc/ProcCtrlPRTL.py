@@ -430,6 +430,7 @@ class ProcCtrlPRTL( Model ):
     # RP32F request type.
     fp_x   = Bits( 4, 15 )
     fp_mul = Bits( 4, FpuReqMsg.TYPE_FMUL )
+    fp_add = Bits( 4, FpuReqMsg.TYPE_FADD )
     fp_sub = Bits( 4, FpuReqMsg.TYPE_FSUB )
     fp_div = Bits( 4, FpuReqMsg.TYPE_FDIV )
     fp_min = Bits( 4, FpuReqMsg.TYPE_FMIN )
