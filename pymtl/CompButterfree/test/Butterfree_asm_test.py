@@ -1,5 +1,5 @@
 #=========================================================================
-# Butterfree_test.py
+# Butterfree_asm_test.py
 #=========================================================================
 # In this test we pick representative instruction from each instrucion
 # categories

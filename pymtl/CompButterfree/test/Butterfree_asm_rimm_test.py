@@ -1,8 +1,6 @@
 #=========================================================================
 # Butterfree_asm_rimm_test.py
 #=========================================================================
-# In this test we pick representative instruction from each instrucion
-# categories
 
 import pytest
 import random
