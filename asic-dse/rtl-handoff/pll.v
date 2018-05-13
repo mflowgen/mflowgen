@@ -4209,7 +4209,7 @@ module inv_logic_n10 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 8;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4344,7 +4344,7 @@ module inv_logic_n11 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 12;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4481,7 +4481,7 @@ module inv_logic_n12 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 36;
+parameter N_LOADS_PER_STAGE = 7;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4619,7 +4619,7 @@ module inv_logic_n13 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 15;
+parameter N_LOADS_PER_STAGE = 9;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4757,7 +4757,7 @@ module inv_logic_n14 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 11;
+parameter N_LOADS_PER_STAGE = 8;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -4894,7 +4894,7 @@ module inv_logic_n15 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 8;
+parameter N_LOADS_PER_STAGE = 6;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5032,7 +5032,7 @@ module inv_logic_n16 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 7;
+parameter N_LOADS_PER_STAGE = 6;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5304,7 +5304,7 @@ module inv_logic_n3 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 30;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5441,7 +5441,7 @@ module inv_logic_n4 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 27;
+parameter N_LOADS_PER_STAGE = 32;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5577,7 +5577,7 @@ module inv_logic_n5 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 36;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5712,7 +5712,7 @@ module inv_logic_n6 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 29;
+parameter N_LOADS_PER_STAGE = 15;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5847,7 +5847,7 @@ module inv_logic_n7 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 6;
+parameter N_LOADS_PER_STAGE = 21;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -5985,7 +5985,7 @@ module inv_logic_n8 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 5;
+parameter N_LOADS_PER_STAGE = 11;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
@@ -6121,7 +6121,7 @@ module inv_logic_n9 (
         out
         );
 
-parameter N_LOADS_PER_STAGE = 33;
+parameter N_LOADS_PER_STAGE = 15;
 
 input in;
 input [N_LOADS_PER_STAGE-1:0] in_ctrl;
