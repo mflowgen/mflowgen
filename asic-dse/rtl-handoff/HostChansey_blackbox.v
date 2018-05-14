@@ -104,31 +104,34 @@ module HostChansey
 
   //                 Inst Name            PAD         data
 
-   `INPUT_PAD_V(        clk_iocell,      clk_io[0],      clk[0] )
+   `INPUT_PAD_V(        clk_iocell,      clk_io[0],      clk[0] ) // South
 
-   `INPUT_PAD_H(      reset_iocell,    reset_io[0],    reset[0] )
+   `INPUT_PAD_H(      reset_iocell,    reset_io[0],    reset[0] ) // East
 
-   `INPUT_PAD_V(  in__msg_0_iocell,  in__msg_io[0],  in__msg[0] )
-   `INPUT_PAD_V(  in__msg_1_iocell,  in__msg_io[1],  in__msg[1] )
-   `INPUT_PAD_V(  in__msg_2_iocell,  in__msg_io[2],  in__msg[2] )
-   `INPUT_PAD_V(  in__msg_3_iocell,  in__msg_io[3],  in__msg[3] )
-   `INPUT_PAD_V(  in__msg_4_iocell,  in__msg_io[4],  in__msg[4] )
-   `INPUT_PAD_V(  in__msg_5_iocell,  in__msg_io[5],  in__msg[5] )
-   `INPUT_PAD_V(  in__msg_6_iocell,  in__msg_io[6],  in__msg[6] )
-   `INPUT_PAD_V(  in__msg_7_iocell,  in__msg_io[7],  in__msg[7] )
-   `INPUT_PAD_V(    in__req_iocell,  in__req_io[0],  in__req[0] )
-   `INPUT_PAD_V(    out_ack_iocell,  out_ack_io[0],  out_ack[0] )
+   `INPUT_PAD_V(    in__req_iocell,  in__req_io[0],  in__req[0] ) // South
+   `INPUT_PAD_V(  in__msg_0_iocell,  in__msg_io[0],  in__msg[0] ) // South
+   `INPUT_PAD_V(  in__msg_1_iocell,  in__msg_io[1],  in__msg[1] ) // South
+   `INPUT_PAD_V(  in__msg_2_iocell,  in__msg_io[2],  in__msg[2] ) // South
+   `INPUT_PAD_V(  in__msg_3_iocell,  in__msg_io[3],  in__msg[3] ) // South
+   `INPUT_PAD_V(  in__msg_4_iocell,  in__msg_io[4],  in__msg[4] ) // South
+   `INPUT_PAD_V(  in__msg_5_iocell,  in__msg_io[5],  in__msg[5] ) // South
+   `INPUT_PAD_V(  in__msg_6_iocell,  in__msg_io[6],  in__msg[6] ) // South
+   `INPUT_PAD_V(  in__msg_7_iocell,  in__msg_io[7],  in__msg[7] ) // South
 
-  `OUTPUT_PAD_V(    in__ack_iocell,  in__ack_io[0],  in__ack[0] )
-  `OUTPUT_PAD_V(  out_msg_0_iocell,  out_msg_io[0],  out_msg[0] )
-  `OUTPUT_PAD_V(  out_msg_1_iocell,  out_msg_io[1],  out_msg[1] )
-  `OUTPUT_PAD_V(  out_msg_2_iocell,  out_msg_io[2],  out_msg[2] )
-  `OUTPUT_PAD_V(  out_msg_3_iocell,  out_msg_io[3],  out_msg[3] )
-  `OUTPUT_PAD_V(  out_msg_4_iocell,  out_msg_io[4],  out_msg[4] )
-  `OUTPUT_PAD_V(  out_msg_5_iocell,  out_msg_io[5],  out_msg[5] )
-  `OUTPUT_PAD_V(  out_msg_6_iocell,  out_msg_io[6],  out_msg[6] )
-  `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] )
-  `OUTPUT_PAD_V(    out_req_iocell,  out_req_io[0],  out_req[0] )
+  `OUTPUT_PAD_V(    in__ack_iocell,  in__ack_io[0],  in__ack[0] ) // South
+
+  `OUTPUT_PAD_H(    out_req_iocell,  out_req_io[0],  out_req[0] ) // East
+
+  `OUTPUT_PAD_V(  out_msg_0_iocell,  out_msg_io[0],  out_msg[0] ) // North
+  `OUTPUT_PAD_V(  out_msg_1_iocell,  out_msg_io[1],  out_msg[1] ) // North
+  `OUTPUT_PAD_V(  out_msg_2_iocell,  out_msg_io[2],  out_msg[2] ) // North
+  `OUTPUT_PAD_V(  out_msg_3_iocell,  out_msg_io[3],  out_msg[3] ) // North
+  `OUTPUT_PAD_V(  out_msg_4_iocell,  out_msg_io[4],  out_msg[4] ) // North
+  `OUTPUT_PAD_V(  out_msg_5_iocell,  out_msg_io[5],  out_msg[5] ) // North
+  `OUTPUT_PAD_V(  out_msg_6_iocell,  out_msg_io[6],  out_msg[6] ) // North
+  `OUTPUT_PAD_V(  out_msg_7_iocell,  out_msg_io[7],  out_msg[7] ) // North
+
+   `INPUT_PAD_H(    out_ack_iocell,  out_ack_io[0],  out_ack[0] ) // East
 
   // wire declarations
   wire   [   0:0] dut_out_val$000;
