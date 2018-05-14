@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
 // SwShim
 //-----------------------------------------------------------------------------
-// dut: <CompChansey.Chansey.Chansey object at 0x7f2d4c5c4290>
-// dut_asynch: <CompChansey.HostChansey.HostChansey object at 0x7f2d4b2dba90>
+// dut: <CompChansey.Chansey.Chansey object at 0x7f5390206110>
+// dut_asynch: <CompChansey.HostChansey.HostChansey object at 0x7f538c7e5dd0>
 // asynch_bitwidth: 8
 // dump_vcd: 
 // translate: zeros
@@ -3728,6 +3728,7 @@ module Chansey
 
   // register declarations
   reg    [   0:0] cachereq_go;
+  reg    [   0:0] l0idisable;
 
   // dcache_adapter temporaries
   wire   [  77:0] dcache_adapter$realreq_msg;
@@ -3775,6 +3776,46 @@ module Chansey
     .realresp_val ( dcache_adapter$realresp_val ),
     .hostresp_msg ( dcache_adapter$hostresp_msg ),
     .hostresp_val ( dcache_adapter$hostresp_val )
+  );
+
+  // net_fpuresp temporaries
+  wire   [   0:0] net_fpuresp$reset;
+  wire   [  39:0] net_fpuresp$in__msg;
+  wire   [   0:0] net_fpuresp$in__val;
+  wire   [   0:0] net_fpuresp$clk;
+  wire   [   0:0] net_fpuresp$out$000_rdy;
+  wire   [   0:0] net_fpuresp$out$001_rdy;
+  wire   [   0:0] net_fpuresp$out$002_rdy;
+  wire   [   0:0] net_fpuresp$out$003_rdy;
+  wire   [   0:0] net_fpuresp$in__rdy;
+  wire   [  39:0] net_fpuresp$out$000_msg;
+  wire   [   0:0] net_fpuresp$out$000_val;
+  wire   [  39:0] net_fpuresp$out$001_msg;
+  wire   [   0:0] net_fpuresp$out$001_val;
+  wire   [  39:0] net_fpuresp$out$002_msg;
+  wire   [   0:0] net_fpuresp$out$002_val;
+  wire   [  39:0] net_fpuresp$out$003_msg;
+  wire   [   0:0] net_fpuresp$out$003_val;
+
+  Router_0x52846acbae83db71 net_fpuresp
+  (
+    .reset       ( net_fpuresp$reset ),
+    .in__msg     ( net_fpuresp$in__msg ),
+    .in__val     ( net_fpuresp$in__val ),
+    .clk         ( net_fpuresp$clk ),
+    .out$000_rdy ( net_fpuresp$out$000_rdy ),
+    .out$001_rdy ( net_fpuresp$out$001_rdy ),
+    .out$002_rdy ( net_fpuresp$out$002_rdy ),
+    .out$003_rdy ( net_fpuresp$out$003_rdy ),
+    .in__rdy     ( net_fpuresp$in__rdy ),
+    .out$000_msg ( net_fpuresp$out$000_msg ),
+    .out$000_val ( net_fpuresp$out$000_val ),
+    .out$001_msg ( net_fpuresp$out$001_msg ),
+    .out$001_val ( net_fpuresp$out$001_val ),
+    .out$002_msg ( net_fpuresp$out$002_msg ),
+    .out$002_val ( net_fpuresp$out$002_val ),
+    .out$003_msg ( net_fpuresp$out$003_msg ),
+    .out$003_val ( net_fpuresp$out$003_val )
   );
 
   // net_mdureq temporaries
@@ -3929,6 +3970,68 @@ module Chansey
     .out$002_val ( net_dcacheresp$out$002_val ),
     .out$003_msg ( net_dcacheresp$out$003_msg ),
     .out$003_val ( net_dcacheresp$out$003_val )
+  );
+
+  // fpu temporaries
+  wire   [   0:0] fpu$resp_rdy;
+  wire   [   0:0] fpu$clk;
+  wire   [  73:0] fpu$req_msg;
+  wire   [   0:0] fpu$req_val;
+  wire   [   0:0] fpu$reset;
+  wire   [  39:0] fpu$resp_msg;
+  wire   [   0:0] fpu$resp_val;
+  wire   [   0:0] fpu$req_rdy;
+
+  DesignWareFloatingPointUnit fpu
+  (
+    .resp_rdy ( fpu$resp_rdy ),
+    .clk      ( fpu$clk ),
+    .req_msg  ( fpu$req_msg ),
+    .req_val  ( fpu$req_val ),
+    .reset    ( fpu$reset ),
+    .resp_msg ( fpu$resp_msg ),
+    .resp_val ( fpu$resp_val ),
+    .req_rdy  ( fpu$req_rdy )
+  );
+
+  // net_fpureq temporaries
+  wire   [   0:0] net_fpureq$reset;
+  wire   [  73:0] net_fpureq$in_$000_msg;
+  wire   [   0:0] net_fpureq$in_$000_val;
+  wire   [  73:0] net_fpureq$in_$001_msg;
+  wire   [   0:0] net_fpureq$in_$001_val;
+  wire   [  73:0] net_fpureq$in_$002_msg;
+  wire   [   0:0] net_fpureq$in_$002_val;
+  wire   [  73:0] net_fpureq$in_$003_msg;
+  wire   [   0:0] net_fpureq$in_$003_val;
+  wire   [   0:0] net_fpureq$clk;
+  wire   [   0:0] net_fpureq$out_rdy;
+  wire   [   0:0] net_fpureq$in_$000_rdy;
+  wire   [   0:0] net_fpureq$in_$001_rdy;
+  wire   [   0:0] net_fpureq$in_$002_rdy;
+  wire   [   0:0] net_fpureq$in_$003_rdy;
+  wire   [  73:0] net_fpureq$out_msg;
+  wire   [   0:0] net_fpureq$out_val;
+
+  Funnel_0x58a91bbf80713154 net_fpureq
+  (
+    .reset       ( net_fpureq$reset ),
+    .in_$000_msg ( net_fpureq$in_$000_msg ),
+    .in_$000_val ( net_fpureq$in_$000_val ),
+    .in_$001_msg ( net_fpureq$in_$001_msg ),
+    .in_$001_val ( net_fpureq$in_$001_val ),
+    .in_$002_msg ( net_fpureq$in_$002_msg ),
+    .in_$002_val ( net_fpureq$in_$002_val ),
+    .in_$003_msg ( net_fpureq$in_$003_msg ),
+    .in_$003_val ( net_fpureq$in_$003_val ),
+    .clk         ( net_fpureq$clk ),
+    .out_rdy     ( net_fpureq$out_rdy ),
+    .in_$000_rdy ( net_fpureq$in_$000_rdy ),
+    .in_$001_rdy ( net_fpureq$in_$001_rdy ),
+    .in_$002_rdy ( net_fpureq$in_$002_rdy ),
+    .in_$003_rdy ( net_fpureq$in_$003_rdy ),
+    .out_msg     ( net_fpureq$out_msg ),
+    .out_val     ( net_fpureq$out_val )
   );
 
   // net_mduresp temporaries
@@ -4146,6 +4249,7 @@ module Chansey
   wire   [   0:0] proc$000$go;
   wire   [  47:0] proc$000$dmemresp_msg;
   wire   [   0:0] proc$000$dmemresp_val;
+  wire   [   0:0] proc$000$fpureq_rdy;
   wire   [   0:0] proc$000$clk;
   wire   [   0:0] proc$000$proc2mngr_rdy;
   wire   [  47:0] proc$000$imemresp_msg;
@@ -4154,6 +4258,8 @@ module Chansey
   wire   [  32:0] proc$000$xcelresp_msg;
   wire   [   0:0] proc$000$xcelresp_val;
   wire   [  31:0] proc$000$core_id;
+  wire   [  39:0] proc$000$fpuresp_msg;
+  wire   [   0:0] proc$000$fpuresp_val;
   wire   [   0:0] proc$000$mdureq_rdy;
   wire   [  31:0] proc$000$mngr2proc_msg;
   wire   [   0:0] proc$000$mngr2proc_val;
@@ -4166,10 +4272,13 @@ module Chansey
   wire   [  77:0] proc$000$imemreq_msg;
   wire   [   0:0] proc$000$imemreq_val;
   wire   [   0:0] proc$000$dmemresp_rdy;
+  wire   [  73:0] proc$000$fpureq_msg;
+  wire   [   0:0] proc$000$fpureq_val;
   wire   [  31:0] proc$000$proc2mngr_msg;
   wire   [   0:0] proc$000$proc2mngr_val;
   wire   [   0:0] proc$000$imemresp_rdy;
   wire   [   0:0] proc$000$xcelresp_rdy;
+  wire   [   0:0] proc$000$fpuresp_rdy;
   wire   [  69:0] proc$000$mdureq_msg;
   wire   [   0:0] proc$000$mdureq_val;
   wire   [   0:0] proc$000$mngr2proc_rdy;
@@ -4185,6 +4294,7 @@ module Chansey
     .go            ( proc$000$go ),
     .dmemresp_msg  ( proc$000$dmemresp_msg ),
     .dmemresp_val  ( proc$000$dmemresp_val ),
+    .fpureq_rdy    ( proc$000$fpureq_rdy ),
     .clk           ( proc$000$clk ),
     .proc2mngr_rdy ( proc$000$proc2mngr_rdy ),
     .imemresp_msg  ( proc$000$imemresp_msg ),
@@ -4193,6 +4303,8 @@ module Chansey
     .xcelresp_msg  ( proc$000$xcelresp_msg ),
     .xcelresp_val  ( proc$000$xcelresp_val ),
     .core_id       ( proc$000$core_id ),
+    .fpuresp_msg   ( proc$000$fpuresp_msg ),
+    .fpuresp_val   ( proc$000$fpuresp_val ),
     .mdureq_rdy    ( proc$000$mdureq_rdy ),
     .mngr2proc_msg ( proc$000$mngr2proc_msg ),
     .mngr2proc_val ( proc$000$mngr2proc_val ),
@@ -4205,10 +4317,13 @@ module Chansey
     .imemreq_msg   ( proc$000$imemreq_msg ),
     .imemreq_val   ( proc$000$imemreq_val ),
     .dmemresp_rdy  ( proc$000$dmemresp_rdy ),
+    .fpureq_msg    ( proc$000$fpureq_msg ),
+    .fpureq_val    ( proc$000$fpureq_val ),
     .proc2mngr_msg ( proc$000$proc2mngr_msg ),
     .proc2mngr_val ( proc$000$proc2mngr_val ),
     .imemresp_rdy  ( proc$000$imemresp_rdy ),
     .xcelresp_rdy  ( proc$000$xcelresp_rdy ),
+    .fpuresp_rdy   ( proc$000$fpuresp_rdy ),
     .mdureq_msg    ( proc$000$mdureq_msg ),
     .mdureq_val    ( proc$000$mdureq_val ),
     .mngr2proc_rdy ( proc$000$mngr2proc_rdy ),
@@ -4224,6 +4339,7 @@ module Chansey
   wire   [   0:0] proc$001$go;
   wire   [  47:0] proc$001$dmemresp_msg;
   wire   [   0:0] proc$001$dmemresp_val;
+  wire   [   0:0] proc$001$fpureq_rdy;
   wire   [   0:0] proc$001$clk;
   wire   [   0:0] proc$001$proc2mngr_rdy;
   wire   [  47:0] proc$001$imemresp_msg;
@@ -4232,6 +4348,8 @@ module Chansey
   wire   [  32:0] proc$001$xcelresp_msg;
   wire   [   0:0] proc$001$xcelresp_val;
   wire   [  31:0] proc$001$core_id;
+  wire   [  39:0] proc$001$fpuresp_msg;
+  wire   [   0:0] proc$001$fpuresp_val;
   wire   [   0:0] proc$001$mdureq_rdy;
   wire   [  31:0] proc$001$mngr2proc_msg;
   wire   [   0:0] proc$001$mngr2proc_val;
@@ -4244,10 +4362,13 @@ module Chansey
   wire   [  77:0] proc$001$imemreq_msg;
   wire   [   0:0] proc$001$imemreq_val;
   wire   [   0:0] proc$001$dmemresp_rdy;
+  wire   [  73:0] proc$001$fpureq_msg;
+  wire   [   0:0] proc$001$fpureq_val;
   wire   [  31:0] proc$001$proc2mngr_msg;
   wire   [   0:0] proc$001$proc2mngr_val;
   wire   [   0:0] proc$001$imemresp_rdy;
   wire   [   0:0] proc$001$xcelresp_rdy;
+  wire   [   0:0] proc$001$fpuresp_rdy;
   wire   [  69:0] proc$001$mdureq_msg;
   wire   [   0:0] proc$001$mdureq_val;
   wire   [   0:0] proc$001$mngr2proc_rdy;
@@ -4263,6 +4384,7 @@ module Chansey
     .go            ( proc$001$go ),
     .dmemresp_msg  ( proc$001$dmemresp_msg ),
     .dmemresp_val  ( proc$001$dmemresp_val ),
+    .fpureq_rdy    ( proc$001$fpureq_rdy ),
     .clk           ( proc$001$clk ),
     .proc2mngr_rdy ( proc$001$proc2mngr_rdy ),
     .imemresp_msg  ( proc$001$imemresp_msg ),
@@ -4271,6 +4393,8 @@ module Chansey
     .xcelresp_msg  ( proc$001$xcelresp_msg ),
     .xcelresp_val  ( proc$001$xcelresp_val ),
     .core_id       ( proc$001$core_id ),
+    .fpuresp_msg   ( proc$001$fpuresp_msg ),
+    .fpuresp_val   ( proc$001$fpuresp_val ),
     .mdureq_rdy    ( proc$001$mdureq_rdy ),
     .mngr2proc_msg ( proc$001$mngr2proc_msg ),
     .mngr2proc_val ( proc$001$mngr2proc_val ),
@@ -4283,10 +4407,13 @@ module Chansey
     .imemreq_msg   ( proc$001$imemreq_msg ),
     .imemreq_val   ( proc$001$imemreq_val ),
     .dmemresp_rdy  ( proc$001$dmemresp_rdy ),
+    .fpureq_msg    ( proc$001$fpureq_msg ),
+    .fpureq_val    ( proc$001$fpureq_val ),
     .proc2mngr_msg ( proc$001$proc2mngr_msg ),
     .proc2mngr_val ( proc$001$proc2mngr_val ),
     .imemresp_rdy  ( proc$001$imemresp_rdy ),
     .xcelresp_rdy  ( proc$001$xcelresp_rdy ),
+    .fpuresp_rdy   ( proc$001$fpuresp_rdy ),
     .mdureq_msg    ( proc$001$mdureq_msg ),
     .mdureq_val    ( proc$001$mdureq_val ),
     .mngr2proc_rdy ( proc$001$mngr2proc_rdy ),
@@ -4302,6 +4429,7 @@ module Chansey
   wire   [   0:0] proc$002$go;
   wire   [  47:0] proc$002$dmemresp_msg;
   wire   [   0:0] proc$002$dmemresp_val;
+  wire   [   0:0] proc$002$fpureq_rdy;
   wire   [   0:0] proc$002$clk;
   wire   [   0:0] proc$002$proc2mngr_rdy;
   wire   [  47:0] proc$002$imemresp_msg;
@@ -4310,6 +4438,8 @@ module Chansey
   wire   [  32:0] proc$002$xcelresp_msg;
   wire   [   0:0] proc$002$xcelresp_val;
   wire   [  31:0] proc$002$core_id;
+  wire   [  39:0] proc$002$fpuresp_msg;
+  wire   [   0:0] proc$002$fpuresp_val;
   wire   [   0:0] proc$002$mdureq_rdy;
   wire   [  31:0] proc$002$mngr2proc_msg;
   wire   [   0:0] proc$002$mngr2proc_val;
@@ -4322,10 +4452,13 @@ module Chansey
   wire   [  77:0] proc$002$imemreq_msg;
   wire   [   0:0] proc$002$imemreq_val;
   wire   [   0:0] proc$002$dmemresp_rdy;
+  wire   [  73:0] proc$002$fpureq_msg;
+  wire   [   0:0] proc$002$fpureq_val;
   wire   [  31:0] proc$002$proc2mngr_msg;
   wire   [   0:0] proc$002$proc2mngr_val;
   wire   [   0:0] proc$002$imemresp_rdy;
   wire   [   0:0] proc$002$xcelresp_rdy;
+  wire   [   0:0] proc$002$fpuresp_rdy;
   wire   [  69:0] proc$002$mdureq_msg;
   wire   [   0:0] proc$002$mdureq_val;
   wire   [   0:0] proc$002$mngr2proc_rdy;
@@ -4341,6 +4474,7 @@ module Chansey
     .go            ( proc$002$go ),
     .dmemresp_msg  ( proc$002$dmemresp_msg ),
     .dmemresp_val  ( proc$002$dmemresp_val ),
+    .fpureq_rdy    ( proc$002$fpureq_rdy ),
     .clk           ( proc$002$clk ),
     .proc2mngr_rdy ( proc$002$proc2mngr_rdy ),
     .imemresp_msg  ( proc$002$imemresp_msg ),
@@ -4349,6 +4483,8 @@ module Chansey
     .xcelresp_msg  ( proc$002$xcelresp_msg ),
     .xcelresp_val  ( proc$002$xcelresp_val ),
     .core_id       ( proc$002$core_id ),
+    .fpuresp_msg   ( proc$002$fpuresp_msg ),
+    .fpuresp_val   ( proc$002$fpuresp_val ),
     .mdureq_rdy    ( proc$002$mdureq_rdy ),
     .mngr2proc_msg ( proc$002$mngr2proc_msg ),
     .mngr2proc_val ( proc$002$mngr2proc_val ),
@@ -4361,10 +4497,13 @@ module Chansey
     .imemreq_msg   ( proc$002$imemreq_msg ),
     .imemreq_val   ( proc$002$imemreq_val ),
     .dmemresp_rdy  ( proc$002$dmemresp_rdy ),
+    .fpureq_msg    ( proc$002$fpureq_msg ),
+    .fpureq_val    ( proc$002$fpureq_val ),
     .proc2mngr_msg ( proc$002$proc2mngr_msg ),
     .proc2mngr_val ( proc$002$proc2mngr_val ),
     .imemresp_rdy  ( proc$002$imemresp_rdy ),
     .xcelresp_rdy  ( proc$002$xcelresp_rdy ),
+    .fpuresp_rdy   ( proc$002$fpuresp_rdy ),
     .mdureq_msg    ( proc$002$mdureq_msg ),
     .mdureq_val    ( proc$002$mdureq_val ),
     .mngr2proc_rdy ( proc$002$mngr2proc_rdy ),
@@ -4380,6 +4519,7 @@ module Chansey
   wire   [   0:0] proc$003$go;
   wire   [  47:0] proc$003$dmemresp_msg;
   wire   [   0:0] proc$003$dmemresp_val;
+  wire   [   0:0] proc$003$fpureq_rdy;
   wire   [   0:0] proc$003$clk;
   wire   [   0:0] proc$003$proc2mngr_rdy;
   wire   [  47:0] proc$003$imemresp_msg;
@@ -4388,6 +4528,8 @@ module Chansey
   wire   [  32:0] proc$003$xcelresp_msg;
   wire   [   0:0] proc$003$xcelresp_val;
   wire   [  31:0] proc$003$core_id;
+  wire   [  39:0] proc$003$fpuresp_msg;
+  wire   [   0:0] proc$003$fpuresp_val;
   wire   [   0:0] proc$003$mdureq_rdy;
   wire   [  31:0] proc$003$mngr2proc_msg;
   wire   [   0:0] proc$003$mngr2proc_val;
@@ -4400,10 +4542,13 @@ module Chansey
   wire   [  77:0] proc$003$imemreq_msg;
   wire   [   0:0] proc$003$imemreq_val;
   wire   [   0:0] proc$003$dmemresp_rdy;
+  wire   [  73:0] proc$003$fpureq_msg;
+  wire   [   0:0] proc$003$fpureq_val;
   wire   [  31:0] proc$003$proc2mngr_msg;
   wire   [   0:0] proc$003$proc2mngr_val;
   wire   [   0:0] proc$003$imemresp_rdy;
   wire   [   0:0] proc$003$xcelresp_rdy;
+  wire   [   0:0] proc$003$fpuresp_rdy;
   wire   [  69:0] proc$003$mdureq_msg;
   wire   [   0:0] proc$003$mdureq_val;
   wire   [   0:0] proc$003$mngr2proc_rdy;
@@ -4419,6 +4564,7 @@ module Chansey
     .go            ( proc$003$go ),
     .dmemresp_msg  ( proc$003$dmemresp_msg ),
     .dmemresp_val  ( proc$003$dmemresp_val ),
+    .fpureq_rdy    ( proc$003$fpureq_rdy ),
     .clk           ( proc$003$clk ),
     .proc2mngr_rdy ( proc$003$proc2mngr_rdy ),
     .imemresp_msg  ( proc$003$imemresp_msg ),
@@ -4427,6 +4573,8 @@ module Chansey
     .xcelresp_msg  ( proc$003$xcelresp_msg ),
     .xcelresp_val  ( proc$003$xcelresp_val ),
     .core_id       ( proc$003$core_id ),
+    .fpuresp_msg   ( proc$003$fpuresp_msg ),
+    .fpuresp_val   ( proc$003$fpuresp_val ),
     .mdureq_rdy    ( proc$003$mdureq_rdy ),
     .mngr2proc_msg ( proc$003$mngr2proc_msg ),
     .mngr2proc_val ( proc$003$mngr2proc_val ),
@@ -4439,10 +4587,13 @@ module Chansey
     .imemreq_msg   ( proc$003$imemreq_msg ),
     .imemreq_val   ( proc$003$imemreq_val ),
     .dmemresp_rdy  ( proc$003$dmemresp_rdy ),
+    .fpureq_msg    ( proc$003$fpureq_msg ),
+    .fpureq_val    ( proc$003$fpureq_val ),
     .proc2mngr_msg ( proc$003$proc2mngr_msg ),
     .proc2mngr_val ( proc$003$proc2mngr_val ),
     .imemresp_rdy  ( proc$003$imemresp_rdy ),
     .xcelresp_rdy  ( proc$003$xcelresp_rdy ),
+    .fpuresp_rdy   ( proc$003$fpuresp_rdy ),
     .mdureq_msg    ( proc$003$mdureq_msg ),
     .mdureq_val    ( proc$003$mdureq_val ),
     .mngr2proc_rdy ( proc$003$mngr2proc_rdy ),
@@ -4483,116 +4634,76 @@ module Chansey
     .memreq_val    ( icache$memreq_val )
   );
 
-  // xcel$000 temporaries
-  wire   [  37:0] xcel$000$xcelreq_msg;
-  wire   [   0:0] xcel$000$xcelreq_val;
-  wire   [   0:0] xcel$000$clk;
-  wire   [   0:0] xcel$000$reset;
-  wire   [   0:0] xcel$000$xcelresp_rdy;
-  wire   [  77:0] xcel$000$memreq_snoop_msg;
-  wire   [   0:0] xcel$000$memreq_snoop_val;
-  wire   [   0:0] xcel$000$xcelreq_rdy;
-  wire   [  32:0] xcel$000$xcelresp_msg;
-  wire   [   0:0] xcel$000$xcelresp_val;
-  wire   [   0:0] xcel$000$memreq_snoop_rdy;
+  // icache_coalescer temporaries
+  wire   [ 145:0] icache_coalescer$memresp_msg;
+  wire   [   0:0] icache_coalescer$memresp_val;
+  wire   [ 175:0] icache_coalescer$reqs$000_msg;
+  wire   [   0:0] icache_coalescer$reqs$000_val;
+  wire   [ 175:0] icache_coalescer$reqs$001_msg;
+  wire   [   0:0] icache_coalescer$reqs$001_val;
+  wire   [ 175:0] icache_coalescer$reqs$002_msg;
+  wire   [   0:0] icache_coalescer$reqs$002_val;
+  wire   [ 175:0] icache_coalescer$reqs$003_msg;
+  wire   [   0:0] icache_coalescer$reqs$003_val;
+  wire   [   0:0] icache_coalescer$clk;
+  wire   [   0:0] icache_coalescer$resps$000_rdy;
+  wire   [   0:0] icache_coalescer$resps$001_rdy;
+  wire   [   0:0] icache_coalescer$resps$002_rdy;
+  wire   [   0:0] icache_coalescer$resps$003_rdy;
+  wire   [   0:0] icache_coalescer$reset;
+  wire   [   0:0] icache_coalescer$memreq_rdy;
+  wire   [   0:0] icache_coalescer$coalescing_en;
+  wire   [   0:0] icache_coalescer$memresp_rdy;
+  wire   [   0:0] icache_coalescer$reqs$000_rdy;
+  wire   [   0:0] icache_coalescer$reqs$001_rdy;
+  wire   [   0:0] icache_coalescer$reqs$002_rdy;
+  wire   [   0:0] icache_coalescer$reqs$003_rdy;
+  wire   [ 145:0] icache_coalescer$resps$000_msg;
+  wire   [   0:0] icache_coalescer$resps$000_val;
+  wire   [ 145:0] icache_coalescer$resps$001_msg;
+  wire   [   0:0] icache_coalescer$resps$001_val;
+  wire   [ 145:0] icache_coalescer$resps$002_msg;
+  wire   [   0:0] icache_coalescer$resps$002_val;
+  wire   [ 145:0] icache_coalescer$resps$003_msg;
+  wire   [   0:0] icache_coalescer$resps$003_val;
+  wire   [ 175:0] icache_coalescer$memreq_msg;
+  wire   [   0:0] icache_coalescer$memreq_val;
 
-  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$000
+  MemCoalescer_0x64e5f16502bd9749 icache_coalescer
   (
-    .xcelreq_msg      ( xcel$000$xcelreq_msg ),
-    .xcelreq_val      ( xcel$000$xcelreq_val ),
-    .clk              ( xcel$000$clk ),
-    .reset            ( xcel$000$reset ),
-    .xcelresp_rdy     ( xcel$000$xcelresp_rdy ),
-    .memreq_snoop_msg ( xcel$000$memreq_snoop_msg ),
-    .memreq_snoop_val ( xcel$000$memreq_snoop_val ),
-    .xcelreq_rdy      ( xcel$000$xcelreq_rdy ),
-    .xcelresp_msg     ( xcel$000$xcelresp_msg ),
-    .xcelresp_val     ( xcel$000$xcelresp_val ),
-    .memreq_snoop_rdy ( xcel$000$memreq_snoop_rdy )
-  );
-
-  // xcel$001 temporaries
-  wire   [  37:0] xcel$001$xcelreq_msg;
-  wire   [   0:0] xcel$001$xcelreq_val;
-  wire   [   0:0] xcel$001$clk;
-  wire   [   0:0] xcel$001$reset;
-  wire   [   0:0] xcel$001$xcelresp_rdy;
-  wire   [  77:0] xcel$001$memreq_snoop_msg;
-  wire   [   0:0] xcel$001$memreq_snoop_val;
-  wire   [   0:0] xcel$001$xcelreq_rdy;
-  wire   [  32:0] xcel$001$xcelresp_msg;
-  wire   [   0:0] xcel$001$xcelresp_val;
-  wire   [   0:0] xcel$001$memreq_snoop_rdy;
-
-  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$001
-  (
-    .xcelreq_msg      ( xcel$001$xcelreq_msg ),
-    .xcelreq_val      ( xcel$001$xcelreq_val ),
-    .clk              ( xcel$001$clk ),
-    .reset            ( xcel$001$reset ),
-    .xcelresp_rdy     ( xcel$001$xcelresp_rdy ),
-    .memreq_snoop_msg ( xcel$001$memreq_snoop_msg ),
-    .memreq_snoop_val ( xcel$001$memreq_snoop_val ),
-    .xcelreq_rdy      ( xcel$001$xcelreq_rdy ),
-    .xcelresp_msg     ( xcel$001$xcelresp_msg ),
-    .xcelresp_val     ( xcel$001$xcelresp_val ),
-    .memreq_snoop_rdy ( xcel$001$memreq_snoop_rdy )
-  );
-
-  // xcel$002 temporaries
-  wire   [  37:0] xcel$002$xcelreq_msg;
-  wire   [   0:0] xcel$002$xcelreq_val;
-  wire   [   0:0] xcel$002$clk;
-  wire   [   0:0] xcel$002$reset;
-  wire   [   0:0] xcel$002$xcelresp_rdy;
-  wire   [  77:0] xcel$002$memreq_snoop_msg;
-  wire   [   0:0] xcel$002$memreq_snoop_val;
-  wire   [   0:0] xcel$002$xcelreq_rdy;
-  wire   [  32:0] xcel$002$xcelresp_msg;
-  wire   [   0:0] xcel$002$xcelresp_val;
-  wire   [   0:0] xcel$002$memreq_snoop_rdy;
-
-  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$002
-  (
-    .xcelreq_msg      ( xcel$002$xcelreq_msg ),
-    .xcelreq_val      ( xcel$002$xcelreq_val ),
-    .clk              ( xcel$002$clk ),
-    .reset            ( xcel$002$reset ),
-    .xcelresp_rdy     ( xcel$002$xcelresp_rdy ),
-    .memreq_snoop_msg ( xcel$002$memreq_snoop_msg ),
-    .memreq_snoop_val ( xcel$002$memreq_snoop_val ),
-    .xcelreq_rdy      ( xcel$002$xcelreq_rdy ),
-    .xcelresp_msg     ( xcel$002$xcelresp_msg ),
-    .xcelresp_val     ( xcel$002$xcelresp_val ),
-    .memreq_snoop_rdy ( xcel$002$memreq_snoop_rdy )
-  );
-
-  // xcel$003 temporaries
-  wire   [  37:0] xcel$003$xcelreq_msg;
-  wire   [   0:0] xcel$003$xcelreq_val;
-  wire   [   0:0] xcel$003$clk;
-  wire   [   0:0] xcel$003$reset;
-  wire   [   0:0] xcel$003$xcelresp_rdy;
-  wire   [  77:0] xcel$003$memreq_snoop_msg;
-  wire   [   0:0] xcel$003$memreq_snoop_val;
-  wire   [   0:0] xcel$003$xcelreq_rdy;
-  wire   [  32:0] xcel$003$xcelresp_msg;
-  wire   [   0:0] xcel$003$xcelresp_val;
-  wire   [   0:0] xcel$003$memreq_snoop_rdy;
-
-  BloomFilterXcel_0x6f5f3c0dd798be25 xcel$003
-  (
-    .xcelreq_msg      ( xcel$003$xcelreq_msg ),
-    .xcelreq_val      ( xcel$003$xcelreq_val ),
-    .clk              ( xcel$003$clk ),
-    .reset            ( xcel$003$reset ),
-    .xcelresp_rdy     ( xcel$003$xcelresp_rdy ),
-    .memreq_snoop_msg ( xcel$003$memreq_snoop_msg ),
-    .memreq_snoop_val ( xcel$003$memreq_snoop_val ),
-    .xcelreq_rdy      ( xcel$003$xcelreq_rdy ),
-    .xcelresp_msg     ( xcel$003$xcelresp_msg ),
-    .xcelresp_val     ( xcel$003$xcelresp_val ),
-    .memreq_snoop_rdy ( xcel$003$memreq_snoop_rdy )
+    .memresp_msg   ( icache_coalescer$memresp_msg ),
+    .memresp_val   ( icache_coalescer$memresp_val ),
+    .reqs$000_msg  ( icache_coalescer$reqs$000_msg ),
+    .reqs$000_val  ( icache_coalescer$reqs$000_val ),
+    .reqs$001_msg  ( icache_coalescer$reqs$001_msg ),
+    .reqs$001_val  ( icache_coalescer$reqs$001_val ),
+    .reqs$002_msg  ( icache_coalescer$reqs$002_msg ),
+    .reqs$002_val  ( icache_coalescer$reqs$002_val ),
+    .reqs$003_msg  ( icache_coalescer$reqs$003_msg ),
+    .reqs$003_val  ( icache_coalescer$reqs$003_val ),
+    .clk           ( icache_coalescer$clk ),
+    .resps$000_rdy ( icache_coalescer$resps$000_rdy ),
+    .resps$001_rdy ( icache_coalescer$resps$001_rdy ),
+    .resps$002_rdy ( icache_coalescer$resps$002_rdy ),
+    .resps$003_rdy ( icache_coalescer$resps$003_rdy ),
+    .reset         ( icache_coalescer$reset ),
+    .memreq_rdy    ( icache_coalescer$memreq_rdy ),
+    .coalescing_en ( icache_coalescer$coalescing_en ),
+    .memresp_rdy   ( icache_coalescer$memresp_rdy ),
+    .reqs$000_rdy  ( icache_coalescer$reqs$000_rdy ),
+    .reqs$001_rdy  ( icache_coalescer$reqs$001_rdy ),
+    .reqs$002_rdy  ( icache_coalescer$reqs$002_rdy ),
+    .reqs$003_rdy  ( icache_coalescer$reqs$003_rdy ),
+    .resps$000_msg ( icache_coalescer$resps$000_msg ),
+    .resps$000_val ( icache_coalescer$resps$000_val ),
+    .resps$001_msg ( icache_coalescer$resps$001_msg ),
+    .resps$001_val ( icache_coalescer$resps$001_val ),
+    .resps$002_msg ( icache_coalescer$resps$002_msg ),
+    .resps$002_val ( icache_coalescer$resps$002_val ),
+    .resps$003_msg ( icache_coalescer$resps$003_msg ),
+    .resps$003_val ( icache_coalescer$resps$003_val ),
+    .memreq_msg    ( icache_coalescer$memreq_msg ),
+    .memreq_val    ( icache_coalescer$memreq_val )
   );
 
   // mdu_adapter temporaries
@@ -4643,46 +4754,6 @@ module Chansey
     .hostresp_val ( mdu_adapter$hostresp_val )
   );
 
-  // net_icachereq temporaries
-  wire   [   0:0] net_icachereq$reset;
-  wire   [ 175:0] net_icachereq$in_$000_msg;
-  wire   [   0:0] net_icachereq$in_$000_val;
-  wire   [ 175:0] net_icachereq$in_$001_msg;
-  wire   [   0:0] net_icachereq$in_$001_val;
-  wire   [ 175:0] net_icachereq$in_$002_msg;
-  wire   [   0:0] net_icachereq$in_$002_val;
-  wire   [ 175:0] net_icachereq$in_$003_msg;
-  wire   [   0:0] net_icachereq$in_$003_val;
-  wire   [   0:0] net_icachereq$clk;
-  wire   [   0:0] net_icachereq$out_rdy;
-  wire   [   0:0] net_icachereq$in_$000_rdy;
-  wire   [   0:0] net_icachereq$in_$001_rdy;
-  wire   [   0:0] net_icachereq$in_$002_rdy;
-  wire   [   0:0] net_icachereq$in_$003_rdy;
-  wire   [ 175:0] net_icachereq$out_msg;
-  wire   [   0:0] net_icachereq$out_val;
-
-  Funnel_0x54e59faab4b44232 net_icachereq
-  (
-    .reset       ( net_icachereq$reset ),
-    .in_$000_msg ( net_icachereq$in_$000_msg ),
-    .in_$000_val ( net_icachereq$in_$000_val ),
-    .in_$001_msg ( net_icachereq$in_$001_msg ),
-    .in_$001_val ( net_icachereq$in_$001_val ),
-    .in_$002_msg ( net_icachereq$in_$002_msg ),
-    .in_$002_val ( net_icachereq$in_$002_val ),
-    .in_$003_msg ( net_icachereq$in_$003_msg ),
-    .in_$003_val ( net_icachereq$in_$003_val ),
-    .clk         ( net_icachereq$clk ),
-    .out_rdy     ( net_icachereq$out_rdy ),
-    .in_$000_rdy ( net_icachereq$in_$000_rdy ),
-    .in_$001_rdy ( net_icachereq$in_$001_rdy ),
-    .in_$002_rdy ( net_icachereq$in_$002_rdy ),
-    .in_$003_rdy ( net_icachereq$in_$003_rdy ),
-    .out_msg     ( net_icachereq$out_msg ),
-    .out_val     ( net_icachereq$out_val )
-  );
-
   // ctrlreg temporaries
   wire   [   0:0] ctrlreg$resp_rdy;
   wire   [   3:0] ctrlreg$commit_inst;
@@ -4696,9 +4767,9 @@ module Chansey
   wire   [   3:0] ctrlreg$go;
   wire   [   0:0] ctrlreg$req_rdy;
   wire   [   0:0] ctrlreg$debug;
-  wire   [   2:0] ctrlreg$host_en;
+  wire   [   4:0] ctrlreg$host_en;
 
-  CtrlReg_0x2547fdfd5863c73b ctrlreg
+  CtrlReg_0x6aec39a1ab183c1 ctrlreg
   (
     .resp_rdy    ( ctrlreg$resp_rdy ),
     .commit_inst ( ctrlreg$commit_inst ),
@@ -4713,6 +4784,118 @@ module Chansey
     .req_rdy     ( ctrlreg$req_rdy ),
     .debug       ( ctrlreg$debug ),
     .host_en     ( ctrlreg$host_en )
+  );
+
+  // xcel$000 temporaries
+  wire   [  37:0] xcel$000$xcelreq_msg;
+  wire   [   0:0] xcel$000$xcelreq_val;
+  wire   [   0:0] xcel$000$clk;
+  wire   [   0:0] xcel$000$reset;
+  wire   [   0:0] xcel$000$xcelresp_rdy;
+  wire   [  77:0] xcel$000$memreq_snoop_msg;
+  wire   [   0:0] xcel$000$memreq_snoop_val;
+  wire   [   0:0] xcel$000$xcelreq_rdy;
+  wire   [  32:0] xcel$000$xcelresp_msg;
+  wire   [   0:0] xcel$000$xcelresp_val;
+  wire   [   0:0] xcel$000$memreq_snoop_rdy;
+
+  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$000
+  (
+    .xcelreq_msg      ( xcel$000$xcelreq_msg ),
+    .xcelreq_val      ( xcel$000$xcelreq_val ),
+    .clk              ( xcel$000$clk ),
+    .reset            ( xcel$000$reset ),
+    .xcelresp_rdy     ( xcel$000$xcelresp_rdy ),
+    .memreq_snoop_msg ( xcel$000$memreq_snoop_msg ),
+    .memreq_snoop_val ( xcel$000$memreq_snoop_val ),
+    .xcelreq_rdy      ( xcel$000$xcelreq_rdy ),
+    .xcelresp_msg     ( xcel$000$xcelresp_msg ),
+    .xcelresp_val     ( xcel$000$xcelresp_val ),
+    .memreq_snoop_rdy ( xcel$000$memreq_snoop_rdy )
+  );
+
+  // xcel$001 temporaries
+  wire   [  37:0] xcel$001$xcelreq_msg;
+  wire   [   0:0] xcel$001$xcelreq_val;
+  wire   [   0:0] xcel$001$clk;
+  wire   [   0:0] xcel$001$reset;
+  wire   [   0:0] xcel$001$xcelresp_rdy;
+  wire   [  77:0] xcel$001$memreq_snoop_msg;
+  wire   [   0:0] xcel$001$memreq_snoop_val;
+  wire   [   0:0] xcel$001$xcelreq_rdy;
+  wire   [  32:0] xcel$001$xcelresp_msg;
+  wire   [   0:0] xcel$001$xcelresp_val;
+  wire   [   0:0] xcel$001$memreq_snoop_rdy;
+
+  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$001
+  (
+    .xcelreq_msg      ( xcel$001$xcelreq_msg ),
+    .xcelreq_val      ( xcel$001$xcelreq_val ),
+    .clk              ( xcel$001$clk ),
+    .reset            ( xcel$001$reset ),
+    .xcelresp_rdy     ( xcel$001$xcelresp_rdy ),
+    .memreq_snoop_msg ( xcel$001$memreq_snoop_msg ),
+    .memreq_snoop_val ( xcel$001$memreq_snoop_val ),
+    .xcelreq_rdy      ( xcel$001$xcelreq_rdy ),
+    .xcelresp_msg     ( xcel$001$xcelresp_msg ),
+    .xcelresp_val     ( xcel$001$xcelresp_val ),
+    .memreq_snoop_rdy ( xcel$001$memreq_snoop_rdy )
+  );
+
+  // xcel$002 temporaries
+  wire   [  37:0] xcel$002$xcelreq_msg;
+  wire   [   0:0] xcel$002$xcelreq_val;
+  wire   [   0:0] xcel$002$clk;
+  wire   [   0:0] xcel$002$reset;
+  wire   [   0:0] xcel$002$xcelresp_rdy;
+  wire   [  77:0] xcel$002$memreq_snoop_msg;
+  wire   [   0:0] xcel$002$memreq_snoop_val;
+  wire   [   0:0] xcel$002$xcelreq_rdy;
+  wire   [  32:0] xcel$002$xcelresp_msg;
+  wire   [   0:0] xcel$002$xcelresp_val;
+  wire   [   0:0] xcel$002$memreq_snoop_rdy;
+
+  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$002
+  (
+    .xcelreq_msg      ( xcel$002$xcelreq_msg ),
+    .xcelreq_val      ( xcel$002$xcelreq_val ),
+    .clk              ( xcel$002$clk ),
+    .reset            ( xcel$002$reset ),
+    .xcelresp_rdy     ( xcel$002$xcelresp_rdy ),
+    .memreq_snoop_msg ( xcel$002$memreq_snoop_msg ),
+    .memreq_snoop_val ( xcel$002$memreq_snoop_val ),
+    .xcelreq_rdy      ( xcel$002$xcelreq_rdy ),
+    .xcelresp_msg     ( xcel$002$xcelresp_msg ),
+    .xcelresp_val     ( xcel$002$xcelresp_val ),
+    .memreq_snoop_rdy ( xcel$002$memreq_snoop_rdy )
+  );
+
+  // xcel$003 temporaries
+  wire   [  37:0] xcel$003$xcelreq_msg;
+  wire   [   0:0] xcel$003$xcelreq_val;
+  wire   [   0:0] xcel$003$clk;
+  wire   [   0:0] xcel$003$reset;
+  wire   [   0:0] xcel$003$xcelresp_rdy;
+  wire   [  77:0] xcel$003$memreq_snoop_msg;
+  wire   [   0:0] xcel$003$memreq_snoop_val;
+  wire   [   0:0] xcel$003$xcelreq_rdy;
+  wire   [  32:0] xcel$003$xcelresp_msg;
+  wire   [   0:0] xcel$003$xcelresp_val;
+  wire   [   0:0] xcel$003$memreq_snoop_rdy;
+
+  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$003
+  (
+    .xcelreq_msg      ( xcel$003$xcelreq_msg ),
+    .xcelreq_val      ( xcel$003$xcelreq_val ),
+    .clk              ( xcel$003$clk ),
+    .reset            ( xcel$003$reset ),
+    .xcelresp_rdy     ( xcel$003$xcelresp_rdy ),
+    .memreq_snoop_msg ( xcel$003$memreq_snoop_msg ),
+    .memreq_snoop_val ( xcel$003$memreq_snoop_val ),
+    .xcelreq_rdy      ( xcel$003$xcelreq_rdy ),
+    .xcelresp_msg     ( xcel$003$xcelresp_msg ),
+    .xcelresp_val     ( xcel$003$xcelresp_val ),
+    .memreq_snoop_rdy ( xcel$003$memreq_snoop_rdy )
   );
 
   // icache_adapter temporaries
@@ -4763,341 +4946,336 @@ module Chansey
     .hostresp_val ( icache_adapter$hostresp_val )
   );
 
-  // net_icacheresp temporaries
-  wire   [   0:0] net_icacheresp$reset;
-  wire   [ 145:0] net_icacheresp$in__msg;
-  wire   [   0:0] net_icacheresp$in__val;
-  wire   [   0:0] net_icacheresp$clk;
-  wire   [   0:0] net_icacheresp$out$000_rdy;
-  wire   [   0:0] net_icacheresp$out$001_rdy;
-  wire   [   0:0] net_icacheresp$out$002_rdy;
-  wire   [   0:0] net_icacheresp$out$003_rdy;
-  wire   [   0:0] net_icacheresp$in__rdy;
-  wire   [ 145:0] net_icacheresp$out$000_msg;
-  wire   [   0:0] net_icacheresp$out$000_val;
-  wire   [ 145:0] net_icacheresp$out$001_msg;
-  wire   [   0:0] net_icacheresp$out$001_val;
-  wire   [ 145:0] net_icacheresp$out$002_msg;
-  wire   [   0:0] net_icacheresp$out$002_val;
-  wire   [ 145:0] net_icacheresp$out$003_msg;
-  wire   [   0:0] net_icacheresp$out$003_val;
-
-  Router_0x3fd90561b3d11051 net_icacheresp
-  (
-    .reset       ( net_icacheresp$reset ),
-    .in__msg     ( net_icacheresp$in__msg ),
-    .in__val     ( net_icacheresp$in__val ),
-    .clk         ( net_icacheresp$clk ),
-    .out$000_rdy ( net_icacheresp$out$000_rdy ),
-    .out$001_rdy ( net_icacheresp$out$001_rdy ),
-    .out$002_rdy ( net_icacheresp$out$002_rdy ),
-    .out$003_rdy ( net_icacheresp$out$003_rdy ),
-    .in__rdy     ( net_icacheresp$in__rdy ),
-    .out$000_msg ( net_icacheresp$out$000_msg ),
-    .out$000_val ( net_icacheresp$out$000_val ),
-    .out$001_msg ( net_icacheresp$out$001_msg ),
-    .out$001_val ( net_icacheresp$out$001_val ),
-    .out$002_msg ( net_icacheresp$out$002_msg ),
-    .out$002_val ( net_icacheresp$out$002_val ),
-    .out$003_msg ( net_icacheresp$out$003_msg ),
-    .out$003_val ( net_icacheresp$out$003_val )
-  );
-
   // signal connections
-  assign ctrlreg$clk                 = clk;
-  assign ctrlreg$commit_inst[0]      = proc$000$commit_inst;
-  assign ctrlreg$commit_inst[1]      = proc$001$commit_inst;
-  assign ctrlreg$commit_inst[2]      = proc$002$commit_inst;
-  assign ctrlreg$commit_inst[3]      = proc$003$commit_inst;
-  assign ctrlreg$req_msg             = ctrlregreq_msg;
-  assign ctrlreg$req_val             = ctrlregreq_val;
-  assign ctrlreg$reset               = reset;
-  assign ctrlreg$resp_rdy            = ctrlregresp_rdy;
-  assign ctrlreg$stats_en            = proc$000$stats_en;
-  assign ctrlregreq_rdy              = ctrlreg$req_rdy;
-  assign ctrlregresp_msg             = ctrlreg$resp_msg;
-  assign ctrlregresp_val             = ctrlreg$resp_val;
-  assign dcache$cachereq_msg         = dcache_adapter$req_msg;
-  assign dcache$cachereq_val         = dcache_adapter$req_val;
-  assign dcache$cacheresp_rdy        = dcache_adapter$resp_rdy;
-  assign dcache$clk                  = clk;
-  assign dcache$memreq_rdy           = dmemreq_rdy;
-  assign dcache$memresp_msg          = dmemresp_msg;
-  assign dcache$memresp_val          = dmemresp_val;
-  assign dcache$reset                = reset;
-  assign dcache_adapter$clk          = clk;
-  assign dcache_adapter$host_en      = ctrlreg$host_en[2];
-  assign dcache_adapter$hostreq_msg  = host_dcachereq_msg;
-  assign dcache_adapter$hostreq_val  = host_dcachereq_val;
-  assign dcache_adapter$hostresp_rdy = host_dcacheresp_rdy;
-  assign dcache_adapter$realreq_msg  = net_dcachereq$out_msg;
-  assign dcache_adapter$realreq_val  = net_dcachereq$out_val;
-  assign dcache_adapter$realresp_rdy = net_dcacheresp$in__rdy;
-  assign dcache_adapter$req_rdy      = dcache$cachereq_rdy;
-  assign dcache_adapter$reset        = reset;
-  assign dcache_adapter$resp_msg     = dcache$cacheresp_msg;
-  assign dcache_adapter$resp_val     = dcache$cacheresp_val;
-  assign dmemreq_msg                 = dcache$memreq_msg;
-  assign dmemreq_val                 = dcache$memreq_val;
-  assign dmemresp_rdy                = dcache$memresp_rdy;
-  assign host_dcachereq_rdy          = dcache_adapter$hostreq_rdy;
-  assign host_dcacheresp_msg         = dcache_adapter$hostresp_msg;
-  assign host_dcacheresp_val         = dcache_adapter$hostresp_val;
-  assign host_icachereq_rdy          = icache_adapter$hostreq_rdy;
-  assign host_icacheresp_msg         = icache_adapter$hostresp_msg;
-  assign host_icacheresp_val         = icache_adapter$hostresp_val;
-  assign host_mdureq_rdy             = mdu_adapter$hostreq_rdy;
-  assign host_mduresp_msg            = mdu_adapter$hostresp_msg;
-  assign host_mduresp_val            = mdu_adapter$hostresp_val;
-  assign icache$cachereq_msg         = icache_adapter$req_msg;
-  assign icache$cachereq_val         = icache_adapter$req_val;
-  assign icache$cacheresp_rdy        = icache_adapter$resp_rdy;
-  assign icache$clk                  = clk;
-  assign icache$memreq_rdy           = imemreq_rdy;
-  assign icache$memresp_msg          = imemresp_msg;
-  assign icache$memresp_val          = imemresp_val;
-  assign icache$reset                = reset;
-  assign icache_adapter$clk          = clk;
-  assign icache_adapter$host_en      = ctrlreg$host_en[1];
-  assign icache_adapter$hostreq_msg  = host_icachereq_msg;
-  assign icache_adapter$hostreq_val  = host_icachereq_val;
-  assign icache_adapter$hostresp_rdy = host_icacheresp_rdy;
-  assign icache_adapter$realreq_msg  = net_icachereq$out_msg;
-  assign icache_adapter$realreq_val  = net_icachereq$out_val;
-  assign icache_adapter$realresp_rdy = net_icacheresp$in__rdy;
-  assign icache_adapter$req_rdy      = icache$cachereq_rdy;
-  assign icache_adapter$reset        = reset;
-  assign icache_adapter$resp_msg     = icache$cacheresp_msg;
-  assign icache_adapter$resp_val     = icache$cacheresp_val;
-  assign imemreq_msg                 = icache$memreq_msg;
-  assign imemreq_val                 = icache$memreq_val;
-  assign imemresp_rdy                = icache$memresp_rdy;
-  assign l0i$000$L0_disable          = 1'd0;
-  assign l0i$000$buffreq_msg         = proc$000$imemreq_msg;
-  assign l0i$000$buffreq_val         = proc$000$imemreq_val;
-  assign l0i$000$buffresp_rdy        = proc$000$imemresp_rdy;
-  assign l0i$000$clk                 = clk;
-  assign l0i$000$memreq_rdy          = net_icachereq$in_$000_rdy;
-  assign l0i$000$memresp_msg         = net_icacheresp$out$000_msg;
-  assign l0i$000$memresp_val         = net_icacheresp$out$000_val;
-  assign l0i$000$reset               = reset;
-  assign l0i$001$L0_disable          = 1'd0;
-  assign l0i$001$buffreq_msg         = proc$001$imemreq_msg;
-  assign l0i$001$buffreq_val         = proc$001$imemreq_val;
-  assign l0i$001$buffresp_rdy        = proc$001$imemresp_rdy;
-  assign l0i$001$clk                 = clk;
-  assign l0i$001$memreq_rdy          = net_icachereq$in_$001_rdy;
-  assign l0i$001$memresp_msg         = net_icacheresp$out$001_msg;
-  assign l0i$001$memresp_val         = net_icacheresp$out$001_val;
-  assign l0i$001$reset               = reset;
-  assign l0i$002$L0_disable          = 1'd0;
-  assign l0i$002$buffreq_msg         = proc$002$imemreq_msg;
-  assign l0i$002$buffreq_val         = proc$002$imemreq_val;
-  assign l0i$002$buffresp_rdy        = proc$002$imemresp_rdy;
-  assign l0i$002$clk                 = clk;
-  assign l0i$002$memreq_rdy          = net_icachereq$in_$002_rdy;
-  assign l0i$002$memresp_msg         = net_icacheresp$out$002_msg;
-  assign l0i$002$memresp_val         = net_icacheresp$out$002_val;
-  assign l0i$002$reset               = reset;
-  assign l0i$003$L0_disable          = 1'd0;
-  assign l0i$003$buffreq_msg         = proc$003$imemreq_msg;
-  assign l0i$003$buffreq_val         = proc$003$imemreq_val;
-  assign l0i$003$buffresp_rdy        = proc$003$imemresp_rdy;
-  assign l0i$003$clk                 = clk;
-  assign l0i$003$memreq_rdy          = net_icachereq$in_$003_rdy;
-  assign l0i$003$memresp_msg         = net_icacheresp$out$003_msg;
-  assign l0i$003$memresp_val         = net_icacheresp$out$003_val;
-  assign l0i$003$reset               = reset;
-  assign mdu$clk                     = clk;
-  assign mdu$req_msg                 = mdu_adapter$req_msg;
-  assign mdu$req_val                 = mdu_adapter$req_val;
-  assign mdu$reset                   = reset;
-  assign mdu$resp_rdy                = mdu_adapter$resp_rdy;
-  assign mdu_adapter$clk             = clk;
-  assign mdu_adapter$host_en         = ctrlreg$host_en[0];
-  assign mdu_adapter$hostreq_msg     = host_mdureq_msg;
-  assign mdu_adapter$hostreq_val     = host_mdureq_val;
-  assign mdu_adapter$hostresp_rdy    = host_mduresp_rdy;
-  assign mdu_adapter$realreq_msg     = net_mdureq$out_msg;
-  assign mdu_adapter$realreq_val     = net_mdureq$out_val;
-  assign mdu_adapter$realresp_rdy    = net_mduresp$in__rdy;
-  assign mdu_adapter$req_rdy         = mdu$req_rdy;
-  assign mdu_adapter$reset           = reset;
-  assign mdu_adapter$resp_msg        = mdu$resp_msg;
-  assign mdu_adapter$resp_val        = mdu$resp_val;
-  assign mngr2proc_0_rdy             = proc$000$mngr2proc_rdy;
-  assign mngr2proc_1_rdy             = proc$001$mngr2proc_rdy;
-  assign mngr2proc_2_rdy             = proc$002$mngr2proc_rdy;
-  assign mngr2proc_3_rdy             = proc$003$mngr2proc_rdy;
-  assign net_dcachereq$clk           = clk;
-  assign net_dcachereq$in_$000_msg   = proc$000$dmemreq_msg;
-  assign net_dcachereq$in_$000_val   = proc$000$dmemreq_val;
-  assign net_dcachereq$in_$001_msg   = proc$001$dmemreq_msg;
-  assign net_dcachereq$in_$001_val   = proc$001$dmemreq_val;
-  assign net_dcachereq$in_$002_msg   = proc$002$dmemreq_msg;
-  assign net_dcachereq$in_$002_val   = proc$002$dmemreq_val;
-  assign net_dcachereq$in_$003_msg   = proc$003$dmemreq_msg;
-  assign net_dcachereq$in_$003_val   = proc$003$dmemreq_val;
-  assign net_dcachereq$out_rdy       = dcache_adapter$realreq_rdy;
-  assign net_dcachereq$reset         = reset;
-  assign net_dcacheresp$clk          = clk;
-  assign net_dcacheresp$in__msg      = dcache_adapter$realresp_msg;
-  assign net_dcacheresp$in__val      = dcache_adapter$realresp_val;
-  assign net_dcacheresp$out$000_rdy  = proc$000$dmemresp_rdy;
-  assign net_dcacheresp$out$001_rdy  = proc$001$dmemresp_rdy;
-  assign net_dcacheresp$out$002_rdy  = proc$002$dmemresp_rdy;
-  assign net_dcacheresp$out$003_rdy  = proc$003$dmemresp_rdy;
-  assign net_dcacheresp$reset        = reset;
-  assign net_icachereq$clk           = clk;
-  assign net_icachereq$in_$000_msg   = l0i$000$memreq_msg;
-  assign net_icachereq$in_$000_val   = l0i$000$memreq_val;
-  assign net_icachereq$in_$001_msg   = l0i$001$memreq_msg;
-  assign net_icachereq$in_$001_val   = l0i$001$memreq_val;
-  assign net_icachereq$in_$002_msg   = l0i$002$memreq_msg;
-  assign net_icachereq$in_$002_val   = l0i$002$memreq_val;
-  assign net_icachereq$in_$003_msg   = l0i$003$memreq_msg;
-  assign net_icachereq$in_$003_val   = l0i$003$memreq_val;
-  assign net_icachereq$out_rdy       = icache_adapter$realreq_rdy;
-  assign net_icachereq$reset         = reset;
-  assign net_icacheresp$clk          = clk;
-  assign net_icacheresp$in__msg      = icache_adapter$realresp_msg;
-  assign net_icacheresp$in__val      = icache_adapter$realresp_val;
-  assign net_icacheresp$out$000_rdy  = l0i$000$memresp_rdy;
-  assign net_icacheresp$out$001_rdy  = l0i$001$memresp_rdy;
-  assign net_icacheresp$out$002_rdy  = l0i$002$memresp_rdy;
-  assign net_icacheresp$out$003_rdy  = l0i$003$memresp_rdy;
-  assign net_icacheresp$reset        = reset;
-  assign net_mdureq$clk              = clk;
-  assign net_mdureq$in_$000_msg      = proc$000$mdureq_msg;
-  assign net_mdureq$in_$000_val      = proc$000$mdureq_val;
-  assign net_mdureq$in_$001_msg      = proc$001$mdureq_msg;
-  assign net_mdureq$in_$001_val      = proc$001$mdureq_val;
-  assign net_mdureq$in_$002_msg      = proc$002$mdureq_msg;
-  assign net_mdureq$in_$002_val      = proc$002$mdureq_val;
-  assign net_mdureq$in_$003_msg      = proc$003$mdureq_msg;
-  assign net_mdureq$in_$003_val      = proc$003$mdureq_val;
-  assign net_mdureq$out_rdy          = mdu_adapter$realreq_rdy;
-  assign net_mdureq$reset            = reset;
-  assign net_mduresp$clk             = clk;
-  assign net_mduresp$in__msg         = mdu_adapter$realresp_msg;
-  assign net_mduresp$in__val         = mdu_adapter$realresp_val;
-  assign net_mduresp$out$000_rdy     = proc$000$mduresp_rdy;
-  assign net_mduresp$out$001_rdy     = proc$001$mduresp_rdy;
-  assign net_mduresp$out$002_rdy     = proc$002$mduresp_rdy;
-  assign net_mduresp$out$003_rdy     = proc$003$mduresp_rdy;
-  assign net_mduresp$reset           = reset;
-  assign proc$000$clk                = clk;
-  assign proc$000$core_id            = 32'd0;
-  assign proc$000$dmemreq_rdy        = net_dcachereq$in_$000_rdy;
-  assign proc$000$dmemresp_msg       = net_dcacheresp$out$000_msg;
-  assign proc$000$dmemresp_val       = net_dcacheresp$out$000_val;
-  assign proc$000$go                 = ctrlreg$go[0];
-  assign proc$000$imemreq_rdy        = l0i$000$buffreq_rdy;
-  assign proc$000$imemresp_msg       = l0i$000$buffresp_msg;
-  assign proc$000$imemresp_val       = l0i$000$buffresp_val;
-  assign proc$000$mdureq_rdy         = net_mdureq$in_$000_rdy;
-  assign proc$000$mduresp_msg        = net_mduresp$out$000_msg;
-  assign proc$000$mduresp_val        = net_mduresp$out$000_val;
-  assign proc$000$mngr2proc_msg      = mngr2proc_0_msg;
-  assign proc$000$mngr2proc_val      = mngr2proc_0_val;
-  assign proc$000$proc2mngr_rdy      = proc2mngr_0_rdy;
-  assign proc$000$reset              = reset;
-  assign proc$000$xcelreq_rdy        = xcel$000$xcelreq_rdy;
-  assign proc$000$xcelresp_msg       = xcel$000$xcelresp_msg;
-  assign proc$000$xcelresp_val       = xcel$000$xcelresp_val;
-  assign proc$001$clk                = clk;
-  assign proc$001$core_id            = 32'd1;
-  assign proc$001$dmemreq_rdy        = net_dcachereq$in_$001_rdy;
-  assign proc$001$dmemresp_msg       = net_dcacheresp$out$001_msg;
-  assign proc$001$dmemresp_val       = net_dcacheresp$out$001_val;
-  assign proc$001$go                 = ctrlreg$go[1];
-  assign proc$001$imemreq_rdy        = l0i$001$buffreq_rdy;
-  assign proc$001$imemresp_msg       = l0i$001$buffresp_msg;
-  assign proc$001$imemresp_val       = l0i$001$buffresp_val;
-  assign proc$001$mdureq_rdy         = net_mdureq$in_$001_rdy;
-  assign proc$001$mduresp_msg        = net_mduresp$out$001_msg;
-  assign proc$001$mduresp_val        = net_mduresp$out$001_val;
-  assign proc$001$mngr2proc_msg      = mngr2proc_1_msg;
-  assign proc$001$mngr2proc_val      = mngr2proc_1_val;
-  assign proc$001$proc2mngr_rdy      = proc2mngr_1_rdy;
-  assign proc$001$reset              = reset;
-  assign proc$001$xcelreq_rdy        = xcel$001$xcelreq_rdy;
-  assign proc$001$xcelresp_msg       = xcel$001$xcelresp_msg;
-  assign proc$001$xcelresp_val       = xcel$001$xcelresp_val;
-  assign proc$002$clk                = clk;
-  assign proc$002$core_id            = 32'd2;
-  assign proc$002$dmemreq_rdy        = net_dcachereq$in_$002_rdy;
-  assign proc$002$dmemresp_msg       = net_dcacheresp$out$002_msg;
-  assign proc$002$dmemresp_val       = net_dcacheresp$out$002_val;
-  assign proc$002$go                 = ctrlreg$go[2];
-  assign proc$002$imemreq_rdy        = l0i$002$buffreq_rdy;
-  assign proc$002$imemresp_msg       = l0i$002$buffresp_msg;
-  assign proc$002$imemresp_val       = l0i$002$buffresp_val;
-  assign proc$002$mdureq_rdy         = net_mdureq$in_$002_rdy;
-  assign proc$002$mduresp_msg        = net_mduresp$out$002_msg;
-  assign proc$002$mduresp_val        = net_mduresp$out$002_val;
-  assign proc$002$mngr2proc_msg      = mngr2proc_2_msg;
-  assign proc$002$mngr2proc_val      = mngr2proc_2_val;
-  assign proc$002$proc2mngr_rdy      = proc2mngr_2_rdy;
-  assign proc$002$reset              = reset;
-  assign proc$002$xcelreq_rdy        = xcel$002$xcelreq_rdy;
-  assign proc$002$xcelresp_msg       = xcel$002$xcelresp_msg;
-  assign proc$002$xcelresp_val       = xcel$002$xcelresp_val;
-  assign proc$003$clk                = clk;
-  assign proc$003$core_id            = 32'd3;
-  assign proc$003$dmemreq_rdy        = net_dcachereq$in_$003_rdy;
-  assign proc$003$dmemresp_msg       = net_dcacheresp$out$003_msg;
-  assign proc$003$dmemresp_val       = net_dcacheresp$out$003_val;
-  assign proc$003$go                 = ctrlreg$go[3];
-  assign proc$003$imemreq_rdy        = l0i$003$buffreq_rdy;
-  assign proc$003$imemresp_msg       = l0i$003$buffresp_msg;
-  assign proc$003$imemresp_val       = l0i$003$buffresp_val;
-  assign proc$003$mdureq_rdy         = net_mdureq$in_$003_rdy;
-  assign proc$003$mduresp_msg        = net_mduresp$out$003_msg;
-  assign proc$003$mduresp_val        = net_mduresp$out$003_val;
-  assign proc$003$mngr2proc_msg      = mngr2proc_3_msg;
-  assign proc$003$mngr2proc_val      = mngr2proc_3_val;
-  assign proc$003$proc2mngr_rdy      = proc2mngr_3_rdy;
-  assign proc$003$reset              = reset;
-  assign proc$003$xcelreq_rdy        = xcel$003$xcelreq_rdy;
-  assign proc$003$xcelresp_msg       = xcel$003$xcelresp_msg;
-  assign proc$003$xcelresp_val       = xcel$003$xcelresp_val;
-  assign proc2mngr_0_msg             = proc$000$proc2mngr_msg;
-  assign proc2mngr_0_val             = proc$000$proc2mngr_val;
-  assign proc2mngr_1_msg             = proc$001$proc2mngr_msg;
-  assign proc2mngr_1_val             = proc$001$proc2mngr_val;
-  assign proc2mngr_2_msg             = proc$002$proc2mngr_msg;
-  assign proc2mngr_2_val             = proc$002$proc2mngr_val;
-  assign proc2mngr_3_msg             = proc$003$proc2mngr_msg;
-  assign proc2mngr_3_val             = proc$003$proc2mngr_val;
-  assign xcel$000$clk                = clk;
-  assign xcel$000$memreq_snoop_msg   = dcache_adapter$req_msg;
-  assign xcel$000$memreq_snoop_val   = cachereq_go;
-  assign xcel$000$reset              = reset;
-  assign xcel$000$xcelreq_msg        = proc$000$xcelreq_msg;
-  assign xcel$000$xcelreq_val        = proc$000$xcelreq_val;
-  assign xcel$000$xcelresp_rdy       = proc$000$xcelresp_rdy;
-  assign xcel$001$clk                = clk;
-  assign xcel$001$memreq_snoop_msg   = dcache_adapter$req_msg;
-  assign xcel$001$memreq_snoop_val   = cachereq_go;
-  assign xcel$001$reset              = reset;
-  assign xcel$001$xcelreq_msg        = proc$001$xcelreq_msg;
-  assign xcel$001$xcelreq_val        = proc$001$xcelreq_val;
-  assign xcel$001$xcelresp_rdy       = proc$001$xcelresp_rdy;
-  assign xcel$002$clk                = clk;
-  assign xcel$002$memreq_snoop_msg   = dcache_adapter$req_msg;
-  assign xcel$002$memreq_snoop_val   = cachereq_go;
-  assign xcel$002$reset              = reset;
-  assign xcel$002$xcelreq_msg        = proc$002$xcelreq_msg;
-  assign xcel$002$xcelreq_val        = proc$002$xcelreq_val;
-  assign xcel$002$xcelresp_rdy       = proc$002$xcelresp_rdy;
-  assign xcel$003$clk                = clk;
-  assign xcel$003$memreq_snoop_msg   = dcache_adapter$req_msg;
-  assign xcel$003$memreq_snoop_val   = cachereq_go;
-  assign xcel$003$reset              = reset;
-  assign xcel$003$xcelreq_msg        = proc$003$xcelreq_msg;
-  assign xcel$003$xcelreq_val        = proc$003$xcelreq_val;
-  assign xcel$003$xcelresp_rdy       = proc$003$xcelresp_rdy;
+  assign ctrlreg$clk                    = clk;
+  assign ctrlreg$commit_inst[0]         = proc$000$commit_inst;
+  assign ctrlreg$commit_inst[1]         = proc$001$commit_inst;
+  assign ctrlreg$commit_inst[2]         = proc$002$commit_inst;
+  assign ctrlreg$commit_inst[3]         = proc$003$commit_inst;
+  assign ctrlreg$req_msg                = ctrlregreq_msg;
+  assign ctrlreg$req_val                = ctrlregreq_val;
+  assign ctrlreg$reset                  = reset;
+  assign ctrlreg$resp_rdy               = ctrlregresp_rdy;
+  assign ctrlreg$stats_en               = proc$000$stats_en;
+  assign ctrlregreq_rdy                 = ctrlreg$req_rdy;
+  assign ctrlregresp_msg                = ctrlreg$resp_msg;
+  assign ctrlregresp_val                = ctrlreg$resp_val;
+  assign dcache$cachereq_msg            = dcache_adapter$req_msg;
+  assign dcache$cachereq_val            = dcache_adapter$req_val;
+  assign dcache$cacheresp_rdy           = dcache_adapter$resp_rdy;
+  assign dcache$clk                     = clk;
+  assign dcache$memreq_rdy              = dmemreq_rdy;
+  assign dcache$memresp_msg             = dmemresp_msg;
+  assign dcache$memresp_val             = dmemresp_val;
+  assign dcache$reset                   = reset;
+  assign dcache_adapter$clk             = clk;
+  assign dcache_adapter$host_en         = ctrlreg$host_en[2];
+  assign dcache_adapter$hostreq_msg     = host_dcachereq_msg;
+  assign dcache_adapter$hostreq_val     = host_dcachereq_val;
+  assign dcache_adapter$hostresp_rdy    = host_dcacheresp_rdy;
+  assign dcache_adapter$realreq_msg     = net_dcachereq$out_msg;
+  assign dcache_adapter$realreq_val     = net_dcachereq$out_val;
+  assign dcache_adapter$realresp_rdy    = net_dcacheresp$in__rdy;
+  assign dcache_adapter$req_rdy         = dcache$cachereq_rdy;
+  assign dcache_adapter$reset           = reset;
+  assign dcache_adapter$resp_msg        = dcache$cacheresp_msg;
+  assign dcache_adapter$resp_val        = dcache$cacheresp_val;
+  assign dmemreq_msg                    = dcache$memreq_msg;
+  assign dmemreq_val                    = dcache$memreq_val;
+  assign dmemresp_rdy                   = dcache$memresp_rdy;
+  assign fpu$clk                        = clk;
+  assign fpu$req_msg                    = net_fpureq$out_msg;
+  assign fpu$req_val                    = net_fpureq$out_val;
+  assign fpu$reset                      = reset;
+  assign fpu$resp_rdy                   = net_fpuresp$in__rdy;
+  assign host_dcachereq_rdy             = dcache_adapter$hostreq_rdy;
+  assign host_dcacheresp_msg            = dcache_adapter$hostresp_msg;
+  assign host_dcacheresp_val            = dcache_adapter$hostresp_val;
+  assign host_icachereq_rdy             = icache_adapter$hostreq_rdy;
+  assign host_icacheresp_msg            = icache_adapter$hostresp_msg;
+  assign host_icacheresp_val            = icache_adapter$hostresp_val;
+  assign host_mdureq_rdy                = mdu_adapter$hostreq_rdy;
+  assign host_mduresp_msg               = mdu_adapter$hostresp_msg;
+  assign host_mduresp_val               = mdu_adapter$hostresp_val;
+  assign icache$cachereq_msg            = icache_adapter$req_msg;
+  assign icache$cachereq_val            = icache_adapter$req_val;
+  assign icache$cacheresp_rdy           = icache_adapter$resp_rdy;
+  assign icache$clk                     = clk;
+  assign icache$memreq_rdy              = imemreq_rdy;
+  assign icache$memresp_msg             = imemresp_msg;
+  assign icache$memresp_val             = imemresp_val;
+  assign icache$reset                   = reset;
+  assign icache_adapter$clk             = clk;
+  assign icache_adapter$host_en         = ctrlreg$host_en[1];
+  assign icache_adapter$hostreq_msg     = host_icachereq_msg;
+  assign icache_adapter$hostreq_val     = host_icachereq_val;
+  assign icache_adapter$hostresp_rdy    = host_icacheresp_rdy;
+  assign icache_adapter$realreq_msg     = icache_coalescer$memreq_msg;
+  assign icache_adapter$realreq_val     = icache_coalescer$memreq_val;
+  assign icache_adapter$realresp_rdy    = icache_coalescer$memresp_rdy;
+  assign icache_adapter$req_rdy         = icache$cachereq_rdy;
+  assign icache_adapter$reset           = reset;
+  assign icache_adapter$resp_msg        = icache$cacheresp_msg;
+  assign icache_adapter$resp_val        = icache$cacheresp_val;
+  assign icache_coalescer$clk           = clk;
+  assign icache_coalescer$coalescing_en = ctrlreg$host_en[3];
+  assign icache_coalescer$memreq_rdy    = icache_adapter$realreq_rdy;
+  assign icache_coalescer$memresp_msg   = icache_adapter$realresp_msg;
+  assign icache_coalescer$memresp_val   = icache_adapter$realresp_val;
+  assign icache_coalescer$reqs$000_msg  = l0i$000$memreq_msg;
+  assign icache_coalescer$reqs$000_val  = l0i$000$memreq_val;
+  assign icache_coalescer$reqs$001_msg  = l0i$001$memreq_msg;
+  assign icache_coalescer$reqs$001_val  = l0i$001$memreq_val;
+  assign icache_coalescer$reqs$002_msg  = l0i$002$memreq_msg;
+  assign icache_coalescer$reqs$002_val  = l0i$002$memreq_val;
+  assign icache_coalescer$reqs$003_msg  = l0i$003$memreq_msg;
+  assign icache_coalescer$reqs$003_val  = l0i$003$memreq_val;
+  assign icache_coalescer$reset         = reset;
+  assign icache_coalescer$resps$000_rdy = l0i$000$memresp_rdy;
+  assign icache_coalescer$resps$001_rdy = l0i$001$memresp_rdy;
+  assign icache_coalescer$resps$002_rdy = l0i$002$memresp_rdy;
+  assign icache_coalescer$resps$003_rdy = l0i$003$memresp_rdy;
+  assign imemreq_msg                    = icache$memreq_msg;
+  assign imemreq_val                    = icache$memreq_val;
+  assign imemresp_rdy                   = icache$memresp_rdy;
+  assign l0i$000$L0_disable             = l0idisable;
+  assign l0i$000$buffreq_msg            = proc$000$imemreq_msg;
+  assign l0i$000$buffreq_val            = proc$000$imemreq_val;
+  assign l0i$000$buffresp_rdy           = proc$000$imemresp_rdy;
+  assign l0i$000$clk                    = clk;
+  assign l0i$000$memreq_rdy             = icache_coalescer$reqs$000_rdy;
+  assign l0i$000$memresp_msg            = icache_coalescer$resps$000_msg;
+  assign l0i$000$memresp_val            = icache_coalescer$resps$000_val;
+  assign l0i$000$reset                  = reset;
+  assign l0i$001$L0_disable             = l0idisable;
+  assign l0i$001$buffreq_msg            = proc$001$imemreq_msg;
+  assign l0i$001$buffreq_val            = proc$001$imemreq_val;
+  assign l0i$001$buffresp_rdy           = proc$001$imemresp_rdy;
+  assign l0i$001$clk                    = clk;
+  assign l0i$001$memreq_rdy             = icache_coalescer$reqs$001_rdy;
+  assign l0i$001$memresp_msg            = icache_coalescer$resps$001_msg;
+  assign l0i$001$memresp_val            = icache_coalescer$resps$001_val;
+  assign l0i$001$reset                  = reset;
+  assign l0i$002$L0_disable             = l0idisable;
+  assign l0i$002$buffreq_msg            = proc$002$imemreq_msg;
+  assign l0i$002$buffreq_val            = proc$002$imemreq_val;
+  assign l0i$002$buffresp_rdy           = proc$002$imemresp_rdy;
+  assign l0i$002$clk                    = clk;
+  assign l0i$002$memreq_rdy             = icache_coalescer$reqs$002_rdy;
+  assign l0i$002$memresp_msg            = icache_coalescer$resps$002_msg;
+  assign l0i$002$memresp_val            = icache_coalescer$resps$002_val;
+  assign l0i$002$reset                  = reset;
+  assign l0i$003$L0_disable             = l0idisable;
+  assign l0i$003$buffreq_msg            = proc$003$imemreq_msg;
+  assign l0i$003$buffreq_val            = proc$003$imemreq_val;
+  assign l0i$003$buffresp_rdy           = proc$003$imemresp_rdy;
+  assign l0i$003$clk                    = clk;
+  assign l0i$003$memreq_rdy             = icache_coalescer$reqs$003_rdy;
+  assign l0i$003$memresp_msg            = icache_coalescer$resps$003_msg;
+  assign l0i$003$memresp_val            = icache_coalescer$resps$003_val;
+  assign l0i$003$reset                  = reset;
+  assign mdu$clk                        = clk;
+  assign mdu$req_msg                    = mdu_adapter$req_msg;
+  assign mdu$req_val                    = mdu_adapter$req_val;
+  assign mdu$reset                      = reset;
+  assign mdu$resp_rdy                   = mdu_adapter$resp_rdy;
+  assign mdu_adapter$clk                = clk;
+  assign mdu_adapter$host_en            = ctrlreg$host_en[0];
+  assign mdu_adapter$hostreq_msg        = host_mdureq_msg;
+  assign mdu_adapter$hostreq_val        = host_mdureq_val;
+  assign mdu_adapter$hostresp_rdy       = host_mduresp_rdy;
+  assign mdu_adapter$realreq_msg        = net_mdureq$out_msg;
+  assign mdu_adapter$realreq_val        = net_mdureq$out_val;
+  assign mdu_adapter$realresp_rdy       = net_mduresp$in__rdy;
+  assign mdu_adapter$req_rdy            = mdu$req_rdy;
+  assign mdu_adapter$reset              = reset;
+  assign mdu_adapter$resp_msg           = mdu$resp_msg;
+  assign mdu_adapter$resp_val           = mdu$resp_val;
+  assign mngr2proc_0_rdy                = proc$000$mngr2proc_rdy;
+  assign mngr2proc_1_rdy                = proc$001$mngr2proc_rdy;
+  assign mngr2proc_2_rdy                = proc$002$mngr2proc_rdy;
+  assign mngr2proc_3_rdy                = proc$003$mngr2proc_rdy;
+  assign net_dcachereq$clk              = clk;
+  assign net_dcachereq$in_$000_msg      = proc$000$dmemreq_msg;
+  assign net_dcachereq$in_$000_val      = proc$000$dmemreq_val;
+  assign net_dcachereq$in_$001_msg      = proc$001$dmemreq_msg;
+  assign net_dcachereq$in_$001_val      = proc$001$dmemreq_val;
+  assign net_dcachereq$in_$002_msg      = proc$002$dmemreq_msg;
+  assign net_dcachereq$in_$002_val      = proc$002$dmemreq_val;
+  assign net_dcachereq$in_$003_msg      = proc$003$dmemreq_msg;
+  assign net_dcachereq$in_$003_val      = proc$003$dmemreq_val;
+  assign net_dcachereq$out_rdy          = dcache_adapter$realreq_rdy;
+  assign net_dcachereq$reset            = reset;
+  assign net_dcacheresp$clk             = clk;
+  assign net_dcacheresp$in__msg         = dcache_adapter$realresp_msg;
+  assign net_dcacheresp$in__val         = dcache_adapter$realresp_val;
+  assign net_dcacheresp$out$000_rdy     = proc$000$dmemresp_rdy;
+  assign net_dcacheresp$out$001_rdy     = proc$001$dmemresp_rdy;
+  assign net_dcacheresp$out$002_rdy     = proc$002$dmemresp_rdy;
+  assign net_dcacheresp$out$003_rdy     = proc$003$dmemresp_rdy;
+  assign net_dcacheresp$reset           = reset;
+  assign net_fpureq$clk                 = clk;
+  assign net_fpureq$in_$000_msg         = proc$000$fpureq_msg;
+  assign net_fpureq$in_$000_val         = proc$000$fpureq_val;
+  assign net_fpureq$in_$001_msg         = proc$001$fpureq_msg;
+  assign net_fpureq$in_$001_val         = proc$001$fpureq_val;
+  assign net_fpureq$in_$002_msg         = proc$002$fpureq_msg;
+  assign net_fpureq$in_$002_val         = proc$002$fpureq_val;
+  assign net_fpureq$in_$003_msg         = proc$003$fpureq_msg;
+  assign net_fpureq$in_$003_val         = proc$003$fpureq_val;
+  assign net_fpureq$out_rdy             = fpu$req_rdy;
+  assign net_fpureq$reset               = reset;
+  assign net_fpuresp$clk                = clk;
+  assign net_fpuresp$in__msg            = fpu$resp_msg;
+  assign net_fpuresp$in__val            = fpu$resp_val;
+  assign net_fpuresp$out$000_rdy        = proc$000$fpuresp_rdy;
+  assign net_fpuresp$out$001_rdy        = proc$001$fpuresp_rdy;
+  assign net_fpuresp$out$002_rdy        = proc$002$fpuresp_rdy;
+  assign net_fpuresp$out$003_rdy        = proc$003$fpuresp_rdy;
+  assign net_fpuresp$reset              = reset;
+  assign net_mdureq$clk                 = clk;
+  assign net_mdureq$in_$000_msg         = proc$000$mdureq_msg;
+  assign net_mdureq$in_$000_val         = proc$000$mdureq_val;
+  assign net_mdureq$in_$001_msg         = proc$001$mdureq_msg;
+  assign net_mdureq$in_$001_val         = proc$001$mdureq_val;
+  assign net_mdureq$in_$002_msg         = proc$002$mdureq_msg;
+  assign net_mdureq$in_$002_val         = proc$002$mdureq_val;
+  assign net_mdureq$in_$003_msg         = proc$003$mdureq_msg;
+  assign net_mdureq$in_$003_val         = proc$003$mdureq_val;
+  assign net_mdureq$out_rdy             = mdu_adapter$realreq_rdy;
+  assign net_mdureq$reset               = reset;
+  assign net_mduresp$clk                = clk;
+  assign net_mduresp$in__msg            = mdu_adapter$realresp_msg;
+  assign net_mduresp$in__val            = mdu_adapter$realresp_val;
+  assign net_mduresp$out$000_rdy        = proc$000$mduresp_rdy;
+  assign net_mduresp$out$001_rdy        = proc$001$mduresp_rdy;
+  assign net_mduresp$out$002_rdy        = proc$002$mduresp_rdy;
+  assign net_mduresp$out$003_rdy        = proc$003$mduresp_rdy;
+  assign net_mduresp$reset              = reset;
+  assign proc$000$clk                   = clk;
+  assign proc$000$core_id               = 32'd0;
+  assign proc$000$dmemreq_rdy           = net_dcachereq$in_$000_rdy;
+  assign proc$000$dmemresp_msg          = net_dcacheresp$out$000_msg;
+  assign proc$000$dmemresp_val          = net_dcacheresp$out$000_val;
+  assign proc$000$fpureq_rdy            = net_fpureq$in_$000_rdy;
+  assign proc$000$fpuresp_msg           = net_fpuresp$out$000_msg;
+  assign proc$000$fpuresp_val           = net_fpuresp$out$000_val;
+  assign proc$000$go                    = ctrlreg$go[0];
+  assign proc$000$imemreq_rdy           = l0i$000$buffreq_rdy;
+  assign proc$000$imemresp_msg          = l0i$000$buffresp_msg;
+  assign proc$000$imemresp_val          = l0i$000$buffresp_val;
+  assign proc$000$mdureq_rdy            = net_mdureq$in_$000_rdy;
+  assign proc$000$mduresp_msg           = net_mduresp$out$000_msg;
+  assign proc$000$mduresp_val           = net_mduresp$out$000_val;
+  assign proc$000$mngr2proc_msg         = mngr2proc_0_msg;
+  assign proc$000$mngr2proc_val         = mngr2proc_0_val;
+  assign proc$000$proc2mngr_rdy         = proc2mngr_0_rdy;
+  assign proc$000$reset                 = reset;
+  assign proc$000$xcelreq_rdy           = xcel$000$xcelreq_rdy;
+  assign proc$000$xcelresp_msg          = xcel$000$xcelresp_msg;
+  assign proc$000$xcelresp_val          = xcel$000$xcelresp_val;
+  assign proc$001$clk                   = clk;
+  assign proc$001$core_id               = 32'd1;
+  assign proc$001$dmemreq_rdy           = net_dcachereq$in_$001_rdy;
+  assign proc$001$dmemresp_msg          = net_dcacheresp$out$001_msg;
+  assign proc$001$dmemresp_val          = net_dcacheresp$out$001_val;
+  assign proc$001$fpureq_rdy            = net_fpureq$in_$001_rdy;
+  assign proc$001$fpuresp_msg           = net_fpuresp$out$001_msg;
+  assign proc$001$fpuresp_val           = net_fpuresp$out$001_val;
+  assign proc$001$go                    = ctrlreg$go[1];
+  assign proc$001$imemreq_rdy           = l0i$001$buffreq_rdy;
+  assign proc$001$imemresp_msg          = l0i$001$buffresp_msg;
+  assign proc$001$imemresp_val          = l0i$001$buffresp_val;
+  assign proc$001$mdureq_rdy            = net_mdureq$in_$001_rdy;
+  assign proc$001$mduresp_msg           = net_mduresp$out$001_msg;
+  assign proc$001$mduresp_val           = net_mduresp$out$001_val;
+  assign proc$001$mngr2proc_msg         = mngr2proc_1_msg;
+  assign proc$001$mngr2proc_val         = mngr2proc_1_val;
+  assign proc$001$proc2mngr_rdy         = proc2mngr_1_rdy;
+  assign proc$001$reset                 = reset;
+  assign proc$001$xcelreq_rdy           = xcel$001$xcelreq_rdy;
+  assign proc$001$xcelresp_msg          = xcel$001$xcelresp_msg;
+  assign proc$001$xcelresp_val          = xcel$001$xcelresp_val;
+  assign proc$002$clk                   = clk;
+  assign proc$002$core_id               = 32'd2;
+  assign proc$002$dmemreq_rdy           = net_dcachereq$in_$002_rdy;
+  assign proc$002$dmemresp_msg          = net_dcacheresp$out$002_msg;
+  assign proc$002$dmemresp_val          = net_dcacheresp$out$002_val;
+  assign proc$002$fpureq_rdy            = net_fpureq$in_$002_rdy;
+  assign proc$002$fpuresp_msg           = net_fpuresp$out$002_msg;
+  assign proc$002$fpuresp_val           = net_fpuresp$out$002_val;
+  assign proc$002$go                    = ctrlreg$go[2];
+  assign proc$002$imemreq_rdy           = l0i$002$buffreq_rdy;
+  assign proc$002$imemresp_msg          = l0i$002$buffresp_msg;
+  assign proc$002$imemresp_val          = l0i$002$buffresp_val;
+  assign proc$002$mdureq_rdy            = net_mdureq$in_$002_rdy;
+  assign proc$002$mduresp_msg           = net_mduresp$out$002_msg;
+  assign proc$002$mduresp_val           = net_mduresp$out$002_val;
+  assign proc$002$mngr2proc_msg         = mngr2proc_2_msg;
+  assign proc$002$mngr2proc_val         = mngr2proc_2_val;
+  assign proc$002$proc2mngr_rdy         = proc2mngr_2_rdy;
+  assign proc$002$reset                 = reset;
+  assign proc$002$xcelreq_rdy           = xcel$002$xcelreq_rdy;
+  assign proc$002$xcelresp_msg          = xcel$002$xcelresp_msg;
+  assign proc$002$xcelresp_val          = xcel$002$xcelresp_val;
+  assign proc$003$clk                   = clk;
+  assign proc$003$core_id               = 32'd3;
+  assign proc$003$dmemreq_rdy           = net_dcachereq$in_$003_rdy;
+  assign proc$003$dmemresp_msg          = net_dcacheresp$out$003_msg;
+  assign proc$003$dmemresp_val          = net_dcacheresp$out$003_val;
+  assign proc$003$fpureq_rdy            = net_fpureq$in_$003_rdy;
+  assign proc$003$fpuresp_msg           = net_fpuresp$out$003_msg;
+  assign proc$003$fpuresp_val           = net_fpuresp$out$003_val;
+  assign proc$003$go                    = ctrlreg$go[3];
+  assign proc$003$imemreq_rdy           = l0i$003$buffreq_rdy;
+  assign proc$003$imemresp_msg          = l0i$003$buffresp_msg;
+  assign proc$003$imemresp_val          = l0i$003$buffresp_val;
+  assign proc$003$mdureq_rdy            = net_mdureq$in_$003_rdy;
+  assign proc$003$mduresp_msg           = net_mduresp$out$003_msg;
+  assign proc$003$mduresp_val           = net_mduresp$out$003_val;
+  assign proc$003$mngr2proc_msg         = mngr2proc_3_msg;
+  assign proc$003$mngr2proc_val         = mngr2proc_3_val;
+  assign proc$003$proc2mngr_rdy         = proc2mngr_3_rdy;
+  assign proc$003$reset                 = reset;
+  assign proc$003$xcelreq_rdy           = xcel$003$xcelreq_rdy;
+  assign proc$003$xcelresp_msg          = xcel$003$xcelresp_msg;
+  assign proc$003$xcelresp_val          = xcel$003$xcelresp_val;
+  assign proc2mngr_0_msg                = proc$000$proc2mngr_msg;
+  assign proc2mngr_0_val                = proc$000$proc2mngr_val;
+  assign proc2mngr_1_msg                = proc$001$proc2mngr_msg;
+  assign proc2mngr_1_val                = proc$001$proc2mngr_val;
+  assign proc2mngr_2_msg                = proc$002$proc2mngr_msg;
+  assign proc2mngr_2_val                = proc$002$proc2mngr_val;
+  assign proc2mngr_3_msg                = proc$003$proc2mngr_msg;
+  assign proc2mngr_3_val                = proc$003$proc2mngr_val;
+  assign xcel$000$clk                   = clk;
+  assign xcel$000$memreq_snoop_msg      = dcache_adapter$req_msg;
+  assign xcel$000$memreq_snoop_val      = cachereq_go;
+  assign xcel$000$reset                 = reset;
+  assign xcel$000$xcelreq_msg           = proc$000$xcelreq_msg;
+  assign xcel$000$xcelreq_val           = proc$000$xcelreq_val;
+  assign xcel$000$xcelresp_rdy          = proc$000$xcelresp_rdy;
+  assign xcel$001$clk                   = clk;
+  assign xcel$001$memreq_snoop_msg      = dcache_adapter$req_msg;
+  assign xcel$001$memreq_snoop_val      = cachereq_go;
+  assign xcel$001$reset                 = reset;
+  assign xcel$001$xcelreq_msg           = proc$001$xcelreq_msg;
+  assign xcel$001$xcelreq_val           = proc$001$xcelreq_val;
+  assign xcel$001$xcelresp_rdy          = proc$001$xcelresp_rdy;
+  assign xcel$002$clk                   = clk;
+  assign xcel$002$memreq_snoop_msg      = dcache_adapter$req_msg;
+  assign xcel$002$memreq_snoop_val      = cachereq_go;
+  assign xcel$002$reset                 = reset;
+  assign xcel$002$xcelreq_msg           = proc$002$xcelreq_msg;
+  assign xcel$002$xcelreq_val           = proc$002$xcelreq_val;
+  assign xcel$002$xcelresp_rdy          = proc$002$xcelresp_rdy;
+  assign xcel$003$clk                   = clk;
+  assign xcel$003$memreq_snoop_msg      = dcache_adapter$req_msg;
+  assign xcel$003$memreq_snoop_val      = cachereq_go;
+  assign xcel$003$reset                 = reset;
+  assign xcel$003$xcelreq_msg           = proc$003$xcelreq_msg;
+  assign xcel$003$xcelreq_val           = proc$003$xcelreq_val;
+  assign xcel$003$xcelresp_rdy          = proc$003$xcelresp_rdy;
 
 
   // PYMTL SOURCE:
@@ -5111,6 +5289,18 @@ module Chansey
     cachereq_go = (dcache$cachereq_val&&dcache$cachereq_rdy);
   end
 
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_l0idisable():
+  //       # The l0i actually takes a disable bit, so invert the enable
+  //       s.l0idisable.value = ~s.ctrlreg.host_en[4]
+
+  // logic for comb_l0idisable()
+  always @ (*) begin
+    l0idisable = ~ctrlreg$host_en[4];
+  end
+
 
 endmodule // Chansey
 `default_nettype wire
@@ -5118,8 +5308,8 @@ endmodule // Chansey
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d4add14d0>
-// req: <pymtl.model.signals.InPort object at 0x7f2d4add1210>
+// resp: <pymtl.model.signals.OutPort object at 0x7f538c2689d0>
+// req: <pymtl.model.signals.InPort object at 0x7f538c268690>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -5215,6 +5405,102 @@ module HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 
 
 endmodule // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Router_0x52846acbae83db71
+//-----------------------------------------------------------------------------
+// nports: 4
+// MsgType: 40
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Router_0x52846acbae83db71
+(
+  input  wire [   0:0] clk,
+  input  wire [  39:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  output wire [  39:0] out$000_msg,
+  input  wire [   0:0] out$000_rdy,
+  output wire [   0:0] out$000_val,
+  output wire [  39:0] out$001_msg,
+  input  wire [   0:0] out$001_rdy,
+  output wire [   0:0] out$001_val,
+  output wire [  39:0] out$002_msg,
+  input  wire [   0:0] out$002_rdy,
+  output wire [   0:0] out$002_val,
+  output wire [  39:0] out$003_msg,
+  input  wire [   0:0] out$003_rdy,
+  output wire [   0:0] out$003_val,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam nports = 4;
+
+  // loop variable declarations
+  integer i;
+
+
+  // array declarations
+  reg    [  39:0] out_msg[0:3];
+  assign out$000_msg = out_msg[  0];
+  assign out$001_msg = out_msg[  1];
+  assign out$002_msg = out_msg[  2];
+  assign out$003_msg = out_msg[  3];
+  wire   [   0:0] out_rdy[0:3];
+  assign out_rdy[  0] = out$000_rdy;
+  assign out_rdy[  1] = out$001_rdy;
+  assign out_rdy[  2] = out$002_rdy;
+  assign out_rdy[  3] = out$003_rdy;
+  reg    [   0:0] out_val[0:3];
+  assign out$000_val = out_val[  0];
+  assign out$001_val = out_val[  1];
+  assign out$002_val = out_val[  2];
+  assign out$003_val = out_val[  3];
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_out_val():
+  //       for i in xrange( nports ):
+  //         s.out[i].val.value = 0
+  //         s.out[i].msg.value = 0
+  //
+  //       if s.in_.val:
+  //         s.out[ s.in_.msg.opaque ].val.value = s.in_.val
+  //         s.out[ s.in_.msg.opaque ].msg.value = s.in_.msg
+
+  // logic for comb_out_val()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      out_val[i] = 0;
+      out_msg[i] = 0;
+    end
+    if (in__val) begin
+      out_val[in__msg[(40)-1:37]] = in__val;
+      out_msg[in__msg[(40)-1:37]] = in__msg;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_in_rdy():
+  //       # in_rdy is the rdy status of the opaque-th output
+  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+
+  // logic for comb_in_rdy()
+  always @ (*) begin
+    in__rdy = out_rdy[in__msg[(40)-1:37]];
+  end
+
+
+endmodule // Router_0x52846acbae83db71
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -9518,8 +9804,8 @@ endmodule // RegEnRst_0x9f365fdf6c8998a
 //-----------------------------------------------------------------------------
 // Mux_0x7e8c65f0610ab9ca
 //-----------------------------------------------------------------------------
-// nports: 2
 // dtype: 32
+// nports: 2
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -14605,8 +14891,8 @@ endmodule // SliceNDicePRTL_0x3637de7713a13a73
 //-----------------------------------------------------------------------------
 // RegEnRst_0x513e5624ff809260
 //-----------------------------------------------------------------------------
-// reset_value: 0
 // dtype: 8
+// reset_value: 0
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -14907,6 +15193,1997 @@ endmodule // Router_0x6c4e178e4038f207
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// DesignWareFloatingPointUnit
+//-----------------------------------------------------------------------------
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module DesignWareFloatingPointUnit
+(
+  input  wire [   0:0] clk,
+  input  wire [  73:0] req_msg,
+  output wire [   0:0] req_rdy,
+  input  wire [   0:0] req_val,
+  input  wire [   0:0] reset,
+  output wire [  39:0] resp_msg,
+  input  wire [   0:0] resp_rdy,
+  output wire [   0:0] resp_val
+);
+
+  // register declarations
+  reg    [   7:0] dw_fexc;
+  reg    [   2:0] dw_frnd;
+  reg    [  31:0] fp_addsub$a;
+  reg    [  31:0] fp_addsub$b;
+  reg    [   0:0] fp_addsub$in_val;
+  reg    [   0:0] fp_addsub$op;
+  reg    [   2:0] fp_addsub$rnd;
+  reg    [  31:0] fp_cmp$a;
+  reg    [  31:0] fp_cmp$b;
+  reg    [   0:0] fp_cmp$zctr;
+  reg    [  31:0] fp_div$a;
+  reg    [  31:0] fp_div$b;
+  reg    [   0:0] fp_div$in_val;
+  reg    [   2:0] fp_div$rnd;
+  reg    [  31:0] fp_flt2i$a;
+  reg    [   2:0] fp_flt2i$rnd;
+  reg    [  31:0] fp_i2flt$a;
+  reg    [   2:0] fp_i2flt$rnd;
+  reg    [  31:0] fp_mult$a;
+  reg    [  31:0] fp_mult$b;
+  reg    [   2:0] fp_mult$rnd;
+  reg    [   0:0] req_q$deq_rdy;
+  reg    [   0:0] resp_go;
+  reg    [  39:0] resp_q$enq_msg;
+  reg    [   0:0] resp_q$enq_val;
+  reg    [   4:0] riscv_fexc;
+
+  // localparam declarations
+  localparam DW_ADDSUB_ADD = 0;
+  localparam DW_ADDSUB_SUB = 1;
+  localparam DW_FEXC_DZ = 128;
+  localparam DW_FEXC_NV = 4;
+  localparam DW_FEXC_NX = 32;
+  localparam DW_FEXC_OF = 16;
+  localparam DW_FEXC_UF = 8;
+  localparam DW_FRND_DN = 3;
+  localparam DW_FRND_MM = 4;
+  localparam DW_FRND_NE = 0;
+  localparam DW_FRND_TZ = 1;
+  localparam DW_FRND_UP = 2;
+  localparam FEXC_DZ = 8;
+  localparam FEXC_NV = 16;
+  localparam FEXC_NX = 1;
+  localparam FEXC_OF = 4;
+  localparam FEXC_UF = 2;
+  localparam FRND_DN = 2;
+  localparam FRND_MM = 4;
+  localparam FRND_NE = 0;
+  localparam FRND_TZ = 1;
+  localparam FRND_UP = 3;
+  localparam TYPE_FADD = 1;
+  localparam TYPE_FCEQ = 8;
+  localparam TYPE_FCLE = 10;
+  localparam TYPE_FCLT = 9;
+  localparam TYPE_FDIV = 3;
+  localparam TYPE_FF2I = 7;
+  localparam TYPE_FI2F = 6;
+  localparam TYPE_FMAX = 5;
+  localparam TYPE_FMIN = 4;
+  localparam TYPE_FMUL = 0;
+  localparam TYPE_FSUB = 2;
+
+  // fp_flt2i temporaries
+  wire   [   0:0] fp_flt2i$clk;
+  wire   [   0:0] fp_flt2i$reset;
+  wire   [   7:0] fp_flt2i$status;
+  wire   [  31:0] fp_flt2i$z;
+
+  DW_fp_flt2i_0x3cd77562127ffa78 fp_flt2i
+  (
+    .clk    ( fp_flt2i$clk ),
+    .a      ( fp_flt2i$a ),
+    .rnd    ( fp_flt2i$rnd ),
+    .reset  ( fp_flt2i$reset ),
+    .status ( fp_flt2i$status ),
+    .z      ( fp_flt2i$z )
+  );
+
+  // req_q temporaries
+  wire   [   0:0] req_q$clk;
+  wire   [  73:0] req_q$enq_msg;
+  wire   [   0:0] req_q$enq_val;
+  wire   [   0:0] req_q$reset;
+  wire   [   0:0] req_q$enq_rdy;
+  wire   [   1:0] req_q$num_free_entries;
+  wire   [  73:0] req_q$deq_msg;
+  wire   [   0:0] req_q$deq_val;
+
+  NormalQueue_0x5cb07886f33e4c89 req_q
+  (
+    .clk              ( req_q$clk ),
+    .enq_msg          ( req_q$enq_msg ),
+    .enq_val          ( req_q$enq_val ),
+    .reset            ( req_q$reset ),
+    .deq_rdy          ( req_q$deq_rdy ),
+    .enq_rdy          ( req_q$enq_rdy ),
+    .num_free_entries ( req_q$num_free_entries ),
+    .deq_msg          ( req_q$deq_msg ),
+    .deq_val          ( req_q$deq_val )
+  );
+
+  // fp_addsub temporaries
+  wire   [   0:0] fp_addsub$clk;
+  wire   [   0:0] fp_addsub$reset;
+  wire   [   0:0] fp_addsub$busy;
+  wire   [   7:0] fp_addsub$status;
+  wire   [   0:0] fp_addsub$out_val;
+  wire   [  31:0] fp_addsub$z;
+
+  DW_fp_addsub_pipelined fp_addsub
+  (
+    .clk     ( fp_addsub$clk ),
+    .a       ( fp_addsub$a ),
+    .in_val  ( fp_addsub$in_val ),
+    .rnd     ( fp_addsub$rnd ),
+    .reset   ( fp_addsub$reset ),
+    .b       ( fp_addsub$b ),
+    .op      ( fp_addsub$op ),
+    .busy    ( fp_addsub$busy ),
+    .status  ( fp_addsub$status ),
+    .out_val ( fp_addsub$out_val ),
+    .z       ( fp_addsub$z )
+  );
+
+  // fp_cmp temporaries
+  wire   [   0:0] fp_cmp$clk;
+  wire   [   0:0] fp_cmp$reset;
+  wire   [   0:0] fp_cmp$agtb;
+  wire   [   0:0] fp_cmp$unordered;
+  wire   [   0:0] fp_cmp$aeqb;
+  wire   [  31:0] fp_cmp$z0;
+  wire   [  31:0] fp_cmp$z1;
+  wire   [   7:0] fp_cmp$status1;
+  wire   [   7:0] fp_cmp$status0;
+  wire   [   0:0] fp_cmp$altb;
+
+  DW_fp_cmp_0x15bdbff0d8f765a1 fp_cmp
+  (
+    .clk       ( fp_cmp$clk ),
+    .zctr      ( fp_cmp$zctr ),
+    .a         ( fp_cmp$a ),
+    .reset     ( fp_cmp$reset ),
+    .b         ( fp_cmp$b ),
+    .agtb      ( fp_cmp$agtb ),
+    .unordered ( fp_cmp$unordered ),
+    .aeqb      ( fp_cmp$aeqb ),
+    .z0        ( fp_cmp$z0 ),
+    .z1        ( fp_cmp$z1 ),
+    .status1   ( fp_cmp$status1 ),
+    .status0   ( fp_cmp$status0 ),
+    .altb      ( fp_cmp$altb )
+  );
+
+  // fp_mult temporaries
+  wire   [   0:0] fp_mult$clk;
+  wire   [   0:0] fp_mult$reset;
+  wire   [   7:0] fp_mult$status;
+  wire   [  31:0] fp_mult$z;
+
+  DW_fp_mult_0x1eaed5d9d53885e0 fp_mult
+  (
+    .clk    ( fp_mult$clk ),
+    .a      ( fp_mult$a ),
+    .rnd    ( fp_mult$rnd ),
+    .reset  ( fp_mult$reset ),
+    .b      ( fp_mult$b ),
+    .status ( fp_mult$status ),
+    .z      ( fp_mult$z )
+  );
+
+  // fp_i2flt temporaries
+  wire   [   0:0] fp_i2flt$clk;
+  wire   [   0:0] fp_i2flt$reset;
+  wire   [   7:0] fp_i2flt$status;
+  wire   [  31:0] fp_i2flt$z;
+
+  DW_fp_i2flt_0x215a2bada2e33c4b fp_i2flt
+  (
+    .clk    ( fp_i2flt$clk ),
+    .a      ( fp_i2flt$a ),
+    .rnd    ( fp_i2flt$rnd ),
+    .reset  ( fp_i2flt$reset ),
+    .status ( fp_i2flt$status ),
+    .z      ( fp_i2flt$z )
+  );
+
+  // fp_div temporaries
+  wire   [   0:0] fp_div$clk;
+  wire   [   0:0] fp_div$reset;
+  wire   [   0:0] fp_div$busy;
+  wire   [   7:0] fp_div$status;
+  wire   [   0:0] fp_div$out_val;
+  wire   [  31:0] fp_div$z;
+
+  DW_fp_div_pipelined fp_div
+  (
+    .clk     ( fp_div$clk ),
+    .a       ( fp_div$a ),
+    .in_val  ( fp_div$in_val ),
+    .rnd     ( fp_div$rnd ),
+    .reset   ( fp_div$reset ),
+    .b       ( fp_div$b ),
+    .busy    ( fp_div$busy ),
+    .status  ( fp_div$status ),
+    .out_val ( fp_div$out_val ),
+    .z       ( fp_div$z )
+  );
+
+  // resp_q temporaries
+  wire   [   0:0] resp_q$clk;
+  wire   [   0:0] resp_q$reset;
+  wire   [   0:0] resp_q$deq_rdy;
+  wire   [   0:0] resp_q$enq_rdy;
+  wire   [   1:0] resp_q$num_free_entries;
+  wire   [  39:0] resp_q$deq_msg;
+  wire   [   0:0] resp_q$deq_val;
+
+  NormalQueue_0x21e242676aeb92b7 resp_q
+  (
+    .clk              ( resp_q$clk ),
+    .enq_msg          ( resp_q$enq_msg ),
+    .enq_val          ( resp_q$enq_val ),
+    .reset            ( resp_q$reset ),
+    .deq_rdy          ( resp_q$deq_rdy ),
+    .enq_rdy          ( resp_q$enq_rdy ),
+    .num_free_entries ( resp_q$num_free_entries ),
+    .deq_msg          ( resp_q$deq_msg ),
+    .deq_val          ( resp_q$deq_val )
+  );
+
+  // signal connections
+  assign fp_addsub$clk   = clk;
+  assign fp_addsub$reset = reset;
+  assign fp_cmp$clk      = clk;
+  assign fp_cmp$reset    = reset;
+  assign fp_div$clk      = clk;
+  assign fp_div$reset    = reset;
+  assign fp_flt2i$clk    = clk;
+  assign fp_flt2i$reset  = reset;
+  assign fp_i2flt$clk    = clk;
+  assign fp_i2flt$reset  = reset;
+  assign fp_mult$clk     = clk;
+  assign fp_mult$reset   = reset;
+  assign req_q$clk       = clk;
+  assign req_q$enq_msg   = req_msg;
+  assign req_q$enq_val   = req_val;
+  assign req_q$reset     = reset;
+  assign req_rdy         = req_q$enq_rdy;
+  assign resp_msg        = resp_q$deq_msg;
+  assign resp_q$clk      = clk;
+  assign resp_q$deq_rdy  = resp_rdy;
+  assign resp_q$reset    = reset;
+  assign resp_val        = resp_q$deq_val;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //       s.fp_mult.a.value       = 0
+  //       s.fp_mult.b.value       = 0
+  //       s.fp_mult.rnd.value     = 0
+  //
+  //       s.fp_addsub.a.value     = 0
+  //       s.fp_addsub.b.value     = 0
+  //       s.fp_addsub.op.value    = 0
+  //       s.fp_addsub.rnd.value   = 0
+  //       s.fp_addsub.in_val.value= 0
+  //
+  //       s.fp_div.a.value        = 0
+  //       s.fp_div.b.value        = 0
+  //       s.fp_div.rnd.value      = 0
+  //       s.fp_div.in_val.value   = 0
+  //
+  //       s.fp_cmp.a.value        = 0
+  //       s.fp_cmp.b.value        = 0
+  //       s.fp_cmp.zctr.value     = 0
+  //
+  //       s.fp_flt2i.a.value      = 0
+  //       s.fp_flt2i.rnd.value    = 0
+  //
+  //       s.fp_i2flt.a.value      = 0
+  //       s.fp_i2flt.rnd.value    = 0
+  //
+  //       s.resp_q.enq.msg.opaque.value = 0
+  //       s.resp_q.enq.msg.result.value = 0
+  //
+  //       s.dw_fexc.value             = 0
+  //       s.resp_q.enq.msg.fexc.value = 0
+  //       s.dw_frnd.value             = 0
+  //       s.riscv_fexc.value          = 0
+  //
+  //       s.req_q.deq.rdy.value   = 0
+  //       s.resp_q.enq.val.value  = 0
+  //       s.resp_go.value         = 0
+  //
+  //       # Because the rounding mode is encoded differently in DW and RISC-V,
+  //       # we convert between the two here.
+  //
+  //       if s.req_q.deq.msg.frnd == FpuReqMsg.FRND_NE:
+  //         s.dw_frnd.value = s.DW_FRND_NE
+  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_TZ:
+  //         s.dw_frnd.value = s.DW_FRND_TZ
+  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_DN:
+  //         s.dw_frnd.value = s.DW_FRND_DN
+  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_UP:
+  //         s.dw_frnd.value = s.DW_FRND_UP
+  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_MM:
+  //         s.dw_frnd.value = s.DW_FRND_MM
+  //
+  //       if s.req_q.deq.val and s.resp_q.enq.rdy:
+  //         s.resp_go.value        = 1
+  //
+  //         if s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMUL:
+  //           s.fp_mult.a.value       = s.req_q.deq.msg.op_a
+  //           s.fp_mult.b.value       = s.req_q.deq.msg.op_b
+  //           s.fp_mult.rnd.value     = s.dw_frnd
+  //           s.resp_q.enq.msg.result.value = s.fp_mult.z
+  //           s.dw_fexc.value         = s.fp_mult.status
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FADD:
+  //           s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
+  //           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
+  //           s.fp_addsub.op.value    = s.DW_ADDSUB_ADD
+  //           s.fp_addsub.rnd.value   = s.dw_frnd
+  //           s.fp_addsub.in_val.value= not s.fp_addsub.busy
+  //           s.resp_q.enq.msg.result.value = s.fp_addsub.z
+  //           s.dw_fexc.value         = s.fp_addsub.status
+  //           s.resp_go.value        = s.fp_addsub.out_val
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FSUB:
+  //           s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
+  //           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
+  //           s.fp_addsub.op.value    = s.DW_ADDSUB_SUB
+  //           s.fp_addsub.rnd.value   = s.dw_frnd
+  //           s.fp_addsub.in_val.value= not s.fp_addsub.busy
+  //           s.resp_q.enq.msg.result.value = s.fp_addsub.z
+  //           s.dw_fexc.value         = s.fp_addsub.status
+  //           s.resp_go.value         = s.fp_addsub.out_val
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FDIV:
+  //           s.fp_div.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_div.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_div.rnd.value      = s.dw_frnd
+  //           s.fp_div.in_val.value   = not s.fp_div.busy
+  //           s.resp_q.enq.msg.result.value = s.fp_div.z
+  //           s.dw_fexc.value         = s.fp_div.status
+  //           s.resp_go.value         = s.fp_div.out_val
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMIN:
+  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_cmp.zctr.value     = 0
+  //           s.resp_q.enq.msg.result.value = s.fp_cmp.z0
+  //           if s.fp_cmp.unordered:
+  //             s.dw_fexc.value       = s.DW_FEXC_NV
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMAX:
+  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_cmp.zctr.value     = 1
+  //           s.resp_q.enq.msg.result.value = s.fp_cmp.z0
+  //           if s.fp_cmp.unordered:
+  //             s.dw_fexc.value       = s.DW_FEXC_NV
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCEQ:
+  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_cmp.zctr.value     = 0
+  //           s.resp_q.enq.msg.result.value = s.fp_cmp.aeqb
+  //           if s.fp_cmp.unordered:
+  //             s.dw_fexc.value       = s.DW_FEXC_NV
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLT:
+  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_cmp.zctr.value     = 0
+  //           s.resp_q.enq.msg.result.value = s.fp_cmp.altb
+  //           if s.fp_cmp.unordered:
+  //             s.dw_fexc.value       = s.DW_FEXC_NV
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLE:
+  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
+  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
+  //           s.fp_cmp.zctr.value     = 0
+  //           s.resp_q.enq.msg.result.value = s.fp_cmp.altb | s.fp_cmp.aeqb
+  //           if s.fp_cmp.unordered:
+  //             s.dw_fexc.value       = s.DW_FEXC_NV
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FF2I:
+  //           s.fp_flt2i.a.value      = s.req_q.deq.msg.op_a
+  //           s.fp_flt2i.rnd.value    = s.dw_frnd
+  //           s.resp_q.enq.msg.result.value = s.fp_flt2i.z
+  //           s.dw_fexc.value         = s.fp_flt2i.status
+  //
+  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FI2F:
+  //           s.fp_i2flt.a.value      = s.req_q.deq.msg.op_a
+  //           s.fp_i2flt.rnd.value    = s.dw_frnd
+  //           s.resp_q.enq.msg.result.value = s.fp_i2flt.z
+  //           s.dw_fexc.value         = s.fp_i2flt.status
+  //
+  //
+  //         s.resp_q.enq.msg.opaque.value = s.req_q.deq.msg.opaque
+  //         s.req_q.deq.rdy.value = s.resp_go
+  //         s.resp_q.enq.val.value = s.resp_go
+  //
+  //       # Because the exceptions are encoded differently in DW and RISC-V,
+  //       # we convert between the two here.
+  //
+  //       if s.dw_fexc & s.DW_FEXC_NX:
+  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_NX
+  //       if s.dw_fexc & s.DW_FEXC_UF:
+  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_UF
+  //       if s.dw_fexc & s.DW_FEXC_OF:
+  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_OF
+  //       if s.dw_fexc & s.DW_FEXC_DZ:
+  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_DZ
+  //       if s.dw_fexc & s.DW_FEXC_NV:
+  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_NV
+  //
+  //       s.resp_q.enq.msg.fexc.value   = s.riscv_fexc
+
+  // logic for comb()
+  always @ (*) begin
+    fp_mult$a = 0;
+    fp_mult$b = 0;
+    fp_mult$rnd = 0;
+    fp_addsub$a = 0;
+    fp_addsub$b = 0;
+    fp_addsub$op = 0;
+    fp_addsub$rnd = 0;
+    fp_addsub$in_val = 0;
+    fp_div$a = 0;
+    fp_div$b = 0;
+    fp_div$rnd = 0;
+    fp_div$in_val = 0;
+    fp_cmp$a = 0;
+    fp_cmp$b = 0;
+    fp_cmp$zctr = 0;
+    fp_flt2i$a = 0;
+    fp_flt2i$rnd = 0;
+    fp_i2flt$a = 0;
+    fp_i2flt$rnd = 0;
+    resp_q$enq_msg[(40)-1:37] = 0;
+    resp_q$enq_msg[(37)-1:5] = 0;
+    dw_fexc = 0;
+    resp_q$enq_msg[(5)-1:0] = 0;
+    dw_frnd = 0;
+    riscv_fexc = 0;
+    req_q$deq_rdy = 0;
+    resp_q$enq_val = 0;
+    resp_go = 0;
+    if ((req_q$deq_msg[(3)-1:0] == FRND_NE)) begin
+      dw_frnd = DW_FRND_NE;
+    end
+    else begin
+      if ((req_q$deq_msg[(3)-1:0] == FRND_TZ)) begin
+        dw_frnd = DW_FRND_TZ;
+      end
+      else begin
+        if ((req_q$deq_msg[(3)-1:0] == FRND_DN)) begin
+          dw_frnd = DW_FRND_DN;
+        end
+        else begin
+          if ((req_q$deq_msg[(3)-1:0] == FRND_UP)) begin
+            dw_frnd = DW_FRND_UP;
+          end
+          else begin
+            if ((req_q$deq_msg[(3)-1:0] == FRND_MM)) begin
+              dw_frnd = DW_FRND_MM;
+            end
+            else begin
+            end
+          end
+        end
+      end
+    end
+    if ((req_q$deq_val&&resp_q$enq_rdy)) begin
+      resp_go = 1;
+      if ((req_q$deq_msg[(74)-1:70] == TYPE_FMUL)) begin
+        fp_mult$a = req_q$deq_msg[(67)-1:35];
+        fp_mult$b = req_q$deq_msg[(35)-1:3];
+        fp_mult$rnd = dw_frnd;
+        resp_q$enq_msg[(37)-1:5] = fp_mult$z;
+        dw_fexc = fp_mult$status;
+      end
+      else begin
+        if ((req_q$deq_msg[(74)-1:70] == TYPE_FADD)) begin
+          fp_addsub$a = req_q$deq_msg[(67)-1:35];
+          fp_addsub$b = req_q$deq_msg[(35)-1:3];
+          fp_addsub$op = DW_ADDSUB_ADD;
+          fp_addsub$rnd = dw_frnd;
+          fp_addsub$in_val = !fp_addsub$busy;
+          resp_q$enq_msg[(37)-1:5] = fp_addsub$z;
+          dw_fexc = fp_addsub$status;
+          resp_go = fp_addsub$out_val;
+        end
+        else begin
+          if ((req_q$deq_msg[(74)-1:70] == TYPE_FSUB)) begin
+            fp_addsub$a = req_q$deq_msg[(67)-1:35];
+            fp_addsub$b = req_q$deq_msg[(35)-1:3];
+            fp_addsub$op = DW_ADDSUB_SUB;
+            fp_addsub$rnd = dw_frnd;
+            fp_addsub$in_val = !fp_addsub$busy;
+            resp_q$enq_msg[(37)-1:5] = fp_addsub$z;
+            dw_fexc = fp_addsub$status;
+            resp_go = fp_addsub$out_val;
+          end
+          else begin
+            if ((req_q$deq_msg[(74)-1:70] == TYPE_FDIV)) begin
+              fp_div$a = req_q$deq_msg[(67)-1:35];
+              fp_div$b = req_q$deq_msg[(35)-1:3];
+              fp_div$rnd = dw_frnd;
+              fp_div$in_val = !fp_div$busy;
+              resp_q$enq_msg[(37)-1:5] = fp_div$z;
+              dw_fexc = fp_div$status;
+              resp_go = fp_div$out_val;
+            end
+            else begin
+              if ((req_q$deq_msg[(74)-1:70] == TYPE_FMIN)) begin
+                fp_cmp$a = req_q$deq_msg[(67)-1:35];
+                fp_cmp$b = req_q$deq_msg[(35)-1:3];
+                fp_cmp$zctr = 0;
+                resp_q$enq_msg[(37)-1:5] = fp_cmp$z0;
+                if (fp_cmp$unordered) begin
+                  dw_fexc = DW_FEXC_NV;
+                end
+                else begin
+                end
+              end
+              else begin
+                if ((req_q$deq_msg[(74)-1:70] == TYPE_FMAX)) begin
+                  fp_cmp$a = req_q$deq_msg[(67)-1:35];
+                  fp_cmp$b = req_q$deq_msg[(35)-1:3];
+                  fp_cmp$zctr = 1;
+                  resp_q$enq_msg[(37)-1:5] = fp_cmp$z0;
+                  if (fp_cmp$unordered) begin
+                    dw_fexc = DW_FEXC_NV;
+                  end
+                  else begin
+                  end
+                end
+                else begin
+                  if ((req_q$deq_msg[(74)-1:70] == TYPE_FCEQ)) begin
+                    fp_cmp$a = req_q$deq_msg[(67)-1:35];
+                    fp_cmp$b = req_q$deq_msg[(35)-1:3];
+                    fp_cmp$zctr = 0;
+                    resp_q$enq_msg[(37)-1:5] = fp_cmp$aeqb;
+                    if (fp_cmp$unordered) begin
+                      dw_fexc = DW_FEXC_NV;
+                    end
+                    else begin
+                    end
+                  end
+                  else begin
+                    if ((req_q$deq_msg[(74)-1:70] == TYPE_FCLT)) begin
+                      fp_cmp$a = req_q$deq_msg[(67)-1:35];
+                      fp_cmp$b = req_q$deq_msg[(35)-1:3];
+                      fp_cmp$zctr = 0;
+                      resp_q$enq_msg[(37)-1:5] = fp_cmp$altb;
+                      if (fp_cmp$unordered) begin
+                        dw_fexc = DW_FEXC_NV;
+                      end
+                      else begin
+                      end
+                    end
+                    else begin
+                      if ((req_q$deq_msg[(74)-1:70] == TYPE_FCLE)) begin
+                        fp_cmp$a = req_q$deq_msg[(67)-1:35];
+                        fp_cmp$b = req_q$deq_msg[(35)-1:3];
+                        fp_cmp$zctr = 0;
+                        resp_q$enq_msg[(37)-1:5] = (fp_cmp$altb|fp_cmp$aeqb);
+                        if (fp_cmp$unordered) begin
+                          dw_fexc = DW_FEXC_NV;
+                        end
+                        else begin
+                        end
+                      end
+                      else begin
+                        if ((req_q$deq_msg[(74)-1:70] == TYPE_FF2I)) begin
+                          fp_flt2i$a = req_q$deq_msg[(67)-1:35];
+                          fp_flt2i$rnd = dw_frnd;
+                          resp_q$enq_msg[(37)-1:5] = fp_flt2i$z;
+                          dw_fexc = fp_flt2i$status;
+                        end
+                        else begin
+                          if ((req_q$deq_msg[(74)-1:70] == TYPE_FI2F)) begin
+                            fp_i2flt$a = req_q$deq_msg[(67)-1:35];
+                            fp_i2flt$rnd = dw_frnd;
+                            resp_q$enq_msg[(37)-1:5] = fp_i2flt$z;
+                            dw_fexc = fp_i2flt$status;
+                          end
+                          else begin
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+      resp_q$enq_msg[(40)-1:37] = req_q$deq_msg[(70)-1:67];
+      req_q$deq_rdy = resp_go;
+      resp_q$enq_val = resp_go;
+    end
+    else begin
+    end
+    if ((dw_fexc&DW_FEXC_NX)) begin
+      riscv_fexc = (riscv_fexc|FEXC_NX);
+    end
+    else begin
+    end
+    if ((dw_fexc&DW_FEXC_UF)) begin
+      riscv_fexc = (riscv_fexc|FEXC_UF);
+    end
+    else begin
+    end
+    if ((dw_fexc&DW_FEXC_OF)) begin
+      riscv_fexc = (riscv_fexc|FEXC_OF);
+    end
+    else begin
+    end
+    if ((dw_fexc&DW_FEXC_DZ)) begin
+      riscv_fexc = (riscv_fexc|FEXC_DZ);
+    end
+    else begin
+    end
+    if ((dw_fexc&DW_FEXC_NV)) begin
+      riscv_fexc = (riscv_fexc|FEXC_NV);
+    end
+    else begin
+    end
+    resp_q$enq_msg[(5)-1:0] = riscv_fexc;
+  end
+
+
+endmodule // DesignWareFloatingPointUnit
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_flt2i_0x3cd77562127ffa78
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_flt2i_0x3cd77562127ffa78
+(
+  input  wire [  31:0] a,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
+
+  DW_fp_flt2i#(
+    .ieee_compliance ( 1 )
+  )  verilog_module
+  (
+    .a      ( a ),
+    .rnd    ( rnd ),
+    .status ( status ),
+    .z      ( z )
+  );
+
+endmodule // DW_fp_flt2i_0x3cd77562127ffa78
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueue_0x5cb07886f33e4c89
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dtype: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueue_0x5cb07886f33e4c89
+(
+  input  wire [   0:0] clk,
+  output wire [  73:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [  73:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output wire [   1:0] num_free_entries,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$waddr;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$raddr;
+  wire   [   1:0] ctrl$num_free_entries;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  NormalQueueCtrl_0x7a42a348c9205b5 ctrl
+  (
+    .clk              ( ctrl$clk ),
+    .enq_val          ( ctrl$enq_val ),
+    .reset            ( ctrl$reset ),
+    .deq_rdy          ( ctrl$deq_rdy ),
+    .waddr            ( ctrl$waddr ),
+    .wen              ( ctrl$wen ),
+    .deq_val          ( ctrl$deq_val ),
+    .raddr            ( ctrl$raddr ),
+    .num_free_entries ( ctrl$num_free_entries ),
+    .enq_rdy          ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$waddr;
+  wire   [   0:0] dpath$clk;
+  wire   [   0:0] dpath$wen;
+  wire   [   0:0] dpath$raddr;
+  wire   [   0:0] dpath$reset;
+  wire   [  73:0] dpath$enq_bits;
+  wire   [  73:0] dpath$deq_bits;
+
+  NormalQueueDpath_0x5cb07886f33e4c89 dpath
+  (
+    .waddr    ( dpath$waddr ),
+    .clk      ( dpath$clk ),
+    .wen      ( dpath$wen ),
+    .raddr    ( dpath$raddr ),
+    .reset    ( dpath$reset ),
+    .enq_bits ( dpath$enq_bits ),
+    .deq_bits ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk         = clk;
+  assign ctrl$deq_rdy     = deq_rdy;
+  assign ctrl$enq_val     = enq_val;
+  assign ctrl$reset       = reset;
+  assign deq_msg          = dpath$deq_bits;
+  assign deq_val          = ctrl$deq_val;
+  assign dpath$clk        = clk;
+  assign dpath$enq_bits   = enq_msg;
+  assign dpath$raddr      = ctrl$raddr;
+  assign dpath$reset      = reset;
+  assign dpath$waddr      = ctrl$waddr;
+  assign dpath$wen        = ctrl$wen;
+  assign enq_rdy          = ctrl$enq_rdy;
+  assign num_free_entries = ctrl$num_free_entries;
+
+
+
+endmodule // NormalQueue_0x5cb07886f33e4c89
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueueCtrl_0x7a42a348c9205b5
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueueCtrl_0x7a42a348c9205b5
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] deq_rdy,
+  output reg  [   0:0] deq_val,
+  output reg  [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output reg  [   1:0] num_free_entries,
+  output reg  [   0:0] raddr,
+  input  wire [   0:0] reset,
+  output reg  [   0:0] waddr,
+  output reg  [   0:0] wen
+);
+
+  // register declarations
+  reg    [   0:0] deq_ptr;
+  reg    [   0:0] deq_ptr_inc;
+  reg    [   0:0] deq_ptr_next;
+  reg    [   0:0] do_deq;
+  reg    [   0:0] do_enq;
+  reg    [   0:0] empty;
+  reg    [   0:0] enq_ptr;
+  reg    [   0:0] enq_ptr_inc;
+  reg    [   0:0] enq_ptr_next;
+  reg    [   0:0] full;
+  reg    [   0:0] full_next_cycle;
+
+  // localparam declarations
+  localparam last_idx = 1;
+  localparam num_entries = 2;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq():
+  //
+  //       if s.reset: s.deq_ptr.next = 0
+  //       else:       s.deq_ptr.next = s.deq_ptr_next
+  //
+  //       if s.reset: s.enq_ptr.next = 0
+  //       else:       s.enq_ptr.next = s.enq_ptr_next
+  //
+  //       if   s.reset:               s.full.next = 0
+  //       elif s.full_next_cycle:     s.full.next = 1
+  //       elif (s.do_deq and s.full): s.full.next = 0
+  //       else:                       s.full.next = s.full
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    if (reset) begin
+      deq_ptr <= 0;
+    end
+    else begin
+      deq_ptr <= deq_ptr_next;
+    end
+    if (reset) begin
+      enq_ptr <= 0;
+    end
+    else begin
+      enq_ptr <= enq_ptr_next;
+    end
+    if (reset) begin
+      full <= 0;
+    end
+    else begin
+      if (full_next_cycle) begin
+        full <= 1;
+      end
+      else begin
+        if ((do_deq&&full)) begin
+          full <= 0;
+        end
+        else begin
+          full <= full;
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //
+  //       # set output signals
+  //
+  //       s.empty.value   = not s.full and (s.enq_ptr == s.deq_ptr)
+  //
+  //       s.enq_rdy.value = not s.full
+  //       s.deq_val.value = not s.empty
+  //
+  //       # only enqueue/dequeue if valid and ready
+  //
+  //       s.do_enq.value = s.enq_rdy and s.enq_val
+  //       s.do_deq.value = s.deq_rdy and s.deq_val
+  //
+  //       # set control signals
+  //
+  //       s.wen.value     = s.do_enq
+  //       s.waddr.value   = s.enq_ptr
+  //       s.raddr.value   = s.deq_ptr
+  //
+  //       # enq ptr incrementer
+  //
+  //       if s.enq_ptr == s.last_idx: s.enq_ptr_inc.value = 0
+  //       else:                       s.enq_ptr_inc.value = s.enq_ptr + 1
+  //
+  //       # deq ptr incrementer
+  //
+  //       if s.deq_ptr == s.last_idx: s.deq_ptr_inc.value = 0
+  //       else:                       s.deq_ptr_inc.value = s.deq_ptr + 1
+  //
+  //       # set the next ptr value
+  //
+  //       if s.do_enq: s.enq_ptr_next.value = s.enq_ptr_inc
+  //       else:        s.enq_ptr_next.value = s.enq_ptr
+  //
+  //       if s.do_deq: s.deq_ptr_next.value = s.deq_ptr_inc
+  //       else:        s.deq_ptr_next.value = s.deq_ptr
+  //
+  //       # number of free entries calculation
+  //
+  //       if   s.reset:
+  //         s.num_free_entries.value = s.num_entries
+  //       elif s.full:
+  //         s.num_free_entries.value = 0
+  //       elif s.empty:
+  //         s.num_free_entries.value = s.num_entries
+  //       elif s.enq_ptr > s.deq_ptr:
+  //         s.num_free_entries.value = s.num_entries - ( s.enq_ptr - s.deq_ptr )
+  //       elif s.deq_ptr > s.enq_ptr:
+  //         s.num_free_entries.value = s.deq_ptr - s.enq_ptr
+  //
+  //       s.full_next_cycle.value = (s.do_enq and not s.do_deq and
+  //                                 (s.enq_ptr_next == s.deq_ptr))
+
+  // logic for comb()
+  always @ (*) begin
+    empty = (!full&&(enq_ptr == deq_ptr));
+    enq_rdy = !full;
+    deq_val = !empty;
+    do_enq = (enq_rdy&&enq_val);
+    do_deq = (deq_rdy&&deq_val);
+    wen = do_enq;
+    waddr = enq_ptr;
+    raddr = deq_ptr;
+    if ((enq_ptr == last_idx)) begin
+      enq_ptr_inc = 0;
+    end
+    else begin
+      enq_ptr_inc = (enq_ptr+1);
+    end
+    if ((deq_ptr == last_idx)) begin
+      deq_ptr_inc = 0;
+    end
+    else begin
+      deq_ptr_inc = (deq_ptr+1);
+    end
+    if (do_enq) begin
+      enq_ptr_next = enq_ptr_inc;
+    end
+    else begin
+      enq_ptr_next = enq_ptr;
+    end
+    if (do_deq) begin
+      deq_ptr_next = deq_ptr_inc;
+    end
+    else begin
+      deq_ptr_next = deq_ptr;
+    end
+    if (reset) begin
+      num_free_entries = num_entries;
+    end
+    else begin
+      if (full) begin
+        num_free_entries = 0;
+      end
+      else begin
+        if (empty) begin
+          num_free_entries = num_entries;
+        end
+        else begin
+          if ((enq_ptr > deq_ptr)) begin
+            num_free_entries = (num_entries-(enq_ptr-deq_ptr));
+          end
+          else begin
+            if ((deq_ptr > enq_ptr)) begin
+              num_free_entries = (deq_ptr-enq_ptr);
+            end
+            else begin
+            end
+          end
+        end
+      end
+    end
+    full_next_cycle = (do_enq&&!do_deq&&(enq_ptr_next == deq_ptr));
+  end
+
+
+endmodule // NormalQueueCtrl_0x7a42a348c9205b5
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueueDpath_0x5cb07886f33e4c89
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dtype: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueueDpath_0x5cb07886f33e4c89
+(
+  input  wire [   0:0] clk,
+  output wire [  73:0] deq_bits,
+  input  wire [  73:0] enq_bits,
+  input  wire [   0:0] raddr,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] waddr,
+  input  wire [   0:0] wen
+);
+
+  // queue temporaries
+  wire   [   0:0] queue$rd_addr$000;
+  wire   [  73:0] queue$wr_data;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$wr_addr;
+  wire   [   0:0] queue$wr_en;
+  wire   [   0:0] queue$reset;
+  wire   [  73:0] queue$rd_data$000;
+
+  RegisterFile_0x3dc677e7a194fe32 queue
+  (
+    .rd_addr$000 ( queue$rd_addr$000 ),
+    .wr_data     ( queue$wr_data ),
+    .clk         ( queue$clk ),
+    .wr_addr     ( queue$wr_addr ),
+    .wr_en       ( queue$wr_en ),
+    .reset       ( queue$reset ),
+    .rd_data$000 ( queue$rd_data$000 )
+  );
+
+  // signal connections
+  assign deq_bits          = queue$rd_data$000;
+  assign queue$clk         = clk;
+  assign queue$rd_addr$000 = raddr;
+  assign queue$reset       = reset;
+  assign queue$wr_addr     = waddr;
+  assign queue$wr_data     = enq_bits;
+  assign queue$wr_en       = wen;
+
+
+
+endmodule // NormalQueueDpath_0x5cb07886f33e4c89
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegisterFile_0x3dc677e7a194fe32
+//-----------------------------------------------------------------------------
+// dtype: 74
+// nregs: 2
+// const_zero: False
+// wr_ports: 1
+// rd_ports: 1
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegisterFile_0x3dc677e7a194fe32
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] rd_addr$000,
+  output wire [  73:0] rd_data$000,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wr_addr,
+  input  wire [  73:0] wr_data,
+  input  wire [   0:0] wr_en
+);
+
+  // wire declarations
+  wire   [  73:0] regs$000;
+  wire   [  73:0] regs$001;
+
+
+  // localparam declarations
+  localparam nregs = 2;
+  localparam rd_ports = 1;
+
+  // loop variable declarations
+  integer i;
+
+
+  // array declarations
+  wire   [   0:0] rd_addr[0:0];
+  assign rd_addr[  0] = rd_addr$000;
+  reg    [  73:0] rd_data[0:0];
+  assign rd_data$000 = rd_data[  0];
+  reg    [  73:0] regs[0:1];
+  assign regs$000 = regs[  0];
+  assign regs$001 = regs[  1];
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //         if s.wr_en:
+  //           s.regs[ s.wr_addr ].next = s.wr_data
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (wr_en) begin
+      regs[wr_addr] <= wr_data;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //         for i in range( rd_ports ):
+  //           assert s.rd_addr[i] < nregs
+  //           s.rd_data[i].value = s.regs[ s.rd_addr[i] ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    for (i=0; i < rd_ports; i=i+1)
+    begin
+      rd_data[i] = regs[rd_addr[i]];
+    end
+  end
+
+
+endmodule // RegisterFile_0x3dc677e7a194fe32
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_addsub_pipelined
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// num_stages: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_addsub_pipelined
+(
+  input  wire [  31:0] a,
+  input  wire [  31:0] b,
+  output reg  [   0:0] busy,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] in_val,
+  input  wire [   0:0] op,
+  output wire [   0:0] out_val,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // wire declarations
+  wire   [   0:0] pipe_val$000;
+  wire   [   0:0] pipe_val$001;
+  wire   [  31:0] pipe_z$000;
+  wire   [  31:0] pipe_z$001;
+  wire   [   7:0] pipe_status$000;
+  wire   [   7:0] pipe_status$001;
+
+
+  // register declarations
+  reg    [  31:0] a_reg;
+  reg    [  31:0] b_reg;
+  reg    [   0:0] in_val_reg;
+  reg    [   0:0] op_reg;
+  reg    [   2:0] rnd_reg;
+
+  // localparam declarations
+  localparam num_stages = 2;
+
+  // loop variable declarations
+  integer i;
+
+  // dw_fp_addsub temporaries
+  wire   [   0:0] dw_fp_addsub$clk;
+  wire   [  31:0] dw_fp_addsub$a;
+  wire   [   2:0] dw_fp_addsub$rnd;
+  wire   [   0:0] dw_fp_addsub$reset;
+  wire   [  31:0] dw_fp_addsub$b;
+  wire   [   0:0] dw_fp_addsub$op;
+  wire   [   7:0] dw_fp_addsub$status;
+  wire   [  31:0] dw_fp_addsub$z;
+
+  DW_fp_addsub_0x3cb0331b99cfb5df dw_fp_addsub
+  (
+    .clk    ( dw_fp_addsub$clk ),
+    .a      ( dw_fp_addsub$a ),
+    .rnd    ( dw_fp_addsub$rnd ),
+    .reset  ( dw_fp_addsub$reset ),
+    .b      ( dw_fp_addsub$b ),
+    .op     ( dw_fp_addsub$op ),
+    .status ( dw_fp_addsub$status ),
+    .z      ( dw_fp_addsub$z )
+  );
+
+  // signal connections
+  assign dw_fp_addsub$a     = a_reg;
+  assign dw_fp_addsub$b     = b_reg;
+  assign dw_fp_addsub$clk   = clk;
+  assign dw_fp_addsub$op    = op_reg;
+  assign dw_fp_addsub$reset = reset;
+  assign dw_fp_addsub$rnd   = rnd_reg;
+  assign out_val            = pipe_val$001;
+  assign status             = pipe_status$001;
+  assign z                  = pipe_z$001;
+
+  // array declarations
+  reg    [   7:0] pipe_status[0:1];
+  assign pipe_status$000 = pipe_status[  0];
+  assign pipe_status$001 = pipe_status[  1];
+  reg    [   0:0] pipe_val[0:1];
+  assign pipe_val$000 = pipe_val[  0];
+  assign pipe_val$001 = pipe_val[  1];
+  reg    [  31:0] pipe_z[0:1];
+  assign pipe_z$000 = pipe_z[  0];
+  assign pipe_z$001 = pipe_z[  1];
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def posedge():
+  //       if s.reset:
+  //         # Only need to reset the valid registers.
+  //         s.in_val_reg.next = 0
+  //
+  //         for i in xrange( num_stages ):
+  //           s.pipe_val[i].next = 0
+  //
+  //       else:
+  //         s.a_reg.next = s.a
+  //         s.b_reg.next = s.b
+  //         s.op_reg.next = s.op
+  //         s.rnd_reg.next = s.rnd
+  //         s.in_val_reg.next = s.in_val
+  //
+  //         s.pipe_val[0].next     = s.in_val_reg
+  //         s.pipe_z[0].next       = s.dw_fp_addsub.z
+  //         s.pipe_status[0].next  = s.dw_fp_addsub.status
+  //
+  //         for i in xrange( 1, num_stages ):
+  //           s.pipe_val[i].next    = s.pipe_val[i-1]
+  //           s.pipe_z[i].next      = s.pipe_z[i-1]
+  //           s.pipe_status[i].next = s.pipe_status[i-1]
+
+  // logic for posedge()
+  always @ (posedge clk) begin
+    if (reset) begin
+      in_val_reg <= 0;
+      for (i=0; i < num_stages; i=i+1)
+      begin
+        pipe_val[i] <= 0;
+      end
+    end
+    else begin
+      a_reg <= a;
+      b_reg <= b;
+      op_reg <= op;
+      rnd_reg <= rnd;
+      in_val_reg <= in_val;
+      pipe_val[0] <= in_val_reg;
+      pipe_z[0] <= dw_fp_addsub$z;
+      pipe_status[0] <= dw_fp_addsub$status;
+      for (i=1; i < num_stages; i=i+1)
+      begin
+        pipe_val[i] <= pipe_val[(i-1)];
+        pipe_z[i] <= pipe_z[(i-1)];
+        pipe_status[i] <= pipe_status[(i-1)];
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_busy():
+  //       s.busy.value = s.in_val_reg
+  //       for i in xrange( num_stages ):
+  //         s.busy.value = s.busy | s.pipe_val[i]
+
+  // logic for comb_busy()
+  always @ (*) begin
+    busy = in_val_reg;
+    for (i=0; i < num_stages; i=i+1)
+    begin
+      busy = (busy|pipe_val[i]);
+    end
+  end
+
+
+endmodule // DW_fp_addsub_pipelined
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_addsub_0x3cb0331b99cfb5df
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_addsub_0x3cb0331b99cfb5df
+(
+  input  wire [  31:0] a,
+  input  wire [  31:0] b,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] op,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
+
+  DW_fp_addsub#(
+    .ieee_compliance ( 1 )
+  )  verilog_module
+  (
+    .a      ( a ),
+    .b      ( b ),
+    .op     ( op ),
+    .rnd    ( rnd ),
+    .status ( status ),
+    .z      ( z )
+  );
+
+endmodule // DW_fp_addsub_0x3cb0331b99cfb5df
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_cmp_0x15bdbff0d8f765a1
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_cmp_0x15bdbff0d8f765a1
+(
+  input  wire [  31:0] a,
+  output wire [   0:0] aeqb,
+  output wire [   0:0] agtb,
+  output wire [   0:0] altb,
+  input  wire [  31:0] b,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] reset,
+  output wire [   7:0] status0,
+  output wire [   7:0] status1,
+  output wire [   0:0] unordered,
+  output wire [  31:0] z0,
+  output wire [  31:0] z1,
+  input  wire [   0:0] zctr
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
+
+  DW_fp_cmp#(
+    .ieee_compliance ( 1 )
+  )  verilog_module
+  (
+    .a         ( a ),
+    .aeqb      ( aeqb ),
+    .agtb      ( agtb ),
+    .altb      ( altb ),
+    .b         ( b ),
+    .status0   ( status0 ),
+    .status1   ( status1 ),
+    .unordered ( unordered ),
+    .z0        ( z0 ),
+    .z1        ( z1 ),
+    .zctr      ( zctr )
+  );
+
+endmodule // DW_fp_cmp_0x15bdbff0d8f765a1
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_mult_0x1eaed5d9d53885e0
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_mult_0x1eaed5d9d53885e0
+(
+  input  wire [  31:0] a,
+  input  wire [  31:0] b,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
+
+  DW_fp_mult#(
+    .ieee_compliance ( 1 )
+  )  verilog_module
+  (
+    .a      ( a ),
+    .b      ( b ),
+    .rnd    ( rnd ),
+    .status ( status ),
+    .z      ( z )
+  );
+
+endmodule // DW_fp_mult_0x1eaed5d9d53885e0
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_i2flt_0x215a2bada2e33c4b
+//-----------------------------------------------------------------------------
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_i2flt_0x215a2bada2e33c4b
+(
+  input  wire [  31:0] a,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
+
+  DW_fp_i2flt#(
+
+  )  verilog_module
+  (
+    .a      ( a ),
+    .rnd    ( rnd ),
+    .status ( status ),
+    .z      ( z )
+  );
+
+endmodule // DW_fp_i2flt_0x215a2bada2e33c4b
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_div_pipelined
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// num_stages: 3
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_div_pipelined
+(
+  input  wire [  31:0] a,
+  input  wire [  31:0] b,
+  output reg  [   0:0] busy,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] in_val,
+  output wire [   0:0] out_val,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // wire declarations
+  wire   [   0:0] pipe_val$000;
+  wire   [   0:0] pipe_val$001;
+  wire   [   0:0] pipe_val$002;
+  wire   [  31:0] pipe_z$000;
+  wire   [  31:0] pipe_z$001;
+  wire   [  31:0] pipe_z$002;
+  wire   [   7:0] pipe_status$000;
+  wire   [   7:0] pipe_status$001;
+  wire   [   7:0] pipe_status$002;
+
+
+  // register declarations
+  reg    [  31:0] a_reg;
+  reg    [  31:0] b_reg;
+  reg    [   0:0] in_val_reg;
+  reg    [   2:0] rnd_reg;
+
+  // localparam declarations
+  localparam num_stages = 3;
+
+  // loop variable declarations
+  integer i;
+
+  // dw_fp_div temporaries
+  wire   [   0:0] dw_fp_div$clk;
+  wire   [  31:0] dw_fp_div$a;
+  wire   [   2:0] dw_fp_div$rnd;
+  wire   [   0:0] dw_fp_div$reset;
+  wire   [  31:0] dw_fp_div$b;
+  wire   [   7:0] dw_fp_div$status;
+  wire   [  31:0] dw_fp_div$z;
+
+  DW_fp_div_0x124edb2c88d843aa dw_fp_div
+  (
+    .clk    ( dw_fp_div$clk ),
+    .a      ( dw_fp_div$a ),
+    .rnd    ( dw_fp_div$rnd ),
+    .reset  ( dw_fp_div$reset ),
+    .b      ( dw_fp_div$b ),
+    .status ( dw_fp_div$status ),
+    .z      ( dw_fp_div$z )
+  );
+
+  // signal connections
+  assign dw_fp_div$a     = a_reg;
+  assign dw_fp_div$b     = b_reg;
+  assign dw_fp_div$clk   = clk;
+  assign dw_fp_div$reset = reset;
+  assign dw_fp_div$rnd   = rnd_reg;
+  assign out_val         = pipe_val$002;
+  assign status          = pipe_status$002;
+  assign z               = pipe_z$002;
+
+  // array declarations
+  reg    [   7:0] pipe_status[0:2];
+  assign pipe_status$000 = pipe_status[  0];
+  assign pipe_status$001 = pipe_status[  1];
+  assign pipe_status$002 = pipe_status[  2];
+  reg    [   0:0] pipe_val[0:2];
+  assign pipe_val$000 = pipe_val[  0];
+  assign pipe_val$001 = pipe_val[  1];
+  assign pipe_val$002 = pipe_val[  2];
+  reg    [  31:0] pipe_z[0:2];
+  assign pipe_z$000 = pipe_z[  0];
+  assign pipe_z$001 = pipe_z[  1];
+  assign pipe_z$002 = pipe_z[  2];
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def posedge():
+  //       if s.reset:
+  //         # Only need to reset the valid registers.
+  //         s.in_val_reg.next = 0
+  //
+  //         for i in xrange( num_stages ):
+  //           s.pipe_val[i].next = 0
+  //
+  //       else:
+  //         s.a_reg.next = s.a
+  //         s.b_reg.next = s.b
+  //         s.rnd_reg.next = s.rnd
+  //         s.in_val_reg.next = s.in_val
+  //
+  //         s.pipe_val[0].next     = s.in_val_reg
+  //         s.pipe_z[0].next       = s.dw_fp_div.z
+  //         s.pipe_status[0].next  = s.dw_fp_div.status
+  //
+  //         for i in xrange( 1, num_stages ):
+  //           s.pipe_val[i].next    = s.pipe_val[i-1]
+  //           s.pipe_z[i].next      = s.pipe_z[i-1]
+  //           s.pipe_status[i].next = s.pipe_status[i-1]
+
+  // logic for posedge()
+  always @ (posedge clk) begin
+    if (reset) begin
+      in_val_reg <= 0;
+      for (i=0; i < num_stages; i=i+1)
+      begin
+        pipe_val[i] <= 0;
+      end
+    end
+    else begin
+      a_reg <= a;
+      b_reg <= b;
+      rnd_reg <= rnd;
+      in_val_reg <= in_val;
+      pipe_val[0] <= in_val_reg;
+      pipe_z[0] <= dw_fp_div$z;
+      pipe_status[0] <= dw_fp_div$status;
+      for (i=1; i < num_stages; i=i+1)
+      begin
+        pipe_val[i] <= pipe_val[(i-1)];
+        pipe_z[i] <= pipe_z[(i-1)];
+        pipe_status[i] <= pipe_status[(i-1)];
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_busy():
+  //       s.busy.value = s.in_val_reg
+  //       for i in xrange( num_stages ):
+  //         s.busy.value = s.busy | s.pipe_val[i]
+
+  // logic for comb_busy()
+  always @ (*) begin
+    busy = in_val_reg;
+    for (i=0; i < num_stages; i=i+1)
+    begin
+      busy = (busy|pipe_val[i]);
+    end
+  end
+
+
+endmodule // DW_fp_div_pipelined
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// DW_fp_div_0x124edb2c88d843aa
+//-----------------------------------------------------------------------------
+// ieee_compliance: 1
+// dump-vcd: True
+// verilator-xinit: zeros
+`default_nettype none
+module DW_fp_div_0x124edb2c88d843aa
+(
+  input  wire [  31:0] a,
+  input  wire [  31:0] b,
+  input  wire [   0:0] clk,
+  input  wire [   0:0] reset,
+  input  wire [   2:0] rnd,
+  output wire [   7:0] status,
+  output wire [  31:0] z
+);
+
+  // Imported Verilog source from:
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
+
+  DW_fp_div#(
+    .faithful_round ( 0 ),
+    .ieee_compliance ( 1 )
+  )  verilog_module
+  (
+    .a      ( a ),
+    .b      ( b ),
+    .rnd    ( rnd ),
+    .status ( status ),
+    .z      ( z )
+  );
+
+endmodule // DW_fp_div_0x124edb2c88d843aa
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueue_0x21e242676aeb92b7
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dtype: 40
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueue_0x21e242676aeb92b7
+(
+  input  wire [   0:0] clk,
+  output wire [  39:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [  39:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output wire [   1:0] num_free_entries,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$waddr;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$raddr;
+  wire   [   1:0] ctrl$num_free_entries;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  NormalQueueCtrl_0x7a42a348c9205b5 ctrl
+  (
+    .clk              ( ctrl$clk ),
+    .enq_val          ( ctrl$enq_val ),
+    .reset            ( ctrl$reset ),
+    .deq_rdy          ( ctrl$deq_rdy ),
+    .waddr            ( ctrl$waddr ),
+    .wen              ( ctrl$wen ),
+    .deq_val          ( ctrl$deq_val ),
+    .raddr            ( ctrl$raddr ),
+    .num_free_entries ( ctrl$num_free_entries ),
+    .enq_rdy          ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$waddr;
+  wire   [   0:0] dpath$clk;
+  wire   [   0:0] dpath$wen;
+  wire   [   0:0] dpath$raddr;
+  wire   [   0:0] dpath$reset;
+  wire   [  39:0] dpath$enq_bits;
+  wire   [  39:0] dpath$deq_bits;
+
+  NormalQueueDpath_0x21e242676aeb92b7 dpath
+  (
+    .waddr    ( dpath$waddr ),
+    .clk      ( dpath$clk ),
+    .wen      ( dpath$wen ),
+    .raddr    ( dpath$raddr ),
+    .reset    ( dpath$reset ),
+    .enq_bits ( dpath$enq_bits ),
+    .deq_bits ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk         = clk;
+  assign ctrl$deq_rdy     = deq_rdy;
+  assign ctrl$enq_val     = enq_val;
+  assign ctrl$reset       = reset;
+  assign deq_msg          = dpath$deq_bits;
+  assign deq_val          = ctrl$deq_val;
+  assign dpath$clk        = clk;
+  assign dpath$enq_bits   = enq_msg;
+  assign dpath$raddr      = ctrl$raddr;
+  assign dpath$reset      = reset;
+  assign dpath$waddr      = ctrl$waddr;
+  assign dpath$wen        = ctrl$wen;
+  assign enq_rdy          = ctrl$enq_rdy;
+  assign num_free_entries = ctrl$num_free_entries;
+
+
+
+endmodule // NormalQueue_0x21e242676aeb92b7
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueueDpath_0x21e242676aeb92b7
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dtype: 40
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueueDpath_0x21e242676aeb92b7
+(
+  input  wire [   0:0] clk,
+  output wire [  39:0] deq_bits,
+  input  wire [  39:0] enq_bits,
+  input  wire [   0:0] raddr,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] waddr,
+  input  wire [   0:0] wen
+);
+
+  // queue temporaries
+  wire   [   0:0] queue$rd_addr$000;
+  wire   [  39:0] queue$wr_data;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$wr_addr;
+  wire   [   0:0] queue$wr_en;
+  wire   [   0:0] queue$reset;
+  wire   [  39:0] queue$rd_data$000;
+
+  RegisterFile_0x7a892ffeceeb3534 queue
+  (
+    .rd_addr$000 ( queue$rd_addr$000 ),
+    .wr_data     ( queue$wr_data ),
+    .clk         ( queue$clk ),
+    .wr_addr     ( queue$wr_addr ),
+    .wr_en       ( queue$wr_en ),
+    .reset       ( queue$reset ),
+    .rd_data$000 ( queue$rd_data$000 )
+  );
+
+  // signal connections
+  assign deq_bits          = queue$rd_data$000;
+  assign queue$clk         = clk;
+  assign queue$rd_addr$000 = raddr;
+  assign queue$reset       = reset;
+  assign queue$wr_addr     = waddr;
+  assign queue$wr_data     = enq_bits;
+  assign queue$wr_en       = wen;
+
+
+
+endmodule // NormalQueueDpath_0x21e242676aeb92b7
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegisterFile_0x7a892ffeceeb3534
+//-----------------------------------------------------------------------------
+// dtype: 40
+// nregs: 2
+// const_zero: False
+// wr_ports: 1
+// rd_ports: 1
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegisterFile_0x7a892ffeceeb3534
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] rd_addr$000,
+  output wire [  39:0] rd_data$000,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wr_addr,
+  input  wire [  39:0] wr_data,
+  input  wire [   0:0] wr_en
+);
+
+  // wire declarations
+  wire   [  39:0] regs$000;
+  wire   [  39:0] regs$001;
+
+
+  // localparam declarations
+  localparam nregs = 2;
+  localparam rd_ports = 1;
+
+  // loop variable declarations
+  integer i;
+
+
+  // array declarations
+  wire   [   0:0] rd_addr[0:0];
+  assign rd_addr[  0] = rd_addr$000;
+  reg    [  39:0] rd_data[0:0];
+  assign rd_data$000 = rd_data[  0];
+  reg    [  39:0] regs[0:1];
+  assign regs$000 = regs[  0];
+  assign regs$001 = regs[  1];
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //         if s.wr_en:
+  //           s.regs[ s.wr_addr ].next = s.wr_data
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (wr_en) begin
+      regs[wr_addr] <= wr_data;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //         for i in range( rd_ports ):
+  //           assert s.rd_addr[i] < nregs
+  //           s.rd_data[i].value = s.regs[ s.rd_addr[i] ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    for (i=0; i < rd_ports; i=i+1)
+    begin
+      rd_data[i] = regs[rd_addr[i]];
+    end
+  end
+
+
+endmodule // RegisterFile_0x7a892ffeceeb3534
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Funnel_0x58a91bbf80713154
+//-----------------------------------------------------------------------------
+// nports: 4
+// MsgType: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Funnel_0x58a91bbf80713154
+(
+  input  wire [   0:0] clk,
+  input  wire [  73:0] in_$000_msg,
+  output wire [   0:0] in_$000_rdy,
+  input  wire [   0:0] in_$000_val,
+  input  wire [  73:0] in_$001_msg,
+  output wire [   0:0] in_$001_rdy,
+  input  wire [   0:0] in_$001_val,
+  input  wire [  73:0] in_$002_msg,
+  output wire [   0:0] in_$002_rdy,
+  input  wire [   0:0] in_$002_val,
+  input  wire [  73:0] in_$003_msg,
+  output wire [   0:0] in_$003_rdy,
+  input  wire [   0:0] in_$003_val,
+  output reg  [  73:0] out_msg,
+  input  wire [   0:0] out_rdy,
+  output reg  [   0:0] out_val,
+  input  wire [   0:0] reset
+);
+
+  // register declarations
+  reg    [   0:0] arbiter$en;
+
+  // localparam declarations
+  localparam nports = 4;
+
+  // loop variable declarations
+  integer i;
+
+  // arbiter temporaries
+  wire   [   3:0] arbiter$reqs;
+  wire   [   0:0] arbiter$clk;
+  wire   [   0:0] arbiter$reset;
+  wire   [   3:0] arbiter$grants;
+
+  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
+  (
+    .en     ( arbiter$en ),
+    .reqs   ( arbiter$reqs ),
+    .clk    ( arbiter$clk ),
+    .reset  ( arbiter$reset ),
+    .grants ( arbiter$grants )
+  );
+
+  // signal connections
+  assign arbiter$clk     = clk;
+  assign arbiter$reqs[0] = in_$000_val;
+  assign arbiter$reqs[1] = in_$001_val;
+  assign arbiter$reqs[2] = in_$002_val;
+  assign arbiter$reqs[3] = in_$003_val;
+  assign arbiter$reset   = reset;
+
+  // array declarations
+  wire   [  73:0] in__msg[0:3];
+  assign in__msg[  0] = in_$000_msg;
+  assign in__msg[  1] = in_$001_msg;
+  assign in__msg[  2] = in_$002_msg;
+  assign in__msg[  3] = in_$003_msg;
+  reg    [   0:0] in__rdy[0:3];
+  assign in_$000_rdy = in__rdy[  0];
+  assign in_$001_rdy = in__rdy[  1];
+  assign in_$002_rdy = in__rdy[  2];
+  assign in_$003_rdy = in__rdy[  3];
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_in_rdy():
+  //       for i in xrange( nports ):
+  //         s.in_[i].rdy.value = s.arbiter.grants[i] & s.out.rdy
+
+  // logic for comb_in_rdy()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      in__rdy[i] = (arbiter$grants[i]&out_rdy);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_arbiter_en():
+  //       s.arbiter.en.value = s.out.val & s.out.rdy
+
+  // logic for comb_arbiter_en()
+  always @ (*) begin
+    arbiter$en = (out_val&out_rdy);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_output():
+  //       s.out.val.value = ( s.arbiter.grants != 0 )
+  //
+  //       s.out.msg.value = 0
+  //       for i in xrange( nports ):
+  //         if s.arbiter.grants[i]:
+  //           s.out.msg.value        = s.in_[i].msg
+  //           s.out.msg.opaque.value = i
+
+  // logic for comb_output()
+  always @ (*) begin
+    out_val = (arbiter$grants != 0);
+    out_msg = 0;
+    for (i=0; i < nports; i=i+1)
+    begin
+      if (arbiter$grants[i]) begin
+        out_msg = in__msg[i];
+        out_msg[(70)-1:67] = i;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // Funnel_0x58a91bbf80713154
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // Router_0x4c184f1ee5bd8508
 //-----------------------------------------------------------------------------
 // nports: 4
@@ -15024,7 +17301,7 @@ module InstBuffer_2_16B
   input  wire [   0:0] memreq_rdy,
   output reg  [   0:0] memreq_val,
   input  wire [ 145:0] memresp_msg,
-  output reg  [   0:0] memresp_rdy,
+  output wire [   0:0] memresp_rdy,
   input  wire [   0:0] memresp_val,
   input  wire [   0:0] reset
 );
@@ -15036,11 +17313,35 @@ module InstBuffer_2_16B
   reg    [   0:0] inner$memreq_rdy;
   reg    [ 145:0] inner$memresp_msg;
   reg    [   0:0] inner$memresp_val;
+  reg    [   0:0] memresp_queue$deq_rdy;
 
   // localparam declarations
   localparam data_len = 4;
   localparam data_nbits = 32;
   localparam zero_nbits = 96;
+
+  // memresp_queue temporaries
+  wire   [   0:0] memresp_queue$clk;
+  wire   [ 145:0] memresp_queue$enq_msg;
+  wire   [   0:0] memresp_queue$enq_val;
+  wire   [   0:0] memresp_queue$reset;
+  wire   [   0:0] memresp_queue$enq_rdy;
+  wire   [   0:0] memresp_queue$full;
+  wire   [ 145:0] memresp_queue$deq_msg;
+  wire   [   0:0] memresp_queue$deq_val;
+
+  SingleElementBypassQueue_0x5a7f0a6588025dd8 memresp_queue
+  (
+    .clk     ( memresp_queue$clk ),
+    .enq_msg ( memresp_queue$enq_msg ),
+    .enq_val ( memresp_queue$enq_val ),
+    .reset   ( memresp_queue$reset ),
+    .deq_rdy ( memresp_queue$deq_rdy ),
+    .enq_rdy ( memresp_queue$enq_rdy ),
+    .full    ( memresp_queue$full ),
+    .deq_msg ( memresp_queue$deq_msg ),
+    .deq_val ( memresp_queue$deq_val )
+  );
 
   // inner temporaries
   wire   [   0:0] inner$clk;
@@ -15071,8 +17372,13 @@ module InstBuffer_2_16B
   );
 
   // signal connections
-  assign inner$clk   = clk;
-  assign inner$reset = reset;
+  assign inner$clk             = clk;
+  assign inner$reset           = reset;
+  assign memresp_queue$clk     = clk;
+  assign memresp_queue$enq_msg = memresp_msg;
+  assign memresp_queue$enq_val = memresp_val;
+  assign memresp_queue$reset   = reset;
+  assign memresp_rdy           = memresp_queue$enq_rdy;
 
 
   // PYMTL SOURCE:
@@ -15083,62 +17389,62 @@ module InstBuffer_2_16B
   //       if s.L0_disable: # host turns the l0 off, proc <-> mem
   //
   //         # Mute inner.buffreq
-  //         s.inner.buffreq.val.value  = 0
-  //         s.inner.buffreq.msg.value  = 0
+  //         s.inner.buffreq.val.value   = 0
+  //         s.inner.buffreq.msg.value   = 0
   //
   //         # Mute inner.buffresp
-  //         s.inner.buffresp.rdy.value = 0
+  //         s.inner.buffresp.rdy.value  = 0
   //
   //         # Mute inner.memreq
-  //         s.inner.memreq.rdy.value   = 0
+  //         s.inner.memreq.rdy.value    = 0
   //
   //         # Mute inner.memresp
-  //         s.inner.memresp.val.value  = 0
-  //         s.inner.memresp.msg.value  = 0
+  //         s.inner.memresp.val.value   = 0
+  //         s.inner.memresp.msg.value   = 0
   //
   //         # memreq <- buffreq
-  //         s.memreq.val.value         = s.buffreq.val
+  //         s.memreq.val.value          = s.buffreq.val
   //
-  //         s.memreq.msg.type_.value   = s.buffreq.msg.type_
-  //         s.memreq.msg.opaque.value  = s.buffreq.msg.opaque
-  //         s.memreq.msg.addr.value    = s.buffreq.msg.addr
-  //         s.memreq.msg.len.value     = data_len
-  //         s.memreq.msg.data.value    = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
+  //         s.memreq.msg.type_.value    = s.buffreq.msg.type_
+  //         s.memreq.msg.opaque.value   = s.buffreq.msg.opaque
+  //         s.memreq.msg.addr.value     = s.buffreq.msg.addr
+  //         s.memreq.msg.len.value      = data_len
+  //         s.memreq.msg.data.value     = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
   //
-  //         s.buffreq.rdy.value        = s.memreq.rdy
+  //         s.buffreq.rdy.value         = s.memreq.rdy
   //
   //         # buffresp <- memresp
-  //         s.buffresp.val.value        = s.memresp.val
+  //         s.buffresp.val.value        = s.memresp_queue.deq.val
   //
-  //         s.buffresp.msg.type_.value  = s.memresp.msg.type_
-  //         s.buffresp.msg.opaque.value = s.memresp.msg.opaque
-  //         s.buffresp.msg.test.value   = s.memresp.msg.test
+  //         s.buffresp.msg.type_.value  = s.memresp_queue.deq.msg.type_
+  //         s.buffresp.msg.opaque.value = s.memresp_queue.deq.msg.opaque
+  //         s.buffresp.msg.test.value   = s.memresp_queue.deq.msg.test
   //         s.buffresp.msg.len.value    = 0
-  //         s.buffresp.msg.data.value   = s.memresp.msg[0:data_nbits]
+  //         s.buffresp.msg.data.value   = s.memresp_queue.deq.msg[0:data_nbits]
   //
-  //         s.memresp.rdy.value         = s.buffresp.rdy
+  //         s.memresp_queue.deq.rdy.value  = s.buffresp.rdy
   //
   //       else: # otherwise proc <-> inner <-> mem
   //
   //         # inner.buffreq <- buffreq
-  //         s.inner.buffreq.val.value  = s.buffreq.val
-  //         s.inner.buffreq.msg.value  = s.buffreq.msg
-  //         s.buffreq.rdy.value        = s.inner.buffreq.rdy
+  //         s.inner.buffreq.val.value     = s.buffreq.val
+  //         s.inner.buffreq.msg.value     = s.buffreq.msg
+  //         s.buffreq.rdy.value           = s.inner.buffreq.rdy
   //
   //         # buffresp <- inner.buffresp
-  //         s.buffresp.val.value       = s.inner.buffresp.val
-  //         s.buffresp.msg.value       = s.inner.buffresp.msg
-  //         s.inner.buffresp.rdy.value = s.buffresp.rdy
+  //         s.buffresp.val.value          = s.inner.buffresp.val
+  //         s.buffresp.msg.value          = s.inner.buffresp.msg
+  //         s.inner.buffresp.rdy.value    = s.buffresp.rdy
   //
   //         # memreq <- inner.memreq
-  //         s.memreq.val.value         = s.inner.memreq.val
-  //         s.memreq.msg.value         = s.inner.memreq.msg
-  //         s.inner.memreq.rdy.value   = s.memreq.rdy
+  //         s.memreq.val.value            = s.inner.memreq.val
+  //         s.memreq.msg.value            = s.inner.memreq.msg
+  //         s.inner.memreq.rdy.value      = s.memreq.rdy
   //
   //         # inner.memresp <- memresp
-  //         s.inner.memresp.val.value  = s.memresp.val
-  //         s.inner.memresp.msg.value  = s.memresp.msg
-  //         s.memresp.rdy.value        = s.inner.memresp.rdy
+  //         s.inner.memresp.val.value     = s.memresp_queue.deq.val
+  //         s.inner.memresp.msg.value     = s.memresp_queue.deq.msg
+  //         s.memresp_queue.deq.rdy.value = s.inner.memresp.rdy
 
   // logic for comb_proc_side()
   always @ (*) begin
@@ -15156,13 +17462,13 @@ module InstBuffer_2_16B
       memreq_msg[(132)-1:128] = data_len;
       memreq_msg[(128)-1:0] = { 96'd0,buffreq_msg[(32)-1:0] };
       buffreq_rdy = memreq_rdy;
-      buffresp_val = memresp_val;
-      buffresp_msg[(48)-1:44] = memresp_msg[(146)-1:142];
-      buffresp_msg[(44)-1:36] = memresp_msg[(142)-1:134];
-      buffresp_msg[(36)-1:34] = memresp_msg[(134)-1:132];
+      buffresp_val = memresp_queue$deq_val;
+      buffresp_msg[(48)-1:44] = memresp_queue$deq_msg[(146)-1:142];
+      buffresp_msg[(44)-1:36] = memresp_queue$deq_msg[(142)-1:134];
+      buffresp_msg[(36)-1:34] = memresp_queue$deq_msg[(134)-1:132];
       buffresp_msg[(34)-1:32] = 0;
-      buffresp_msg[(32)-1:0] = memresp_msg[(data_nbits)-1:0];
-      memresp_rdy = buffresp_rdy;
+      buffresp_msg[(32)-1:0] = memresp_queue$deq_msg[(data_nbits)-1:0];
+      memresp_queue$deq_rdy = buffresp_rdy;
     end
     else begin
       inner$buffreq_val = buffreq_val;
@@ -15174,14 +17480,245 @@ module InstBuffer_2_16B
       memreq_val = inner$memreq_val;
       memreq_msg = inner$memreq_msg;
       inner$memreq_rdy = memreq_rdy;
-      inner$memresp_val = memresp_val;
-      inner$memresp_msg = memresp_msg;
-      memresp_rdy = inner$memresp_rdy;
+      inner$memresp_val = memresp_queue$deq_val;
+      inner$memresp_msg = memresp_queue$deq_msg;
+      memresp_queue$deq_rdy = inner$memresp_rdy;
     end
   end
 
 
 endmodule // InstBuffer_2_16B
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementBypassQueue_0x5a7f0a6588025dd8
+//-----------------------------------------------------------------------------
+// dtype: 146
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueue_0x5a7f0a6588025dd8
+(
+  input  wire [   0:0] clk,
+  output wire [ 145:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [ 145:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output wire [   0:0] full,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$bypass_mux_sel;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$full;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  SingleElementBypassQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  (
+    .clk            ( ctrl$clk ),
+    .enq_val        ( ctrl$enq_val ),
+    .reset          ( ctrl$reset ),
+    .deq_rdy        ( ctrl$deq_rdy ),
+    .bypass_mux_sel ( ctrl$bypass_mux_sel ),
+    .wen            ( ctrl$wen ),
+    .deq_val        ( ctrl$deq_val ),
+    .full           ( ctrl$full ),
+    .enq_rdy        ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$wen;
+  wire   [   0:0] dpath$bypass_mux_sel;
+  wire   [   0:0] dpath$clk;
+  wire   [   0:0] dpath$reset;
+  wire   [ 145:0] dpath$enq_bits;
+  wire   [ 145:0] dpath$deq_bits;
+
+  SingleElementBypassQueueDpath_0x5a7f0a6588025dd8 dpath
+  (
+    .wen            ( dpath$wen ),
+    .bypass_mux_sel ( dpath$bypass_mux_sel ),
+    .clk            ( dpath$clk ),
+    .reset          ( dpath$reset ),
+    .enq_bits       ( dpath$enq_bits ),
+    .deq_bits       ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk             = clk;
+  assign ctrl$deq_rdy         = deq_rdy;
+  assign ctrl$enq_val         = enq_val;
+  assign ctrl$reset           = reset;
+  assign deq_msg              = dpath$deq_bits;
+  assign deq_val              = ctrl$deq_val;
+  assign dpath$bypass_mux_sel = ctrl$bypass_mux_sel;
+  assign dpath$clk            = clk;
+  assign dpath$enq_bits       = enq_msg;
+  assign dpath$reset          = reset;
+  assign dpath$wen            = ctrl$wen;
+  assign enq_rdy              = ctrl$enq_rdy;
+  assign full                 = ctrl$full;
+
+
+
+endmodule // SingleElementBypassQueue_0x5a7f0a6588025dd8
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+//-----------------------------------------------------------------------------
+// dtype: 146
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+(
+  input  wire [   0:0] bypass_mux_sel,
+  input  wire [   0:0] clk,
+  output wire [ 145:0] deq_bits,
+  input  wire [ 145:0] enq_bits,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wen
+);
+
+  // bypass_mux temporaries
+  wire   [   0:0] bypass_mux$reset;
+  wire   [ 145:0] bypass_mux$in_$000;
+  wire   [ 145:0] bypass_mux$in_$001;
+  wire   [   0:0] bypass_mux$clk;
+  wire   [   0:0] bypass_mux$sel;
+  wire   [ 145:0] bypass_mux$out;
+
+  Mux_0x45e00ad6230c4538 bypass_mux
+  (
+    .reset   ( bypass_mux$reset ),
+    .in_$000 ( bypass_mux$in_$000 ),
+    .in_$001 ( bypass_mux$in_$001 ),
+    .clk     ( bypass_mux$clk ),
+    .sel     ( bypass_mux$sel ),
+    .out     ( bypass_mux$out )
+  );
+
+  // queue temporaries
+  wire   [   0:0] queue$reset;
+  wire   [ 145:0] queue$in_;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$en;
+  wire   [ 145:0] queue$out;
+
+  RegEn_0x1c3ed81872982f83 queue
+  (
+    .reset ( queue$reset ),
+    .in_   ( queue$in_ ),
+    .clk   ( queue$clk ),
+    .en    ( queue$en ),
+    .out   ( queue$out )
+  );
+
+  // signal connections
+  assign bypass_mux$clk     = clk;
+  assign bypass_mux$in_$000 = queue$out;
+  assign bypass_mux$in_$001 = enq_bits;
+  assign bypass_mux$reset   = reset;
+  assign bypass_mux$sel     = bypass_mux_sel;
+  assign deq_bits           = bypass_mux$out;
+  assign queue$clk          = clk;
+  assign queue$en           = wen;
+  assign queue$in_          = enq_bits;
+  assign queue$reset        = reset;
+
+
+
+endmodule // SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x45e00ad6230c4538
+//-----------------------------------------------------------------------------
+// dtype: 146
+// nports: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x45e00ad6230c4538
+(
+  input  wire [   0:0] clk,
+  input  wire [ 145:0] in_$000,
+  input  wire [ 145:0] in_$001,
+  output reg  [ 145:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 2;
+
+
+  // array declarations
+  wire   [ 145:0] in_[0:1];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x45e00ad6230c4538
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x1c3ed81872982f83
+//-----------------------------------------------------------------------------
+// dtype: 146
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x1c3ed81872982f83
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [ 145:0] in_,
+  output reg  [ 145:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x1c3ed81872982f83
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -15976,8 +18513,8 @@ endmodule // RegisterFile_0x2e2ef9fd0efc0b3d
 //-----------------------------------------------------------------------------
 // Mux_0x7be03e4007003adc
 //-----------------------------------------------------------------------------
-// nports: 4
 // dtype: 32
+// nports: 4
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -18118,6 +20655,12 @@ module ProcPRTL_0x1202655511af6cc5
   input  wire [  47:0] dmemresp_msg,
   output wire [   0:0] dmemresp_rdy,
   input  wire [   0:0] dmemresp_val,
+  output wire [  73:0] fpureq_msg,
+  input  wire [   0:0] fpureq_rdy,
+  output wire [   0:0] fpureq_val,
+  input  wire [  39:0] fpuresp_msg,
+  output wire [   0:0] fpuresp_rdy,
+  input  wire [   0:0] fpuresp_val,
   input  wire [   0:0] go,
   output wire [  77:0] imemreq_msg,
   input  wire [   0:0] imemreq_rdy,
@@ -18176,14 +20719,15 @@ module ProcPRTL_0x1202655511af6cc5
   );
 
   // ctrl temporaries
+  wire   [   0:0] ctrl$imemresp_val;
   wire   [   0:0] ctrl$go;
   wire   [   0:0] ctrl$clk;
   wire   [   0:0] ctrl$proc2mngr_rdy;
   wire   [   0:0] ctrl$br_cond_ltu_X;
-  wire   [   0:0] ctrl$imemresp_val;
   wire   [   0:0] ctrl$mngr2proc_val;
   wire   [   0:0] ctrl$br_cond_lt_X;
   wire   [   0:0] ctrl$mduresp_val;
+  wire   [   0:0] ctrl$fpureq_rdy;
   wire   [   0:0] ctrl$xcelreq_rdy;
   wire   [  31:0] ctrl$inst_D;
   wire   [   0:0] ctrl$dmemreq_rdy;
@@ -18193,14 +20737,17 @@ module ProcPRTL_0x1202655511af6cc5
   wire   [   0:0] ctrl$dmemresp_val;
   wire   [   0:0] ctrl$mdureq_rdy;
   wire   [   0:0] ctrl$br_cond_eq_X;
-  wire   [   2:0] ctrl$imm_type_D;
+  wire   [   0:0] ctrl$fpuresp_val;
   wire   [   0:0] ctrl$dmemreq_val;
   wire   [   0:0] ctrl$mduresp_rdy;
   wire   [   0:0] ctrl$mngr2proc_rdy;
+  wire   [   2:0] ctrl$imm_type_D;
   wire   [   0:0] ctrl$mdureq_val;
+  wire   [   0:0] ctrl$rs1_fprf_D;
   wire   [   2:0] ctrl$mdureq_msg_type;
   wire   [   1:0] ctrl$op1_byp_sel_D;
   wire   [   0:0] ctrl$dmemresp_rdy;
+  wire   [   0:0] ctrl$fpuresp_rdy;
   wire   [   0:0] ctrl$reg_en_X;
   wire   [   0:0] ctrl$xcelreq_val;
   wire   [   1:0] ctrl$wb_result_sel_M;
@@ -18212,12 +20759,16 @@ module ProcPRTL_0x1202655511af6cc5
   wire   [   3:0] ctrl$alu_fn_X;
   wire   [   0:0] ctrl$xcelreq_msg_type;
   wire   [   1:0] ctrl$ex_result_sel_X;
+  wire   [   0:0] ctrl$rs2_fprf_D;
+  wire   [   0:0] ctrl$fpureq_val;
+  wire   [   3:0] ctrl$fpureq_msg_type;
   wire   [   1:0] ctrl$csrr_sel_D;
   wire   [   1:0] ctrl$dmemreq_msg_len;
-  wire   [   3:0] ctrl$dmemreq_msg_type;
   wire   [   1:0] ctrl$op2_byp_sel_D;
   wire   [   0:0] ctrl$rf_wen_W;
+  wire   [   3:0] ctrl$dmemreq_msg_type;
   wire   [   4:0] ctrl$rf_waddr_W;
+  wire   [   0:0] ctrl$rd_fprf_W;
   wire   [   1:0] ctrl$pc_sel_F;
   wire   [   0:0] ctrl$proc2mngr_val;
   wire   [   0:0] ctrl$commit_inst;
@@ -18231,14 +20782,15 @@ module ProcPRTL_0x1202655511af6cc5
 
   ProcCtrlPRTL_0x202e2b8309fdc725 ctrl
   (
+    .imemresp_val     ( ctrl$imemresp_val ),
     .go               ( ctrl$go ),
     .clk              ( ctrl$clk ),
     .proc2mngr_rdy    ( ctrl$proc2mngr_rdy ),
     .br_cond_ltu_X    ( ctrl$br_cond_ltu_X ),
-    .imemresp_val     ( ctrl$imemresp_val ),
     .mngr2proc_val    ( ctrl$mngr2proc_val ),
     .br_cond_lt_X     ( ctrl$br_cond_lt_X ),
     .mduresp_val      ( ctrl$mduresp_val ),
+    .fpureq_rdy       ( ctrl$fpureq_rdy ),
     .xcelreq_rdy      ( ctrl$xcelreq_rdy ),
     .inst_D           ( ctrl$inst_D ),
     .dmemreq_rdy      ( ctrl$dmemreq_rdy ),
@@ -18248,14 +20800,17 @@ module ProcPRTL_0x1202655511af6cc5
     .dmemresp_val     ( ctrl$dmemresp_val ),
     .mdureq_rdy       ( ctrl$mdureq_rdy ),
     .br_cond_eq_X     ( ctrl$br_cond_eq_X ),
-    .imm_type_D       ( ctrl$imm_type_D ),
+    .fpuresp_val      ( ctrl$fpuresp_val ),
     .dmemreq_val      ( ctrl$dmemreq_val ),
     .mduresp_rdy      ( ctrl$mduresp_rdy ),
     .mngr2proc_rdy    ( ctrl$mngr2proc_rdy ),
+    .imm_type_D       ( ctrl$imm_type_D ),
     .mdureq_val       ( ctrl$mdureq_val ),
+    .rs1_fprf_D       ( ctrl$rs1_fprf_D ),
     .mdureq_msg_type  ( ctrl$mdureq_msg_type ),
     .op1_byp_sel_D    ( ctrl$op1_byp_sel_D ),
     .dmemresp_rdy     ( ctrl$dmemresp_rdy ),
+    .fpuresp_rdy      ( ctrl$fpuresp_rdy ),
     .reg_en_X         ( ctrl$reg_en_X ),
     .xcelreq_val      ( ctrl$xcelreq_val ),
     .wb_result_sel_M  ( ctrl$wb_result_sel_M ),
@@ -18267,12 +20822,16 @@ module ProcPRTL_0x1202655511af6cc5
     .alu_fn_X         ( ctrl$alu_fn_X ),
     .xcelreq_msg_type ( ctrl$xcelreq_msg_type ),
     .ex_result_sel_X  ( ctrl$ex_result_sel_X ),
+    .rs2_fprf_D       ( ctrl$rs2_fprf_D ),
+    .fpureq_val       ( ctrl$fpureq_val ),
+    .fpureq_msg_type  ( ctrl$fpureq_msg_type ),
     .csrr_sel_D       ( ctrl$csrr_sel_D ),
     .dmemreq_msg_len  ( ctrl$dmemreq_msg_len ),
-    .dmemreq_msg_type ( ctrl$dmemreq_msg_type ),
     .op2_byp_sel_D    ( ctrl$op2_byp_sel_D ),
     .rf_wen_W         ( ctrl$rf_wen_W ),
+    .dmemreq_msg_type ( ctrl$dmemreq_msg_type ),
     .rf_waddr_W       ( ctrl$rf_waddr_W ),
+    .rd_fprf_W        ( ctrl$rd_fprf_W ),
     .pc_sel_F         ( ctrl$pc_sel_F ),
     .proc2mngr_val    ( ctrl$proc2mngr_val ),
     .commit_inst      ( ctrl$commit_inst ),
@@ -18283,6 +20842,30 @@ module ProcPRTL_0x1202655511af6cc5
     .stats_en_wen_W   ( ctrl$stats_en_wen_W ),
     .imemresp_rdy     ( ctrl$imemresp_rdy ),
     .op2_sel_D        ( ctrl$op2_sel_D )
+  );
+
+  // fpureq_queue temporaries
+  wire   [   0:0] fpureq_queue$clk;
+  wire   [  73:0] fpureq_queue$enq_msg;
+  wire   [   0:0] fpureq_queue$enq_val;
+  wire   [   0:0] fpureq_queue$reset;
+  wire   [   0:0] fpureq_queue$deq_rdy;
+  wire   [   0:0] fpureq_queue$enq_rdy;
+  wire   [   0:0] fpureq_queue$full;
+  wire   [  73:0] fpureq_queue$deq_msg;
+  wire   [   0:0] fpureq_queue$deq_val;
+
+  SingleElementBypassQueue_0x52899b086f58fcd0 fpureq_queue
+  (
+    .clk     ( fpureq_queue$clk ),
+    .enq_msg ( fpureq_queue$enq_msg ),
+    .enq_val ( fpureq_queue$enq_val ),
+    .reset   ( fpureq_queue$reset ),
+    .deq_rdy ( fpureq_queue$deq_rdy ),
+    .enq_rdy ( fpureq_queue$enq_rdy ),
+    .full    ( fpureq_queue$full ),
+    .deq_msg ( fpureq_queue$deq_msg ),
+    .deq_val ( fpureq_queue$deq_val )
   );
 
   // imemresp_drop_unit temporaries
@@ -18337,6 +20920,8 @@ module ProcPRTL_0x1202655511af6cc5
   wire   [   2:0] dpath$imm_type_D;
   wire   [   0:0] dpath$clk;
   wire   [   0:0] dpath$reg_en_W;
+  wire   [  31:0] dpath$fpuresp_msg;
+  wire   [   0:0] dpath$rs1_fprf_D;
   wire   [   1:0] dpath$op1_byp_sel_D;
   wire   [   0:0] dpath$reg_en_X;
   wire   [   1:0] dpath$op2_byp_sel_D;
@@ -18347,9 +20932,11 @@ module ProcPRTL_0x1202655511af6cc5
   wire   [   2:0] dpath$dm_resp_sel_M;
   wire   [   3:0] dpath$alu_fn_X;
   wire   [   1:0] dpath$ex_result_sel_X;
+  wire   [   0:0] dpath$rs2_fprf_D;
   wire   [   1:0] dpath$csrr_sel_D;
   wire   [   0:0] dpath$rf_wen_W;
   wire   [   4:0] dpath$rf_waddr_W;
+  wire   [   0:0] dpath$rd_fprf_W;
   wire   [  31:0] dpath$mduresp_msg;
   wire   [   0:0] dpath$stats_en_wen_W;
   wire   [  31:0] dpath$mngr2proc_data;
@@ -18369,6 +20956,8 @@ module ProcPRTL_0x1202655511af6cc5
   wire   [  31:0] dpath$inst_D;
   wire   [  31:0] dpath$mdureq_msg_op_b;
   wire   [  31:0] dpath$mdureq_msg_op_a;
+  wire   [  31:0] dpath$fpureq_msg_op_a;
+  wire   [  31:0] dpath$fpureq_msg_op_b;
   wire   [   4:0] dpath$xcelreq_msg_raddr;
   wire   [  31:0] dpath$dmemreq_msg_addr;
   wire   [   0:0] dpath$br_cond_eq_X;
@@ -18380,6 +20969,8 @@ module ProcPRTL_0x1202655511af6cc5
     .imm_type_D        ( dpath$imm_type_D ),
     .clk               ( dpath$clk ),
     .reg_en_W          ( dpath$reg_en_W ),
+    .fpuresp_msg       ( dpath$fpuresp_msg ),
+    .rs1_fprf_D        ( dpath$rs1_fprf_D ),
     .op1_byp_sel_D     ( dpath$op1_byp_sel_D ),
     .reg_en_X          ( dpath$reg_en_X ),
     .op2_byp_sel_D     ( dpath$op2_byp_sel_D ),
@@ -18390,9 +20981,11 @@ module ProcPRTL_0x1202655511af6cc5
     .dm_resp_sel_M     ( dpath$dm_resp_sel_M ),
     .alu_fn_X          ( dpath$alu_fn_X ),
     .ex_result_sel_X   ( dpath$ex_result_sel_X ),
+    .rs2_fprf_D        ( dpath$rs2_fprf_D ),
     .csrr_sel_D        ( dpath$csrr_sel_D ),
     .rf_wen_W          ( dpath$rf_wen_W ),
     .rf_waddr_W        ( dpath$rf_waddr_W ),
+    .rd_fprf_W         ( dpath$rd_fprf_W ),
     .mduresp_msg       ( dpath$mduresp_msg ),
     .stats_en_wen_W    ( dpath$stats_en_wen_W ),
     .mngr2proc_data    ( dpath$mngr2proc_data ),
@@ -18412,6 +21005,8 @@ module ProcPRTL_0x1202655511af6cc5
     .inst_D            ( dpath$inst_D ),
     .mdureq_msg_op_b   ( dpath$mdureq_msg_op_b ),
     .mdureq_msg_op_a   ( dpath$mdureq_msg_op_a ),
+    .fpureq_msg_op_a   ( dpath$fpureq_msg_op_a ),
+    .fpureq_msg_op_b   ( dpath$fpureq_msg_op_b ),
     .xcelreq_msg_raddr ( dpath$xcelreq_msg_raddr ),
     .dmemreq_msg_addr  ( dpath$dmemreq_msg_addr ),
     .br_cond_eq_X      ( dpath$br_cond_eq_X ),
@@ -18502,6 +21097,8 @@ module ProcPRTL_0x1202655511af6cc5
   assign ctrl$clk                     = clk;
   assign ctrl$dmemreq_rdy             = dmemreq_queue$enq_rdy;
   assign ctrl$dmemresp_val            = dmemresp_val;
+  assign ctrl$fpureq_rdy              = fpureq_queue$enq_rdy;
+  assign ctrl$fpuresp_val             = fpuresp_val;
   assign ctrl$go                      = go;
   assign ctrl$go                      = go;
   assign ctrl$imemreq_rdy             = imemreq_queue$enq_rdy;
@@ -18534,6 +21131,7 @@ module ProcPRTL_0x1202655511af6cc5
   assign dpath$dm_resp_sel_M          = ctrl$dm_resp_sel_M;
   assign dpath$dmemresp_msg_data      = dmemresp_msg[31:0];
   assign dpath$ex_result_sel_X        = ctrl$ex_result_sel_X;
+  assign dpath$fpuresp_msg            = fpuresp_msg[36:5];
   assign dpath$imemresp_msg_data      = imemresp_drop_unit$out_msg;
   assign dpath$imm_type_D             = ctrl$imm_type_D;
   assign dpath$mduresp_msg            = mduresp_msg[31:0];
@@ -18543,6 +21141,7 @@ module ProcPRTL_0x1202655511af6cc5
   assign dpath$op2_byp_sel_D          = ctrl$op2_byp_sel_D;
   assign dpath$op2_sel_D              = ctrl$op2_sel_D;
   assign dpath$pc_sel_F               = ctrl$pc_sel_F;
+  assign dpath$rd_fprf_W              = ctrl$rd_fprf_W;
   assign dpath$reg_en_D               = ctrl$reg_en_D;
   assign dpath$reg_en_F               = ctrl$reg_en_F;
   assign dpath$reg_en_M               = ctrl$reg_en_M;
@@ -18551,9 +21150,22 @@ module ProcPRTL_0x1202655511af6cc5
   assign dpath$reset                  = reset;
   assign dpath$rf_waddr_W             = ctrl$rf_waddr_W;
   assign dpath$rf_wen_W               = ctrl$rf_wen_W;
+  assign dpath$rs1_fprf_D             = ctrl$rs1_fprf_D;
+  assign dpath$rs2_fprf_D             = ctrl$rs2_fprf_D;
   assign dpath$stats_en_wen_W         = ctrl$stats_en_wen_W;
   assign dpath$wb_result_sel_M        = ctrl$wb_result_sel_M;
   assign dpath$xcelresp_msg_data      = xcelresp_msg[31:0];
+  assign fpureq_msg                   = fpureq_queue$deq_msg;
+  assign fpureq_queue$clk             = clk;
+  assign fpureq_queue$deq_rdy         = fpureq_rdy;
+  assign fpureq_queue$enq_msg[2:0]    = 3'd0;
+  assign fpureq_queue$enq_msg[34:3]   = dpath$fpureq_msg_op_b;
+  assign fpureq_queue$enq_msg[66:35]  = dpath$fpureq_msg_op_a;
+  assign fpureq_queue$enq_msg[73:70]  = ctrl$fpureq_msg_type;
+  assign fpureq_queue$enq_val         = ctrl$fpureq_val;
+  assign fpureq_queue$reset           = reset;
+  assign fpureq_val                   = fpureq_queue$deq_val;
+  assign fpuresp_rdy                  = ctrl$fpuresp_rdy;
   assign imemreq_msg                  = imemreq_queue$deq_msg;
   assign imemreq_queue$clk            = clk;
   assign imemreq_queue$deq_rdy        = imemreq_rdy;
@@ -18822,6 +21434,11 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   output reg  [   0:0] dmemresp_rdy,
   input  wire [   0:0] dmemresp_val,
   output reg  [   1:0] ex_result_sel_X,
+  output reg  [   3:0] fpureq_msg_type,
+  input  wire [   0:0] fpureq_rdy,
+  output reg  [   0:0] fpureq_val,
+  output reg  [   0:0] fpuresp_rdy,
+  input  wire [   0:0] fpuresp_val,
   input  wire [   0:0] go,
   input  wire [   0:0] imemreq_rdy,
   output reg  [   0:0] imemreq_val,
@@ -18844,6 +21461,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   output reg  [   1:0] pc_sel_F,
   input  wire [   0:0] proc2mngr_rdy,
   output reg  [   0:0] proc2mngr_val,
+  output reg  [   0:0] rd_fprf_W,
   output reg  [   0:0] reg_en_D,
   output reg  [   0:0] reg_en_F,
   output reg  [   0:0] reg_en_M,
@@ -18852,6 +21470,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   input  wire [   0:0] reset,
   output reg  [   4:0] rf_waddr_W,
   output reg  [   0:0] rf_wen_W,
+  output reg  [   0:0] rs1_fprf_D,
+  output reg  [   0:0] rs2_fprf_D,
   output reg  [   0:0] stats_en_wen_W,
   output reg  [   1:0] wb_result_sel_M,
   output reg  [   0:0] xcelreq_msg_type,
@@ -18870,7 +21490,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   reg    [   3:0] alu_fn_D;
   reg    [   2:0] br_type_D;
   reg    [   2:0] br_type_X;
-  reg    [  36:0] cs;
+  reg    [  43:0] cs;
   reg    [   0:0] csrr_D;
   reg    [   0:0] csrw_D;
   reg    [   2:0] dm_resp_sel_D;
@@ -18882,6 +21502,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   reg    [   3:0] dmemreq_type_M;
   reg    [   3:0] dmemreq_type_X;
   reg    [   1:0] ex_result_sel_D;
+  reg    [   3:0] fpu_D;
+  reg    [   3:0] fpu_X;
   reg    [   7:0] inst__10;
   reg    [   7:0] inst_type_M;
   reg    [   7:0] inst_type_W;
@@ -18908,6 +21530,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   reg    [   0:0] ostall_csrrx_X_rs2_D;
   reg    [   0:0] ostall_dmem_M;
   reg    [   0:0] ostall_dmem_X;
+  reg    [   0:0] ostall_fpu_D;
+  reg    [   0:0] ostall_fpu_X;
   reg    [   0:0] ostall_hazard_D;
   reg    [   0:0] ostall_ld_X_rs1_D;
   reg    [   0:0] ostall_ld_X_rs2_D;
@@ -18923,6 +21547,9 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   reg    [   0:0] proc2mngr_val_M;
   reg    [   0:0] proc2mngr_val_W;
   reg    [   0:0] proc2mngr_val_X;
+  reg    [   0:0] rd_fprf_D;
+  reg    [   0:0] rd_fprf_M;
+  reg    [   0:0] rd_fprf_X;
   reg    [   4:0] rf_waddr_D;
   reg    [   4:0] rf_waddr_M;
   reg    [   4:0] rf_waddr_X;
@@ -18977,9 +21604,9 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   localparam BLT = 32;
   localparam BLTU = 34;
   localparam BNE = 31;
-  localparam CSRR = 55;
-  localparam CSRRX = 58;
-  localparam CSRW = 56;
+  localparam CSRR = 70;
+  localparam CSRRX = 73;
+  localparam CSRW = 71;
   localparam CSR_COREID = 3860;
   localparam CSR_MNGR2PROC = 4032;
   localparam CSR_NUMCORES = 4033;
@@ -18987,6 +21614,21 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   localparam CSR_STATS_EN = 1985;
   localparam DIV = 42;
   localparam DIVU = 43;
+  localparam FADDS = 57;
+  localparam FCVTSW = 68;
+  localparam FCVTWS = 63;
+  localparam FDIVS = 60;
+  localparam FEQS = 65;
+  localparam FLES = 67;
+  localparam FLTS = 66;
+  localparam FLW = 55;
+  localparam FMAXS = 62;
+  localparam FMINS = 61;
+  localparam FMULS = 59;
+  localparam FMVWX = 69;
+  localparam FMVXW = 64;
+  localparam FSUBS = 58;
+  localparam FSW = 56;
   localparam JAL = 36;
   localparam JALR = 37;
   localparam LB = 1;
@@ -19070,6 +21712,18 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   localparam dm_hu = 3'd4;
   localparam dm_w = 3'd2;
   localparam dm_x = 3'd0;
+  localparam fp_add = 4'd1;
+  localparam fp_ceq = 4'd8;
+  localparam fp_cle = 4'd10;
+  localparam fp_clt = 4'd9;
+  localparam fp_div = 4'd3;
+  localparam fp_f2i = 4'd7;
+  localparam fp_i2f = 4'd6;
+  localparam fp_max = 4'd5;
+  localparam fp_min = 4'd4;
+  localparam fp_mul = 4'd0;
+  localparam fp_sub = 4'd2;
+  localparam fp_x = 4'd15;
   localparam imm_b = 3'd2;
   localparam imm_i = 3'd0;
   localparam imm_j = 3'd4;
@@ -19108,6 +21762,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   localparam wm_m = 2'd1;
   localparam wm_x = 2'd0;
   localparam xm_a = 2'd0;
+  localparam xm_f = 2'd3;
   localparam xm_m = 2'd1;
   localparam xm_p = 2'd2;
   localparam xm_x = 2'd0;
@@ -19200,6 +21855,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.stats_en_wen_X.next   = s.stats_en_wen_D
   //         s.br_type_X.next        = s.br_type_D
   //         s.mdu_X.next            = s.mdu_D
+  //         s.fpu_X.next            = s.fpu_D
+  //         s.rd_fprf_X.next        = s.rd_fprf_D
   //         s.ex_result_sel_X.next  = s.ex_result_sel_D
   //         s.xcelreq_X.next        = s.xcelreq_D
   //         s.xcelreq_type_X.next   = s.xcelreq_type_D
@@ -19225,6 +21882,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
         stats_en_wen_X <= stats_en_wen_D;
         br_type_X <= br_type_D;
         mdu_X <= mdu_D;
+        fpu_X <= fpu_D;
+        rd_fprf_X <= rd_fprf_D;
         ex_result_sel_X <= ex_result_sel_D;
         xcelreq_X <= xcelreq_D;
         xcelreq_type_X <= xcelreq_type_D;
@@ -19251,6 +21910,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.dmemreq_len_M.next    = s.dmemreq_len_X
   //         s.dm_resp_sel_M.next    = s.dm_resp_sel_X
   //         s.wb_result_sel_M.next  = s.wb_result_sel_X
+  //         s.rd_fprf_M.next        = s.rd_fprf_X
   //         s.stats_en_wen_M.next   = s.stats_en_wen_X
   //         # xcel
   //         s.xcelreq_M.next        = s.xcelreq_X
@@ -19272,6 +21932,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
         dmemreq_len_M <= dmemreq_len_X;
         dm_resp_sel_M <= dm_resp_sel_X;
         wb_result_sel_M <= wb_result_sel_X;
+        rd_fprf_M <= rd_fprf_X;
         stats_en_wen_M <= stats_en_wen_X;
         xcelreq_M <= xcelreq_X;
       end
@@ -19294,6 +21955,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.inst_type_W.next            = s.inst_type_M
   //         s.rf_waddr_W.next             = s.rf_waddr_M
   //         s.proc2mngr_val_W.next        = s.proc2mngr_val_M
+  //         s.rd_fprf_W.next              = s.rd_fprf_M
   //         s.stats_en_wen_pending_W.next = s.stats_en_wen_M
 
   // logic for reg_W()
@@ -19309,6 +21971,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
         inst_type_W <= inst_type_M;
         rf_waddr_W <= rf_waddr_M;
         proc2mngr_val_W <= proc2mngr_val_M;
+        rd_fprf_W <= rd_fprf_M;
         stats_en_wen_pending_W <= stats_en_wen_M;
       end
       else begin
@@ -19431,77 +22094,99 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   // @s.combinational
   // def comb_control_table_D():
   //       inst = s.inst_type_decoder_D.out.value
-  //       #                                             br    jal op1   rs1 imm    op2    rs2 alu      dmm      dmm     xres  dmmux  wbmux rf  rv32m    cs cs
-  //       #                                         val type   D  muxsel en type   muxsel  en fn       typ      len     sel   sel    sel   wen          rr rw
-  //       if   inst == NOP    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_a, n,  md_x,    n, n )
+  //       #                                         rd r1 r2  fpu        br    jal op1   rs1 imm    op2    rs2 alu      dmm      dmm     xres  dmmux  wbmux rf  rv32m    cs cs
+  //       #                                         fp fp fp  type   val type   D  muxsel en type   muxsel  en fn       typ      len     sel   sel    sel   wen          rr rw
+  //       if   inst == NOP    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_a, n,  md_x,    n, n )
   //       # RV32I
   //       # xcel/csrr/csrw
-  //       elif inst == CSRRX  : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_c, y,  md_x,    y, n )
-  //       elif inst == CSRR   : s.cs.value = concat( y, br_na, n, am_x,  n, imm_i, bm_csr, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    y, n )
-  //       elif inst == CSRW   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_cp0, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, n,  md_x,    n, y )
+  //       elif inst == CSRRX  : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_x,  n, imm_i, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_c, y,  md_x,    y, n )
+  //       elif inst == CSRR   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_x,  n, imm_i, bm_csr, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    y, n )
+  //       elif inst == CSRW   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_cp0, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, n,  md_x,    n, y )
   //       # reg-reg
-  //       elif inst == ADD    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SUB    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sub, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == AND    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == OR     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == XOR    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLT    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLTU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SRA    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SRL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == ADD    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SUB    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sub, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == AND    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == OR     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == XOR    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLT    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLTU   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SRA    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SRL    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLL    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
   //       # reg-imm
-  //       elif inst == ADDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == ANDI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == ORI    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == XORI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLTI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLTIU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SRAI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SRLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == SLLI   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == LUI    : s.cs.value = concat( y, br_na, n, am_x,  n, imm_u, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == AUIPC  : s.cs.value = concat( y, br_na, n, am_pc, n, imm_u, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == ADDI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == ANDI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_and, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == ORI    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_or , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == XORI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_xor, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLTI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_lt , mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLTIU  : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SRAI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sra, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SRLI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_srl, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == SLLI   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_sll, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == LUI    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_x,  n, imm_u, bm_imm, n, alu_cp1, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == AUIPC  : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_pc, n, imm_u, bm_imm, n, alu_add, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
   //       # branch
-  //       elif inst == BNE    : s.cs.value = concat( y, br_ne, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
-  //       elif inst == BEQ    : s.cs.value = concat( y, br_eq, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
-  //       elif inst == BLT    : s.cs.value = concat( y, br_lt, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
-  //       elif inst == BLTU   : s.cs.value = concat( y, br_lu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
-  //       elif inst == BGE    : s.cs.value = concat( y, br_ge, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
-  //       elif inst == BGEU   : s.cs.value = concat( y, br_gu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BNE    : s.cs.value = concat( n, n, n, fp_x,   y, br_ne, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BEQ    : s.cs.value = concat( n, n, n, fp_x,   y, br_eq, n, am_rf, y, imm_b, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BLT    : s.cs.value = concat( n, n, n, fp_x,   y, br_lt, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BLTU   : s.cs.value = concat( n, n, n, fp_x,   y, br_lu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BGE    : s.cs.value = concat( n, n, n, fp_x,   y, br_ge, n, am_rf, y, imm_b, bm_rf,  y, alu_lt,  mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == BGEU   : s.cs.value = concat( n, n, n, fp_x,   y, br_gu, n, am_rf, y, imm_b, bm_rf,  y, alu_ltu, mem_nr,  mlen_x, xm_a, dm_x,  wm_x, n,  md_x,    n, n )
   //       # jump
-  //       elif inst == JAL    : s.cs.value = concat( y, br_na, y, am_x,  n, imm_j, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
-  //       elif inst == JALR   : s.cs.value = concat( y, jalr , n, am_rf, y, imm_i, bm_imm, n, alu_adz, mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == JAL    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, y, am_x,  n, imm_j, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == JALR   : s.cs.value = concat( n, n, n, fp_x,   y, jalr , n, am_rf, y, imm_i, bm_imm, n, alu_adz, mem_nr,  mlen_x, xm_p, dm_x,  wm_a, y,  md_x,    n, n )
   //       # mem
-  //       elif inst == LB     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_b,  wm_m, y,  md_x,    n, n )
-  //       elif inst == LH     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_h,  wm_m, y,  md_x,    n, n )
-  //       elif inst == LW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == LBU    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_bu, wm_m, y,  md_x,    n, n )
-  //       elif inst == LHU    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_hu, wm_m, y,  md_x,    n, n )
-  //       elif inst == SB     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_b, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
-  //       elif inst == SH     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_h, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
-  //       elif inst == SW     : s.cs.value = concat( y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_w, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+  //       elif inst == LB     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_b,  wm_m, y,  md_x,    n, n )
+  //       elif inst == LH     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_h,  wm_m, y,  md_x,    n, n )
+  //       elif inst == LW     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == LBU    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_b, xm_a, dm_bu, wm_m, y,  md_x,    n, n )
+  //       elif inst == LHU    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_h, xm_a, dm_hu, wm_m, y,  md_x,    n, n )
+  //       elif inst == SB     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_b, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+  //       elif inst == SH     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_h, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+  //       elif inst == SW     : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_w, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
   //       # RV32A
-  //       elif inst == AMOADD : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_ad,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOAND : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_an,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOOR  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_or,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOSWAP: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_sp,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOMIN : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mn,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOMINU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mnu, mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOMAX : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mx,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOMAXU: s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mxu, mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
-  //       elif inst == AMOXOR : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_xr,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOADD : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_ad,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOAND : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_an,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOOR  : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_or,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOSWAP: s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_sp,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOMIN : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mn,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOMINU: s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mnu, mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOMAX : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mx,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOMAXU: s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_mxu, mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == AMOXOR : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_cp0, mem_xr,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
   //       # RV32M
-  //       elif inst == MUL    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mul,  n, n )
-  //       elif inst == MULH   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mh,   n, n )
-  //       elif inst == MULHSU : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhsu, n, n )
-  //       elif inst == MULHU  : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhu,  n, n )
-  //       elif inst == DIV    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_div,  n, n )
-  //       elif inst == DIVU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_divu, n, n )
-  //       elif inst == REM    : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_rem,  n, n )
-  //       elif inst == REMU   : s.cs.value = concat( y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_remu, n, n )
-  //       else:                 s.cs.value = concat( n, br_x,  n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_x, n,  md_x,    n, n )
+  //       elif inst == MUL    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mul,  n, n )
+  //       elif inst == MULH   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mh,   n, n )
+  //       elif inst == MULHSU : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhsu, n, n )
+  //       elif inst == MULHU  : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_mhu,  n, n )
+  //       elif inst == DIV    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_div,  n, n )
+  //       elif inst == DIVU   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_divu, n, n )
+  //       elif inst == REM    : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_rem,  n, n )
+  //       elif inst == REMU   : s.cs.value = concat( n, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_m, dm_x,  wm_a, y,  md_remu, n, n )
+  //       # RV32F
+  //       #                                         rd r1 r2  fpu        br    jal op1   rs1 imm    op2    rs2 alu      dmm      dmm     xres  dmmux  wbmux rf  rv32m    cs cs
+  //       #                                         fp fp fp  type   val type   D  muxsel en type   muxsel  en fn       typ      len     sel   sel    sel   wen          rr rw
+  //       elif inst == FLW    : s.cs.value = concat( y, n, n, fp_x,   y, br_na, n, am_rf, y, imm_i, bm_imm, n, alu_add, mem_ld,  mlen_w, xm_a, dm_w,  wm_m, y,  md_x,    n, n )
+  //       elif inst == FSW    : s.cs.value = concat( n, n, y, fp_x,   y, br_na, n, am_rf, y, imm_s, bm_imm, y, alu_add, mem_st,  mlen_w, xm_a, dm_x,  wm_m, n,  md_x,    n, n )
+  //       elif inst == FADDS  : s.cs.value = concat( y, y, y, fp_add, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FSUBS  : s.cs.value = concat( y, y, y, fp_sub, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FMULS  : s.cs.value = concat( y, y, y, fp_mul, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FDIVS  : s.cs.value = concat( y, y, y, fp_div, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FMINS  : s.cs.value = concat( y, y, y, fp_min, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FMAXS  : s.cs.value = concat( y, y, y, fp_max, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FCVTWS : s.cs.value = concat( n, y, n, fp_f2i, y, br_na, n, am_rf, y, imm_x, bm_rf,  n, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FMVXW  : s.cs.value = concat( n, y, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  n, alu_cp0, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FEQS   : s.cs.value = concat( n, y, y, fp_ceq, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FLTS   : s.cs.value = concat( n, y, y, fp_clt, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FLES   : s.cs.value = concat( n, y, y, fp_cle, y, br_na, n, am_rf, y, imm_x, bm_rf,  y, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FCVTSW : s.cs.value = concat( y, n, n, fp_i2f, y, br_na, n, am_rf, y, imm_x, bm_rf,  n, alu_x,   mem_nr,  mlen_x, xm_f, dm_x,  wm_a, y,  md_x,    n, n )
+  //       elif inst == FMVWX  : s.cs.value = concat( y, n, n, fp_x,   y, br_na, n, am_rf, y, imm_x, bm_rf,  n, alu_cp0, mem_nr,  mlen_x, xm_a, dm_x,  wm_a, y,  md_x,    n, n )
+  //       else:                 s.cs.value = concat( n, n, n, fp_x,   n, br_x,  n, am_x,  n, imm_x, bm_x,   n, alu_x,   mem_nr,  mlen_x, xm_x, dm_x,  wm_x, n,  md_x,    n, n )
   //
+  //       s.rd_fprf_D.value        = s.cs[43:44]
+  //       s.rs1_fprf_D.value       = s.cs[42:43]
+  //       s.rs2_fprf_D.value       = s.cs[41:42]
+  //       s.fpu_D.value            = s.cs[37:41]
   //       s.inst_val_D.value       = s.cs[36:37]
   //       s.br_type_D.value        = s.cs[33:36]
   //       s.jal_D.value            = s.cs[32:33]
@@ -19563,238 +22248,313 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   always @ (*) begin
     inst__10 = inst_type_decoder_D$out;
     if ((inst__10 == NOP)) begin
-      cs = { y,br_na,n,am_x,n,imm_x,bm_x,n,alu_x,mem_nr,mlen_x,xm_x,dm_x,wm_a,n,md_x,n,n };
+      cs = { n,n,n,fp_x,y,br_na,n,am_x,n,imm_x,bm_x,n,alu_x,mem_nr,mlen_x,xm_x,dm_x,wm_a,n,md_x,n,n };
     end
     else begin
       if ((inst__10 == CSRRX)) begin
-        cs = { y,br_na,n,am_x,n,imm_i,bm_imm,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_c,y,md_x,y,n };
+        cs = { n,n,n,fp_x,y,br_na,n,am_x,n,imm_i,bm_imm,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_c,y,md_x,y,n };
       end
       else begin
         if ((inst__10 == CSRR)) begin
-          cs = { y,br_na,n,am_x,n,imm_i,bm_csr,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,y,n };
+          cs = { n,n,n,fp_x,y,br_na,n,am_x,n,imm_i,bm_csr,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,y,n };
         end
         else begin
           if ((inst__10 == CSRW)) begin
-            cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_cp0,mem_nr,mlen_x,xm_a,dm_x,wm_a,n,md_x,n,y };
+            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_cp0,mem_nr,mlen_x,xm_a,dm_x,wm_a,n,md_x,n,y };
           end
           else begin
             if ((inst__10 == ADD)) begin
-              cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
             end
             else begin
               if ((inst__10 == SUB)) begin
-                cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sub,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sub,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
               end
               else begin
                 if ((inst__10 == AND)) begin
-                  cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_and,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_and,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                 end
                 else begin
                   if ((inst__10 == OR)) begin
-                    cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_or,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                    cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_or,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                   end
                   else begin
                     if ((inst__10 == XOR)) begin
-                      cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_xor,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                      cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_xor,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                     end
                     else begin
                       if ((inst__10 == SLT)) begin
-                        cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                       end
                       else begin
                         if ((inst__10 == SLTU)) begin
-                          cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                          cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                         end
                         else begin
                           if ((inst__10 == SRA)) begin
-                            cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sra,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sra,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                           end
                           else begin
                             if ((inst__10 == SRL)) begin
-                              cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_srl,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_srl,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                             end
                             else begin
                               if ((inst__10 == SLL)) begin
-                                cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sll,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_sll,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                               end
                               else begin
                                 if ((inst__10 == ADDI)) begin
-                                  cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                 end
                                 else begin
                                   if ((inst__10 == ANDI)) begin
-                                    cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_and,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                    cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_and,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                   end
                                   else begin
                                     if ((inst__10 == ORI)) begin
-                                      cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_or,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                      cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_or,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                     end
                                     else begin
                                       if ((inst__10 == XORI)) begin
-                                        cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_xor,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_xor,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                       end
                                       else begin
                                         if ((inst__10 == SLTI)) begin
-                                          cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                          cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                         end
                                         else begin
                                           if ((inst__10 == SLTIU)) begin
-                                            cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                           end
                                           else begin
                                             if ((inst__10 == SRAI)) begin
-                                              cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_sra,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_sra,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                             end
                                             else begin
                                               if ((inst__10 == SRLI)) begin
-                                                cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_srl,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_srl,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                               end
                                               else begin
                                                 if ((inst__10 == SLLI)) begin
-                                                  cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_sll,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_sll,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                                 end
                                                 else begin
                                                   if ((inst__10 == LUI)) begin
-                                                    cs = { y,br_na,n,am_x,n,imm_u,bm_imm,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                    cs = { n,n,n,fp_x,y,br_na,n,am_x,n,imm_u,bm_imm,n,alu_cp1,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                                   end
                                                   else begin
                                                     if ((inst__10 == AUIPC)) begin
-                                                      cs = { y,br_na,n,am_pc,n,imm_u,bm_imm,n,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                      cs = { n,n,n,fp_x,y,br_na,n,am_pc,n,imm_u,bm_imm,n,alu_add,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
                                                     end
                                                     else begin
                                                       if ((inst__10 == BNE)) begin
-                                                        cs = { y,br_ne,n,am_rf,y,imm_b,bm_rf,y,alu_x,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                        cs = { n,n,n,fp_x,y,br_ne,n,am_rf,y,imm_b,bm_rf,y,alu_x,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                       end
                                                       else begin
                                                         if ((inst__10 == BEQ)) begin
-                                                          cs = { y,br_eq,n,am_rf,y,imm_b,bm_rf,y,alu_x,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                          cs = { n,n,n,fp_x,y,br_eq,n,am_rf,y,imm_b,bm_rf,y,alu_x,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                         end
                                                         else begin
                                                           if ((inst__10 == BLT)) begin
-                                                            cs = { y,br_lt,n,am_rf,y,imm_b,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                            cs = { n,n,n,fp_x,y,br_lt,n,am_rf,y,imm_b,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                           end
                                                           else begin
                                                             if ((inst__10 == BLTU)) begin
-                                                              cs = { y,br_lu,n,am_rf,y,imm_b,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                              cs = { n,n,n,fp_x,y,br_lu,n,am_rf,y,imm_b,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                             end
                                                             else begin
                                                               if ((inst__10 == BGE)) begin
-                                                                cs = { y,br_ge,n,am_rf,y,imm_b,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                                cs = { n,n,n,fp_x,y,br_ge,n,am_rf,y,imm_b,bm_rf,y,alu_lt,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                               end
                                                               else begin
                                                                 if ((inst__10 == BGEU)) begin
-                                                                  cs = { y,br_gu,n,am_rf,y,imm_b,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
+                                                                  cs = { n,n,n,fp_x,y,br_gu,n,am_rf,y,imm_b,bm_rf,y,alu_ltu,mem_nr,mlen_x,xm_a,dm_x,wm_x,n,md_x,n,n };
                                                                 end
                                                                 else begin
                                                                   if ((inst__10 == JAL)) begin
-                                                                    cs = { y,br_na,y,am_x,n,imm_j,bm_x,n,alu_x,mem_nr,mlen_x,xm_p,dm_x,wm_a,y,md_x,n,n };
+                                                                    cs = { n,n,n,fp_x,y,br_na,y,am_x,n,imm_j,bm_x,n,alu_x,mem_nr,mlen_x,xm_p,dm_x,wm_a,y,md_x,n,n };
                                                                   end
                                                                   else begin
                                                                     if ((inst__10 == JALR)) begin
-                                                                      cs = { y,jalr,n,am_rf,y,imm_i,bm_imm,n,alu_adz,mem_nr,mlen_x,xm_p,dm_x,wm_a,y,md_x,n,n };
+                                                                      cs = { n,n,n,fp_x,y,jalr,n,am_rf,y,imm_i,bm_imm,n,alu_adz,mem_nr,mlen_x,xm_p,dm_x,wm_a,y,md_x,n,n };
                                                                     end
                                                                     else begin
                                                                       if ((inst__10 == LB)) begin
-                                                                        cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_b,xm_a,dm_b,wm_m,y,md_x,n,n };
+                                                                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_b,xm_a,dm_b,wm_m,y,md_x,n,n };
                                                                       end
                                                                       else begin
                                                                         if ((inst__10 == LH)) begin
-                                                                          cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_h,xm_a,dm_h,wm_m,y,md_x,n,n };
+                                                                          cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_h,xm_a,dm_h,wm_m,y,md_x,n,n };
                                                                         end
                                                                         else begin
                                                                           if ((inst__10 == LW)) begin
-                                                                            cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                           end
                                                                           else begin
                                                                             if ((inst__10 == LBU)) begin
-                                                                              cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_b,xm_a,dm_bu,wm_m,y,md_x,n,n };
+                                                                              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_b,xm_a,dm_bu,wm_m,y,md_x,n,n };
                                                                             end
                                                                             else begin
                                                                               if ((inst__10 == LHU)) begin
-                                                                                cs = { y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_h,xm_a,dm_hu,wm_m,y,md_x,n,n };
+                                                                                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_h,xm_a,dm_hu,wm_m,y,md_x,n,n };
                                                                               end
                                                                               else begin
                                                                                 if ((inst__10 == SB)) begin
-                                                                                  cs = { y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_b,xm_a,dm_x,wm_m,n,md_x,n,n };
+                                                                                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_b,xm_a,dm_x,wm_m,n,md_x,n,n };
                                                                                 end
                                                                                 else begin
                                                                                   if ((inst__10 == SH)) begin
-                                                                                    cs = { y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_h,xm_a,dm_x,wm_m,n,md_x,n,n };
+                                                                                    cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_h,xm_a,dm_x,wm_m,n,md_x,n,n };
                                                                                   end
                                                                                   else begin
                                                                                     if ((inst__10 == SW)) begin
-                                                                                      cs = { y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_w,xm_a,dm_x,wm_m,n,md_x,n,n };
+                                                                                      cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_w,xm_a,dm_x,wm_m,n,md_x,n,n };
                                                                                     end
                                                                                     else begin
                                                                                       if ((inst__10 == AMOADD)) begin
-                                                                                        cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_ad,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_ad,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                       end
                                                                                       else begin
                                                                                         if ((inst__10 == AMOAND)) begin
-                                                                                          cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_an,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                          cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_an,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                         end
                                                                                         else begin
                                                                                           if ((inst__10 == AMOOR)) begin
-                                                                                            cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_or,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_or,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                           end
                                                                                           else begin
                                                                                             if ((inst__10 == AMOSWAP)) begin
-                                                                                              cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_sp,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_sp,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                             end
                                                                                             else begin
                                                                                               if ((inst__10 == AMOMIN)) begin
-                                                                                                cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mn,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mn,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                               end
                                                                                               else begin
                                                                                                 if ((inst__10 == AMOMINU)) begin
-                                                                                                  cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mnu,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mnu,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                                 end
                                                                                                 else begin
                                                                                                   if ((inst__10 == AMOMAX)) begin
-                                                                                                    cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mx,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                    cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mx,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                                   end
                                                                                                   else begin
                                                                                                     if ((inst__10 == AMOMAXU)) begin
-                                                                                                      cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mxu,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                      cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_mxu,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                                     end
                                                                                                     else begin
                                                                                                       if ((inst__10 == AMOXOR)) begin
-                                                                                                        cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_xr,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_cp0,mem_xr,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
                                                                                                       end
                                                                                                       else begin
                                                                                                         if ((inst__10 == MUL)) begin
-                                                                                                          cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mul,n,n };
+                                                                                                          cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mul,n,n };
                                                                                                         end
                                                                                                         else begin
                                                                                                           if ((inst__10 == MULH)) begin
-                                                                                                            cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mh,n,n };
+                                                                                                            cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mh,n,n };
                                                                                                           end
                                                                                                           else begin
                                                                                                             if ((inst__10 == MULHSU)) begin
-                                                                                                              cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mhsu,n,n };
+                                                                                                              cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mhsu,n,n };
                                                                                                             end
                                                                                                             else begin
                                                                                                               if ((inst__10 == MULHU)) begin
-                                                                                                                cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mhu,n,n };
+                                                                                                                cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_mhu,n,n };
                                                                                                               end
                                                                                                               else begin
                                                                                                                 if ((inst__10 == DIV)) begin
-                                                                                                                  cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_div,n,n };
+                                                                                                                  cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_div,n,n };
                                                                                                                 end
                                                                                                                 else begin
                                                                                                                   if ((inst__10 == DIVU)) begin
-                                                                                                                    cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_divu,n,n };
+                                                                                                                    cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_divu,n,n };
                                                                                                                   end
                                                                                                                   else begin
                                                                                                                     if ((inst__10 == REM)) begin
-                                                                                                                      cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_rem,n,n };
+                                                                                                                      cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_rem,n,n };
                                                                                                                     end
                                                                                                                     else begin
                                                                                                                       if ((inst__10 == REMU)) begin
-                                                                                                                        cs = { y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_remu,n,n };
+                                                                                                                        cs = { n,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_m,dm_x,wm_a,y,md_remu,n,n };
                                                                                                                       end
                                                                                                                       else begin
-                                                                                                                        cs = { n,br_x,n,am_x,n,imm_x,bm_x,n,alu_x,mem_nr,mlen_x,xm_x,dm_x,wm_x,n,md_x,n,n };
+                                                                                                                        if ((inst__10 == FLW)) begin
+                                                                                                                          cs = { y,n,n,fp_x,y,br_na,n,am_rf,y,imm_i,bm_imm,n,alu_add,mem_ld,mlen_w,xm_a,dm_w,wm_m,y,md_x,n,n };
+                                                                                                                        end
+                                                                                                                        else begin
+                                                                                                                          if ((inst__10 == FSW)) begin
+                                                                                                                            cs = { n,n,y,fp_x,y,br_na,n,am_rf,y,imm_s,bm_imm,y,alu_add,mem_st,mlen_w,xm_a,dm_x,wm_m,n,md_x,n,n };
+                                                                                                                          end
+                                                                                                                          else begin
+                                                                                                                            if ((inst__10 == FADDS)) begin
+                                                                                                                              cs = { y,y,y,fp_add,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                            end
+                                                                                                                            else begin
+                                                                                                                              if ((inst__10 == FSUBS)) begin
+                                                                                                                                cs = { y,y,y,fp_sub,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                              end
+                                                                                                                              else begin
+                                                                                                                                if ((inst__10 == FMULS)) begin
+                                                                                                                                  cs = { y,y,y,fp_mul,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                end
+                                                                                                                                else begin
+                                                                                                                                  if ((inst__10 == FDIVS)) begin
+                                                                                                                                    cs = { y,y,y,fp_div,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                  end
+                                                                                                                                  else begin
+                                                                                                                                    if ((inst__10 == FMINS)) begin
+                                                                                                                                      cs = { y,y,y,fp_min,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                    end
+                                                                                                                                    else begin
+                                                                                                                                      if ((inst__10 == FMAXS)) begin
+                                                                                                                                        cs = { y,y,y,fp_max,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                      end
+                                                                                                                                      else begin
+                                                                                                                                        if ((inst__10 == FCVTWS)) begin
+                                                                                                                                          cs = { n,y,n,fp_f2i,y,br_na,n,am_rf,y,imm_x,bm_rf,n,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                        end
+                                                                                                                                        else begin
+                                                                                                                                          if ((inst__10 == FMVXW)) begin
+                                                                                                                                            cs = { n,y,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,n,alu_cp0,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                          end
+                                                                                                                                          else begin
+                                                                                                                                            if ((inst__10 == FEQS)) begin
+                                                                                                                                              cs = { n,y,y,fp_ceq,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                            end
+                                                                                                                                            else begin
+                                                                                                                                              if ((inst__10 == FLTS)) begin
+                                                                                                                                                cs = { n,y,y,fp_clt,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                              end
+                                                                                                                                              else begin
+                                                                                                                                                if ((inst__10 == FLES)) begin
+                                                                                                                                                  cs = { n,y,y,fp_cle,y,br_na,n,am_rf,y,imm_x,bm_rf,y,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                                end
+                                                                                                                                                else begin
+                                                                                                                                                  if ((inst__10 == FCVTSW)) begin
+                                                                                                                                                    cs = { y,n,n,fp_i2f,y,br_na,n,am_rf,y,imm_x,bm_rf,n,alu_x,mem_nr,mlen_x,xm_f,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                                  end
+                                                                                                                                                  else begin
+                                                                                                                                                    if ((inst__10 == FMVWX)) begin
+                                                                                                                                                      cs = { y,n,n,fp_x,y,br_na,n,am_rf,y,imm_x,bm_rf,n,alu_cp0,mem_nr,mlen_x,xm_a,dm_x,wm_a,y,md_x,n,n };
+                                                                                                                                                    end
+                                                                                                                                                    else begin
+                                                                                                                                                      cs = { n,n,n,fp_x,n,br_x,n,am_x,n,imm_x,bm_x,n,alu_x,mem_nr,mlen_x,xm_x,dm_x,wm_x,n,md_x,n,n };
+                                                                                                                                                    end
+                                                                                                                                                  end
+                                                                                                                                                end
+                                                                                                                                              end
+                                                                                                                                            end
+                                                                                                                                          end
+                                                                                                                                        end
+                                                                                                                                      end
+                                                                                                                                    end
+                                                                                                                                  end
+                                                                                                                                end
+                                                                                                                              end
+                                                                                                                            end
+                                                                                                                          end
+                                                                                                                        end
                                                                                                                       end
                                                                                                                     end
                                                                                                                   end
@@ -19853,6 +22613,10 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
         end
       end
     end
+    rd_fprf_D = cs[(44)-1:43];
+    rs1_fprf_D = cs[(43)-1:42];
+    rs2_fprf_D = cs[(42)-1:41];
+    fpu_D = cs[(41)-1:37];
     inst_val_D = cs[(37)-1:36];
     br_type_D = cs[(36)-1:33];
     jal_D = cs[(33)-1:32];
@@ -19946,37 +22710,49 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //
   //       if s.rs1_en_D:
   //
-  //         if   s.val_X & ( s.inst_D[ RS1 ] == s.rf_waddr_X ) & ( s.rf_waddr_X != 0 ) \
+  //         if   s.val_X & ( s.inst_D[ RS1 ] == s.rf_waddr_X ) \
+  //                      & ( s.rs1_fprf_D | s.rf_waddr_X != 0 ) \
+  //                      & ( s.rs1_fprf_D == s.rd_fprf_X ) \
   //                      & s.rf_wen_pending_X:    s.op1_byp_sel_D.value = byp_x
-  //         elif s.val_M & ( s.inst_D[ RS1 ] == s.rf_waddr_M ) & ( s.rf_waddr_M != 0 ) \
+  //         elif s.val_M & ( s.inst_D[ RS1 ] == s.rf_waddr_M ) \
+  //                      & ( s.rs1_fprf_D | s.rf_waddr_M != 0 ) \
+  //                      & ( s.rs1_fprf_D == s.rd_fprf_M ) \
   //                      & s.rf_wen_pending_M:    s.op1_byp_sel_D.value = byp_m
-  //         elif s.val_W & ( s.inst_D[ RS1 ] == s.rf_waddr_W ) & ( s.rf_waddr_W != 0 ) \
+  //         elif s.val_W & ( s.inst_D[ RS1 ] == s.rf_waddr_W ) \
+  //                      & ( s.rs1_fprf_D | s.rf_waddr_W != 0 ) \
+  //                      & ( s.rs1_fprf_D == s.rd_fprf_W ) \
   //                      & s.rf_wen_pending_W:    s.op1_byp_sel_D.value = byp_w
   //
   //       s.op2_byp_sel_D.value = byp_d
   //
   //       if s.rs2_en_D:
   //
-  //         if   s.val_X & ( s.inst_D[ RS2 ] == s.rf_waddr_X ) & ( s.rf_waddr_X != 0 ) \
+  //         if   s.val_X & ( s.inst_D[ RS2 ] == s.rf_waddr_X ) \
+  //                      & ( s.rs2_fprf_D | s.rf_waddr_X != 0 ) \
+  //                      & ( s.rs2_fprf_D == s.rd_fprf_X ) \
   //                      & s.rf_wen_pending_X:    s.op2_byp_sel_D.value = byp_x
-  //         elif s.val_M & ( s.inst_D[ RS2 ] == s.rf_waddr_M ) & ( s.rf_waddr_M != 0 ) \
+  //         elif s.val_M & ( s.inst_D[ RS2 ] == s.rf_waddr_M ) \
+  //                      & ( s.rs2_fprf_D | s.rf_waddr_M != 0 ) \
+  //                      & ( s.rs2_fprf_D == s.rd_fprf_M ) \
   //                      & s.rf_wen_pending_M:    s.op2_byp_sel_D.value = byp_m
-  //         elif s.val_W & ( s.inst_D[ RS2 ] == s.rf_waddr_W ) & ( s.rf_waddr_W != 0 ) \
+  //         elif s.val_W & ( s.inst_D[ RS2 ] == s.rf_waddr_W ) \
+  //                      & ( s.rs2_fprf_D | s.rf_waddr_W != 0 ) \
+  //                      & ( s.rs2_fprf_D == s.rd_fprf_W ) \
   //                      & s.rf_wen_pending_W:    s.op2_byp_sel_D.value = byp_w
 
   // logic for comb_bypass_D()
   always @ (*) begin
     op1_byp_sel_D = byp_d;
     if (rs1_en_D) begin
-      if ((((val_X&(inst_D[(20)-1:15] == rf_waddr_X))&(rf_waddr_X != 0))&rf_wen_pending_X)) begin
+      if (((((val_X&(inst_D[(20)-1:15] == rf_waddr_X))&((rs1_fprf_D|rf_waddr_X) != 0))&(rs1_fprf_D == rd_fprf_X))&rf_wen_pending_X)) begin
         op1_byp_sel_D = byp_x;
       end
       else begin
-        if ((((val_M&(inst_D[(20)-1:15] == rf_waddr_M))&(rf_waddr_M != 0))&rf_wen_pending_M)) begin
+        if (((((val_M&(inst_D[(20)-1:15] == rf_waddr_M))&((rs1_fprf_D|rf_waddr_M) != 0))&(rs1_fprf_D == rd_fprf_M))&rf_wen_pending_M)) begin
           op1_byp_sel_D = byp_m;
         end
         else begin
-          if ((((val_W&(inst_D[(20)-1:15] == rf_waddr_W))&(rf_waddr_W != 0))&rf_wen_pending_W)) begin
+          if (((((val_W&(inst_D[(20)-1:15] == rf_waddr_W))&((rs1_fprf_D|rf_waddr_W) != 0))&(rs1_fprf_D == rd_fprf_W))&rf_wen_pending_W)) begin
             op1_byp_sel_D = byp_w;
           end
           else begin
@@ -19988,15 +22764,15 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     end
     op2_byp_sel_D = byp_d;
     if (rs2_en_D) begin
-      if ((((val_X&(inst_D[(25)-1:20] == rf_waddr_X))&(rf_waddr_X != 0))&rf_wen_pending_X)) begin
+      if (((((val_X&(inst_D[(25)-1:20] == rf_waddr_X))&((rs2_fprf_D|rf_waddr_X) != 0))&(rs2_fprf_D == rd_fprf_X))&rf_wen_pending_X)) begin
         op2_byp_sel_D = byp_x;
       end
       else begin
-        if ((((val_M&(inst_D[(25)-1:20] == rf_waddr_M))&(rf_waddr_M != 0))&rf_wen_pending_M)) begin
+        if (((((val_M&(inst_D[(25)-1:20] == rf_waddr_M))&((rs2_fprf_D|rf_waddr_M) != 0))&(rs2_fprf_D == rd_fprf_M))&rf_wen_pending_M)) begin
           op2_byp_sel_D = byp_m;
         end
         else begin
-          if ((((val_W&(inst_D[(25)-1:20] == rf_waddr_W))&(rf_waddr_W != 0))&rf_wen_pending_W)) begin
+          if (((((val_W&(inst_D[(25)-1:20] == rf_waddr_W))&((rs2_fprf_D|rf_waddr_W) != 0))&(rs2_fprf_D == rd_fprf_W))&rf_wen_pending_W)) begin
             op2_byp_sel_D = byp_w;
           end
           else begin
@@ -20086,9 +22862,13 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //       # ostall due to mdu
   //       s.ostall_mdu_D.value  = s.val_D & (s.mdu_D != md_x) & ~s.mdureq_rdy
   //
+  //       # ostall due to fpu
+  //       s.ostall_fpu_D.value  = s.val_D & (s.fpu_D != fp_x) & ~s.fpureq_rdy
+  //
   //       # put together all ostall conditions
   //
-  //       s.ostall_D.value = s.val_D & ( s.ostall_mngr_D | s.ostall_hazard_D | s.ostall_mdu_D );
+  //       s.ostall_D.value = s.val_D & ( s.ostall_mngr_D | s.ostall_hazard_D |
+  //                                      s.ostall_mdu_D | s.ostall_fpu_D )
   //
   //       # stall in D stage
   //
@@ -20118,6 +22898,11 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //
   //       s.mdureq_msg_type.value = s.mdu_D[0:3]
   //
+  //       # fpu request valid signal
+  //
+  //       s.fpureq_val.value = s.val_D & ~s.stall_D & ~s.squash_D & (s.fpu_D != fp_x)
+  //       s.fpureq_msg_type.value = s.fpu_D
+  //
   //       # next valid bit
   //
   //       s.next_val_D.value = s.val_D & ~s.stall_D & ~s.squash_D
@@ -20126,13 +22911,16 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   always @ (*) begin
     ostall_mngr_D = (mngr2proc_rdy_D&~mngr2proc_val);
     ostall_mdu_D = ((val_D&(mdu_D != md_x))&~mdureq_rdy);
-    ostall_D = (val_D&((ostall_mngr_D|ostall_hazard_D)|ostall_mdu_D));
+    ostall_fpu_D = ((val_D&(fpu_D != fp_x))&~fpureq_rdy);
+    ostall_D = (val_D&(((ostall_mngr_D|ostall_hazard_D)|ostall_mdu_D)|ostall_fpu_D));
     stall_D = (val_D&(((ostall_D|ostall_X)|ostall_M)|ostall_W));
     osquash_D = ((val_D&~stall_D)&pc_redirect_D);
     squash_D = (val_D&osquash_X);
     mngr2proc_rdy = ((val_D&~stall_D)&mngr2proc_rdy_D);
     mdureq_val = (((val_D&~stall_D)&~squash_D)&(mdu_D != md_x));
     mdureq_msg_type = mdu_D[(3)-1:0];
+    fpureq_val = (((val_D&~stall_D)&~squash_D)&(fpu_D != fp_x));
+    fpureq_msg_type = fpu_D;
     next_val_D = ((val_D&~stall_D)&~squash_D);
   end
 
@@ -20220,7 +23008,10 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //       # ostall due to mdu
   //       s.ostall_mdu_X.value = (s.mdu_X != md_x) & ~s.mduresp_val
   //
-  //       s.ostall_X.value = s.val_X & ( s.ostall_dmem_X | s.ostall_mdu_X | s.ostall_xcel_X )
+  //       # ostall due to fpu
+  //       s.ostall_fpu_X.value = (s.fpu_X != fp_x) & ~s.fpuresp_val
+  //
+  //       s.ostall_X.value = s.val_X & ( s.ostall_dmem_X | s.ostall_mdu_X | s.ostall_fpu_X | s.ostall_xcel_X )
   //
   //       # stall in X stage
   //
@@ -20264,6 +23055,10 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //
   //       s.mduresp_rdy.value = s.val_X & ~s.stall_X & ( s.mdu_X != md_x )
   //
+  //       # fpu resp ready signal
+  //
+  //       s.fpuresp_rdy.value = s.val_X & ~s.stall_X & ( s.fpu_X != fp_x )
+  //
   //       # next valid bit
   //
   //       s.next_val_X.value  = s.val_X & ~s.stall_X
@@ -20273,7 +23068,8 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     ostall_xcel_X = (xcelreq_X&~xcelreq_rdy);
     ostall_dmem_X = ((dmemreq_type_X != mem_nr)&~dmemreq_rdy);
     ostall_mdu_X = ((mdu_X != md_x)&~mduresp_val);
-    ostall_X = (val_X&((ostall_dmem_X|ostall_mdu_X)|ostall_xcel_X));
+    ostall_fpu_X = ((fpu_X != fp_x)&~fpuresp_val);
+    ostall_X = (val_X&(((ostall_dmem_X|ostall_mdu_X)|ostall_fpu_X)|ostall_xcel_X));
     stall_X = (val_X&((ostall_X|ostall_M)|ostall_W));
     osquash_X = ((val_X&~stall_X)&pc_redirect_X);
     dmemreq_val = ((val_X&~stall_X)&(dmemreq_type_X != mem_nr));
@@ -20332,6 +23128,7 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     xcelreq_val = ((val_X&~stall_X)&xcelreq_X);
     xcelreq_msg_type = xcelreq_type_X;
     mduresp_rdy = ((val_X&~stall_X)&(mdu_X != md_x));
+    fpuresp_rdy = ((val_X&~stall_X)&(fpu_X != fp_x));
     next_val_X = (val_X&~stall_X);
   end
 
@@ -20469,11 +23266,26 @@ module DecodeInstType_0x72c9bb161518ada2
   localparam BLT = 32;
   localparam BLTU = 34;
   localparam BNE = 31;
-  localparam CSRR = 55;
-  localparam CSRRX = 58;
-  localparam CSRW = 56;
+  localparam CSRR = 70;
+  localparam CSRRX = 73;
+  localparam CSRW = 71;
   localparam DIV = 42;
   localparam DIVU = 43;
+  localparam FADDS = 57;
+  localparam FCVTSW = 68;
+  localparam FCVTWS = 63;
+  localparam FDIVS = 60;
+  localparam FEQS = 65;
+  localparam FLES = 67;
+  localparam FLTS = 66;
+  localparam FLW = 55;
+  localparam FMAXS = 62;
+  localparam FMINS = 61;
+  localparam FMULS = 59;
+  localparam FMVWX = 69;
+  localparam FMVXW = 64;
+  localparam FSUBS = 58;
+  localparam FSW = 56;
   localparam JAL = 36;
   localparam JALR = 37;
   localparam LB = 1;
@@ -20507,7 +23319,7 @@ module DecodeInstType_0x72c9bb161518ada2
   localparam SW = 8;
   localparam XOR = 20;
   localparam XORI = 21;
-  localparam ZERO = 57;
+  localparam ZERO = 72;
 
 
 
@@ -20600,6 +23412,35 @@ module DecodeInstType_0x72c9bb161518ada2
   //           elif s.in_[FUNCT5] == 0b10100:     s.out.value = AMOMAX
   //           elif s.in_[FUNCT5] == 0b11000:     s.out.value = AMOMINU
   //           elif s.in_[FUNCT5] == 0b11100:     s.out.value = AMOMAXU
+  //
+  //       elif s.in_[OPCODE] == 0b0000111:
+  //         if   s.in_[FUNCT3] == 0b010:         s.out.value = FLW
+  //
+  //       elif s.in_[OPCODE] == 0b0100111:
+  //         if   s.in_[FUNCT3] == 0b010:         s.out.value = FSW
+  //
+  //       elif s.in_[OPCODE] == 0b1010011:
+  //         if   s.in_[FUNCT7] == 0b0000000:     s.out.value = FADDS
+  //         elif s.in_[FUNCT7] == 0b0000100:     s.out.value = FSUBS
+  //         elif s.in_[FUNCT7] == 0b0001000:     s.out.value = FMULS
+  //         elif s.in_[FUNCT7] == 0b0001100:     s.out.value = FDIVS
+  //         elif s.in_[FUNCT7] == 0b0010100:
+  //           if   s.in_[FUNCT3] == 0b000:       s.out.value = FMINS
+  //           elif s.in_[FUNCT3] == 0b001:       s.out.value = FMAXS
+  //         elif s.in_[FUNCT7] == 0b1100000:
+  //           if   s.in_[RS2] == 0b00000:        s.out.value = FCVTWS
+  //         elif s.in_[FUNCT7] == 0b1110000:
+  //           if   s.in_[RS2] == 0b00000:
+  //             if   s.in_[FUNCT3] == 0b000:     s.out.value = FMVXW
+  //         elif s.in_[FUNCT7] == 0b1010000:
+  //           if   s.in_[FUNCT3] == 0b010:       s.out.value = FEQS
+  //           elif s.in_[FUNCT3] == 0b001:       s.out.value = FLTS
+  //           elif s.in_[FUNCT3] == 0b000:       s.out.value = FLES
+  //         elif s.in_[FUNCT7] == 0b1101000:
+  //           if   s.in_[RS2] == 0b00000:        s.out.value = FCVTSW
+  //         elif s.in_[FUNCT7] == 0b1111000:
+  //           if   s.in_[RS2] == 0b00000:
+  //             if   s.in_[FUNCT3] == 0b000:     s.out.value = FMVWX
 
   // logic for comb_logic()
   always @ (*) begin
@@ -20930,6 +23771,125 @@ module DecodeInstType_0x72c9bb161518ada2
                             end
                           end
                           else begin
+                            if ((in_[(7)-1:0] == 7)) begin
+                              if ((in_[(15)-1:12] == 2)) begin
+                                out = FLW;
+                              end
+                              else begin
+                              end
+                            end
+                            else begin
+                              if ((in_[(7)-1:0] == 39)) begin
+                                if ((in_[(15)-1:12] == 2)) begin
+                                  out = FSW;
+                                end
+                                else begin
+                                end
+                              end
+                              else begin
+                                if ((in_[(7)-1:0] == 83)) begin
+                                  if ((in_[(32)-1:25] == 0)) begin
+                                    out = FADDS;
+                                  end
+                                  else begin
+                                    if ((in_[(32)-1:25] == 4)) begin
+                                      out = FSUBS;
+                                    end
+                                    else begin
+                                      if ((in_[(32)-1:25] == 8)) begin
+                                        out = FMULS;
+                                      end
+                                      else begin
+                                        if ((in_[(32)-1:25] == 12)) begin
+                                          out = FDIVS;
+                                        end
+                                        else begin
+                                          if ((in_[(32)-1:25] == 20)) begin
+                                            if ((in_[(15)-1:12] == 0)) begin
+                                              out = FMINS;
+                                            end
+                                            else begin
+                                              if ((in_[(15)-1:12] == 1)) begin
+                                                out = FMAXS;
+                                              end
+                                              else begin
+                                              end
+                                            end
+                                          end
+                                          else begin
+                                            if ((in_[(32)-1:25] == 96)) begin
+                                              if ((in_[(25)-1:20] == 0)) begin
+                                                out = FCVTWS;
+                                              end
+                                              else begin
+                                              end
+                                            end
+                                            else begin
+                                              if ((in_[(32)-1:25] == 112)) begin
+                                                if ((in_[(25)-1:20] == 0)) begin
+                                                  if ((in_[(15)-1:12] == 0)) begin
+                                                    out = FMVXW;
+                                                  end
+                                                  else begin
+                                                  end
+                                                end
+                                                else begin
+                                                end
+                                              end
+                                              else begin
+                                                if ((in_[(32)-1:25] == 80)) begin
+                                                  if ((in_[(15)-1:12] == 2)) begin
+                                                    out = FEQS;
+                                                  end
+                                                  else begin
+                                                    if ((in_[(15)-1:12] == 1)) begin
+                                                      out = FLTS;
+                                                    end
+                                                    else begin
+                                                      if ((in_[(15)-1:12] == 0)) begin
+                                                        out = FLES;
+                                                      end
+                                                      else begin
+                                                      end
+                                                    end
+                                                  end
+                                                end
+                                                else begin
+                                                  if ((in_[(32)-1:25] == 104)) begin
+                                                    if ((in_[(25)-1:20] == 0)) begin
+                                                      out = FCVTSW;
+                                                    end
+                                                    else begin
+                                                    end
+                                                  end
+                                                  else begin
+                                                    if ((in_[(32)-1:25] == 120)) begin
+                                                      if ((in_[(25)-1:20] == 0)) begin
+                                                        if ((in_[(15)-1:12] == 0)) begin
+                                                          out = FMVWX;
+                                                        end
+                                                        else begin
+                                                        end
+                                                      end
+                                                      else begin
+                                                      end
+                                                    end
+                                                    else begin
+                                                    end
+                                                  end
+                                                end
+                                              end
+                                            end
+                                          end
+                                        end
+                                      end
+                                    end
+                                  end
+                                end
+                                else begin
+                                end
+                              end
+                            end
                           end
                         end
                       end
@@ -20946,6 +23906,237 @@ module DecodeInstType_0x72c9bb161518ada2
 
 
 endmodule // DecodeInstType_0x72c9bb161518ada2
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementBypassQueue_0x52899b086f58fcd0
+//-----------------------------------------------------------------------------
+// dtype: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueue_0x52899b086f58fcd0
+(
+  input  wire [   0:0] clk,
+  output wire [  73:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [  73:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output wire [   0:0] full,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$bypass_mux_sel;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$full;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  SingleElementBypassQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  (
+    .clk            ( ctrl$clk ),
+    .enq_val        ( ctrl$enq_val ),
+    .reset          ( ctrl$reset ),
+    .deq_rdy        ( ctrl$deq_rdy ),
+    .bypass_mux_sel ( ctrl$bypass_mux_sel ),
+    .wen            ( ctrl$wen ),
+    .deq_val        ( ctrl$deq_val ),
+    .full           ( ctrl$full ),
+    .enq_rdy        ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$wen;
+  wire   [   0:0] dpath$bypass_mux_sel;
+  wire   [   0:0] dpath$clk;
+  wire   [   0:0] dpath$reset;
+  wire   [  73:0] dpath$enq_bits;
+  wire   [  73:0] dpath$deq_bits;
+
+  SingleElementBypassQueueDpath_0x52899b086f58fcd0 dpath
+  (
+    .wen            ( dpath$wen ),
+    .bypass_mux_sel ( dpath$bypass_mux_sel ),
+    .clk            ( dpath$clk ),
+    .reset          ( dpath$reset ),
+    .enq_bits       ( dpath$enq_bits ),
+    .deq_bits       ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk             = clk;
+  assign ctrl$deq_rdy         = deq_rdy;
+  assign ctrl$enq_val         = enq_val;
+  assign ctrl$reset           = reset;
+  assign deq_msg              = dpath$deq_bits;
+  assign deq_val              = ctrl$deq_val;
+  assign dpath$bypass_mux_sel = ctrl$bypass_mux_sel;
+  assign dpath$clk            = clk;
+  assign dpath$enq_bits       = enq_msg;
+  assign dpath$reset          = reset;
+  assign dpath$wen            = ctrl$wen;
+  assign enq_rdy              = ctrl$enq_rdy;
+  assign full                 = ctrl$full;
+
+
+
+endmodule // SingleElementBypassQueue_0x52899b086f58fcd0
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementBypassQueueDpath_0x52899b086f58fcd0
+//-----------------------------------------------------------------------------
+// dtype: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueueDpath_0x52899b086f58fcd0
+(
+  input  wire [   0:0] bypass_mux_sel,
+  input  wire [   0:0] clk,
+  output wire [  73:0] deq_bits,
+  input  wire [  73:0] enq_bits,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wen
+);
+
+  // bypass_mux temporaries
+  wire   [   0:0] bypass_mux$reset;
+  wire   [  73:0] bypass_mux$in_$000;
+  wire   [  73:0] bypass_mux$in_$001;
+  wire   [   0:0] bypass_mux$clk;
+  wire   [   0:0] bypass_mux$sel;
+  wire   [  73:0] bypass_mux$out;
+
+  Mux_0x359bab890c39b030 bypass_mux
+  (
+    .reset   ( bypass_mux$reset ),
+    .in_$000 ( bypass_mux$in_$000 ),
+    .in_$001 ( bypass_mux$in_$001 ),
+    .clk     ( bypass_mux$clk ),
+    .sel     ( bypass_mux$sel ),
+    .out     ( bypass_mux$out )
+  );
+
+  // queue temporaries
+  wire   [   0:0] queue$reset;
+  wire   [  73:0] queue$in_;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$en;
+  wire   [  73:0] queue$out;
+
+  RegEn_0x754c24062309ac25 queue
+  (
+    .reset ( queue$reset ),
+    .in_   ( queue$in_ ),
+    .clk   ( queue$clk ),
+    .en    ( queue$en ),
+    .out   ( queue$out )
+  );
+
+  // signal connections
+  assign bypass_mux$clk     = clk;
+  assign bypass_mux$in_$000 = queue$out;
+  assign bypass_mux$in_$001 = enq_bits;
+  assign bypass_mux$reset   = reset;
+  assign bypass_mux$sel     = bypass_mux_sel;
+  assign deq_bits           = bypass_mux$out;
+  assign queue$clk          = clk;
+  assign queue$en           = wen;
+  assign queue$in_          = enq_bits;
+  assign queue$reset        = reset;
+
+
+
+endmodule // SingleElementBypassQueueDpath_0x52899b086f58fcd0
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x359bab890c39b030
+//-----------------------------------------------------------------------------
+// dtype: 74
+// nports: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x359bab890c39b030
+(
+  input  wire [   0:0] clk,
+  input  wire [  73:0] in_$000,
+  input  wire [  73:0] in_$001,
+  output reg  [  73:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 2;
+
+
+  // array declarations
+  wire   [  73:0] in_[0:1];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x359bab890c39b030
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x754c24062309ac25
+//-----------------------------------------------------------------------------
+// dtype: 74
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x754c24062309ac25
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  73:0] in_,
+  output reg  [  73:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x754c24062309ac25
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -21323,6 +24514,9 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   output wire [  31:0] dmemreq_msg_data,
   input  wire [  31:0] dmemresp_msg_data,
   input  wire [   1:0] ex_result_sel_X,
+  output wire [  31:0] fpureq_msg_op_a,
+  output wire [  31:0] fpureq_msg_op_b,
+  input  wire [  31:0] fpuresp_msg,
   output reg  [  77:0] imemreq_msg,
   input  wire [  31:0] imemresp_msg_data,
   input  wire [   2:0] imm_type_D,
@@ -21337,6 +24531,7 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   input  wire [   1:0] op2_sel_D,
   input  wire [   1:0] pc_sel_F,
   output wire [  31:0] proc2mngr_data,
+  input  wire [   0:0] rd_fprf_W,
   input  wire [   0:0] reg_en_D,
   input  wire [   0:0] reg_en_F,
   input  wire [   0:0] reg_en_M,
@@ -21345,6 +24540,8 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   input  wire [   0:0] reset,
   input  wire [   4:0] rf_waddr_W,
   input  wire [   0:0] rf_wen_W,
+  input  wire [   0:0] rs1_fprf_D,
+  input  wire [   0:0] rs2_fprf_D,
   output reg  [   0:0] stats_en,
   input  wire [   0:0] stats_en_wen_W,
   input  wire [   1:0] wb_result_sel_M,
@@ -21375,6 +24572,9 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   reg    [  31:0] dmemresp_msg_data_lw_M;
   reg    [  15:0] dmemresp_msg_data_truncated16_M;
   reg    [   7:0] dmemresp_msg_data_truncated8_M;
+  reg    [   5:0] rf_rd_addr0;
+  reg    [   5:0] rf_rd_addr1;
+  reg    [   5:0] rf_wr_addr;
 
   // localparam declarations
   localparam TYPE_READ = 0;
@@ -21566,16 +24766,18 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   wire   [  31:0] ex_result_sel_mux_X$in_$000;
   wire   [  31:0] ex_result_sel_mux_X$in_$001;
   wire   [  31:0] ex_result_sel_mux_X$in_$002;
+  wire   [  31:0] ex_result_sel_mux_X$in_$003;
   wire   [   0:0] ex_result_sel_mux_X$clk;
   wire   [   1:0] ex_result_sel_mux_X$sel;
   wire   [  31:0] ex_result_sel_mux_X$out;
 
-  Mux_0x32d1d735b6f2dcf9 ex_result_sel_mux_X
+  Mux_0x7be03e4007003adc ex_result_sel_mux_X
   (
     .reset   ( ex_result_sel_mux_X$reset ),
     .in_$000 ( ex_result_sel_mux_X$in_$000 ),
     .in_$001 ( ex_result_sel_mux_X$in_$001 ),
     .in_$002 ( ex_result_sel_mux_X$in_$002 ),
+    .in_$003 ( ex_result_sel_mux_X$in_$003 ),
     .clk     ( ex_result_sel_mux_X$clk ),
     .sel     ( ex_result_sel_mux_X$sel ),
     .out     ( ex_result_sel_mux_X$out )
@@ -21614,17 +24816,17 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   );
 
   // rf temporaries
-  wire   [   4:0] rf$rd_addr$000;
-  wire   [   4:0] rf$rd_addr$001;
+  wire   [   5:0] rf$rd_addr$000;
+  wire   [   5:0] rf$rd_addr$001;
   wire   [  31:0] rf$wr_data;
   wire   [   0:0] rf$clk;
-  wire   [   4:0] rf$wr_addr;
+  wire   [   5:0] rf$wr_addr;
   wire   [   0:0] rf$wr_en;
   wire   [   0:0] rf$reset;
   wire   [  31:0] rf$rd_data$000;
   wire   [  31:0] rf$rd_data$001;
 
-  RegisterFile_0x2abe1c1ba9590e64 rf
+  RegisterFile_0x6e5247e4cbbfa7fc rf
   (
     .rd_addr$000 ( rf$rd_addr$000 ),
     .rd_addr$001 ( rf$rd_addr$001 ),
@@ -21900,8 +25102,11 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   assign ex_result_sel_mux_X$in_$000 = alu_X$out;
   assign ex_result_sel_mux_X$in_$001 = mduresp_msg;
   assign ex_result_sel_mux_X$in_$002 = pc_incr_X$out;
+  assign ex_result_sel_mux_X$in_$003 = fpuresp_msg;
   assign ex_result_sel_mux_X$reset   = reset;
   assign ex_result_sel_mux_X$sel     = ex_result_sel_X;
+  assign fpureq_msg_op_a             = op1_sel_mux_D$out;
+  assign fpureq_msg_op_b             = op2_sel_mux_D$out;
   assign imm_gen_D$clk               = clk;
   assign imm_gen_D$imm_type          = imm_type_D;
   assign imm_gen_D$inst              = inst_D;
@@ -21982,10 +25187,10 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
   assign pc_sel_mux_F$sel            = pc_sel_F;
   assign proc2mngr_data              = wb_result_reg_W$out;
   assign rf$clk                      = clk;
-  assign rf$rd_addr$000              = inst_D[19:15];
-  assign rf$rd_addr$001              = inst_D[24:20];
+  assign rf$rd_addr$000              = rf_rd_addr0;
+  assign rf$rd_addr$001              = rf_rd_addr1;
   assign rf$reset                    = reset;
-  assign rf$wr_addr                  = rf_waddr_W;
+  assign rf$wr_addr                  = rf_wr_addr;
   assign rf$wr_data                  = rf_wdata_W;
   assign rf$wr_en                    = rf_wen_W;
   assign rf_rdata0_D                 = rf$rd_data$000;
@@ -22026,6 +25231,27 @@ module ProcDpathPRTL_0x6258b32b7d2224ce
     imemreq_msg[(66)-1:34] = pc_sel_mux_F$out;
     imemreq_msg[(32)-1:0] = 0;
     imemreq_msg[(74)-1:66] = 0;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_rf():
+  //       s.rf_rd_addr0[0:5].value = s.inst_D[ RS1 ]
+  //       s.rf_rd_addr0[5:6].value = s.rs1_fprf_D
+  //       s.rf_rd_addr1[0:5].value = s.inst_D[ RS2 ]
+  //       s.rf_rd_addr1[5:6].value = s.rs2_fprf_D
+  //       s.rf_wr_addr[0:5].value = s.rf_waddr_W
+  //       s.rf_wr_addr[5:6].value = s.rd_fprf_W
+
+  // logic for comb_rf()
+  always @ (*) begin
+    rf_rd_addr0[(5)-1:0] = inst_D[(20)-1:15];
+    rf_rd_addr0[(6)-1:5] = rs1_fprf_D;
+    rf_rd_addr1[(5)-1:0] = inst_D[(25)-1:20];
+    rf_rd_addr1[(6)-1:5] = rs2_fprf_D;
+    rf_wr_addr[(5)-1:0] = rf_waddr_W;
+    rf_wr_addr[(6)-1:5] = rd_fprf_W;
   end
 
   // PYMTL SOURCE:
@@ -22328,25 +25554,25 @@ endmodule // AluPRTL_0x487c51659b588c2b
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegisterFile_0x2abe1c1ba9590e64
+// RegisterFile_0x6e5247e4cbbfa7fc
 //-----------------------------------------------------------------------------
 // const_zero: True
 // dtype: 32
-// nregs: 32
+// nregs: 64
 // rd_ports: 2
 // wr_ports: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegisterFile_0x2abe1c1ba9590e64
+module RegisterFile_0x6e5247e4cbbfa7fc
 (
   input  wire [   0:0] clk,
-  input  wire [   4:0] rd_addr$000,
-  input  wire [   4:0] rd_addr$001,
+  input  wire [   5:0] rd_addr$000,
+  input  wire [   5:0] rd_addr$001,
   output wire [  31:0] rd_data$000,
   output wire [  31:0] rd_data$001,
   input  wire [   0:0] reset,
-  input  wire [   4:0] wr_addr,
+  input  wire [   5:0] wr_addr,
   input  wire [  31:0] wr_data,
   input  wire [   0:0] wr_en
 );
@@ -22384,10 +25610,42 @@ module RegisterFile_0x2abe1c1ba9590e64
   wire   [  31:0] regs$029;
   wire   [  31:0] regs$030;
   wire   [  31:0] regs$031;
+  wire   [  31:0] regs$032;
+  wire   [  31:0] regs$033;
+  wire   [  31:0] regs$034;
+  wire   [  31:0] regs$035;
+  wire   [  31:0] regs$036;
+  wire   [  31:0] regs$037;
+  wire   [  31:0] regs$038;
+  wire   [  31:0] regs$039;
+  wire   [  31:0] regs$040;
+  wire   [  31:0] regs$041;
+  wire   [  31:0] regs$042;
+  wire   [  31:0] regs$043;
+  wire   [  31:0] regs$044;
+  wire   [  31:0] regs$045;
+  wire   [  31:0] regs$046;
+  wire   [  31:0] regs$047;
+  wire   [  31:0] regs$048;
+  wire   [  31:0] regs$049;
+  wire   [  31:0] regs$050;
+  wire   [  31:0] regs$051;
+  wire   [  31:0] regs$052;
+  wire   [  31:0] regs$053;
+  wire   [  31:0] regs$054;
+  wire   [  31:0] regs$055;
+  wire   [  31:0] regs$056;
+  wire   [  31:0] regs$057;
+  wire   [  31:0] regs$058;
+  wire   [  31:0] regs$059;
+  wire   [  31:0] regs$060;
+  wire   [  31:0] regs$061;
+  wire   [  31:0] regs$062;
+  wire   [  31:0] regs$063;
 
 
   // localparam declarations
-  localparam nregs = 32;
+  localparam nregs = 64;
   localparam rd_ports = 2;
 
   // loop variable declarations
@@ -22395,13 +25653,13 @@ module RegisterFile_0x2abe1c1ba9590e64
 
 
   // array declarations
-  wire   [   4:0] rd_addr[0:1];
+  wire   [   5:0] rd_addr[0:1];
   assign rd_addr[  0] = rd_addr$000;
   assign rd_addr[  1] = rd_addr$001;
   reg    [  31:0] rd_data[0:1];
   assign rd_data$000 = rd_data[  0];
   assign rd_data$001 = rd_data[  1];
-  reg    [  31:0] regs[0:31];
+  reg    [  31:0] regs[0:63];
   assign regs$000 = regs[  0];
   assign regs$001 = regs[  1];
   assign regs$002 = regs[  2];
@@ -22434,6 +25692,38 @@ module RegisterFile_0x2abe1c1ba9590e64
   assign regs$029 = regs[ 29];
   assign regs$030 = regs[ 30];
   assign regs$031 = regs[ 31];
+  assign regs$032 = regs[ 32];
+  assign regs$033 = regs[ 33];
+  assign regs$034 = regs[ 34];
+  assign regs$035 = regs[ 35];
+  assign regs$036 = regs[ 36];
+  assign regs$037 = regs[ 37];
+  assign regs$038 = regs[ 38];
+  assign regs$039 = regs[ 39];
+  assign regs$040 = regs[ 40];
+  assign regs$041 = regs[ 41];
+  assign regs$042 = regs[ 42];
+  assign regs$043 = regs[ 43];
+  assign regs$044 = regs[ 44];
+  assign regs$045 = regs[ 45];
+  assign regs$046 = regs[ 46];
+  assign regs$047 = regs[ 47];
+  assign regs$048 = regs[ 48];
+  assign regs$049 = regs[ 49];
+  assign regs$050 = regs[ 50];
+  assign regs$051 = regs[ 51];
+  assign regs$052 = regs[ 52];
+  assign regs$053 = regs[ 53];
+  assign regs$054 = regs[ 54];
+  assign regs$055 = regs[ 55];
+  assign regs$056 = regs[ 56];
+  assign regs$057 = regs[ 57];
+  assign regs$058 = regs[ 58];
+  assign regs$059 = regs[ 59];
+  assign regs$060 = regs[ 60];
+  assign regs$061 = regs[ 61];
+  assign regs$062 = regs[ 62];
+  assign regs$063 = regs[ 63];
 
   // PYMTL SOURCE:
   //
@@ -22476,7 +25766,7 @@ module RegisterFile_0x2abe1c1ba9590e64
   end
 
 
-endmodule // RegisterFile_0x2abe1c1ba9590e64
+endmodule // RegisterFile_0x6e5247e4cbbfa7fc
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -24912,237 +28202,6 @@ endmodule // DecodeWbenPRTL_0x18c15822932d5d24
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SingleElementBypassQueue_0x5a7f0a6588025dd8
-//-----------------------------------------------------------------------------
-// dtype: 146
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementBypassQueue_0x5a7f0a6588025dd8
-(
-  input  wire [   0:0] clk,
-  output wire [ 145:0] deq_msg,
-  input  wire [   0:0] deq_rdy,
-  output wire [   0:0] deq_val,
-  input  wire [ 145:0] enq_msg,
-  output wire [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  output wire [   0:0] full,
-  input  wire [   0:0] reset
-);
-
-  // ctrl temporaries
-  wire   [   0:0] ctrl$clk;
-  wire   [   0:0] ctrl$enq_val;
-  wire   [   0:0] ctrl$reset;
-  wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$bypass_mux_sel;
-  wire   [   0:0] ctrl$wen;
-  wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$full;
-  wire   [   0:0] ctrl$enq_rdy;
-
-  SingleElementBypassQueueCtrl_0x2a979dc5ff91cb88 ctrl
-  (
-    .clk            ( ctrl$clk ),
-    .enq_val        ( ctrl$enq_val ),
-    .reset          ( ctrl$reset ),
-    .deq_rdy        ( ctrl$deq_rdy ),
-    .bypass_mux_sel ( ctrl$bypass_mux_sel ),
-    .wen            ( ctrl$wen ),
-    .deq_val        ( ctrl$deq_val ),
-    .full           ( ctrl$full ),
-    .enq_rdy        ( ctrl$enq_rdy )
-  );
-
-  // dpath temporaries
-  wire   [   0:0] dpath$wen;
-  wire   [   0:0] dpath$bypass_mux_sel;
-  wire   [   0:0] dpath$clk;
-  wire   [   0:0] dpath$reset;
-  wire   [ 145:0] dpath$enq_bits;
-  wire   [ 145:0] dpath$deq_bits;
-
-  SingleElementBypassQueueDpath_0x5a7f0a6588025dd8 dpath
-  (
-    .wen            ( dpath$wen ),
-    .bypass_mux_sel ( dpath$bypass_mux_sel ),
-    .clk            ( dpath$clk ),
-    .reset          ( dpath$reset ),
-    .enq_bits       ( dpath$enq_bits ),
-    .deq_bits       ( dpath$deq_bits )
-  );
-
-  // signal connections
-  assign ctrl$clk             = clk;
-  assign ctrl$deq_rdy         = deq_rdy;
-  assign ctrl$enq_val         = enq_val;
-  assign ctrl$reset           = reset;
-  assign deq_msg              = dpath$deq_bits;
-  assign deq_val              = ctrl$deq_val;
-  assign dpath$bypass_mux_sel = ctrl$bypass_mux_sel;
-  assign dpath$clk            = clk;
-  assign dpath$enq_bits       = enq_msg;
-  assign dpath$reset          = reset;
-  assign dpath$wen            = ctrl$wen;
-  assign enq_rdy              = ctrl$enq_rdy;
-  assign full                 = ctrl$full;
-
-
-
-endmodule // SingleElementBypassQueue_0x5a7f0a6588025dd8
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
-//-----------------------------------------------------------------------------
-// dtype: 146
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
-(
-  input  wire [   0:0] bypass_mux_sel,
-  input  wire [   0:0] clk,
-  output wire [ 145:0] deq_bits,
-  input  wire [ 145:0] enq_bits,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] wen
-);
-
-  // bypass_mux temporaries
-  wire   [   0:0] bypass_mux$reset;
-  wire   [ 145:0] bypass_mux$in_$000;
-  wire   [ 145:0] bypass_mux$in_$001;
-  wire   [   0:0] bypass_mux$clk;
-  wire   [   0:0] bypass_mux$sel;
-  wire   [ 145:0] bypass_mux$out;
-
-  Mux_0x45e00ad6230c4538 bypass_mux
-  (
-    .reset   ( bypass_mux$reset ),
-    .in_$000 ( bypass_mux$in_$000 ),
-    .in_$001 ( bypass_mux$in_$001 ),
-    .clk     ( bypass_mux$clk ),
-    .sel     ( bypass_mux$sel ),
-    .out     ( bypass_mux$out )
-  );
-
-  // queue temporaries
-  wire   [   0:0] queue$reset;
-  wire   [ 145:0] queue$in_;
-  wire   [   0:0] queue$clk;
-  wire   [   0:0] queue$en;
-  wire   [ 145:0] queue$out;
-
-  RegEn_0x1c3ed81872982f83 queue
-  (
-    .reset ( queue$reset ),
-    .in_   ( queue$in_ ),
-    .clk   ( queue$clk ),
-    .en    ( queue$en ),
-    .out   ( queue$out )
-  );
-
-  // signal connections
-  assign bypass_mux$clk     = clk;
-  assign bypass_mux$in_$000 = queue$out;
-  assign bypass_mux$in_$001 = enq_bits;
-  assign bypass_mux$reset   = reset;
-  assign bypass_mux$sel     = bypass_mux_sel;
-  assign deq_bits           = bypass_mux$out;
-  assign queue$clk          = clk;
-  assign queue$en           = wen;
-  assign queue$in_          = enq_bits;
-  assign queue$reset        = reset;
-
-
-
-endmodule // SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Mux_0x45e00ad6230c4538
-//-----------------------------------------------------------------------------
-// dtype: 146
-// nports: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Mux_0x45e00ad6230c4538
-(
-  input  wire [   0:0] clk,
-  input  wire [ 145:0] in_$000,
-  input  wire [ 145:0] in_$001,
-  output reg  [ 145:0] out,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] sel
-);
-
-  // localparam declarations
-  localparam nports = 2;
-
-
-  // array declarations
-  wire   [ 145:0] in_[0:1];
-  assign in_[  0] = in_$000;
-  assign in_[  1] = in_$001;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       assert s.sel < nports
-  //       s.out.v = s.in_[ s.sel ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = in_[sel];
-  end
-
-
-endmodule // Mux_0x45e00ad6230c4538
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEn_0x1c3ed81872982f83
-//-----------------------------------------------------------------------------
-// dtype: 146
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEn_0x1c3ed81872982f83
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [ 145:0] in_,
-  output reg  [ 145:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (en) begin
-      out <= in_;
-    end
-    else begin
-    end
-  end
-
-
-endmodule // RegEn_0x1c3ed81872982f83
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
 // BlockingCacheDpathPRTL_0x6b511b3b41602acf
 //-----------------------------------------------------------------------------
 // idx_shamt: 0
@@ -26287,16 +29346,1912 @@ endmodule // GenWriteDataPRTL_0x472c29e762348c17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x6f5f3c0dd798be25
+// MemCoalescer_0x64e5f16502bd9749
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f2d4b2e1310>
+// nports: 4
+// MsgTypeReq: 176
+// MsgTypeResp: 146
+// addr_nbits: 32
+// opaque_nbits: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module MemCoalescer_0x64e5f16502bd9749
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] coalescing_en,
+  output reg  [ 175:0] memreq_msg,
+  input  wire [   0:0] memreq_rdy,
+  output reg  [   0:0] memreq_val,
+  input  wire [ 145:0] memresp_msg,
+  output reg  [   0:0] memresp_rdy,
+  input  wire [   0:0] memresp_val,
+  input  wire [ 175:0] reqs$000_msg,
+  output wire [   0:0] reqs$000_rdy,
+  input  wire [   0:0] reqs$000_val,
+  input  wire [ 175:0] reqs$001_msg,
+  output wire [   0:0] reqs$001_rdy,
+  input  wire [   0:0] reqs$001_val,
+  input  wire [ 175:0] reqs$002_msg,
+  output wire [   0:0] reqs$002_rdy,
+  input  wire [   0:0] reqs$002_val,
+  input  wire [ 175:0] reqs$003_msg,
+  output wire [   0:0] reqs$003_rdy,
+  input  wire [   0:0] reqs$003_val,
+  input  wire [   0:0] reset,
+  output wire [ 145:0] resps$000_msg,
+  input  wire [   0:0] resps$000_rdy,
+  output wire [   0:0] resps$000_val,
+  output wire [ 145:0] resps$001_msg,
+  input  wire [   0:0] resps$001_rdy,
+  output wire [   0:0] resps$001_val,
+  output wire [ 145:0] resps$002_msg,
+  input  wire [   0:0] resps$002_rdy,
+  output wire [   0:0] resps$002_val,
+  output wire [ 145:0] resps$003_msg,
+  input  wire [   0:0] resps$003_rdy,
+  output wire [   0:0] resps$003_val
+);
+
+  // wire declarations
+  wire   [   0:0] coalesced_bits$000;
+  wire   [   0:0] coalesced_bits$001;
+  wire   [   0:0] coalesced_bits$002;
+  wire   [   0:0] coalesced_bits$003;
+
+
+  // register declarations
+  reg    [   0:0] arbiter$en;
+  reg    [   0:0] cmp_addr_sel_mux$sel;
+  reg    [   3:0] coalesced;
+  reg    [   0:0] curr_addr_reg$en;
+  reg    [   0:0] curr_state__9;
+  reg    [   1:0] encoded_arb_grant;
+  reg    [   0:0] encoder_kill;
+  reg    [   0:0] go_bit;
+  reg    [   3:0] go_vector;
+  reg    [   1:0] granted_addr_sel_mux$sel;
+  reg    [   3:0] issued;
+  reg    [   0:0] memreq_kill;
+  reg    [ 175:0] memreq_tmp_req;
+  reg    [   3:0] memresp_rdy_vector;
+  reg    [   0:0] next_state__9;
+  reg    [ 175:0] opaque_tmp_req;
+  reg    [ 145:0] tmp_resp;
+  reg    [   3:0] tmp_resps_val;
+
+  // localparam declarations
+  localparam PORT_STATE_IDLE = 0;
+  localparam PORT_STATE_PENDING = 1;
+  localparam nports = 4;
+
+  // loop variable declarations
+  integer i;
+
+  // curr_addr_reg temporaries
+  wire   [   0:0] curr_addr_reg$reset;
+  wire   [   0:0] curr_addr_reg$clk;
+  wire   [  31:0] curr_addr_reg$in_;
+  wire   [  31:0] curr_addr_reg$out;
+
+  RegEnRst_0x3857337130dc0828 curr_addr_reg
+  (
+    .reset ( curr_addr_reg$reset ),
+    .en    ( curr_addr_reg$en ),
+    .clk   ( curr_addr_reg$clk ),
+    .in_   ( curr_addr_reg$in_ ),
+    .out   ( curr_addr_reg$out )
+  );
+
+  // addr_cmps$000 temporaries
+  wire   [   0:0] addr_cmps$000$reset;
+  wire   [   0:0] addr_cmps$000$clk;
+  wire   [  31:0] addr_cmps$000$in0;
+  wire   [  31:0] addr_cmps$000$in1;
+  wire   [   0:0] addr_cmps$000$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$000
+  (
+    .reset ( addr_cmps$000$reset ),
+    .clk   ( addr_cmps$000$clk ),
+    .in0   ( addr_cmps$000$in0 ),
+    .in1   ( addr_cmps$000$in1 ),
+    .out   ( addr_cmps$000$out )
+  );
+
+  // addr_cmps$001 temporaries
+  wire   [   0:0] addr_cmps$001$reset;
+  wire   [   0:0] addr_cmps$001$clk;
+  wire   [  31:0] addr_cmps$001$in0;
+  wire   [  31:0] addr_cmps$001$in1;
+  wire   [   0:0] addr_cmps$001$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$001
+  (
+    .reset ( addr_cmps$001$reset ),
+    .clk   ( addr_cmps$001$clk ),
+    .in0   ( addr_cmps$001$in0 ),
+    .in1   ( addr_cmps$001$in1 ),
+    .out   ( addr_cmps$001$out )
+  );
+
+  // addr_cmps$002 temporaries
+  wire   [   0:0] addr_cmps$002$reset;
+  wire   [   0:0] addr_cmps$002$clk;
+  wire   [  31:0] addr_cmps$002$in0;
+  wire   [  31:0] addr_cmps$002$in1;
+  wire   [   0:0] addr_cmps$002$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$002
+  (
+    .reset ( addr_cmps$002$reset ),
+    .clk   ( addr_cmps$002$clk ),
+    .in0   ( addr_cmps$002$in0 ),
+    .in1   ( addr_cmps$002$in1 ),
+    .out   ( addr_cmps$002$out )
+  );
+
+  // addr_cmps$003 temporaries
+  wire   [   0:0] addr_cmps$003$reset;
+  wire   [   0:0] addr_cmps$003$clk;
+  wire   [  31:0] addr_cmps$003$in0;
+  wire   [  31:0] addr_cmps$003$in1;
+  wire   [   0:0] addr_cmps$003$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$003
+  (
+    .reset ( addr_cmps$003$reset ),
+    .clk   ( addr_cmps$003$clk ),
+    .in0   ( addr_cmps$003$in0 ),
+    .in1   ( addr_cmps$003$in1 ),
+    .out   ( addr_cmps$003$out )
+  );
+
+  // opaque_regs$000 temporaries
+  wire   [   0:0] opaque_regs$000$reset;
+  wire   [   0:0] opaque_regs$000$en;
+  wire   [   0:0] opaque_regs$000$clk;
+  wire   [   7:0] opaque_regs$000$in_;
+  wire   [   7:0] opaque_regs$000$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$000
+  (
+    .reset ( opaque_regs$000$reset ),
+    .en    ( opaque_regs$000$en ),
+    .clk   ( opaque_regs$000$clk ),
+    .in_   ( opaque_regs$000$in_ ),
+    .out   ( opaque_regs$000$out )
+  );
+
+  // opaque_regs$001 temporaries
+  wire   [   0:0] opaque_regs$001$reset;
+  wire   [   0:0] opaque_regs$001$en;
+  wire   [   0:0] opaque_regs$001$clk;
+  wire   [   7:0] opaque_regs$001$in_;
+  wire   [   7:0] opaque_regs$001$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$001
+  (
+    .reset ( opaque_regs$001$reset ),
+    .en    ( opaque_regs$001$en ),
+    .clk   ( opaque_regs$001$clk ),
+    .in_   ( opaque_regs$001$in_ ),
+    .out   ( opaque_regs$001$out )
+  );
+
+  // opaque_regs$002 temporaries
+  wire   [   0:0] opaque_regs$002$reset;
+  wire   [   0:0] opaque_regs$002$en;
+  wire   [   0:0] opaque_regs$002$clk;
+  wire   [   7:0] opaque_regs$002$in_;
+  wire   [   7:0] opaque_regs$002$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$002
+  (
+    .reset ( opaque_regs$002$reset ),
+    .en    ( opaque_regs$002$en ),
+    .clk   ( opaque_regs$002$clk ),
+    .in_   ( opaque_regs$002$in_ ),
+    .out   ( opaque_regs$002$out )
+  );
+
+  // opaque_regs$003 temporaries
+  wire   [   0:0] opaque_regs$003$reset;
+  wire   [   0:0] opaque_regs$003$en;
+  wire   [   0:0] opaque_regs$003$clk;
+  wire   [   7:0] opaque_regs$003$in_;
+  wire   [   7:0] opaque_regs$003$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$003
+  (
+    .reset ( opaque_regs$003$reset ),
+    .en    ( opaque_regs$003$en ),
+    .clk   ( opaque_regs$003$clk ),
+    .in_   ( opaque_regs$003$in_ ),
+    .out   ( opaque_regs$003$out )
+  );
+
+  // arbiter temporaries
+  wire   [   3:0] arbiter$reqs;
+  wire   [   0:0] arbiter$clk;
+  wire   [   0:0] arbiter$reset;
+  wire   [   3:0] arbiter$grants;
+
+  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
+  (
+    .en     ( arbiter$en ),
+    .reqs   ( arbiter$reqs ),
+    .clk    ( arbiter$clk ),
+    .reset  ( arbiter$reset ),
+    .grants ( arbiter$grants )
+  );
+
+  // ports_state$000 temporaries
+  wire   [   0:0] ports_state$000$reset;
+  wire   [   0:0] ports_state$000$in_;
+  wire   [   0:0] ports_state$000$clk;
+  wire   [   0:0] ports_state$000$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$000
+  (
+    .reset ( ports_state$000$reset ),
+    .in_   ( ports_state$000$in_ ),
+    .clk   ( ports_state$000$clk ),
+    .out   ( ports_state$000$out )
+  );
+
+  // ports_state$001 temporaries
+  wire   [   0:0] ports_state$001$reset;
+  wire   [   0:0] ports_state$001$in_;
+  wire   [   0:0] ports_state$001$clk;
+  wire   [   0:0] ports_state$001$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$001
+  (
+    .reset ( ports_state$001$reset ),
+    .in_   ( ports_state$001$in_ ),
+    .clk   ( ports_state$001$clk ),
+    .out   ( ports_state$001$out )
+  );
+
+  // ports_state$002 temporaries
+  wire   [   0:0] ports_state$002$reset;
+  wire   [   0:0] ports_state$002$in_;
+  wire   [   0:0] ports_state$002$clk;
+  wire   [   0:0] ports_state$002$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$002
+  (
+    .reset ( ports_state$002$reset ),
+    .in_   ( ports_state$002$in_ ),
+    .clk   ( ports_state$002$clk ),
+    .out   ( ports_state$002$out )
+  );
+
+  // ports_state$003 temporaries
+  wire   [   0:0] ports_state$003$reset;
+  wire   [   0:0] ports_state$003$in_;
+  wire   [   0:0] ports_state$003$clk;
+  wire   [   0:0] ports_state$003$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$003
+  (
+    .reset ( ports_state$003$reset ),
+    .in_   ( ports_state$003$in_ ),
+    .clk   ( ports_state$003$clk ),
+    .out   ( ports_state$003$out )
+  );
+
+  // granted_addr_sel_mux temporaries
+  wire   [   0:0] granted_addr_sel_mux$reset;
+  wire   [  31:0] granted_addr_sel_mux$in_$000;
+  wire   [  31:0] granted_addr_sel_mux$in_$001;
+  wire   [  31:0] granted_addr_sel_mux$in_$002;
+  wire   [  31:0] granted_addr_sel_mux$in_$003;
+  wire   [   0:0] granted_addr_sel_mux$clk;
+  wire   [  31:0] granted_addr_sel_mux$out;
+
+  Mux_0x7be03e4007003adc granted_addr_sel_mux
+  (
+    .reset   ( granted_addr_sel_mux$reset ),
+    .in_$000 ( granted_addr_sel_mux$in_$000 ),
+    .in_$001 ( granted_addr_sel_mux$in_$001 ),
+    .in_$002 ( granted_addr_sel_mux$in_$002 ),
+    .in_$003 ( granted_addr_sel_mux$in_$003 ),
+    .clk     ( granted_addr_sel_mux$clk ),
+    .sel     ( granted_addr_sel_mux$sel ),
+    .out     ( granted_addr_sel_mux$out )
+  );
+
+  // cmp_addr_sel_mux temporaries
+  wire   [   0:0] cmp_addr_sel_mux$reset;
+  wire   [  31:0] cmp_addr_sel_mux$in_$000;
+  wire   [  31:0] cmp_addr_sel_mux$in_$001;
+  wire   [   0:0] cmp_addr_sel_mux$clk;
+  wire   [  31:0] cmp_addr_sel_mux$out;
+
+  Mux_0x7e8c65f0610ab9ca cmp_addr_sel_mux
+  (
+    .reset   ( cmp_addr_sel_mux$reset ),
+    .in_$000 ( cmp_addr_sel_mux$in_$000 ),
+    .in_$001 ( cmp_addr_sel_mux$in_$001 ),
+    .clk     ( cmp_addr_sel_mux$clk ),
+    .sel     ( cmp_addr_sel_mux$sel ),
+    .out     ( cmp_addr_sel_mux$out )
+  );
+
+  // signal connections
+  assign addr_cmps$000$clk            = clk;
+  assign addr_cmps$000$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$000$in1            = reqs$000_msg[163:132];
+  assign addr_cmps$000$reset          = reset;
+  assign addr_cmps$001$clk            = clk;
+  assign addr_cmps$001$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$001$in1            = reqs$001_msg[163:132];
+  assign addr_cmps$001$reset          = reset;
+  assign addr_cmps$002$clk            = clk;
+  assign addr_cmps$002$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$002$in1            = reqs$002_msg[163:132];
+  assign addr_cmps$002$reset          = reset;
+  assign addr_cmps$003$clk            = clk;
+  assign addr_cmps$003$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$003$in1            = reqs$003_msg[163:132];
+  assign addr_cmps$003$reset          = reset;
+  assign arbiter$clk                  = clk;
+  assign arbiter$reqs[0]              = reqs$000_val;
+  assign arbiter$reqs[1]              = reqs$001_val;
+  assign arbiter$reqs[2]              = reqs$002_val;
+  assign arbiter$reqs[3]              = reqs$003_val;
+  assign arbiter$reset                = reset;
+  assign cmp_addr_sel_mux$clk         = clk;
+  assign cmp_addr_sel_mux$in_$000     = curr_addr_reg$in_;
+  assign cmp_addr_sel_mux$in_$001     = curr_addr_reg$out;
+  assign cmp_addr_sel_mux$reset       = reset;
+  assign coalesced_bits$000           = addr_cmps$000$out;
+  assign coalesced_bits$001           = addr_cmps$001$out;
+  assign coalesced_bits$002           = addr_cmps$002$out;
+  assign coalesced_bits$003           = addr_cmps$003$out;
+  assign curr_addr_reg$clk            = clk;
+  assign curr_addr_reg$in_            = granted_addr_sel_mux$out;
+  assign curr_addr_reg$reset          = reset;
+  assign granted_addr_sel_mux$clk     = clk;
+  assign granted_addr_sel_mux$in_$000 = reqs$000_msg[163:132];
+  assign granted_addr_sel_mux$in_$001 = reqs$001_msg[163:132];
+  assign granted_addr_sel_mux$in_$002 = reqs$002_msg[163:132];
+  assign granted_addr_sel_mux$in_$003 = reqs$003_msg[163:132];
+  assign granted_addr_sel_mux$reset   = reset;
+  assign opaque_regs$000$clk          = clk;
+  assign opaque_regs$000$reset        = reset;
+  assign opaque_regs$001$clk          = clk;
+  assign opaque_regs$001$reset        = reset;
+  assign opaque_regs$002$clk          = clk;
+  assign opaque_regs$002$reset        = reset;
+  assign opaque_regs$003$clk          = clk;
+  assign opaque_regs$003$reset        = reset;
+  assign ports_state$000$clk          = clk;
+  assign ports_state$000$reset        = reset;
+  assign ports_state$001$clk          = clk;
+  assign ports_state$001$reset        = reset;
+  assign ports_state$002$clk          = clk;
+  assign ports_state$002$reset        = reset;
+  assign ports_state$003$clk          = clk;
+  assign ports_state$003$reset        = reset;
+
+  // array declarations
+  wire   [   0:0] coalesced_bits[0:3];
+  assign coalesced_bits[  0] = coalesced_bits$000;
+  assign coalesced_bits[  1] = coalesced_bits$001;
+  assign coalesced_bits[  2] = coalesced_bits$002;
+  assign coalesced_bits[  3] = coalesced_bits$003;
+  reg    [   0:0] opaque_regs$en[0:3];
+  assign opaque_regs$000$en = opaque_regs$en[  0];
+  assign opaque_regs$001$en = opaque_regs$en[  1];
+  assign opaque_regs$002$en = opaque_regs$en[  2];
+  assign opaque_regs$003$en = opaque_regs$en[  3];
+  reg    [   7:0] opaque_regs$in_[0:3];
+  assign opaque_regs$000$in_ = opaque_regs$in_[  0];
+  assign opaque_regs$001$in_ = opaque_regs$in_[  1];
+  assign opaque_regs$002$in_ = opaque_regs$in_[  2];
+  assign opaque_regs$003$in_ = opaque_regs$in_[  3];
+  wire   [   7:0] opaque_regs$out[0:3];
+  assign opaque_regs$out[  0] = opaque_regs$000$out;
+  assign opaque_regs$out[  1] = opaque_regs$001$out;
+  assign opaque_regs$out[  2] = opaque_regs$002$out;
+  assign opaque_regs$out[  3] = opaque_regs$003$out;
+  reg    [   0:0] ports_state$in_[0:3];
+  assign ports_state$000$in_ = ports_state$in_[  0];
+  assign ports_state$001$in_ = ports_state$in_[  1];
+  assign ports_state$002$in_ = ports_state$in_[  2];
+  assign ports_state$003$in_ = ports_state$in_[  3];
+  wire   [   0:0] ports_state$out[0:3];
+  assign ports_state$out[  0] = ports_state$000$out;
+  assign ports_state$out[  1] = ports_state$001$out;
+  assign ports_state$out[  2] = ports_state$002$out;
+  assign ports_state$out[  3] = ports_state$003$out;
+  wire   [ 175:0] reqs_msg[0:3];
+  assign reqs_msg[  0] = reqs$000_msg;
+  assign reqs_msg[  1] = reqs$001_msg;
+  assign reqs_msg[  2] = reqs$002_msg;
+  assign reqs_msg[  3] = reqs$003_msg;
+  reg    [   0:0] reqs_rdy[0:3];
+  assign reqs$000_rdy = reqs_rdy[  0];
+  assign reqs$001_rdy = reqs_rdy[  1];
+  assign reqs$002_rdy = reqs_rdy[  2];
+  assign reqs$003_rdy = reqs_rdy[  3];
+  wire   [   0:0] reqs_val[0:3];
+  assign reqs_val[  0] = reqs$000_val;
+  assign reqs_val[  1] = reqs$001_val;
+  assign reqs_val[  2] = reqs$002_val;
+  assign reqs_val[  3] = reqs$003_val;
+  reg    [ 145:0] resps_msg[0:3];
+  assign resps$000_msg = resps_msg[  0];
+  assign resps$001_msg = resps_msg[  1];
+  assign resps$002_msg = resps_msg[  2];
+  assign resps$003_msg = resps_msg[  3];
+  wire   [   0:0] resps_rdy[0:3];
+  assign resps_rdy[  0] = resps$000_rdy;
+  assign resps_rdy[  1] = resps$001_rdy;
+  assign resps_rdy[  2] = resps$002_rdy;
+  assign resps_rdy[  3] = resps$003_rdy;
+  reg    [   0:0] resps_val[0:3];
+  assign resps$000_val = resps_val[  0];
+  assign resps$001_val = resps_val[  1];
+  assign resps$002_val = resps_val[  2];
+  assign resps$003_val = resps_val[  3];
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_go_bit_set():
+  //
+  //       for i in range( nports ):
+  //         s.go_vector[i].value =  ( s.ports_state[i].out == PORT_STATE_IDLE ) | \
+  //                                 ( s.tmp_resps_val[i] & s.resps[i].rdy )
+  //
+  //       s.go_bit.value = reduce_and( s.go_vector )
+
+  // logic for comb_go_bit_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      go_vector[i] = ((ports_state$out[i] == PORT_STATE_IDLE)|(tmp_resps_val[i]&resps_rdy[i]));
+    end
+    go_bit = (&go_vector);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_memreq_set():
+  //
+  //       s.memreq.val.value =  s.go_bit & ( s.arbiter.grants != 0 )
+  //
+  //       s.memreq_kill.value = 0
+  //       s.memreq.msg.value  = 0
+  //
+  //       for i in range( nports ):
+  //         if s.arbiter.grants[i] and s.memreq_kill == 0:
+  //           # hawajkm: PyMTL bug
+  //           s.memreq_tmp_req.value  = s.reqs[i].msg
+  //           s.memreq.msg.value      = s.memreq_tmp_req
+  //           s.memreq_kill.value     = 1
+
+  // logic for comb_memreq_set()
+  always @ (*) begin
+    memreq_val = (go_bit&(arbiter$grants != 0));
+    memreq_kill = 0;
+    memreq_msg = 0;
+    for (i=0; i < nports; i=i+1)
+    begin
+      if ((arbiter$grants[i]&&(memreq_kill == 0))) begin
+        memreq_tmp_req = reqs_msg[i];
+        memreq_msg = memreq_tmp_req;
+        memreq_kill = 1;
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_reqs_rdy_set():
+  //
+  //       for i in range( nports ):
+  //         if s.coalescing_en:
+  //
+  //           # whether a request can be issued
+  //           s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
+  //
+  //           # whether a request can be coalesced
+  //           s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
+  //                                   ( s.ports_state[i].out == PORT_STATE_IDLE ) & ~s.memresp.val
+  //
+  //         else:
+  //           # issued only if the requesting port is granted
+  //           s.issued[i].value     = s.go_bit & s.arbiter.grants[i] & s.memreq.rdy
+  //
+  //           # no colaescing allowed
+  //           s.coalesced[i].value  = 0
+  //
+  //         # ready if a request is either issued or coalesced
+  //         s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
+
+  // logic for comb_reqs_rdy_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      if (coalescing_en) begin
+        issued[i] = ((go_bit&coalesced_bits[i])&memreq_rdy);
+        coalesced[i] = (((~go_bit&coalesced_bits[i])&(ports_state$out[i] == PORT_STATE_IDLE))&~memresp_val);
+      end
+      else begin
+        issued[i] = ((go_bit&arbiter$grants[i])&memreq_rdy);
+        coalesced[i] = 0;
+      end
+      reqs_rdy[i] = (issued[i]|coalesced[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_memresp_rdy_set():
+  //
+  //       for i in range( nports ):
+  //         s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
+  //                                         ( s.ports_state[i].out == PORT_STATE_IDLE )
+  //       s.memresp.rdy.value = reduce_and( s.memresp_rdy_vector )
+
+  // logic for comb_memresp_rdy_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      memresp_rdy_vector[i] = (((ports_state$out[i] == PORT_STATE_PENDING)&resps_rdy[i])|(ports_state$out[i] == PORT_STATE_IDLE));
+    end
+    memresp_rdy = (&memresp_rdy_vector);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_resps_set():
+  //
+  //       for i in range( nports ):
+  //         s.tmp_resps_val[i].value = s.memresp.val & \
+  //                                s.memresp.rdy & \
+  //                                ( s.ports_state[i].out == PORT_STATE_PENDING )
+
+  // logic for comb_resps_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      tmp_resps_val[i] = ((memresp_val&memresp_rdy)&(ports_state$out[i] == PORT_STATE_PENDING));
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_connect_resp_val():
+  //
+  //       for i in xrange( nports ):
+  //         s.resps[i].val.value = s.tmp_resps_val[i]
+  //
+  //         # hawajkm: PyMTL bug
+  //         s.tmp_resp.value        = s.memresp.msg
+  //         s.tmp_resp.opaque.value = s.opaque_regs[i].out
+  //         s.resps[i].msg.value    = s.tmp_resp
+
+  // logic for comb_connect_resp_val()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      resps_val[i] = tmp_resps_val[i];
+      tmp_resp = memresp_msg;
+      tmp_resp[(142)-1:134] = opaque_regs$out[i];
+      resps_msg[i] = tmp_resp;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_arbiter_en():
+  //
+  //       s.arbiter.en.value = s.memreq.val & s.memreq.rdy
+
+  // logic for comb_arbiter_en()
+  always @ (*) begin
+    arbiter$en = (memreq_val&memreq_rdy);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_encode_arb_grants():
+  //
+  //       s.encoder_kill.value = 0
+  //       s.encoded_arb_grant.value = 0
+  //
+  //       for i in range( nports ):
+  //         if s.arbiter.grants[i] and s.encoder_kill == 0:
+  //           s.encoded_arb_grant.value = i
+  //           s.encoder_kill.value = 1
+
+  // logic for comb_encode_arb_grants()
+  always @ (*) begin
+    encoder_kill = 0;
+    encoded_arb_grant = 0;
+    for (i=0; i < nports; i=i+1)
+    begin
+      if ((arbiter$grants[i]&&(encoder_kill == 0))) begin
+        encoded_arb_grant = i;
+        encoder_kill = 1;
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_curr_addr_reg_en():
+  //
+  //       s.curr_addr_reg.en.value = s.go_bit
+
+  // logic for comb_curr_addr_reg_en()
+  always @ (*) begin
+    curr_addr_reg$en = go_bit;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def ports_state_transition():
+  //
+  //       for i in range( nports ):
+  //         curr_state = s.ports_state[i].out
+  //         next_state = s.ports_state[i].out
+  //
+  //         # PORT_STATE_IDLE -> PORT_STATE_PENDING
+  //         if ( curr_state == PORT_STATE_IDLE ):
+  //           if ( s.reqs[i].val and s.reqs[i].rdy ):
+  //             next_state = PORT_STATE_PENDING
+  //
+  //         # PORT_STATE_PENDING -> PORT_STATE_IDLE
+  //         elif ( curr_state == PORT_STATE_PENDING ):
+  //           if ( s.memresp.rdy and s.memresp.val and ~( s.reqs[i].val and s.reqs[i].rdy ) ):
+  //             next_state = PORT_STATE_IDLE
+  //
+  //         s.ports_state[i].in_.value = next_state
+
+  // logic for ports_state_transition()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      curr_state__9 = ports_state$out[i];
+      next_state__9 = ports_state$out[i];
+      if ((curr_state__9 == PORT_STATE_IDLE)) begin
+        if ((reqs_val[i]&&reqs_rdy[i])) begin
+          next_state__9 = PORT_STATE_PENDING;
+        end
+        else begin
+        end
+      end
+      else begin
+        if ((curr_state__9 == PORT_STATE_PENDING)) begin
+          if ((memresp_rdy&&memresp_val&&~(reqs_val[i]&&reqs_rdy[i]))) begin
+            next_state__9 = PORT_STATE_IDLE;
+          end
+          else begin
+          end
+        end
+        else begin
+        end
+      end
+      ports_state$in_[i] = next_state__9;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_opaque_regs_en():
+  //
+  //       for i in range( nports ):
+  //         # hawajkm: PyMTL bug
+  //         s.opaque_tmp_req.value = s.reqs[i].msg
+  //         s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == PORT_STATE_IDLE )
+  //         s.opaque_regs[i].in_.value = s.opaque_tmp_req.opaque
+
+  // logic for comb_opaque_regs_en()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      opaque_tmp_req = reqs_msg[i];
+      opaque_regs$en[i] = (go_bit|(ports_state$out[i] == PORT_STATE_IDLE));
+      opaque_regs$in_[i] = opaque_tmp_req[(172)-1:164];
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cmp_addr_sel_mux_sel():
+  //
+  //       s.cmp_addr_sel_mux.sel.value = ~s.go_bit
+
+  // logic for comb_cmp_addr_sel_mux_sel()
+  always @ (*) begin
+    cmp_addr_sel_mux$sel = ~go_bit;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_granted_addr_sel_mux_sel():
+  //
+  //       s.granted_addr_sel_mux.sel.value = s.encoded_arb_grant
+
+  // logic for comb_granted_addr_sel_mux_sel()
+  always @ (*) begin
+    granted_addr_sel_mux$sel = encoded_arb_grant;
+  end
+
+
+endmodule // MemCoalescer_0x64e5f16502bd9749
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// EqComparator_0x20454677a5a72bab
+//-----------------------------------------------------------------------------
+// nbits: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module EqComparator_0x20454677a5a72bab
+(
+  input  wire [   0:0] clk,
+  input  wire [  31:0] in0,
+  input  wire [  31:0] in1,
+  output reg  [   0:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       s.out.value = s.in0 == s.in1
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = (in0 == in1);
+  end
+
+
+endmodule // EqComparator_0x20454677a5a72bab
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// HostAdapter_MduReqMsg_32_8_MduRespMsg_32
+//-----------------------------------------------------------------------------
+// resp: <pymtl.model.signals.OutPort object at 0x7f538bcc5310>
+// req: <pymtl.model.signals.InPort object at 0x7f538bcbdd10>
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module HostAdapter_MduReqMsg_32_8_MduRespMsg_32
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] host_en,
+  input  wire [  69:0] hostreq_msg,
+  output reg  [   0:0] hostreq_rdy,
+  input  wire [   0:0] hostreq_val,
+  output reg  [  34:0] hostresp_msg,
+  input  wire [   0:0] hostresp_rdy,
+  output reg  [   0:0] hostresp_val,
+  input  wire [  69:0] realreq_msg,
+  output reg  [   0:0] realreq_rdy,
+  input  wire [   0:0] realreq_val,
+  output reg  [  34:0] realresp_msg,
+  input  wire [   0:0] realresp_rdy,
+  output reg  [   0:0] realresp_val,
+  output reg  [  69:0] req_msg,
+  input  wire [   0:0] req_rdy,
+  output reg  [   0:0] req_val,
+  input  wire [   0:0] reset,
+  input  wire [  34:0] resp_msg,
+  output reg  [   0:0] resp_rdy,
+  input  wire [   0:0] resp_val
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_req_select():
+  //
+  //       if s.host_en:
+  //         # Mute req
+  //         s.realreq.rdy.value  = 0
+  //         s.realresp.val.value = 0
+  //         s.realresp.msg.value = 0
+  //
+  //         # instance.req <- hostreq
+  //         s.req.val.value      = s.hostreq.val
+  //         s.req.msg.value      = s.hostreq.msg
+  //         s.hostreq.rdy.value  = s.req.rdy
+  //
+  //         # hostresp <- out_resp
+  //         s.hostresp.val.value = s.resp.val
+  //         s.hostresp.msg.value = s.resp.msg
+  //         s.resp.rdy.value     = s.hostresp.rdy
+  //
+  //       else:
+  //         # Mute host
+  //         s.hostreq.rdy.value  = 0
+  //         s.hostresp.val.value = 0
+  //         s.hostresp.msg.value = 0
+  //
+  //         # req <- realreq
+  //         s.req.val.value      = s.realreq.val
+  //         s.req.msg.value      = s.realreq.msg
+  //         s.realreq.rdy.value  = s.req.rdy
+  //
+  //         # realresp <- resp
+  //         s.realresp.val.value = s.resp.val
+  //         s.realresp.msg.value = s.resp.msg
+  //         s.resp.rdy.value     = s.realresp.rdy
+
+  // logic for comb_req_select()
+  always @ (*) begin
+    if (host_en) begin
+      realreq_rdy = 0;
+      realresp_val = 0;
+      realresp_msg = 0;
+      req_val = hostreq_val;
+      req_msg = hostreq_msg;
+      hostreq_rdy = req_rdy;
+      hostresp_val = resp_val;
+      hostresp_msg = resp_msg;
+      resp_rdy = hostresp_rdy;
+    end
+    else begin
+      hostreq_rdy = 0;
+      hostresp_val = 0;
+      hostresp_msg = 0;
+      req_val = realreq_val;
+      req_msg = realreq_msg;
+      realreq_rdy = req_rdy;
+      realresp_val = resp_val;
+      realresp_msg = resp_msg;
+      resp_rdy = realresp_rdy;
+    end
+  end
+
+
+endmodule // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// CtrlReg_0x6aec39a1ab183c1
+//-----------------------------------------------------------------------------
+// num_cores: 4
+// valrdy_ifcs: 5
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module CtrlReg_0x6aec39a1ab183c1
+(
+  input  wire [   0:0] clk,
+  input  wire [   3:0] commit_inst,
+  output wire [   0:0] debug,
+  output wire [   3:0] go,
+  output wire [   4:0] host_en,
+  input  wire [  36:0] req_msg,
+  output wire [   0:0] req_rdy,
+  input  wire [   0:0] req_val,
+  input  wire [   0:0] reset,
+  output wire [  32:0] resp_msg,
+  input  wire [   0:0] resp_rdy,
+  output wire [   0:0] resp_val,
+  input  wire [   0:0] stats_en
+);
+
+  // wire declarations
+  wire   [  31:0] instcounters_in$000;
+  wire   [  31:0] instcounters_in$001;
+  wire   [  31:0] instcounters_in$002;
+  wire   [  31:0] instcounters_in$003;
+  wire   [  31:0] instcounters_out$000;
+  wire   [  31:0] instcounters_out$001;
+  wire   [  31:0] instcounters_out$002;
+  wire   [  31:0] instcounters_out$003;
+  wire   [  31:0] cyclecounters_out;
+
+
+  // register declarations
+  reg    [   0:0] cr_debug_en;
+  reg    [  31:0] cr_debug_in;
+  reg    [   0:0] cr_go_en;
+  reg    [  31:0] cr_go_in;
+  reg    [   0:0] cyclecounters_en;
+  reg    [  31:0] cyclecounters_in;
+  reg    [   3:0] instcounters_en;
+  reg    [  32:0] out_q$enq_msg;
+  reg    [   3:0] rf_raddr;
+  reg    [  31:0] rf_rdata;
+  reg    [   3:0] rf_waddr;
+  reg    [  31:0] rf_wdata;
+  reg    [   0:0] rf_wen;
+  reg    [   4:0] wire_host_en;
+
+  // localparam declarations
+  localparam TYPE_WRITE = 1;
+  localparam cr_debug = 1;
+  localparam cr_go = 0;
+  localparam cr_host_en = 7;
+  localparam num_cores = 4;
+  localparam valrdy_ifcs = 5;
+
+  // loop variable declarations
+  integer core_idx;
+  integer idx;
+
+  // in_q temporaries
+  wire   [   0:0] in_q$reset;
+  wire   [   0:0] in_q$clk;
+  wire   [   0:0] in_q$deq_rdy;
+  wire   [  36:0] in_q$enq_msg;
+  wire   [   0:0] in_q$enq_val;
+  wire   [  36:0] in_q$deq_msg;
+  wire   [   0:0] in_q$deq_val;
+  wire   [   0:0] in_q$enq_rdy;
+
+  SingleElementNormalQueue_0x5cdd7a7d31cf6b7d in_q
+  (
+    .reset   ( in_q$reset ),
+    .clk     ( in_q$clk ),
+    .deq_rdy ( in_q$deq_rdy ),
+    .enq_msg ( in_q$enq_msg ),
+    .enq_val ( in_q$enq_val ),
+    .deq_msg ( in_q$deq_msg ),
+    .deq_val ( in_q$deq_val ),
+    .enq_rdy ( in_q$enq_rdy )
+  );
+
+  // ctrlregs$000 temporaries
+  wire   [   0:0] ctrlregs$000$reset;
+  wire   [   0:0] ctrlregs$000$en;
+  wire   [   0:0] ctrlregs$000$clk;
+  wire   [  31:0] ctrlregs$000$in_;
+  wire   [  31:0] ctrlregs$000$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$000
+  (
+    .reset ( ctrlregs$000$reset ),
+    .en    ( ctrlregs$000$en ),
+    .clk   ( ctrlregs$000$clk ),
+    .in_   ( ctrlregs$000$in_ ),
+    .out   ( ctrlregs$000$out )
+  );
+
+  // ctrlregs$001 temporaries
+  wire   [   0:0] ctrlregs$001$reset;
+  wire   [   0:0] ctrlregs$001$en;
+  wire   [   0:0] ctrlregs$001$clk;
+  wire   [  31:0] ctrlregs$001$in_;
+  wire   [  31:0] ctrlregs$001$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$001
+  (
+    .reset ( ctrlregs$001$reset ),
+    .en    ( ctrlregs$001$en ),
+    .clk   ( ctrlregs$001$clk ),
+    .in_   ( ctrlregs$001$in_ ),
+    .out   ( ctrlregs$001$out )
+  );
+
+  // ctrlregs$002 temporaries
+  wire   [   0:0] ctrlregs$002$reset;
+  wire   [   0:0] ctrlregs$002$en;
+  wire   [   0:0] ctrlregs$002$clk;
+  wire   [  31:0] ctrlregs$002$in_;
+  wire   [  31:0] ctrlregs$002$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$002
+  (
+    .reset ( ctrlregs$002$reset ),
+    .en    ( ctrlregs$002$en ),
+    .clk   ( ctrlregs$002$clk ),
+    .in_   ( ctrlregs$002$in_ ),
+    .out   ( ctrlregs$002$out )
+  );
+
+  // ctrlregs$003 temporaries
+  wire   [   0:0] ctrlregs$003$reset;
+  wire   [   0:0] ctrlregs$003$en;
+  wire   [   0:0] ctrlregs$003$clk;
+  wire   [  31:0] ctrlregs$003$in_;
+  wire   [  31:0] ctrlregs$003$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$003
+  (
+    .reset ( ctrlregs$003$reset ),
+    .en    ( ctrlregs$003$en ),
+    .clk   ( ctrlregs$003$clk ),
+    .in_   ( ctrlregs$003$in_ ),
+    .out   ( ctrlregs$003$out )
+  );
+
+  // ctrlregs$004 temporaries
+  wire   [   0:0] ctrlregs$004$reset;
+  wire   [   0:0] ctrlregs$004$en;
+  wire   [   0:0] ctrlregs$004$clk;
+  wire   [  31:0] ctrlregs$004$in_;
+  wire   [  31:0] ctrlregs$004$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$004
+  (
+    .reset ( ctrlregs$004$reset ),
+    .en    ( ctrlregs$004$en ),
+    .clk   ( ctrlregs$004$clk ),
+    .in_   ( ctrlregs$004$in_ ),
+    .out   ( ctrlregs$004$out )
+  );
+
+  // ctrlregs$005 temporaries
+  wire   [   0:0] ctrlregs$005$reset;
+  wire   [   0:0] ctrlregs$005$en;
+  wire   [   0:0] ctrlregs$005$clk;
+  wire   [  31:0] ctrlregs$005$in_;
+  wire   [  31:0] ctrlregs$005$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$005
+  (
+    .reset ( ctrlregs$005$reset ),
+    .en    ( ctrlregs$005$en ),
+    .clk   ( ctrlregs$005$clk ),
+    .in_   ( ctrlregs$005$in_ ),
+    .out   ( ctrlregs$005$out )
+  );
+
+  // ctrlregs$006 temporaries
+  wire   [   0:0] ctrlregs$006$reset;
+  wire   [   0:0] ctrlregs$006$en;
+  wire   [   0:0] ctrlregs$006$clk;
+  wire   [  31:0] ctrlregs$006$in_;
+  wire   [  31:0] ctrlregs$006$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$006
+  (
+    .reset ( ctrlregs$006$reset ),
+    .en    ( ctrlregs$006$en ),
+    .clk   ( ctrlregs$006$clk ),
+    .in_   ( ctrlregs$006$in_ ),
+    .out   ( ctrlregs$006$out )
+  );
+
+  // ctrlregs$007 temporaries
+  wire   [   0:0] ctrlregs$007$reset;
+  wire   [   0:0] ctrlregs$007$en;
+  wire   [   0:0] ctrlregs$007$clk;
+  wire   [  31:0] ctrlregs$007$in_;
+  wire   [  31:0] ctrlregs$007$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$007
+  (
+    .reset ( ctrlregs$007$reset ),
+    .en    ( ctrlregs$007$en ),
+    .clk   ( ctrlregs$007$clk ),
+    .in_   ( ctrlregs$007$in_ ),
+    .out   ( ctrlregs$007$out )
+  );
+
+  // ctrlregs$008 temporaries
+  wire   [   0:0] ctrlregs$008$reset;
+  wire   [   0:0] ctrlregs$008$en;
+  wire   [   0:0] ctrlregs$008$clk;
+  wire   [  31:0] ctrlregs$008$in_;
+  wire   [  31:0] ctrlregs$008$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$008
+  (
+    .reset ( ctrlregs$008$reset ),
+    .en    ( ctrlregs$008$en ),
+    .clk   ( ctrlregs$008$clk ),
+    .in_   ( ctrlregs$008$in_ ),
+    .out   ( ctrlregs$008$out )
+  );
+
+  // ctrlregs$009 temporaries
+  wire   [   0:0] ctrlregs$009$reset;
+  wire   [   0:0] ctrlregs$009$en;
+  wire   [   0:0] ctrlregs$009$clk;
+  wire   [  31:0] ctrlregs$009$in_;
+  wire   [  31:0] ctrlregs$009$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$009
+  (
+    .reset ( ctrlregs$009$reset ),
+    .en    ( ctrlregs$009$en ),
+    .clk   ( ctrlregs$009$clk ),
+    .in_   ( ctrlregs$009$in_ ),
+    .out   ( ctrlregs$009$out )
+  );
+
+  // ctrlregs$010 temporaries
+  wire   [   0:0] ctrlregs$010$reset;
+  wire   [   0:0] ctrlregs$010$en;
+  wire   [   0:0] ctrlregs$010$clk;
+  wire   [  31:0] ctrlregs$010$in_;
+  wire   [  31:0] ctrlregs$010$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$010
+  (
+    .reset ( ctrlregs$010$reset ),
+    .en    ( ctrlregs$010$en ),
+    .clk   ( ctrlregs$010$clk ),
+    .in_   ( ctrlregs$010$in_ ),
+    .out   ( ctrlregs$010$out )
+  );
+
+  // ctrlregs$011 temporaries
+  wire   [   0:0] ctrlregs$011$reset;
+  wire   [   0:0] ctrlregs$011$en;
+  wire   [   0:0] ctrlregs$011$clk;
+  wire   [  31:0] ctrlregs$011$in_;
+  wire   [  31:0] ctrlregs$011$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$011
+  (
+    .reset ( ctrlregs$011$reset ),
+    .en    ( ctrlregs$011$en ),
+    .clk   ( ctrlregs$011$clk ),
+    .in_   ( ctrlregs$011$in_ ),
+    .out   ( ctrlregs$011$out )
+  );
+
+  // ctrlregs$012 temporaries
+  wire   [   0:0] ctrlregs$012$reset;
+  wire   [   0:0] ctrlregs$012$en;
+  wire   [   0:0] ctrlregs$012$clk;
+  wire   [  31:0] ctrlregs$012$in_;
+  wire   [  31:0] ctrlregs$012$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$012
+  (
+    .reset ( ctrlregs$012$reset ),
+    .en    ( ctrlregs$012$en ),
+    .clk   ( ctrlregs$012$clk ),
+    .in_   ( ctrlregs$012$in_ ),
+    .out   ( ctrlregs$012$out )
+  );
+
+  // ctrlregs$013 temporaries
+  wire   [   0:0] ctrlregs$013$reset;
+  wire   [   0:0] ctrlregs$013$en;
+  wire   [   0:0] ctrlregs$013$clk;
+  wire   [  31:0] ctrlregs$013$in_;
+  wire   [  31:0] ctrlregs$013$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$013
+  (
+    .reset ( ctrlregs$013$reset ),
+    .en    ( ctrlregs$013$en ),
+    .clk   ( ctrlregs$013$clk ),
+    .in_   ( ctrlregs$013$in_ ),
+    .out   ( ctrlregs$013$out )
+  );
+
+  // ctrlregs$014 temporaries
+  wire   [   0:0] ctrlregs$014$reset;
+  wire   [   0:0] ctrlregs$014$en;
+  wire   [   0:0] ctrlregs$014$clk;
+  wire   [  31:0] ctrlregs$014$in_;
+  wire   [  31:0] ctrlregs$014$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$014
+  (
+    .reset ( ctrlregs$014$reset ),
+    .en    ( ctrlregs$014$en ),
+    .clk   ( ctrlregs$014$clk ),
+    .in_   ( ctrlregs$014$in_ ),
+    .out   ( ctrlregs$014$out )
+  );
+
+  // ctrlregs$015 temporaries
+  wire   [   0:0] ctrlregs$015$reset;
+  wire   [   0:0] ctrlregs$015$en;
+  wire   [   0:0] ctrlregs$015$clk;
+  wire   [  31:0] ctrlregs$015$in_;
+  wire   [  31:0] ctrlregs$015$out;
+
+  RegEnRst_0x3857337130dc0828 ctrlregs$015
+  (
+    .reset ( ctrlregs$015$reset ),
+    .en    ( ctrlregs$015$en ),
+    .clk   ( ctrlregs$015$clk ),
+    .in_   ( ctrlregs$015$in_ ),
+    .out   ( ctrlregs$015$out )
+  );
+
+  // out_q temporaries
+  wire   [   0:0] out_q$reset;
+  wire   [   0:0] out_q$clk;
+  wire   [   0:0] out_q$deq_rdy;
+  wire   [   0:0] out_q$enq_val;
+  wire   [  32:0] out_q$deq_msg;
+  wire   [   0:0] out_q$deq_val;
+  wire   [   0:0] out_q$enq_rdy;
+
+  SingleElementNormalQueue_0x79667c2fcd82f209 out_q
+  (
+    .reset   ( out_q$reset ),
+    .clk     ( out_q$clk ),
+    .deq_rdy ( out_q$deq_rdy ),
+    .enq_msg ( out_q$enq_msg ),
+    .enq_val ( out_q$enq_val ),
+    .deq_msg ( out_q$deq_msg ),
+    .deq_val ( out_q$deq_val ),
+    .enq_rdy ( out_q$enq_rdy )
+  );
+
+  // signal connections
+  assign ctrlregs$000$clk     = clk;
+  assign ctrlregs$000$en      = cr_go_en;
+  assign ctrlregs$000$in_     = cr_go_in;
+  assign ctrlregs$000$reset   = reset;
+  assign ctrlregs$001$clk     = clk;
+  assign ctrlregs$001$en      = cr_debug_en;
+  assign ctrlregs$001$in_     = cr_debug_in;
+  assign ctrlregs$001$reset   = reset;
+  assign ctrlregs$002$clk     = clk;
+  assign ctrlregs$002$en      = cyclecounters_en;
+  assign ctrlregs$002$in_     = cyclecounters_in;
+  assign ctrlregs$002$reset   = reset;
+  assign ctrlregs$003$clk     = clk;
+  assign ctrlregs$003$en      = instcounters_en[0];
+  assign ctrlregs$003$in_     = instcounters_in$000;
+  assign ctrlregs$003$reset   = reset;
+  assign ctrlregs$004$clk     = clk;
+  assign ctrlregs$004$en      = instcounters_en[1];
+  assign ctrlregs$004$in_     = instcounters_in$001;
+  assign ctrlregs$004$reset   = reset;
+  assign ctrlregs$005$clk     = clk;
+  assign ctrlregs$005$en      = instcounters_en[2];
+  assign ctrlregs$005$in_     = instcounters_in$002;
+  assign ctrlregs$005$reset   = reset;
+  assign ctrlregs$006$clk     = clk;
+  assign ctrlregs$006$en      = instcounters_en[3];
+  assign ctrlregs$006$in_     = instcounters_in$003;
+  assign ctrlregs$006$reset   = reset;
+  assign ctrlregs$007$clk     = clk;
+  assign ctrlregs$007$en      = wire_host_en[0];
+  assign ctrlregs$007$in_     = rf_wdata;
+  assign ctrlregs$007$reset   = reset;
+  assign ctrlregs$008$clk     = clk;
+  assign ctrlregs$008$en      = wire_host_en[1];
+  assign ctrlregs$008$in_     = rf_wdata;
+  assign ctrlregs$008$reset   = reset;
+  assign ctrlregs$009$clk     = clk;
+  assign ctrlregs$009$en      = wire_host_en[2];
+  assign ctrlregs$009$in_     = rf_wdata;
+  assign ctrlregs$009$reset   = reset;
+  assign ctrlregs$010$clk     = clk;
+  assign ctrlregs$010$en      = wire_host_en[3];
+  assign ctrlregs$010$in_     = rf_wdata;
+  assign ctrlregs$010$reset   = reset;
+  assign ctrlregs$011$clk     = clk;
+  assign ctrlregs$011$en      = wire_host_en[4];
+  assign ctrlregs$011$in_     = rf_wdata;
+  assign ctrlregs$011$reset   = reset;
+  assign ctrlregs$012$clk     = clk;
+  assign ctrlregs$012$reset   = reset;
+  assign ctrlregs$013$clk     = clk;
+  assign ctrlregs$013$reset   = reset;
+  assign ctrlregs$014$clk     = clk;
+  assign ctrlregs$014$reset   = reset;
+  assign ctrlregs$015$clk     = clk;
+  assign ctrlregs$015$reset   = reset;
+  assign cyclecounters_out    = ctrlregs$002$out;
+  assign debug                = ctrlregs$001$out[0];
+  assign go[0]                = ctrlregs$000$out[0];
+  assign go[1]                = ctrlregs$000$out[1];
+  assign go[2]                = ctrlregs$000$out[2];
+  assign go[3]                = ctrlregs$000$out[3];
+  assign host_en[0]           = ctrlregs$007$out[0];
+  assign host_en[1]           = ctrlregs$008$out[0];
+  assign host_en[2]           = ctrlregs$009$out[0];
+  assign host_en[3]           = ctrlregs$010$out[0];
+  assign host_en[4]           = ctrlregs$011$out[0];
+  assign in_q$clk             = clk;
+  assign in_q$deq_rdy         = out_q$enq_rdy;
+  assign in_q$enq_msg         = req_msg;
+  assign in_q$enq_val         = req_val;
+  assign in_q$reset           = reset;
+  assign instcounters_out$000 = ctrlregs$003$out;
+  assign instcounters_out$001 = ctrlregs$004$out;
+  assign instcounters_out$002 = ctrlregs$005$out;
+  assign instcounters_out$003 = ctrlregs$006$out;
+  assign out_q$clk            = clk;
+  assign out_q$deq_rdy        = resp_rdy;
+  assign out_q$enq_val        = in_q$deq_val;
+  assign out_q$reset          = reset;
+  assign req_rdy              = in_q$enq_rdy;
+  assign resp_msg             = out_q$deq_msg;
+  assign resp_val             = out_q$deq_val;
+
+  // array declarations
+  wire   [  31:0] ctrlregs$out[0:15];
+  assign ctrlregs$out[  0] = ctrlregs$000$out;
+  assign ctrlregs$out[  1] = ctrlregs$001$out;
+  assign ctrlregs$out[  2] = ctrlregs$002$out;
+  assign ctrlregs$out[  3] = ctrlregs$003$out;
+  assign ctrlregs$out[  4] = ctrlregs$004$out;
+  assign ctrlregs$out[  5] = ctrlregs$005$out;
+  assign ctrlregs$out[  6] = ctrlregs$006$out;
+  assign ctrlregs$out[  7] = ctrlregs$007$out;
+  assign ctrlregs$out[  8] = ctrlregs$008$out;
+  assign ctrlregs$out[  9] = ctrlregs$009$out;
+  assign ctrlregs$out[ 10] = ctrlregs$010$out;
+  assign ctrlregs$out[ 11] = ctrlregs$011$out;
+  assign ctrlregs$out[ 12] = ctrlregs$012$out;
+  assign ctrlregs$out[ 13] = ctrlregs$013$out;
+  assign ctrlregs$out[ 14] = ctrlregs$014$out;
+  assign ctrlregs$out[ 15] = ctrlregs$015$out;
+  reg    [  31:0] instcounters_in[0:3];
+  assign instcounters_in$000 = instcounters_in[  0];
+  assign instcounters_in$001 = instcounters_in[  1];
+  assign instcounters_in$002 = instcounters_in[  2];
+  assign instcounters_in$003 = instcounters_in[  3];
+  wire   [  31:0] instcounters_out[0:3];
+  assign instcounters_out[  0] = instcounters_out$000;
+  assign instcounters_out[  1] = instcounters_out$001;
+  assign instcounters_out[  2] = instcounters_out$002;
+  assign instcounters_out[  3] = instcounters_out$003;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_rf_read_interface():
+  //       s.rf_raddr.value = s.in_q.deq.msg.addr
+  //       s.rf_rdata.value = s.ctrlregs[ s.rf_raddr ].out
+
+  // logic for comb_rf_read_interface()
+  always @ (*) begin
+    rf_raddr = in_q$deq_msg[(36)-1:32];
+    rf_rdata = ctrlregs$out[rf_raddr];
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_rf_write_interface():
+  //       s.rf_waddr.value = s.in_q.deq.msg.addr
+  //       s.rf_wdata.value = s.in_q.deq.msg.data
+  //       s.rf_wen.value   = s.in_q.deq.val & \
+  //           ( s.in_q.deq.msg.type_ == CtrlRegReqMsg.TYPE_WRITE )
+
+  // logic for comb_rf_write_interface()
+  always @ (*) begin
+    rf_waddr = in_q$deq_msg[(36)-1:32];
+    rf_wdata = in_q$deq_msg[(32)-1:0];
+    rf_wen = (in_q$deq_val&(in_q$deq_msg[(37)-1:36] == TYPE_WRITE));
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_go_logic():
+  //       s.cr_go_en.value = s.rf_wen & ( s.rf_waddr == cr_go )
+  //       s.cr_go_in.value = s.rf_wdata
+
+  // logic for comb_cr_go_logic()
+  always @ (*) begin
+    cr_go_en = (rf_wen&(rf_waddr == cr_go));
+    cr_go_in = rf_wdata;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_debug_logic():
+  //       s.cr_debug_en.value = s.rf_wen & ( s.rf_waddr == cr_debug )
+  //       s.cr_debug_in.value = s.rf_wdata
+
+  // logic for comb_cr_debug_logic()
+  always @ (*) begin
+    cr_debug_en = (rf_wen&(rf_waddr == cr_debug));
+    cr_debug_in = rf_wdata;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_instcounter_logic():
+  //       for core_idx in xrange(num_cores):
+  //         s.instcounters_en[core_idx].value = s.commit_inst[core_idx] & s.stats_en
+  //         s.instcounters_in[core_idx].value = s.instcounters_out[core_idx] + 1
+
+  // logic for comb_cr_instcounter_logic()
+  always @ (*) begin
+    for (core_idx=0; core_idx < num_cores; core_idx=core_idx+1)
+    begin
+      instcounters_en[core_idx] = (commit_inst[core_idx]&stats_en);
+      instcounters_in[core_idx] = (instcounters_out[core_idx]+1);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_cyclecounter_logic():
+  //       s.cyclecounters_en.value = s.stats_en
+  //       s.cyclecounters_in.value = s.cyclecounters_out + 1
+
+  // logic for comb_cr_cyclecounter_logic()
+  always @ (*) begin
+    cyclecounters_en = stats_en;
+    cyclecounters_in = (cyclecounters_out+1);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_hosten_logic():
+  //       for idx in xrange(valrdy_ifcs):
+  //         s.wire_host_en[idx].value = s.rf_wen & ( s.rf_waddr == ( idx + cr_host_en ) )
+
+  // logic for comb_cr_hosten_logic()
+  always @ (*) begin
+    for (idx=0; idx < valrdy_ifcs; idx=idx+1)
+    begin
+      wire_host_en[idx] = (rf_wen&(rf_waddr == (idx+cr_host_en)));
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_resp_msg():
+  //       s.out_q.enq.msg.type_.value  = s.in_q.deq.msg.type_
+  //
+  //       if s.in_q.deq.msg.type_ == CtrlRegReqMsg.TYPE_WRITE:
+  //         s.out_q.enq.msg.data.value = 0
+  //       else:
+  //         s.out_q.enq.msg.data.value = s.rf_rdata
+
+  // logic for comb_resp_msg()
+  always @ (*) begin
+    out_q$enq_msg[(33)-1:32] = in_q$deq_msg[(37)-1:36];
+    if ((in_q$deq_msg[(37)-1:36] == TYPE_WRITE)) begin
+      out_q$enq_msg[(32)-1:0] = 0;
+    end
+    else begin
+      out_q$enq_msg[(32)-1:0] = rf_rdata;
+    end
+  end
+
+
+endmodule // CtrlReg_0x6aec39a1ab183c1
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
+//-----------------------------------------------------------------------------
+// dtype: 37
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
+(
+  input  wire [   0:0] clk,
+  output wire [  36:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [  36:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  (
+    .clk     ( ctrl$clk ),
+    .enq_val ( ctrl$enq_val ),
+    .reset   ( ctrl$reset ),
+    .deq_rdy ( ctrl$deq_rdy ),
+    .wen     ( ctrl$wen ),
+    .deq_val ( ctrl$deq_val ),
+    .enq_rdy ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$reset;
+  wire   [   0:0] dpath$clk;
+  wire   [  36:0] dpath$enq_bits;
+  wire   [   0:0] dpath$wen;
+  wire   [  36:0] dpath$deq_bits;
+
+  SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d dpath
+  (
+    .reset    ( dpath$reset ),
+    .clk      ( dpath$clk ),
+    .enq_bits ( dpath$enq_bits ),
+    .wen      ( dpath$wen ),
+    .deq_bits ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk       = clk;
+  assign ctrl$deq_rdy   = deq_rdy;
+  assign ctrl$enq_val   = enq_val;
+  assign ctrl$reset     = reset;
+  assign deq_msg        = dpath$deq_bits;
+  assign deq_val        = ctrl$deq_val;
+  assign dpath$clk      = clk;
+  assign dpath$enq_bits = enq_msg;
+  assign dpath$reset    = reset;
+  assign dpath$wen      = ctrl$wen;
+  assign enq_rdy        = ctrl$enq_rdy;
+
+
+
+endmodule // SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
+//-----------------------------------------------------------------------------
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] deq_rdy,
+  output reg  [   0:0] deq_val,
+  output reg  [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  input  wire [   0:0] reset,
+  output reg  [   0:0] wen
+);
+
+  // register declarations
+  reg    [   0:0] full;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq():
+  //
+  //       # full bit calculation: the full bit is cleared when a dequeue
+  //       # transaction occurs, the full bit is set when the queue storage is
+  //       # empty and a enqueue transaction occurs
+  //
+  //       if   s.reset:                 s.full.next = 0
+  //       elif s.deq_rdy and s.deq_val: s.full.next = 0
+  //       elif s.enq_rdy and s.enq_val: s.full.next = 1
+  //       else:                         s.full.next = s.full
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    if (reset) begin
+      full <= 0;
+    end
+    else begin
+      if ((deq_rdy&&deq_val)) begin
+        full <= 0;
+      end
+      else begin
+        if ((enq_rdy&&enq_val)) begin
+          full <= 1;
+        end
+        else begin
+          full <= full;
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //
+  //       # wen control signal: set the write enable signal if the storage queue
+  //       # is empty and a valid enqueue request is present
+  //
+  //       s.wen.value = ~s.full & s.enq_val
+  //
+  //       # enq_rdy signal is asserted when the single element queue storage is
+  //       # empty
+  //
+  //       s.enq_rdy.value = ~s.full
+  //
+  //       # deq_val signal is asserted when the single element queue storage is
+  //       # full
+  //
+  //       s.deq_val.value = s.full
+
+  // logic for comb()
+  always @ (*) begin
+    wen = (~full&enq_val);
+    enq_rdy = ~full;
+    deq_val = full;
+  end
+
+
+endmodule // SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
+//-----------------------------------------------------------------------------
+// dtype: 37
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
+(
+  input  wire [   0:0] clk,
+  output wire [  36:0] deq_bits,
+  input  wire [  36:0] enq_bits,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wen
+);
+
+  // queue temporaries
+  wire   [   0:0] queue$reset;
+  wire   [  36:0] queue$in_;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$en;
+  wire   [  36:0] queue$out;
+
+  RegEn_0x3ed9fadb7a785162 queue
+  (
+    .reset ( queue$reset ),
+    .in_   ( queue$in_ ),
+    .clk   ( queue$clk ),
+    .en    ( queue$en ),
+    .out   ( queue$out )
+  );
+
+  // signal connections
+  assign deq_bits    = queue$out;
+  assign queue$clk   = clk;
+  assign queue$en    = wen;
+  assign queue$in_   = enq_bits;
+  assign queue$reset = reset;
+
+
+
+endmodule // SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x3ed9fadb7a785162
+//-----------------------------------------------------------------------------
+// dtype: 37
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x3ed9fadb7a785162
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  36:0] in_,
+  output reg  [  36:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x3ed9fadb7a785162
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementNormalQueue_0x79667c2fcd82f209
+//-----------------------------------------------------------------------------
+// dtype: 33
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementNormalQueue_0x79667c2fcd82f209
+(
+  input  wire [   0:0] clk,
+  output wire [  32:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [  32:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  (
+    .clk     ( ctrl$clk ),
+    .enq_val ( ctrl$enq_val ),
+    .reset   ( ctrl$reset ),
+    .deq_rdy ( ctrl$deq_rdy ),
+    .wen     ( ctrl$wen ),
+    .deq_val ( ctrl$deq_val ),
+    .enq_rdy ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$reset;
+  wire   [   0:0] dpath$clk;
+  wire   [  32:0] dpath$enq_bits;
+  wire   [   0:0] dpath$wen;
+  wire   [  32:0] dpath$deq_bits;
+
+  SingleElementNormalQueueDpath_0x79667c2fcd82f209 dpath
+  (
+    .reset    ( dpath$reset ),
+    .clk      ( dpath$clk ),
+    .enq_bits ( dpath$enq_bits ),
+    .wen      ( dpath$wen ),
+    .deq_bits ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk       = clk;
+  assign ctrl$deq_rdy   = deq_rdy;
+  assign ctrl$enq_val   = enq_val;
+  assign ctrl$reset     = reset;
+  assign deq_msg        = dpath$deq_bits;
+  assign deq_val        = ctrl$deq_val;
+  assign dpath$clk      = clk;
+  assign dpath$enq_bits = enq_msg;
+  assign dpath$reset    = reset;
+  assign dpath$wen      = ctrl$wen;
+  assign enq_rdy        = ctrl$enq_rdy;
+
+
+
+endmodule // SingleElementNormalQueue_0x79667c2fcd82f209
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementNormalQueueDpath_0x79667c2fcd82f209
+//-----------------------------------------------------------------------------
+// dtype: 33
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementNormalQueueDpath_0x79667c2fcd82f209
+(
+  input  wire [   0:0] clk,
+  output wire [  32:0] deq_bits,
+  input  wire [  32:0] enq_bits,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wen
+);
+
+  // queue temporaries
+  wire   [   0:0] queue$reset;
+  wire   [  32:0] queue$in_;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$en;
+  wire   [  32:0] queue$out;
+
+  RegEn_0x77783ba1bb4fce3e queue
+  (
+    .reset ( queue$reset ),
+    .in_   ( queue$in_ ),
+    .clk   ( queue$clk ),
+    .en    ( queue$en ),
+    .out   ( queue$out )
+  );
+
+  // signal connections
+  assign deq_bits    = queue$out;
+  assign queue$clk   = clk;
+  assign queue$en    = wen;
+  assign queue$in_   = enq_bits;
+  assign queue$reset = reset;
+
+
+
+endmodule // SingleElementNormalQueueDpath_0x79667c2fcd82f209
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x77783ba1bb4fce3e
+//-----------------------------------------------------------------------------
+// dtype: 33
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x77783ba1bb4fce3e
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  32:0] in_,
+  output reg  [  32:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x77783ba1bb4fce3e
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// BloomFilterXcel_0x29c0cb3fc5b013ad
+//-----------------------------------------------------------------------------
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f538c7ea690>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x6f5f3c0dd798be25
+module BloomFilterXcel_0x29c0cb3fc5b013ad
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -26739,7 +31694,7 @@ module BloomFilterXcel_0x6f5f3c0dd798be25
   end
 
 
-endmodule // BloomFilterXcel_0x6f5f3c0dd798be25
+endmodule // BloomFilterXcel_0x29c0cb3fc5b013ad
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -27306,217 +32261,6 @@ module NormalQueue_0x7aacac805eb4ec3f
 
 
 endmodule // NormalQueue_0x7aacac805eb4ec3f
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueueCtrl_0x7a42a348c9205b5
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueueCtrl_0x7a42a348c9205b5
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] deq_rdy,
-  output reg  [   0:0] deq_val,
-  output reg  [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  output reg  [   1:0] num_free_entries,
-  output reg  [   0:0] raddr,
-  input  wire [   0:0] reset,
-  output reg  [   0:0] waddr,
-  output reg  [   0:0] wen
-);
-
-  // register declarations
-  reg    [   0:0] deq_ptr;
-  reg    [   0:0] deq_ptr_inc;
-  reg    [   0:0] deq_ptr_next;
-  reg    [   0:0] do_deq;
-  reg    [   0:0] do_enq;
-  reg    [   0:0] empty;
-  reg    [   0:0] enq_ptr;
-  reg    [   0:0] enq_ptr_inc;
-  reg    [   0:0] enq_ptr_next;
-  reg    [   0:0] full;
-  reg    [   0:0] full_next_cycle;
-
-  // localparam declarations
-  localparam last_idx = 1;
-  localparam num_entries = 2;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq():
-  //
-  //       if s.reset: s.deq_ptr.next = 0
-  //       else:       s.deq_ptr.next = s.deq_ptr_next
-  //
-  //       if s.reset: s.enq_ptr.next = 0
-  //       else:       s.enq_ptr.next = s.enq_ptr_next
-  //
-  //       if   s.reset:               s.full.next = 0
-  //       elif s.full_next_cycle:     s.full.next = 1
-  //       elif (s.do_deq and s.full): s.full.next = 0
-  //       else:                       s.full.next = s.full
-
-  // logic for seq()
-  always @ (posedge clk) begin
-    if (reset) begin
-      deq_ptr <= 0;
-    end
-    else begin
-      deq_ptr <= deq_ptr_next;
-    end
-    if (reset) begin
-      enq_ptr <= 0;
-    end
-    else begin
-      enq_ptr <= enq_ptr_next;
-    end
-    if (reset) begin
-      full <= 0;
-    end
-    else begin
-      if (full_next_cycle) begin
-        full <= 1;
-      end
-      else begin
-        if ((do_deq&&full)) begin
-          full <= 0;
-        end
-        else begin
-          full <= full;
-        end
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb():
-  //
-  //       # set output signals
-  //
-  //       s.empty.value   = not s.full and (s.enq_ptr == s.deq_ptr)
-  //
-  //       s.enq_rdy.value = not s.full
-  //       s.deq_val.value = not s.empty
-  //
-  //       # only enqueue/dequeue if valid and ready
-  //
-  //       s.do_enq.value = s.enq_rdy and s.enq_val
-  //       s.do_deq.value = s.deq_rdy and s.deq_val
-  //
-  //       # set control signals
-  //
-  //       s.wen.value     = s.do_enq
-  //       s.waddr.value   = s.enq_ptr
-  //       s.raddr.value   = s.deq_ptr
-  //
-  //       # enq ptr incrementer
-  //
-  //       if s.enq_ptr == s.last_idx: s.enq_ptr_inc.value = 0
-  //       else:                       s.enq_ptr_inc.value = s.enq_ptr + 1
-  //
-  //       # deq ptr incrementer
-  //
-  //       if s.deq_ptr == s.last_idx: s.deq_ptr_inc.value = 0
-  //       else:                       s.deq_ptr_inc.value = s.deq_ptr + 1
-  //
-  //       # set the next ptr value
-  //
-  //       if s.do_enq: s.enq_ptr_next.value = s.enq_ptr_inc
-  //       else:        s.enq_ptr_next.value = s.enq_ptr
-  //
-  //       if s.do_deq: s.deq_ptr_next.value = s.deq_ptr_inc
-  //       else:        s.deq_ptr_next.value = s.deq_ptr
-  //
-  //       # number of free entries calculation
-  //
-  //       if   s.reset:
-  //         s.num_free_entries.value = s.num_entries
-  //       elif s.full:
-  //         s.num_free_entries.value = 0
-  //       elif s.empty:
-  //         s.num_free_entries.value = s.num_entries
-  //       elif s.enq_ptr > s.deq_ptr:
-  //         s.num_free_entries.value = s.num_entries - ( s.enq_ptr - s.deq_ptr )
-  //       elif s.deq_ptr > s.enq_ptr:
-  //         s.num_free_entries.value = s.deq_ptr - s.enq_ptr
-  //
-  //       s.full_next_cycle.value = (s.do_enq and not s.do_deq and
-  //                                 (s.enq_ptr_next == s.deq_ptr))
-
-  // logic for comb()
-  always @ (*) begin
-    empty = (!full&&(enq_ptr == deq_ptr));
-    enq_rdy = !full;
-    deq_val = !empty;
-    do_enq = (enq_rdy&&enq_val);
-    do_deq = (deq_rdy&&deq_val);
-    wen = do_enq;
-    waddr = enq_ptr;
-    raddr = deq_ptr;
-    if ((enq_ptr == last_idx)) begin
-      enq_ptr_inc = 0;
-    end
-    else begin
-      enq_ptr_inc = (enq_ptr+1);
-    end
-    if ((deq_ptr == last_idx)) begin
-      deq_ptr_inc = 0;
-    end
-    else begin
-      deq_ptr_inc = (deq_ptr+1);
-    end
-    if (do_enq) begin
-      enq_ptr_next = enq_ptr_inc;
-    end
-    else begin
-      enq_ptr_next = enq_ptr;
-    end
-    if (do_deq) begin
-      deq_ptr_next = deq_ptr_inc;
-    end
-    else begin
-      deq_ptr_next = deq_ptr;
-    end
-    if (reset) begin
-      num_free_entries = num_entries;
-    end
-    else begin
-      if (full) begin
-        num_free_entries = 0;
-      end
-      else begin
-        if (empty) begin
-          num_free_entries = num_entries;
-        end
-        else begin
-          if ((enq_ptr > deq_ptr)) begin
-            num_free_entries = (num_entries-(enq_ptr-deq_ptr));
-          end
-          else begin
-            if ((deq_ptr > enq_ptr)) begin
-              num_free_entries = (deq_ptr-enq_ptr);
-            end
-            else begin
-            end
-          end
-        end
-      end
-    end
-    full_next_cycle = (do_enq&&!do_deq&&(enq_ptr_next == deq_ptr));
-  end
-
-
-endmodule // NormalQueueCtrl_0x7a42a348c9205b5
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -28366,1237 +33110,10 @@ endmodule // Reg_0x20dfe5f222b87beb
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// HostAdapter_MduReqMsg_32_8_MduRespMsg_32
-//-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d4a824950>
-// req: <pymtl.model.signals.InPort object at 0x7f2d4a824390>
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module HostAdapter_MduReqMsg_32_8_MduRespMsg_32
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] host_en,
-  input  wire [  69:0] hostreq_msg,
-  output reg  [   0:0] hostreq_rdy,
-  input  wire [   0:0] hostreq_val,
-  output reg  [  34:0] hostresp_msg,
-  input  wire [   0:0] hostresp_rdy,
-  output reg  [   0:0] hostresp_val,
-  input  wire [  69:0] realreq_msg,
-  output reg  [   0:0] realreq_rdy,
-  input  wire [   0:0] realreq_val,
-  output reg  [  34:0] realresp_msg,
-  input  wire [   0:0] realresp_rdy,
-  output reg  [   0:0] realresp_val,
-  output reg  [  69:0] req_msg,
-  input  wire [   0:0] req_rdy,
-  output reg  [   0:0] req_val,
-  input  wire [   0:0] reset,
-  input  wire [  34:0] resp_msg,
-  output reg  [   0:0] resp_rdy,
-  input  wire [   0:0] resp_val
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_req_select():
-  //
-  //       if s.host_en:
-  //         # Mute req
-  //         s.realreq.rdy.value  = 0
-  //         s.realresp.val.value = 0
-  //         s.realresp.msg.value = 0
-  //
-  //         # instance.req <- hostreq
-  //         s.req.val.value      = s.hostreq.val
-  //         s.req.msg.value      = s.hostreq.msg
-  //         s.hostreq.rdy.value  = s.req.rdy
-  //
-  //         # hostresp <- out_resp
-  //         s.hostresp.val.value = s.resp.val
-  //         s.hostresp.msg.value = s.resp.msg
-  //         s.resp.rdy.value     = s.hostresp.rdy
-  //
-  //       else:
-  //         # Mute host
-  //         s.hostreq.rdy.value  = 0
-  //         s.hostresp.val.value = 0
-  //         s.hostresp.msg.value = 0
-  //
-  //         # req <- realreq
-  //         s.req.val.value      = s.realreq.val
-  //         s.req.msg.value      = s.realreq.msg
-  //         s.realreq.rdy.value  = s.req.rdy
-  //
-  //         # realresp <- resp
-  //         s.realresp.val.value = s.resp.val
-  //         s.realresp.msg.value = s.resp.msg
-  //         s.resp.rdy.value     = s.realresp.rdy
-
-  // logic for comb_req_select()
-  always @ (*) begin
-    if (host_en) begin
-      realreq_rdy = 0;
-      realresp_val = 0;
-      realresp_msg = 0;
-      req_val = hostreq_val;
-      req_msg = hostreq_msg;
-      hostreq_rdy = req_rdy;
-      hostresp_val = resp_val;
-      hostresp_msg = resp_msg;
-      resp_rdy = hostresp_rdy;
-    end
-    else begin
-      hostreq_rdy = 0;
-      hostresp_val = 0;
-      hostresp_msg = 0;
-      req_val = realreq_val;
-      req_msg = realreq_msg;
-      realreq_rdy = req_rdy;
-      realresp_val = resp_val;
-      realresp_msg = resp_msg;
-      resp_rdy = realresp_rdy;
-    end
-  end
-
-
-endmodule // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Funnel_0x54e59faab4b44232
-//-----------------------------------------------------------------------------
-// nports: 4
-// MsgType: 176
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Funnel_0x54e59faab4b44232
-(
-  input  wire [   0:0] clk,
-  input  wire [ 175:0] in_$000_msg,
-  output wire [   0:0] in_$000_rdy,
-  input  wire [   0:0] in_$000_val,
-  input  wire [ 175:0] in_$001_msg,
-  output wire [   0:0] in_$001_rdy,
-  input  wire [   0:0] in_$001_val,
-  input  wire [ 175:0] in_$002_msg,
-  output wire [   0:0] in_$002_rdy,
-  input  wire [   0:0] in_$002_val,
-  input  wire [ 175:0] in_$003_msg,
-  output wire [   0:0] in_$003_rdy,
-  input  wire [   0:0] in_$003_val,
-  output reg  [ 175:0] out_msg,
-  input  wire [   0:0] out_rdy,
-  output reg  [   0:0] out_val,
-  input  wire [   0:0] reset
-);
-
-  // register declarations
-  reg    [   0:0] arbiter$en;
-
-  // localparam declarations
-  localparam nports = 4;
-
-  // loop variable declarations
-  integer i;
-
-  // arbiter temporaries
-  wire   [   3:0] arbiter$reqs;
-  wire   [   0:0] arbiter$clk;
-  wire   [   0:0] arbiter$reset;
-  wire   [   3:0] arbiter$grants;
-
-  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
-  (
-    .en     ( arbiter$en ),
-    .reqs   ( arbiter$reqs ),
-    .clk    ( arbiter$clk ),
-    .reset  ( arbiter$reset ),
-    .grants ( arbiter$grants )
-  );
-
-  // signal connections
-  assign arbiter$clk     = clk;
-  assign arbiter$reqs[0] = in_$000_val;
-  assign arbiter$reqs[1] = in_$001_val;
-  assign arbiter$reqs[2] = in_$002_val;
-  assign arbiter$reqs[3] = in_$003_val;
-  assign arbiter$reset   = reset;
-
-  // array declarations
-  wire   [ 175:0] in__msg[0:3];
-  assign in__msg[  0] = in_$000_msg;
-  assign in__msg[  1] = in_$001_msg;
-  assign in__msg[  2] = in_$002_msg;
-  assign in__msg[  3] = in_$003_msg;
-  reg    [   0:0] in__rdy[0:3];
-  assign in_$000_rdy = in__rdy[  0];
-  assign in_$001_rdy = in__rdy[  1];
-  assign in_$002_rdy = in__rdy[  2];
-  assign in_$003_rdy = in__rdy[  3];
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_in_rdy():
-  //       for i in xrange( nports ):
-  //         s.in_[i].rdy.value = s.arbiter.grants[i] & s.out.rdy
-
-  // logic for comb_in_rdy()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      in__rdy[i] = (arbiter$grants[i]&out_rdy);
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_arbiter_en():
-  //       s.arbiter.en.value = s.out.val & s.out.rdy
-
-  // logic for comb_arbiter_en()
-  always @ (*) begin
-    arbiter$en = (out_val&out_rdy);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_output():
-  //       s.out.val.value = ( s.arbiter.grants != 0 )
-  //
-  //       s.out.msg.value = 0
-  //       for i in xrange( nports ):
-  //         if s.arbiter.grants[i]:
-  //           s.out.msg.value        = s.in_[i].msg
-  //           s.out.msg.opaque.value = i
-
-  // logic for comb_output()
-  always @ (*) begin
-    out_val = (arbiter$grants != 0);
-    out_msg = 0;
-    for (i=0; i < nports; i=i+1)
-    begin
-      if (arbiter$grants[i]) begin
-        out_msg = in__msg[i];
-        out_msg[(172)-1:164] = i;
-      end
-      else begin
-      end
-    end
-  end
-
-
-endmodule // Funnel_0x54e59faab4b44232
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// CtrlReg_0x2547fdfd5863c73b
-//-----------------------------------------------------------------------------
-// num_cores: 4
-// valrdy_ifcs: 3
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module CtrlReg_0x2547fdfd5863c73b
-(
-  input  wire [   0:0] clk,
-  input  wire [   3:0] commit_inst,
-  output wire [   0:0] debug,
-  output wire [   3:0] go,
-  output wire [   2:0] host_en,
-  input  wire [  36:0] req_msg,
-  output wire [   0:0] req_rdy,
-  input  wire [   0:0] req_val,
-  input  wire [   0:0] reset,
-  output wire [  32:0] resp_msg,
-  input  wire [   0:0] resp_rdy,
-  output wire [   0:0] resp_val,
-  input  wire [   0:0] stats_en
-);
-
-  // wire declarations
-  wire   [  31:0] instcounters_in$000;
-  wire   [  31:0] instcounters_in$001;
-  wire   [  31:0] instcounters_in$002;
-  wire   [  31:0] instcounters_in$003;
-  wire   [  31:0] instcounters_out$000;
-  wire   [  31:0] instcounters_out$001;
-  wire   [  31:0] instcounters_out$002;
-  wire   [  31:0] instcounters_out$003;
-  wire   [  31:0] cyclecounters_out;
-
-
-  // register declarations
-  reg    [   0:0] cr_debug_en;
-  reg    [  31:0] cr_debug_in;
-  reg    [   0:0] cr_go_en;
-  reg    [  31:0] cr_go_in;
-  reg    [   0:0] cyclecounters_en;
-  reg    [  31:0] cyclecounters_in;
-  reg    [   3:0] instcounters_en;
-  reg    [  32:0] out_q$enq_msg;
-  reg    [   3:0] rf_raddr;
-  reg    [  31:0] rf_rdata;
-  reg    [   3:0] rf_waddr;
-  reg    [  31:0] rf_wdata;
-  reg    [   0:0] rf_wen;
-  reg    [   2:0] wire_host_en;
-
-  // localparam declarations
-  localparam TYPE_WRITE = 1;
-  localparam cr_debug = 1;
-  localparam cr_go = 0;
-  localparam cr_host_en = 7;
-  localparam num_cores = 4;
-  localparam valrdy_ifcs = 3;
-
-  // loop variable declarations
-  integer core_idx;
-  integer idx;
-
-  // in_q temporaries
-  wire   [   0:0] in_q$reset;
-  wire   [   0:0] in_q$clk;
-  wire   [   0:0] in_q$deq_rdy;
-  wire   [  36:0] in_q$enq_msg;
-  wire   [   0:0] in_q$enq_val;
-  wire   [  36:0] in_q$deq_msg;
-  wire   [   0:0] in_q$deq_val;
-  wire   [   0:0] in_q$enq_rdy;
-
-  SingleElementNormalQueue_0x5cdd7a7d31cf6b7d in_q
-  (
-    .reset   ( in_q$reset ),
-    .clk     ( in_q$clk ),
-    .deq_rdy ( in_q$deq_rdy ),
-    .enq_msg ( in_q$enq_msg ),
-    .enq_val ( in_q$enq_val ),
-    .deq_msg ( in_q$deq_msg ),
-    .deq_val ( in_q$deq_val ),
-    .enq_rdy ( in_q$enq_rdy )
-  );
-
-  // ctrlregs$000 temporaries
-  wire   [   0:0] ctrlregs$000$reset;
-  wire   [   0:0] ctrlregs$000$en;
-  wire   [   0:0] ctrlregs$000$clk;
-  wire   [  31:0] ctrlregs$000$in_;
-  wire   [  31:0] ctrlregs$000$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$000
-  (
-    .reset ( ctrlregs$000$reset ),
-    .en    ( ctrlregs$000$en ),
-    .clk   ( ctrlregs$000$clk ),
-    .in_   ( ctrlregs$000$in_ ),
-    .out   ( ctrlregs$000$out )
-  );
-
-  // ctrlregs$001 temporaries
-  wire   [   0:0] ctrlregs$001$reset;
-  wire   [   0:0] ctrlregs$001$en;
-  wire   [   0:0] ctrlregs$001$clk;
-  wire   [  31:0] ctrlregs$001$in_;
-  wire   [  31:0] ctrlregs$001$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$001
-  (
-    .reset ( ctrlregs$001$reset ),
-    .en    ( ctrlregs$001$en ),
-    .clk   ( ctrlregs$001$clk ),
-    .in_   ( ctrlregs$001$in_ ),
-    .out   ( ctrlregs$001$out )
-  );
-
-  // ctrlregs$002 temporaries
-  wire   [   0:0] ctrlregs$002$reset;
-  wire   [   0:0] ctrlregs$002$en;
-  wire   [   0:0] ctrlregs$002$clk;
-  wire   [  31:0] ctrlregs$002$in_;
-  wire   [  31:0] ctrlregs$002$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$002
-  (
-    .reset ( ctrlregs$002$reset ),
-    .en    ( ctrlregs$002$en ),
-    .clk   ( ctrlregs$002$clk ),
-    .in_   ( ctrlregs$002$in_ ),
-    .out   ( ctrlregs$002$out )
-  );
-
-  // ctrlregs$003 temporaries
-  wire   [   0:0] ctrlregs$003$reset;
-  wire   [   0:0] ctrlregs$003$en;
-  wire   [   0:0] ctrlregs$003$clk;
-  wire   [  31:0] ctrlregs$003$in_;
-  wire   [  31:0] ctrlregs$003$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$003
-  (
-    .reset ( ctrlregs$003$reset ),
-    .en    ( ctrlregs$003$en ),
-    .clk   ( ctrlregs$003$clk ),
-    .in_   ( ctrlregs$003$in_ ),
-    .out   ( ctrlregs$003$out )
-  );
-
-  // ctrlregs$004 temporaries
-  wire   [   0:0] ctrlregs$004$reset;
-  wire   [   0:0] ctrlregs$004$en;
-  wire   [   0:0] ctrlregs$004$clk;
-  wire   [  31:0] ctrlregs$004$in_;
-  wire   [  31:0] ctrlregs$004$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$004
-  (
-    .reset ( ctrlregs$004$reset ),
-    .en    ( ctrlregs$004$en ),
-    .clk   ( ctrlregs$004$clk ),
-    .in_   ( ctrlregs$004$in_ ),
-    .out   ( ctrlregs$004$out )
-  );
-
-  // ctrlregs$005 temporaries
-  wire   [   0:0] ctrlregs$005$reset;
-  wire   [   0:0] ctrlregs$005$en;
-  wire   [   0:0] ctrlregs$005$clk;
-  wire   [  31:0] ctrlregs$005$in_;
-  wire   [  31:0] ctrlregs$005$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$005
-  (
-    .reset ( ctrlregs$005$reset ),
-    .en    ( ctrlregs$005$en ),
-    .clk   ( ctrlregs$005$clk ),
-    .in_   ( ctrlregs$005$in_ ),
-    .out   ( ctrlregs$005$out )
-  );
-
-  // ctrlregs$006 temporaries
-  wire   [   0:0] ctrlregs$006$reset;
-  wire   [   0:0] ctrlregs$006$en;
-  wire   [   0:0] ctrlregs$006$clk;
-  wire   [  31:0] ctrlregs$006$in_;
-  wire   [  31:0] ctrlregs$006$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$006
-  (
-    .reset ( ctrlregs$006$reset ),
-    .en    ( ctrlregs$006$en ),
-    .clk   ( ctrlregs$006$clk ),
-    .in_   ( ctrlregs$006$in_ ),
-    .out   ( ctrlregs$006$out )
-  );
-
-  // ctrlregs$007 temporaries
-  wire   [   0:0] ctrlregs$007$reset;
-  wire   [   0:0] ctrlregs$007$en;
-  wire   [   0:0] ctrlregs$007$clk;
-  wire   [  31:0] ctrlregs$007$in_;
-  wire   [  31:0] ctrlregs$007$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$007
-  (
-    .reset ( ctrlregs$007$reset ),
-    .en    ( ctrlregs$007$en ),
-    .clk   ( ctrlregs$007$clk ),
-    .in_   ( ctrlregs$007$in_ ),
-    .out   ( ctrlregs$007$out )
-  );
-
-  // ctrlregs$008 temporaries
-  wire   [   0:0] ctrlregs$008$reset;
-  wire   [   0:0] ctrlregs$008$en;
-  wire   [   0:0] ctrlregs$008$clk;
-  wire   [  31:0] ctrlregs$008$in_;
-  wire   [  31:0] ctrlregs$008$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$008
-  (
-    .reset ( ctrlregs$008$reset ),
-    .en    ( ctrlregs$008$en ),
-    .clk   ( ctrlregs$008$clk ),
-    .in_   ( ctrlregs$008$in_ ),
-    .out   ( ctrlregs$008$out )
-  );
-
-  // ctrlregs$009 temporaries
-  wire   [   0:0] ctrlregs$009$reset;
-  wire   [   0:0] ctrlregs$009$en;
-  wire   [   0:0] ctrlregs$009$clk;
-  wire   [  31:0] ctrlregs$009$in_;
-  wire   [  31:0] ctrlregs$009$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$009
-  (
-    .reset ( ctrlregs$009$reset ),
-    .en    ( ctrlregs$009$en ),
-    .clk   ( ctrlregs$009$clk ),
-    .in_   ( ctrlregs$009$in_ ),
-    .out   ( ctrlregs$009$out )
-  );
-
-  // ctrlregs$010 temporaries
-  wire   [   0:0] ctrlregs$010$reset;
-  wire   [   0:0] ctrlregs$010$en;
-  wire   [   0:0] ctrlregs$010$clk;
-  wire   [  31:0] ctrlregs$010$in_;
-  wire   [  31:0] ctrlregs$010$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$010
-  (
-    .reset ( ctrlregs$010$reset ),
-    .en    ( ctrlregs$010$en ),
-    .clk   ( ctrlregs$010$clk ),
-    .in_   ( ctrlregs$010$in_ ),
-    .out   ( ctrlregs$010$out )
-  );
-
-  // ctrlregs$011 temporaries
-  wire   [   0:0] ctrlregs$011$reset;
-  wire   [   0:0] ctrlregs$011$en;
-  wire   [   0:0] ctrlregs$011$clk;
-  wire   [  31:0] ctrlregs$011$in_;
-  wire   [  31:0] ctrlregs$011$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$011
-  (
-    .reset ( ctrlregs$011$reset ),
-    .en    ( ctrlregs$011$en ),
-    .clk   ( ctrlregs$011$clk ),
-    .in_   ( ctrlregs$011$in_ ),
-    .out   ( ctrlregs$011$out )
-  );
-
-  // ctrlregs$012 temporaries
-  wire   [   0:0] ctrlregs$012$reset;
-  wire   [   0:0] ctrlregs$012$en;
-  wire   [   0:0] ctrlregs$012$clk;
-  wire   [  31:0] ctrlregs$012$in_;
-  wire   [  31:0] ctrlregs$012$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$012
-  (
-    .reset ( ctrlregs$012$reset ),
-    .en    ( ctrlregs$012$en ),
-    .clk   ( ctrlregs$012$clk ),
-    .in_   ( ctrlregs$012$in_ ),
-    .out   ( ctrlregs$012$out )
-  );
-
-  // ctrlregs$013 temporaries
-  wire   [   0:0] ctrlregs$013$reset;
-  wire   [   0:0] ctrlregs$013$en;
-  wire   [   0:0] ctrlregs$013$clk;
-  wire   [  31:0] ctrlregs$013$in_;
-  wire   [  31:0] ctrlregs$013$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$013
-  (
-    .reset ( ctrlregs$013$reset ),
-    .en    ( ctrlregs$013$en ),
-    .clk   ( ctrlregs$013$clk ),
-    .in_   ( ctrlregs$013$in_ ),
-    .out   ( ctrlregs$013$out )
-  );
-
-  // ctrlregs$014 temporaries
-  wire   [   0:0] ctrlregs$014$reset;
-  wire   [   0:0] ctrlregs$014$en;
-  wire   [   0:0] ctrlregs$014$clk;
-  wire   [  31:0] ctrlregs$014$in_;
-  wire   [  31:0] ctrlregs$014$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$014
-  (
-    .reset ( ctrlregs$014$reset ),
-    .en    ( ctrlregs$014$en ),
-    .clk   ( ctrlregs$014$clk ),
-    .in_   ( ctrlregs$014$in_ ),
-    .out   ( ctrlregs$014$out )
-  );
-
-  // ctrlregs$015 temporaries
-  wire   [   0:0] ctrlregs$015$reset;
-  wire   [   0:0] ctrlregs$015$en;
-  wire   [   0:0] ctrlregs$015$clk;
-  wire   [  31:0] ctrlregs$015$in_;
-  wire   [  31:0] ctrlregs$015$out;
-
-  RegEnRst_0x3857337130dc0828 ctrlregs$015
-  (
-    .reset ( ctrlregs$015$reset ),
-    .en    ( ctrlregs$015$en ),
-    .clk   ( ctrlregs$015$clk ),
-    .in_   ( ctrlregs$015$in_ ),
-    .out   ( ctrlregs$015$out )
-  );
-
-  // out_q temporaries
-  wire   [   0:0] out_q$reset;
-  wire   [   0:0] out_q$clk;
-  wire   [   0:0] out_q$deq_rdy;
-  wire   [   0:0] out_q$enq_val;
-  wire   [  32:0] out_q$deq_msg;
-  wire   [   0:0] out_q$deq_val;
-  wire   [   0:0] out_q$enq_rdy;
-
-  SingleElementNormalQueue_0x79667c2fcd82f209 out_q
-  (
-    .reset   ( out_q$reset ),
-    .clk     ( out_q$clk ),
-    .deq_rdy ( out_q$deq_rdy ),
-    .enq_msg ( out_q$enq_msg ),
-    .enq_val ( out_q$enq_val ),
-    .deq_msg ( out_q$deq_msg ),
-    .deq_val ( out_q$deq_val ),
-    .enq_rdy ( out_q$enq_rdy )
-  );
-
-  // signal connections
-  assign ctrlregs$000$clk     = clk;
-  assign ctrlregs$000$en      = cr_go_en;
-  assign ctrlregs$000$in_     = cr_go_in;
-  assign ctrlregs$000$reset   = reset;
-  assign ctrlregs$001$clk     = clk;
-  assign ctrlregs$001$en      = cr_debug_en;
-  assign ctrlregs$001$in_     = cr_debug_in;
-  assign ctrlregs$001$reset   = reset;
-  assign ctrlregs$002$clk     = clk;
-  assign ctrlregs$002$en      = cyclecounters_en;
-  assign ctrlregs$002$in_     = cyclecounters_in;
-  assign ctrlregs$002$reset   = reset;
-  assign ctrlregs$003$clk     = clk;
-  assign ctrlregs$003$en      = instcounters_en[0];
-  assign ctrlregs$003$in_     = instcounters_in$000;
-  assign ctrlregs$003$reset   = reset;
-  assign ctrlregs$004$clk     = clk;
-  assign ctrlregs$004$en      = instcounters_en[1];
-  assign ctrlregs$004$in_     = instcounters_in$001;
-  assign ctrlregs$004$reset   = reset;
-  assign ctrlregs$005$clk     = clk;
-  assign ctrlregs$005$en      = instcounters_en[2];
-  assign ctrlregs$005$in_     = instcounters_in$002;
-  assign ctrlregs$005$reset   = reset;
-  assign ctrlregs$006$clk     = clk;
-  assign ctrlregs$006$en      = instcounters_en[3];
-  assign ctrlregs$006$in_     = instcounters_in$003;
-  assign ctrlregs$006$reset   = reset;
-  assign ctrlregs$007$clk     = clk;
-  assign ctrlregs$007$en      = wire_host_en[0];
-  assign ctrlregs$007$in_     = rf_wdata;
-  assign ctrlregs$007$reset   = reset;
-  assign ctrlregs$008$clk     = clk;
-  assign ctrlregs$008$en      = wire_host_en[1];
-  assign ctrlregs$008$in_     = rf_wdata;
-  assign ctrlregs$008$reset   = reset;
-  assign ctrlregs$009$clk     = clk;
-  assign ctrlregs$009$en      = wire_host_en[2];
-  assign ctrlregs$009$in_     = rf_wdata;
-  assign ctrlregs$009$reset   = reset;
-  assign ctrlregs$010$clk     = clk;
-  assign ctrlregs$010$reset   = reset;
-  assign ctrlregs$011$clk     = clk;
-  assign ctrlregs$011$reset   = reset;
-  assign ctrlregs$012$clk     = clk;
-  assign ctrlregs$012$reset   = reset;
-  assign ctrlregs$013$clk     = clk;
-  assign ctrlregs$013$reset   = reset;
-  assign ctrlregs$014$clk     = clk;
-  assign ctrlregs$014$reset   = reset;
-  assign ctrlregs$015$clk     = clk;
-  assign ctrlregs$015$reset   = reset;
-  assign cyclecounters_out    = ctrlregs$002$out;
-  assign debug                = ctrlregs$001$out[0];
-  assign go[0]                = ctrlregs$000$out[0];
-  assign go[1]                = ctrlregs$000$out[0];
-  assign go[2]                = ctrlregs$000$out[0];
-  assign go[3]                = ctrlregs$000$out[0];
-  assign host_en[0]           = ctrlregs$007$out[0];
-  assign host_en[1]           = ctrlregs$008$out[0];
-  assign host_en[2]           = ctrlregs$009$out[0];
-  assign in_q$clk             = clk;
-  assign in_q$deq_rdy         = out_q$enq_rdy;
-  assign in_q$enq_msg         = req_msg;
-  assign in_q$enq_val         = req_val;
-  assign in_q$reset           = reset;
-  assign instcounters_out$000 = ctrlregs$003$out;
-  assign instcounters_out$001 = ctrlregs$004$out;
-  assign instcounters_out$002 = ctrlregs$005$out;
-  assign instcounters_out$003 = ctrlregs$006$out;
-  assign out_q$clk            = clk;
-  assign out_q$deq_rdy        = resp_rdy;
-  assign out_q$enq_val        = in_q$deq_val;
-  assign out_q$reset          = reset;
-  assign req_rdy              = in_q$enq_rdy;
-  assign resp_msg             = out_q$deq_msg;
-  assign resp_val             = out_q$deq_val;
-
-  // array declarations
-  wire   [  31:0] ctrlregs$out[0:15];
-  assign ctrlregs$out[  0] = ctrlregs$000$out;
-  assign ctrlregs$out[  1] = ctrlregs$001$out;
-  assign ctrlregs$out[  2] = ctrlregs$002$out;
-  assign ctrlregs$out[  3] = ctrlregs$003$out;
-  assign ctrlregs$out[  4] = ctrlregs$004$out;
-  assign ctrlregs$out[  5] = ctrlregs$005$out;
-  assign ctrlregs$out[  6] = ctrlregs$006$out;
-  assign ctrlregs$out[  7] = ctrlregs$007$out;
-  assign ctrlregs$out[  8] = ctrlregs$008$out;
-  assign ctrlregs$out[  9] = ctrlregs$009$out;
-  assign ctrlregs$out[ 10] = ctrlregs$010$out;
-  assign ctrlregs$out[ 11] = ctrlregs$011$out;
-  assign ctrlregs$out[ 12] = ctrlregs$012$out;
-  assign ctrlregs$out[ 13] = ctrlregs$013$out;
-  assign ctrlregs$out[ 14] = ctrlregs$014$out;
-  assign ctrlregs$out[ 15] = ctrlregs$015$out;
-  reg    [  31:0] instcounters_in[0:3];
-  assign instcounters_in$000 = instcounters_in[  0];
-  assign instcounters_in$001 = instcounters_in[  1];
-  assign instcounters_in$002 = instcounters_in[  2];
-  assign instcounters_in$003 = instcounters_in[  3];
-  wire   [  31:0] instcounters_out[0:3];
-  assign instcounters_out[  0] = instcounters_out$000;
-  assign instcounters_out[  1] = instcounters_out$001;
-  assign instcounters_out[  2] = instcounters_out$002;
-  assign instcounters_out[  3] = instcounters_out$003;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_rf_read_interface():
-  //       s.rf_raddr.value = s.in_q.deq.msg.addr
-  //       s.rf_rdata.value = s.ctrlregs[ s.rf_raddr ].out
-
-  // logic for comb_rf_read_interface()
-  always @ (*) begin
-    rf_raddr = in_q$deq_msg[(36)-1:32];
-    rf_rdata = ctrlregs$out[rf_raddr];
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_rf_write_interface():
-  //       s.rf_waddr.value = s.in_q.deq.msg.addr
-  //       s.rf_wdata.value = s.in_q.deq.msg.data
-  //       s.rf_wen.value   = s.in_q.deq.val & \
-  //           ( s.in_q.deq.msg.type_ == CtrlRegReqMsg.TYPE_WRITE )
-
-  // logic for comb_rf_write_interface()
-  always @ (*) begin
-    rf_waddr = in_q$deq_msg[(36)-1:32];
-    rf_wdata = in_q$deq_msg[(32)-1:0];
-    rf_wen = (in_q$deq_val&(in_q$deq_msg[(37)-1:36] == TYPE_WRITE));
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cr_go_logic():
-  //       s.cr_go_en.value = s.rf_wen & ( s.rf_waddr == cr_go )
-  //       s.cr_go_in.value = s.rf_wdata
-
-  // logic for comb_cr_go_logic()
-  always @ (*) begin
-    cr_go_en = (rf_wen&(rf_waddr == cr_go));
-    cr_go_in = rf_wdata;
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cr_debug_logic():
-  //       s.cr_debug_en.value = s.rf_wen & ( s.rf_waddr == cr_debug )
-  //       s.cr_debug_in.value = s.rf_wdata
-
-  // logic for comb_cr_debug_logic()
-  always @ (*) begin
-    cr_debug_en = (rf_wen&(rf_waddr == cr_debug));
-    cr_debug_in = rf_wdata;
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cr_instcounter_logic():
-  //       for core_idx in xrange(num_cores):
-  //         s.instcounters_en[core_idx].value = s.commit_inst[core_idx] & s.stats_en
-  //         s.instcounters_in[core_idx].value = s.instcounters_out[core_idx] + 1
-
-  // logic for comb_cr_instcounter_logic()
-  always @ (*) begin
-    for (core_idx=0; core_idx < num_cores; core_idx=core_idx+1)
-    begin
-      instcounters_en[core_idx] = (commit_inst[core_idx]&stats_en);
-      instcounters_in[core_idx] = (instcounters_out[core_idx]+1);
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cr_cyclecounter_logic():
-  //       s.cyclecounters_en.value = s.stats_en
-  //       s.cyclecounters_in.value = s.cyclecounters_out + 1
-
-  // logic for comb_cr_cyclecounter_logic()
-  always @ (*) begin
-    cyclecounters_en = stats_en;
-    cyclecounters_in = (cyclecounters_out+1);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cr_hosten_logic():
-  //       for idx in xrange(valrdy_ifcs):
-  //         s.wire_host_en[idx].value = s.rf_wen & ( s.rf_waddr == ( idx + cr_host_en ) )
-
-  // logic for comb_cr_hosten_logic()
-  always @ (*) begin
-    for (idx=0; idx < valrdy_ifcs; idx=idx+1)
-    begin
-      wire_host_en[idx] = (rf_wen&(rf_waddr == (idx+cr_host_en)));
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_resp_msg():
-  //       s.out_q.enq.msg.type_.value  = s.in_q.deq.msg.type_
-  //
-  //       if s.in_q.deq.msg.type_ == CtrlRegReqMsg.TYPE_WRITE:
-  //         s.out_q.enq.msg.data.value = 0
-  //       else:
-  //         s.out_q.enq.msg.data.value = s.rf_rdata
-
-  // logic for comb_resp_msg()
-  always @ (*) begin
-    out_q$enq_msg[(33)-1:32] = in_q$deq_msg[(37)-1:36];
-    if ((in_q$deq_msg[(37)-1:36] == TYPE_WRITE)) begin
-      out_q$enq_msg[(32)-1:0] = 0;
-    end
-    else begin
-      out_q$enq_msg[(32)-1:0] = rf_rdata;
-    end
-  end
-
-
-endmodule // CtrlReg_0x2547fdfd5863c73b
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
-//-----------------------------------------------------------------------------
-// dtype: 37
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
-(
-  input  wire [   0:0] clk,
-  output wire [  36:0] deq_msg,
-  input  wire [   0:0] deq_rdy,
-  output wire [   0:0] deq_val,
-  input  wire [  36:0] enq_msg,
-  output wire [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  input  wire [   0:0] reset
-);
-
-  // ctrl temporaries
-  wire   [   0:0] ctrl$clk;
-  wire   [   0:0] ctrl$enq_val;
-  wire   [   0:0] ctrl$reset;
-  wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$wen;
-  wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$enq_rdy;
-
-  SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88 ctrl
-  (
-    .clk     ( ctrl$clk ),
-    .enq_val ( ctrl$enq_val ),
-    .reset   ( ctrl$reset ),
-    .deq_rdy ( ctrl$deq_rdy ),
-    .wen     ( ctrl$wen ),
-    .deq_val ( ctrl$deq_val ),
-    .enq_rdy ( ctrl$enq_rdy )
-  );
-
-  // dpath temporaries
-  wire   [   0:0] dpath$reset;
-  wire   [   0:0] dpath$clk;
-  wire   [  36:0] dpath$enq_bits;
-  wire   [   0:0] dpath$wen;
-  wire   [  36:0] dpath$deq_bits;
-
-  SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d dpath
-  (
-    .reset    ( dpath$reset ),
-    .clk      ( dpath$clk ),
-    .enq_bits ( dpath$enq_bits ),
-    .wen      ( dpath$wen ),
-    .deq_bits ( dpath$deq_bits )
-  );
-
-  // signal connections
-  assign ctrl$clk       = clk;
-  assign ctrl$deq_rdy   = deq_rdy;
-  assign ctrl$enq_val   = enq_val;
-  assign ctrl$reset     = reset;
-  assign deq_msg        = dpath$deq_bits;
-  assign deq_val        = ctrl$deq_val;
-  assign dpath$clk      = clk;
-  assign dpath$enq_bits = enq_msg;
-  assign dpath$reset    = reset;
-  assign dpath$wen      = ctrl$wen;
-  assign enq_rdy        = ctrl$enq_rdy;
-
-
-
-endmodule // SingleElementNormalQueue_0x5cdd7a7d31cf6b7d
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
-//-----------------------------------------------------------------------------
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] deq_rdy,
-  output reg  [   0:0] deq_val,
-  output reg  [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  input  wire [   0:0] reset,
-  output reg  [   0:0] wen
-);
-
-  // register declarations
-  reg    [   0:0] full;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq():
-  //
-  //       # full bit calculation: the full bit is cleared when a dequeue
-  //       # transaction occurs, the full bit is set when the queue storage is
-  //       # empty and a enqueue transaction occurs
-  //
-  //       if   s.reset:                 s.full.next = 0
-  //       elif s.deq_rdy and s.deq_val: s.full.next = 0
-  //       elif s.enq_rdy and s.enq_val: s.full.next = 1
-  //       else:                         s.full.next = s.full
-
-  // logic for seq()
-  always @ (posedge clk) begin
-    if (reset) begin
-      full <= 0;
-    end
-    else begin
-      if ((deq_rdy&&deq_val)) begin
-        full <= 0;
-      end
-      else begin
-        if ((enq_rdy&&enq_val)) begin
-          full <= 1;
-        end
-        else begin
-          full <= full;
-        end
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb():
-  //
-  //       # wen control signal: set the write enable signal if the storage queue
-  //       # is empty and a valid enqueue request is present
-  //
-  //       s.wen.value = ~s.full & s.enq_val
-  //
-  //       # enq_rdy signal is asserted when the single element queue storage is
-  //       # empty
-  //
-  //       s.enq_rdy.value = ~s.full
-  //
-  //       # deq_val signal is asserted when the single element queue storage is
-  //       # full
-  //
-  //       s.deq_val.value = s.full
-
-  // logic for comb()
-  always @ (*) begin
-    wen = (~full&enq_val);
-    enq_rdy = ~full;
-    deq_val = full;
-  end
-
-
-endmodule // SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
-//-----------------------------------------------------------------------------
-// dtype: 37
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
-(
-  input  wire [   0:0] clk,
-  output wire [  36:0] deq_bits,
-  input  wire [  36:0] enq_bits,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] wen
-);
-
-  // queue temporaries
-  wire   [   0:0] queue$reset;
-  wire   [  36:0] queue$in_;
-  wire   [   0:0] queue$clk;
-  wire   [   0:0] queue$en;
-  wire   [  36:0] queue$out;
-
-  RegEn_0x3ed9fadb7a785162 queue
-  (
-    .reset ( queue$reset ),
-    .in_   ( queue$in_ ),
-    .clk   ( queue$clk ),
-    .en    ( queue$en ),
-    .out   ( queue$out )
-  );
-
-  // signal connections
-  assign deq_bits    = queue$out;
-  assign queue$clk   = clk;
-  assign queue$en    = wen;
-  assign queue$in_   = enq_bits;
-  assign queue$reset = reset;
-
-
-
-endmodule // SingleElementNormalQueueDpath_0x5cdd7a7d31cf6b7d
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEn_0x3ed9fadb7a785162
-//-----------------------------------------------------------------------------
-// dtype: 37
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEn_0x3ed9fadb7a785162
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [  36:0] in_,
-  output reg  [  36:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (en) begin
-      out <= in_;
-    end
-    else begin
-    end
-  end
-
-
-endmodule // RegEn_0x3ed9fadb7a785162
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementNormalQueue_0x79667c2fcd82f209
-//-----------------------------------------------------------------------------
-// dtype: 33
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementNormalQueue_0x79667c2fcd82f209
-(
-  input  wire [   0:0] clk,
-  output wire [  32:0] deq_msg,
-  input  wire [   0:0] deq_rdy,
-  output wire [   0:0] deq_val,
-  input  wire [  32:0] enq_msg,
-  output wire [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  input  wire [   0:0] reset
-);
-
-  // ctrl temporaries
-  wire   [   0:0] ctrl$clk;
-  wire   [   0:0] ctrl$enq_val;
-  wire   [   0:0] ctrl$reset;
-  wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$wen;
-  wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$enq_rdy;
-
-  SingleElementNormalQueueCtrl_0x2a979dc5ff91cb88 ctrl
-  (
-    .clk     ( ctrl$clk ),
-    .enq_val ( ctrl$enq_val ),
-    .reset   ( ctrl$reset ),
-    .deq_rdy ( ctrl$deq_rdy ),
-    .wen     ( ctrl$wen ),
-    .deq_val ( ctrl$deq_val ),
-    .enq_rdy ( ctrl$enq_rdy )
-  );
-
-  // dpath temporaries
-  wire   [   0:0] dpath$reset;
-  wire   [   0:0] dpath$clk;
-  wire   [  32:0] dpath$enq_bits;
-  wire   [   0:0] dpath$wen;
-  wire   [  32:0] dpath$deq_bits;
-
-  SingleElementNormalQueueDpath_0x79667c2fcd82f209 dpath
-  (
-    .reset    ( dpath$reset ),
-    .clk      ( dpath$clk ),
-    .enq_bits ( dpath$enq_bits ),
-    .wen      ( dpath$wen ),
-    .deq_bits ( dpath$deq_bits )
-  );
-
-  // signal connections
-  assign ctrl$clk       = clk;
-  assign ctrl$deq_rdy   = deq_rdy;
-  assign ctrl$enq_val   = enq_val;
-  assign ctrl$reset     = reset;
-  assign deq_msg        = dpath$deq_bits;
-  assign deq_val        = ctrl$deq_val;
-  assign dpath$clk      = clk;
-  assign dpath$enq_bits = enq_msg;
-  assign dpath$reset    = reset;
-  assign dpath$wen      = ctrl$wen;
-  assign enq_rdy        = ctrl$enq_rdy;
-
-
-
-endmodule // SingleElementNormalQueue_0x79667c2fcd82f209
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// SingleElementNormalQueueDpath_0x79667c2fcd82f209
-//-----------------------------------------------------------------------------
-// dtype: 33
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module SingleElementNormalQueueDpath_0x79667c2fcd82f209
-(
-  input  wire [   0:0] clk,
-  output wire [  32:0] deq_bits,
-  input  wire [  32:0] enq_bits,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] wen
-);
-
-  // queue temporaries
-  wire   [   0:0] queue$reset;
-  wire   [  32:0] queue$in_;
-  wire   [   0:0] queue$clk;
-  wire   [   0:0] queue$en;
-  wire   [  32:0] queue$out;
-
-  RegEn_0x77783ba1bb4fce3e queue
-  (
-    .reset ( queue$reset ),
-    .in_   ( queue$in_ ),
-    .clk   ( queue$clk ),
-    .en    ( queue$en ),
-    .out   ( queue$out )
-  );
-
-  // signal connections
-  assign deq_bits    = queue$out;
-  assign queue$clk   = clk;
-  assign queue$en    = wen;
-  assign queue$in_   = enq_bits;
-  assign queue$reset = reset;
-
-
-
-endmodule // SingleElementNormalQueueDpath_0x79667c2fcd82f209
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEn_0x77783ba1bb4fce3e
-//-----------------------------------------------------------------------------
-// dtype: 33
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEn_0x77783ba1bb4fce3e
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [  32:0] in_,
-  output reg  [  32:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (en) begin
-      out <= in_;
-    end
-    else begin
-    end
-  end
-
-
-endmodule // RegEn_0x77783ba1bb4fce3e
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f2d4b2fc550>
-// req: <pymtl.model.signals.InPort object at 0x7f2d4b2fc210>
+// resp: <pymtl.model.signals.OutPort object at 0x7f538c788390>
+// req: <pymtl.model.signals.InPort object at 0x7f538c788050>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -29692,102 +33209,6 @@ module HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 
 
 endmodule // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Router_0x3fd90561b3d11051
-//-----------------------------------------------------------------------------
-// nports: 4
-// MsgType: 146
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Router_0x3fd90561b3d11051
-(
-  input  wire [   0:0] clk,
-  input  wire [ 145:0] in__msg,
-  output reg  [   0:0] in__rdy,
-  input  wire [   0:0] in__val,
-  output wire [ 145:0] out$000_msg,
-  input  wire [   0:0] out$000_rdy,
-  output wire [   0:0] out$000_val,
-  output wire [ 145:0] out$001_msg,
-  input  wire [   0:0] out$001_rdy,
-  output wire [   0:0] out$001_val,
-  output wire [ 145:0] out$002_msg,
-  input  wire [   0:0] out$002_rdy,
-  output wire [   0:0] out$002_val,
-  output wire [ 145:0] out$003_msg,
-  input  wire [   0:0] out$003_rdy,
-  output wire [   0:0] out$003_val,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam nports = 4;
-
-  // loop variable declarations
-  integer i;
-
-
-  // array declarations
-  reg    [ 145:0] out_msg[0:3];
-  assign out$000_msg = out_msg[  0];
-  assign out$001_msg = out_msg[  1];
-  assign out$002_msg = out_msg[  2];
-  assign out$003_msg = out_msg[  3];
-  wire   [   0:0] out_rdy[0:3];
-  assign out_rdy[  0] = out$000_rdy;
-  assign out_rdy[  1] = out$001_rdy;
-  assign out_rdy[  2] = out$002_rdy;
-  assign out_rdy[  3] = out$003_rdy;
-  reg    [   0:0] out_val[0:3];
-  assign out$000_val = out_val[  0];
-  assign out$001_val = out_val[  1];
-  assign out$002_val = out_val[  2];
-  assign out$003_val = out_val[  3];
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_out_val():
-  //       for i in xrange( nports ):
-  //         s.out[i].val.value = 0
-  //         s.out[i].msg.value = 0
-  //
-  //       if s.in_.val:
-  //         s.out[ s.in_.msg.opaque ].val.value = s.in_.val
-  //         s.out[ s.in_.msg.opaque ].msg.value = s.in_.msg
-
-  // logic for comb_out_val()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      out_val[i] = 0;
-      out_msg[i] = 0;
-    end
-    if (in__val) begin
-      out_val[in__msg[(142)-1:134]] = in__val;
-      out_msg[in__msg[(142)-1:134]] = in__msg;
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_in_rdy():
-  //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
-
-  // logic for comb_in_rdy()
-  always @ (*) begin
-    in__rdy = out_rdy[in__msg[(142)-1:134]];
-  end
-
-
-endmodule // Router_0x3fd90561b3d11051
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -30189,3 +33610,2639 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
 endmodule // ReqAckToValRdy_0x1b4e41cb91c5205
 `default_nettype wire
 
+`line 1 "fpu/DW_fp_flt2i.v" 0
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2005 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Kyung-Nam Han, Oct. 31, 2005
+//
+// VERSION:   Verilog Simulation Model for DW_fp_flt2i
+//
+// DesignWare_version: 3b5d9457
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//
+// ABSTRACT:  Floating-point Number Format to Integer Number Format
+//            Converter
+//
+//              This converts a floating-point number to a signed
+//              integer number.
+//              Conversion to a unsigned integer number is not supported.
+//
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              isize           integer size,      3 to 512 bits
+//              ieee_compliance support the IEEE Compliance 
+//                              including NaN and denormal expressions.
+//                              0 - IEEE 754 compatible without denormal support
+//                                  (NaN becomes Infinity, Denormal becomes Zero)
+//                              1 - IEEE 754 standard compatible
+//                                  (NaN and denormal numbers are supported)
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              rnd             3 bits
+//                              Rounding Mode Input
+//              z               (isize)-bits
+//                              Converted Integer Output
+//              status          8 bits
+//                              Status Flags Output
+//
+// Modified:
+//  Mar. 13. 2008 Kyung-Nam Han (from 0712-SP3)
+//    Removed VCS Warning Message (STAR 9000232556) 
+//  Sep. 09. 2009 Kyung-Nam Han (0903-SP3)
+//    Added ieee_compliance parameter
+//-----------------------------------------------------------------------------
+
+module DW_fp_flt2i (a, rnd, z, status);
+
+  parameter sig_width=23;        // RANGE 2 TO 253
+  parameter exp_width=8;         // RANGE 3 TO 31
+  parameter isize=32;            // RANGE 3 TO 512
+  parameter ieee_compliance = 0; // RANGE 0 to 1
+  
+  input  [exp_width + sig_width:0] a;
+  input  [2:0] rnd;
+  output [isize - 1:0] z;
+  output [7:0] status;
+  
+  // synopsys translate_off
+
+
+  `define isign               0  // 0 : signed, 1 : unsigned 
+  `define rnd_Width           4
+  `define rnd_Inc             0
+  `define rnd_Inexact         1
+  `define rnd_HugeInfinity    2
+  `define rnd_TinyminNorm     3
+  `define Mwidth              (2 * isize + 2)
+  `define Movf                (`Mwidth - 1)
+  `define MM                  (`Movf - 1)
+  `define ML                  (`Movf - isize)
+  `define MR                  (`ML - 1)
+  `define MS                  (`ML - 2)
+  `define af_lsb              ((sig_width <= isize) ? 0 : (sig_width - 1) - isize + 1)
+  `define DW_MI_LSB           ((sig_width <= isize) ? `MR - sig_width + 1 : 0)
+  
+  //-------------------------------------------------------------------------
+  // Parameter legality check
+  //-------------------------------------------------------------------------
+    
+
+  // XXX: berkin
+  /* verilator lint_off WIDTH */
+ 
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+    
+        
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+        
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+        
+    if ( (isize < 3) || (isize > 512) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter isize (legal range: 3 to 512)",
+	isize );
+    end
+        
+    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
+	ieee_compliance );
+    end
+     
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check 
+
+  //-----------------------------------------------------  
+  
+  
+  function [`rnd_Width-1:0] rnd_eval;
+  
+    input [2:0] rnd;
+    input [0:0] Sign;
+    input [0:0] L,R,stk;
+    
+    
+    begin
+      rnd_eval[`rnd_Inc] = 0;
+      rnd_eval[`rnd_Inexact] = R|stk;
+      rnd_eval[`rnd_HugeInfinity] = 0;
+      rnd_eval[`rnd_TinyminNorm] = 0;
+      
+      if ($time > 0) begin
+        case (rnd)
+          3'b000:
+          begin
+            rnd_eval[`rnd_Inc] = R&(L|stk);
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b001:
+          begin
+            rnd_eval[`rnd_Inc] = 0;
+            rnd_eval[`rnd_HugeInfinity] = 0;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b010:
+          begin
+            rnd_eval[`rnd_Inc] = ~Sign & (R|stk);
+            rnd_eval[`rnd_HugeInfinity] = ~Sign;
+            rnd_eval[`rnd_TinyminNorm] = ~Sign;
+          end
+          3'b011:
+          begin
+            rnd_eval[`rnd_Inc] = Sign & (R|stk);
+            rnd_eval[`rnd_HugeInfinity] = Sign;
+            rnd_eval[`rnd_TinyminNorm] = Sign;
+          end
+          3'b100:
+          begin
+            rnd_eval[`rnd_Inc] = R;
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b101:
+          begin
+            rnd_eval[`rnd_Inc] = R|stk;
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 1;
+          end
+          default:
+          begin
+            $display("Error! illegal rounding mode.\n");
+            $display("a : %b", a);
+            $display("rnd : %b", rnd);
+          end
+        endcase
+      end
+
+    end
+  endfunction
+  
+  reg [(exp_width + sig_width):0] af;
+  reg [8    -1:0] status_reg;
+  reg [isize-1:0] z_reg;
+  reg [exp_width-1:0] eaf;
+  reg [`Mwidth-1:0] mi;
+  reg [exp_width-1:0] exp;
+  reg [0:0] stk;
+  reg [`rnd_Width-1:0] rnd_val;  
+  reg [isize-1:0] maxneg;
+  reg [isize-1:0] maxpos;
+  reg [(sig_width - 1):0] sig;
+  reg inf_input;
+  reg denorm_input;
+  reg nan_input;
+  reg zero_input;
+
+  integer num;
+  
+  assign status = status_reg;
+  assign z = z_reg;
+  
+  always @(a or rnd) begin : a1000_PROC
+    
+    af = a;
+    status_reg = 0;
+    mi = 0;
+    exp = 0;
+    stk = 0;
+    eaf = af[((exp_width + sig_width) - 1):sig_width];
+    num = 0;
+    sig  = af[(sig_width - 1):0];
+
+    if (ieee_compliance) begin
+      inf_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (sig == 0);
+      nan_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (sig != 0);
+      denorm_input = (eaf == 0) & (sig != 0);
+      zero_input = (eaf == 0) & (sig == 0);
+    end
+    else begin
+      inf_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1));
+      nan_input = 0;
+      denorm_input = 0;
+      zero_input = (eaf == 0 );
+    end
+    
+    if (inf_input) begin
+      
+      if (ieee_compliance) begin
+        status_reg[2] = 1;
+      end
+      else begin
+        status_reg[6] = 1;
+        status_reg[5] = 1;
+      end
+      
+    end
+    else if (nan_input) begin
+      
+      status_reg[2] = 1;
+
+    end
+    else if (zero_input) begin
+      
+      status_reg[0] = 1;
+      
+    end
+    else begin
+      
+      mi[`ML] = 1;
+      
+      if (sig_width <= isize) begin
+        
+        mi[`MR:`DW_MI_LSB] = af[(sig_width - 1):0];
+        
+      end
+      else begin
+        
+
+        mi[`MR:`MR-isize+1] = af[(sig_width - 1):`af_lsb];
+        num = (sig_width - 1) - isize;  // >= 0
+        stk = 0;
+        
+        while (num != 0) begin
+          stk = stk | af[num];
+          num = num - 1;
+        end
+        
+        stk = stk | af[num];
+        mi[0] = stk;
+      end
+
+      if (eaf >= ((1 << (exp_width-1)) - 1)) begin
+        exp = eaf - ((1 << (exp_width-1)) - 1);
+        
+        while (exp !== 0) begin
+          if (mi[`Movf] !== 1) begin
+            mi = mi << 1;
+          end
+          
+          exp = exp - 1;
+        end
+      end
+      else begin
+        
+        exp = ((1 << (exp_width-1)) - 1) - eaf;
+        
+        while (exp != 0) begin
+          
+          stk = mi[0];
+          mi = mi >> 1;
+          mi[0] = stk | mi[0];
+          exp = exp - 1;
+          
+        end
+      end
+      
+      
+      if (mi[`Movf] === 1) begin
+      
+        status_reg[6] = 1;
+        status_reg[5] = 1;
+        
+      end
+      else begin
+      
+        stk = 0;
+        num = `MS;
+        
+        while (num != 0) begin
+          stk = stk | mi[num];
+          num = num - 1;
+        end
+        
+        stk = stk | mi[num];
+        mi[`MS] = stk;
+        
+        rnd_val = rnd_eval(rnd, af[(exp_width + sig_width)], mi[`ML], mi[`MR], mi[`MS]);
+
+        if (rnd_val[`rnd_Inc] === 1) begin
+          mi = mi + (1<<`ML);
+        end
+        
+        status_reg[5] =
+        status_reg[5] | rnd_val[`rnd_Inexact];
+        
+        if (mi[`Movf] === 1) begin
+          
+          status_reg[6] = 1;
+          status_reg[5] = 1;
+          
+        end
+        else if (mi[`MM:`ML] === 0) begin
+          
+          status_reg[0] = 1;
+
+          if (denorm_input) begin
+            status_reg[3] = 1;
+          end
+          
+        end
+      end
+      
+    end
+
+    
+    
+    if (`isign === 0) begin
+
+      maxneg = 0;
+      maxneg[isize-1] = 1;
+      maxpos = -1;
+      maxpos[isize-1] = 0;
+      
+      if ( (af[(exp_width + sig_width)] === 1 && mi[`MM:`ML] > maxneg) ||
+        (af[(exp_width + sig_width)] === 0 && mi[`MM:`ML] > maxpos) ) begin
+        
+        status_reg[6] = 1;
+        status_reg[5] = 1;
+        
+      end
+      
+      if (af[(exp_width + sig_width)] === 1) begin
+        
+        if (status_reg[6] === 1 || 
+            status_reg[2] === 1) begin
+          z_reg = -maxneg;
+        end
+        else if (status_reg[0] === 1) begin
+          z_reg = 0;
+        end
+        else begin
+          z_reg = -mi[`MM:`ML];
+        end
+        
+      end
+      else begin
+        
+        if (status_reg[6] === 1 ||
+            status_reg[2] === 1) begin
+          z_reg = maxpos;
+        end
+        else if (status_reg[0] === 1) begin
+          z_reg = 0;
+        end
+        else begin
+          z_reg = mi[`MM:`ML];
+        end
+        
+      end
+      
+    end
+    else begin
+      
+      $display("Error! Unsigned integer for DW_fp_flt2i is not supported.");
+      
+    end
+  end
+
+  `undef isign
+  `undef rnd_Width
+  `undef rnd_Inc
+  `undef rnd_Inexact
+  `undef rnd_HugeInfinity
+  `undef rnd_TinyminNorm
+  `undef Mwidth
+  `undef Movf
+  `undef MM
+  `undef ML
+  `undef MR
+  `undef MS
+  `undef af_lsb
+  `undef DW_MI_LSB
+
+  // synopsys translate_on
+
+endmodule
+`line 1 "fpu/DW_fp_addsub.v" 0
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2005 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Alexandre Tenca (Jan 2006)
+//
+// VERSION:   Verilog Simulation Model for FP adder/subtractor
+//
+// DesignWare_version: db3a591c
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------
+//
+// ABSTRACT: Floating-point two-operand Adder/Subtractor
+//           Computes the addition/subtraction of two FP numbers. 
+//           The format of the FP numbers is defined by the number of bits 
+//           in the significand (sig_width) and the number of bits in the 
+//           exponent (exp_width).
+//           The total number of bits in the FP number is sig_width+exp_width+1
+//           since the sign bit takes the place of the MS bits in the significand
+//           which is always 1 (unless the number is a denormal; a condition 
+//           that can be detected testing the exponent value).
+//           The output is a FP number and status flags with information about
+//           special number representations and exceptions. 
+//           Subtraction is forced when op=1.
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              ieee_compliance 0 or 1 (default 0)
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              b               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              rnd             3 bits
+//                              rounding mode
+//              op              1 bit
+//                              add/sub control: 0 for add - 1 for sub
+//
+//              Output ports    Size & Description
+//              ===========     ==================
+//              z               (sig_width + exp_width + 1) bits
+//                              Floating-point Number result
+//              status          byte
+//                              info about FP results
+//
+// MODIFIED:
+//        7/21/2006: 
+//           - includes manipulation of inexact bit
+//           - fixes value assigned to HugeInfinity when rnd=4 (up) RND_eval
+//           - fixes some special cases when rounding close to inf and zero
+//        12/14/06: modifications based on code review by Kyung-Nam Han
+//
+//-------------------------------------------------------------------------------
+
+module DW_fp_addsub (a, b, rnd, op, z, status);
+parameter sig_width=23;
+parameter exp_width=8;  
+parameter ieee_compliance=0;                    
+
+// declaration of inputs and outputs
+input  [sig_width+exp_width:0] a,b;
+input  [2:0] rnd;
+input  op;
+output [7:0] status;
+output [sig_width+exp_width:0] z;
+
+    // synopsys translate_off
+
+  //-------------------------------------------------------------------------
+  // Parameter legality check
+  //-------------------------------------------------------------------------
+  
+ 
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+    
+  
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+  
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+  
+    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
+	ieee_compliance );
+    end
+  
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check 
+
+
+
+
+function [4-1:0] RND_eval;
+
+  input [2:0] RND;
+  input [0:0] Sign;
+  input [0:0] L,R,STK;
+
+
+  begin
+  RND_eval[0] = 0;
+  RND_eval[1] = R|STK;
+  RND_eval[2] = 0;
+  RND_eval[3] = 0;
+  if ($time > 0)
+  case (RND)
+    3'b000:
+    begin
+      RND_eval[0] = R&(L|STK);
+      RND_eval[2] = 1;
+      RND_eval[3] = 0;
+    end
+    3'b001:
+    begin
+      RND_eval[0] = 0;
+      RND_eval[2] = 0;
+      RND_eval[3] = 0;
+    end
+    3'b010:
+    begin
+      RND_eval[0] = ~Sign & (R|STK);
+      RND_eval[2] = ~Sign;
+      RND_eval[3] = ~Sign;
+    end
+    3'b011:
+    begin
+      RND_eval[0] = Sign & (R|STK);
+      RND_eval[2] = Sign;
+      RND_eval[3] = Sign;
+    end
+    3'b100:
+    begin
+      RND_eval[0] = R;
+      RND_eval[2] = 1;
+      RND_eval[3] = 0;
+    end
+    3'b101:
+    begin
+      RND_eval[0] = R|STK;
+      RND_eval[2] = 1;
+      RND_eval[3] = 1;
+    end
+    default:
+      $display("Error! illegal rounding mode.\n");
+  endcase
+  end
+
+endfunction
+
+
+// definitions used in the code
+
+reg [8    -1:0] status_int;
+reg [(exp_width + sig_width):0] z_temp,Large,Small;
+reg [0:0] swap,subtract,STK;
+reg [exp_width-1:0] E_Large,E_Small,E_Diff; // Exponents.
+reg [sig_width-1:0] F_Large,F_Small;        // Fractions.
+reg [exp_width+1:0] E_Comp;                 // The biggest possible exponent
+reg [((sig_width + 3 + 3        ) - 2):0] M_Large,M_Small;       // The Mantissa numbers.
+reg [((sig_width + 3 + 3        ) - 2):0] M_Z;                   // The Mantissa numbers.
+reg [4-1:0] RND_val;         // Values returned by RND_eval function.
+reg [(exp_width + sig_width):0] NaNFp;          // NaN FP number
+reg [(exp_width + sig_width):0] b_int;          // internal value of b
+reg Denormal_Large;                  // signals a denormal as a large operand
+reg Denormal_Small;                  // signals a denormal as a small operand
+
+// main process of information
+always @(a or b or rnd or op)
+begin
+  NaNFp = {1'b0,{exp_width{1'b1}},{sig_width-1{1'b0}},1'b1};
+  status_int = 0;
+  b_int = b;
+  b_int[(exp_width + sig_width)] = (op == 1)?~b[(exp_width + sig_width)]:b[(exp_width + sig_width)];
+  subtract = a[(exp_width + sig_width)] ^ b_int[(exp_width + sig_width)];
+
+  swap = a[((exp_width + sig_width) - 1):0] < b[((exp_width + sig_width) - 1):0];
+  Large = swap ? b_int : a;
+  Small = swap ? a : b_int;
+  E_Large = Large[((exp_width + sig_width) - 1):sig_width];
+  E_Small = Small[((exp_width + sig_width) - 1):sig_width];
+  F_Large = Large[(sig_width - 1):0];
+  F_Small = Small[(sig_width - 1):0];
+
+  // 
+  // NaN Input
+  // 
+  if ((((E_Large === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large !== 0)) ||
+      ((E_Small === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large !== 0))) && ieee_compliance === 1)
+    begin
+      z_temp = NaNFp;
+      status_int[2] = 1;
+    end
+  //
+  // Infinity Input
+  //
+  else 
+    if (E_Large === ((((1 << (exp_width-1)) - 1) * 2) + 1) && (F_Large === 0 || ieee_compliance === 0)) 
+      begin
+   	status_int[1] = 1;
+        z_temp = Large;
+        // zero out the fractional part
+        z_temp[(sig_width - 1):0] = 0;
+   	// Watch out for Inf-Inf !
+   	if ( (E_Small === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large === 0 || ieee_compliance === 0) && (subtract === 1) )
+    	  begin
+            status_int[2] = 1;
+            if (ieee_compliance)   
+              begin
+                status_int[1] = 0;
+                z_temp = NaNFp;
+              end
+            else
+              z_temp[(exp_width + sig_width)] = 0;  // use positive inf. to represent NaN
+   	  end
+      end
+    //
+    // Zero Input (or denormal input when ieee_compliance == 0)
+    //
+    else 
+      if (E_Small == 0 && ((ieee_compliance == 0) || (F_Small == 0)))
+        begin
+           z_temp = Large;
+           // watch out for 0-0 !
+           if (E_Large === 0 && ((ieee_compliance == 0) || (F_Large == 0)))
+      	     begin
+      	       status_int[0] = 1;
+               // Set the fraction to 000...
+               z_temp = 0;
+               if (subtract) 
+                 if (rnd === 3'b011) z_temp[(exp_width + sig_width)] = 1;
+                 else                z_temp[(exp_width + sig_width)] = 0;
+               else                  z_temp[(exp_width + sig_width)] = a[(exp_width + sig_width)];
+             end
+        end
+      //
+      // Normal Inputs
+      //
+      else
+        begin
+          // Detect the denormal input case
+          if ((E_Large == 0) && (F_Large != 0)) 
+            begin
+              // M_Large contains the Mantissa of denormal value
+              M_Large = {2'b00,F_Large,3'b000};
+              Denormal_Large = 1'b1;
+            end
+          else
+            begin
+              // M_Large is the Mantissa for Large number
+              M_Large = {2'b01,F_Large,3'b000};
+              Denormal_Large = 1'b0;
+            end
+   
+          if ((E_Small == 0) && (F_Small != 0)) 
+            begin
+              // M_Small contains the Mantissa of denormal value
+              M_Small = {2'b00,F_Small,3'b000};
+              Denormal_Small = 1'b1;
+            end
+          else
+            begin
+              // M_Small is the Mantissa for Small number
+              M_Small = {2'b01,F_Small,3'b000};
+              Denormal_Small = 1'b0;
+            end
+
+          // When one of the inputs is a denormal, we need to
+          // compensate because the exponent for a denormal is
+          // actually 1, and not 0.
+          if ((Denormal_Large ^ Denormal_Small) == 1'b1) 
+            E_Diff = E_Large - E_Small - 1;
+	  else
+            E_Diff = E_Large - E_Small;
+
+          // Shift right by E_Diff for Small number: M_Small.
+          STK = 0;
+          while ( (M_Small != 0) && (E_Diff != 0) )
+            begin
+              STK = M_Small[0] | STK;
+              M_Small = M_Small >> 1;
+              E_Diff = E_Diff - 1;
+            end
+          M_Small[0] = M_Small[0] | STK;
+
+          // Compute M_Z result: a +/- b
+          if (subtract === 0) M_Z = M_Large + M_Small;
+          else M_Z = M_Large - M_Small;
+
+          // ----------------------------------------------------------
+          //  Post Process
+          // -----------------------------------------------------------
+          E_Comp = {2'b00, E_Large};
+
+          //
+          // Exact 0 special case after the computation.
+          //
+            if (M_Z === 0)
+              begin
+                status_int[0] = 1;
+                z_temp = 0;
+                // If rounding mode is -Infinity, the sign bit is 1; 
+                // otherwise the sign bit is 0.
+                if (rnd === 3'b011) z_temp[(exp_width + sig_width)] = 1;
+              end
+            //
+            // Normal case after the computation.
+            //
+            else
+              begin
+                // Normalize the Mantissa for computation overflow case.
+                if (M_Z[((sig_width + 3 + 3        ) - 2)] === 1)
+                  begin
+                    E_Comp = E_Comp + 1;
+                    STK = M_Z[0];
+                    M_Z = M_Z >> 1;
+                    M_Z[0] = M_Z[0] | STK;
+                  end
+
+                // Normalize the Mantissa for leading zero case.
+                while ( (M_Z[((sig_width + 3 + 3        ) - 2)-1] === 0) && (E_Comp > 1) )
+                  begin
+                    E_Comp = E_Comp - 1;
+                    M_Z = M_Z << 1;
+                  end
+
+                // test if the output of the normalization unit is still not normalized
+                if (M_Z[((sig_width + 3 + 3        ) - 2):((sig_width + 3 + 3        ) - 2)-1] === 0)
+	          if (ieee_compliance == 1) 
+                    begin
+                      z_temp = {Large[(exp_width + sig_width)],{exp_width{1'b0}}, M_Z[((sig_width + 3 + 3        ) - 2)-2:3]};
+                      status_int[3] = 0;
+                      if ((STK == 1) || (M_Z[(3 - 1):0] != 0))
+                        status_int[5] = 1;
+                      if (M_Z[((sig_width + 3 + 3        ) - 2)-2:3] == 0) 
+                        status_int[0] = 1; 
+                    end
+                  else // when denormal is not used --> becomes zero or minFP
+                    begin
+                      if ((rnd == 2 & ~Large[(exp_width + sig_width)]) | 
+                          (rnd == 3 & Large[(exp_width + sig_width)]) | 
+                          (rnd == 5)) 
+                        begin
+                          z_temp = {Large[(exp_width + sig_width)],{exp_width-1{1'b0}},{1'b1},{sig_width{1'b0}}};
+                          status_int[0] = 0;
+                        end
+                      else
+                        begin
+                          z_temp = {Large[(exp_width + sig_width)],{exp_width{1'b0}}, {sig_width{1'b0}}};
+                          status_int[0] = 1;
+                        end
+                      status_int[3] = 1;
+                      status_int[5] = 1;
+                    end
+                else
+                  begin
+                    // Round M_Z according to the rounding mode (rnd).
+                    RND_val = RND_eval(rnd, Large[(exp_width + sig_width)], M_Z[3], M_Z[(3 - 1)], (|{M_Z[1:0]}));
+
+                    if (RND_val[0] === 1) M_Z = M_Z + (1<<3);
+ 
+                    // Normalize the Mantissa for overflow case after rounding.
+                    if ( (M_Z[((sig_width + 3 + 3        ) - 2)] === 1) )
+                      begin
+                        E_Comp = E_Comp + 1;
+                        M_Z = M_Z >> 1;
+                      end
+
+                    //
+                    // Huge
+                    //
+                    if (E_Comp >= ((((1 << (exp_width-1)) - 1) * 2) + 1))
+                      begin
+                        status_int[4] = 1;
+                        status_int[5] = 1;
+                        if(RND_val[2] === 1)
+                          begin
+                            // Infinity
+                            M_Z[((sig_width + 3 + 3        ) - 2)-2:3] = 0;
+                            E_Comp = ((((1 << (exp_width-1)) - 1) * 2) + 1);
+                            status_int[1] = 1;
+                          end
+                        else
+                          begin
+                            // MaxNorm
+                            E_Comp = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
+                            M_Z[((sig_width + 3 + 3        ) - 2)-2:3] = -1;
+                          end
+                      end
+                    //
+                    // Tiny or Denormal
+                    //
+                    else 
+                      if (E_Comp <= 0) E_Comp = 0 + 1;
+    
+                    //
+                    // Normal  (continues)
+                    //
+                    status_int[5] = status_int[5] | RND_val[1];
+                    // Reconstruct the floating point format.
+                    z_temp = {Large[(exp_width + sig_width)],E_Comp[exp_width-1:0],M_Z[((sig_width + 3 + 3        ) - 2)-2:3]};
+                  end //  result is normal value 
+              end  // Normal computation case
+        end    // non-special inputs
+end
+
+assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0) || (^(op ^ op) !== 1'b0)) ? {8'bx} : status_int;
+assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0) || (^(op ^ op) !== 1'b0)) ? {sig_width+exp_width+1{1'bx}} : z_temp;
+
+    // synopsys translate_on
+
+endmodule
+
+`line 1 "fpu/DW_fp_cmp.v" 0
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Alexandre Tenca, March 2006
+//
+// VERSION:   Verilog Simulation Model for FP Comparator
+//
+// DesignWare_version: 58e94b19
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+//-------------------------------------------------------------------------------
+//
+// ABSTRACT: Floating-point Comparator
+//           Compares two FP numbers and generates outputs that indicate when 
+//           A>B, A<B and A=B. The component also provides outputs for MAX and 
+//           MIN values, with corresponding status flags.
+//
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              ieee_compliance 0 or 1
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              b               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              zctr            1 bit
+//                              defines the min/max operation of z0 and z1
+//
+//              Output ports    Size & Description
+//              ===========     ==================
+//              aeqb            1 bit
+//                              has value 1 when a=b
+//              altb            1 bit
+//                              has value 1 when a<b
+//              agtb            1 bit
+//                              has value 1 when a>b
+//              unordered       1 bit
+//                              one of the inputs is NaN
+//              z0              (sig_width + exp_width + 1) bits
+//                              Floating-point Number that has max(a,b) when
+//                              zctr=1, and min(a,b) otherwise
+//              z1              (sig_width + exp_width + 1) bits
+//                              Floating-point Number that has max(a,b) when
+//                              zctr=0, and min(a,b) otherwise
+//              status0         byte
+//                              info about FP value in z0
+//              status1         byte
+//                              info about FP value in z1
+//
+// MODIFIED: 
+//    4/18 - the ieee_compliance parameter is also controlling the use of nans
+//           When 0, the component behaves as the MC component (no denormals
+//           and no NaNs).
+//
+//-------------------------------------------------------------------------------
+
+module DW_fp_cmp (a, b, zctr, aeqb, altb, agtb, unordered, z0, z1, status0, status1);
+parameter sig_width=23;
+parameter exp_width=8;
+parameter ieee_compliance=0;
+
+// declaration of inputs and outputs
+input  [sig_width + exp_width:0] a,b;
+input  zctr;
+output aeqb, altb, agtb, unordered;
+output [sig_width + exp_width:0] z0, z1;
+output [7:0] status0, status1;
+
+// synopsys translate_off
+  //-------------------------------------------------------------------------
+  // Parameter legality check
+  //-------------------------------------------------------------------------
+  
+ 
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+    
+  
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+  
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+  
+    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
+	ieee_compliance );
+    end
+  
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check 
+
+
+// definitions used in the code
+ 
+reg [0:0] sign;
+reg [exp_width-1:0] Ea,Eb;
+reg [sig_width:0] Ma,Mb;
+reg [sig_width-1:0] Fa,Fb;
+reg [(exp_width + sig_width):0] z0_int,z1_int;
+reg [8    -1:0] status0_int,status1_int;
+reg [0:0] agtb_int,aeqb_int,altb_int, unordered_int;
+reg [1:0] chk;
+reg zer_a, zer_b;
+
+always @(a or b or zctr) 
+begin
+
+  Ea = a[((exp_width + sig_width) - 1):sig_width];
+  Eb = b[((exp_width + sig_width) - 1):sig_width];
+  Fa = a[(sig_width - 1):0];
+  Fb = b[(sig_width - 1):0];
+  zer_a = 0;
+  zer_b = 0;
+
+  if (ieee_compliance === 1 && Ea === 0)
+    begin
+      zer_a = Fa === 0;
+      Ma = {1'b0,a[(sig_width - 1):0]};
+    end
+  else if (ieee_compliance === 0 && Ea === 0)
+    begin
+      Ma = 0;
+      zer_a = 1;
+    end
+  else
+    Ma = {1'b1,a[(sig_width - 1):0]};
+  if (ieee_compliance === 1 && Eb === 0)
+    begin
+      zer_b = Fb === 0;
+      Mb = {1'b0,b[(sig_width - 1):0]};
+    end
+  else if (ieee_compliance === 0 && Eb === 0)
+    begin
+      Mb = 0;
+      zer_b = 1;
+    end
+  else
+    Mb = {1'b1,b[(sig_width - 1):0]};
+  
+  sign = (a[(exp_width + sig_width)] && !zer_a) ^ (b[(exp_width + sig_width)] && !zer_b);
+
+  status0_int = 0;
+  status1_int = 0;
+  z0_int = 0;
+  z1_int = 0;
+  agtb_int = 0;
+  aeqb_int = 0;
+  altb_int = 0;
+  unordered_int = 0;
+
+  //
+  // NaN input
+  //
+  if (((Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0)||		// a or b are NaN.
+       (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0)) && (ieee_compliance === 1))
+  begin
+    // nothing to do
+    // z0 and z1 get the values of a and b
+    unordered_int = 1;
+  end
+  //
+  // Infinity Input
+  //
+  else if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1))	// a and b are Infinity.
+  begin
+    if (sign === 0) aeqb_int = 1;
+    else if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
+    else altb_int = 1;
+  end
+  else if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Only a is Infinity.
+  begin
+    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
+    else altb_int = 1;
+  end
+  else if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Only b is Infinity.
+  begin
+    if (b[(exp_width + sig_width)] === 0) altb_int = 1;
+    else agtb_int = 1;
+  end
+  //
+  // Zero Input
+  //
+  else if (zer_a && zer_b)			// a and b are Zero.
+    aeqb_int = 1;	// +0 == -0
+  else if (zer_a) 				// Only a is Zero.
+  begin
+    if (b[(exp_width + sig_width)] === 0) altb_int = 1;
+    else agtb_int = 1;
+  end
+  else if (zer_b)				// Only b is Zero.
+  begin
+    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
+    else altb_int = 1;
+  end
+  //
+  // Normal/Denormal Inputs
+  //
+  else if (sign === 1)		// a and b have different sign bit.
+  begin
+    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
+    else altb_int = 1;
+  end
+  else if (Ea !== Eb)		// a and b have the same sign, but different exponents
+  begin
+    if ( (!a[(exp_width + sig_width)] && Ea>Eb) || (a[(exp_width + sig_width)] && Ea<Eb) ) agtb_int = 1;
+    else altb_int = 1;
+  end
+  else 
+  begin
+    if ( (!a[(exp_width + sig_width)] && Fa>Fb) || (a[(exp_width + sig_width)] && Fa<Fb) ) 
+       agtb_int = 1;   // a and b have the same exponent and sign but different fractions
+    else if (Fa === Fb) 
+       aeqb_int = 1;
+    else
+       altb_int = 1;
+  end
+
+  // Check if agtb_int, aeqb_int, and altb_int are mutually exclusive.
+  chk = agtb_int + aeqb_int + altb_int + unordered_int;
+  if (chk !== 1) $display ("Error! agtb, aeqb, altb, and unordered are NOT mutually exclusive.");
+
+  // assign a or b to zx outputs according to zctr flag.
+  if ( (agtb_int && zctr) || (altb_int && !zctr) || (aeqb_int && !zctr) || (unordered_int) ) 
+  begin
+    z0_int = a;
+    z1_int = b;
+    status0_int[7] = 1;
+    if (ieee_compliance === 1)
+      begin
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0) status0_int[2] = 1;
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa === 0) status0_int[1] = 1;
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0) status1_int[2] = 1;
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb === 0) status1_int[1] = 1;
+      end
+    else
+      begin
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status0_int[1] = 1;
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status1_int[1] = 1;
+      end
+    status0_int[0] = zer_a;
+    status1_int[0] = zer_b;
+  end
+  else
+  begin
+    z0_int = b;
+    z1_int = a;
+    if (ieee_compliance === 1)
+      begin
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0) status0_int[2] = 1;
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb === 0) status0_int[1] = 1;
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0) status1_int[2] = 1;
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa === 0) status1_int[1] = 1;
+      end
+    else
+      begin
+        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status0_int[1] = 1;
+        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status1_int[1] = 1;
+      end
+    status0_int[0] = zer_b;
+    status1_int[0] = zer_a;
+    status1_int[7] = 1;
+  end
+
+end
+
+assign z0 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {exp_width+sig_width+1{1'bx}} : z0_int;
+assign z1 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {exp_width+sig_width+1{1'bx}} : z1_int;
+assign status0 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {8'bx} : status0_int;
+assign status1 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {8'bx} : status1_int;
+assign agtb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : agtb_int;
+assign aeqb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : aeqb_int;
+assign altb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : altb_int;
+assign unordered = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : unordered_int;
+
+// synopsys translate_on
+
+endmodule
+
+`line 1 "fpu/DW_fp_mult.v" 0
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Kyung-Nam Han, Feb. 22, 2006
+//
+// VERSION:   Verilog Simulation Model for DW_fp_mult
+//
+// DesignWare_version: 89edc232
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//-----------------------------------------------------------------------------
+//
+// ABSTRACT: Floating-Point Multiplier
+//
+//              DW_fp_mult calculates the floating-point multiplication
+//              while supporting six rounding modes, including four IEEE
+//              standard rounding modes.
+//
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              ieee_compliance support the IEEE Compliance
+//                              including NaN and denormal expressions.
+//                              0 - IEEE 754 compatible without denormal support
+//                                  (NaN becomes Infinity, Denormal becomes Zero)
+//                              1 - IEEE 754 standard compatible
+//                                  (NaN and denormal numbers are supported)
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              b               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              rnd             3 bits
+//                              Rounding Mode Input
+//              z               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Output
+//              status          8 bits
+//                              Status Flags Output
+//
+// Modified:
+//     2009.11.12 Kyung-Nam Han
+//       Bug fix for STAR9000352662, available from 2009.06-SP4
+//     2015.12.10 Kyung-Nam Han
+//       Bug fix for STAR9000983334, available from 2015.06-SP5
+//-----------------------------------------------------------------------------
+
+// verilator lint_off WIDTH
+
+module DW_fp_mult (a, b, rnd, z, status);
+
+  parameter sig_width = 23;      // RANGE 2 TO 253
+  parameter exp_width = 8;       // RANGE 3 TO 31
+  parameter ieee_compliance = 0; // RANGE 0 TO 1
+
+  input  [exp_width + sig_width:0] a;
+  input  [exp_width + sig_width:0] b;
+  input  [2:0] rnd;
+  output [exp_width + sig_width:0] z;
+  output [7:0] status;
+
+  // synopsys translate_off
+
+
+  `define Mwidth (2 * sig_width + 3)
+  `define Movf   (`Mwidth - 1)
+  `define L      (`Movf - 1 - sig_width)
+  `define R      (`L - 1)
+  `define RND_Width  4
+  `define RND_Inc  0
+  `define RND_Inexact  1
+  `define RND_HugeInfinity  2
+  `define RND_TinyminNorm  3
+  `define log_awidth ((sig_width + 1>65536)?((sig_width + 1>16777216)?((sig_width + 1>268435456)?((sig_width + 1>536870912)?30:29):((sig_width + 1>67108864)?((sig_width + 1>134217728)?28:27):((sig_width + 1>33554432)?26:25))):((sig_width + 1>1048576)?((sig_width + 1>4194304)?((sig_width + 1>8388608)?24:23):((sig_width + 1>2097152)?22:21)):((sig_width + 1>262144)?((sig_width + 1>524288)?20:19):((sig_width + 1>131072)?18:17)))):((sig_width + 1>256)?((sig_width + 1>4096)?((sig_width + 1>16384)?((sig_width + 1>32768)?16:15):((sig_width + 1>8192)?14:13)):((sig_width + 1>1024)?((sig_width + 1>2048)?12:11):((sig_width + 1>512)?10:9))):((sig_width + 1>16)?((sig_width + 1>64)?((sig_width + 1>128)?8:7):((sig_width + 1>32)?6:5)):((sig_width + 1>4)?((sig_width + 1>8)?4:3):((sig_width + 1>2)?2:1)))))
+  `define ez_msb ((exp_width >= `log_awidth) ? exp_width + 1 : `log_awidth + 1)
+
+  //-------------------------------------------------------------------------
+  // Parameter legality check
+  //-------------------------------------------------------------------------
+
+
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+
+
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+
+    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
+	ieee_compliance );
+    end
+
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check
+
+  //-------------------------------------------------------------------------
+
+  //-----------------------------------------------------
+  // Usage: rnd_val = rnd_eval(rnd,Sign,L,R,stk);
+  // rnd_val has 4 bits:
+  // rnd_val[rnd_Inc]
+  // rnd_val[rnd_Inexact]
+  // rnd_val[rnd_HugeInfinity]
+  // rnd_val[rnd_TinyminNorm]
+  //----------------------------------------------------
+  // Rounding increment equations
+  // MODE | Equation   | Description
+  // ------------------------------------------------
+  // even | R&(L|stk)  | IEEE round to nearest (even)
+  // zero | 0          | IEEE round to zero
+  // +inf | S'&(R|stk) | IEEE round to positive infinity
+  // -inf | S&(R|stk)  | IEEE round to negative infinity
+  // up   | R          | round to nearest (up)
+  // away | (R|stk)    | round away from zero
+  //----------------------------------------------------
+
+  function [`RND_Width-1:0] rnd_eval;
+
+    input [2:0] rnd;
+    input [0:0] Sign;
+    input [0:0] L,R,stk;
+
+    begin
+      rnd_eval[`RND_Inc] = 0;
+      rnd_eval[`RND_Inexact] = R|stk;
+      rnd_eval[`RND_HugeInfinity] = 0;
+      rnd_eval[`RND_TinyminNorm] = 0;
+
+      if ($time > 0)
+      begin
+        case (rnd)
+          3'b000:
+          begin
+            // round to nearest (even)
+            rnd_eval[`RND_Inc] = R&(L|stk);
+            rnd_eval[`RND_HugeInfinity] = 1;
+            rnd_eval[`RND_TinyminNorm] = 0;
+          end
+          3'b001:
+          begin
+            // round to zero
+            rnd_eval[`RND_Inc] = 0;
+            rnd_eval[`RND_HugeInfinity] = 0;
+            rnd_eval[`RND_TinyminNorm] = 0;
+          end
+          3'b010:
+          begin
+            // round to positive infinity
+            rnd_eval[`RND_Inc] = ~Sign & (R|stk);
+            rnd_eval[`RND_HugeInfinity] = ~Sign;
+            rnd_eval[`RND_TinyminNorm] = ~Sign;
+          end
+          3'b011:
+          begin
+            // round to negative infinity
+            rnd_eval[`RND_Inc] = Sign & (R|stk);
+            rnd_eval[`RND_HugeInfinity] = Sign;
+            rnd_eval[`RND_TinyminNorm] = Sign;
+          end
+          3'b100:
+          begin
+            // round to nearest (up)
+            rnd_eval[`RND_Inc] = R;
+            rnd_eval[`RND_HugeInfinity] = 1;
+            rnd_eval[`RND_TinyminNorm] = 0;
+          end
+          3'b101:
+          begin
+            // round away form 0
+            rnd_eval[`RND_Inc] = R|stk;
+            rnd_eval[`RND_HugeInfinity] = 1;
+            rnd_eval[`RND_TinyminNorm] = 1;
+          end
+          default:
+          begin
+            $display("Error! illegal rounding mode.\n");
+            $display("a : %b", a);
+            $display("rnd : %b", rnd);
+          end
+        endcase
+      end
+    end
+  endfunction
+
+
+
+  reg [(exp_width + sig_width):0] z_reg;
+  reg [exp_width-1:0] EA;
+  reg [exp_width-1:0] EB;
+  reg signed [`ez_msb:0] EZ;
+  reg signed [`ez_msb:0] Range_Check;
+  reg signed [`ez_msb:0] SH_Shift;
+  reg signed [`ez_msb:0] EZ_Shift;
+  reg [sig_width:0] MA;
+  reg [sig_width:0] MB;
+  reg [sig_width:0] TMP_MA;
+  reg [sig_width:0] TMP_MB;
+  reg [`Mwidth-1:0] MZ;
+  reg STK;
+  reg SIGN;
+  reg [`RND_Width-1:0] RND_val;
+  reg [8    -1:0] status_reg;
+  reg MaxEXP_A;
+  reg MaxEXP_B;
+  reg InfSIG_A;
+  reg InfSIG_B;
+  reg Zero_A;
+  reg Zero_B;
+  reg Denorm_A;
+  reg Denorm_B;
+  reg [9:0] LZ_INA;
+  reg [9:0] LZ_INB;
+  reg [9:0] LZ_IN;
+  reg [sig_width - 1:0] SIGA;
+  reg [sig_width - 1:0] SIGB;
+  reg [(exp_width + sig_width):0] NaN_Reg;
+  reg [(exp_width + sig_width):0] Inf_Reg;
+  reg MZ_Movf1;
+  reg EZ_Zero;
+  reg STK_PRE;
+  reg [sig_width:0] STK_EXT;
+  reg [sig_width - 1:0] NaN_Sig;
+  reg [sig_width - 1:0] Inf_Sig;
+  reg STK_CHECK;
+  reg minnorm_case;
+
+  integer i;
+
+  always @(a or b or rnd) begin : a1000_PROC
+    SIGN = a[(exp_width + sig_width)] ^ b[(exp_width + sig_width)];
+    EA = a[((exp_width + sig_width) - 1):sig_width];
+    EB = b[((exp_width + sig_width) - 1):sig_width];
+    SIGA = a[(sig_width - 1):0];
+    SIGB = b[(sig_width - 1):0];
+    status_reg = 0;
+    LZ_INA = 0;
+    LZ_INB = 0;
+    LZ_IN = 0;
+    STK_EXT = 0;
+
+    MaxEXP_A = (EA == ((((1 << (exp_width-1)) - 1) * 2) + 1));
+    MaxEXP_B = (EB == ((((1 << (exp_width-1)) - 1) * 2) + 1));
+    InfSIG_A = (SIGA == 0);
+    InfSIG_B = (SIGB == 0);
+
+    // Zero and Denormal
+    if (ieee_compliance) begin
+      Zero_A = (EA == 0 ) & (SIGA == 0);
+      Zero_B = (EB == 0 ) & (SIGB == 0);
+      Denorm_A = (EA == 0 ) & (SIGA != 0);
+      Denorm_B = (EB == 0 ) & (SIGB != 0);
+      // IEEE Standard
+      NaN_Sig = 1;
+      Inf_Sig = 0;
+      NaN_Reg = {1'b0, {(exp_width){1'b1}}, NaN_Sig};
+      Inf_Reg = {SIGN, {(exp_width){1'b1}}, Inf_Sig};
+
+      if (Denorm_A) begin
+        MA = {1'b0, a[(sig_width - 1):0]};
+      end
+      else begin
+        MA = {1'b1, a[(sig_width - 1):0]};
+      end
+
+      if (Denorm_B) begin
+        MB = {1'b0, b[(sig_width - 1):0]};
+      end
+      else begin
+        MB = {1'b1, b[(sig_width - 1):0]};
+      end
+
+    end
+    else begin // ieee_compliance = 0
+      Zero_A = (EA == 0 );
+      Zero_B = (EB == 0 );
+      Denorm_A = 0;
+      Denorm_B = 0;
+      MA = {1'b1,a[(sig_width - 1):0]};
+      MB = {1'b1,b[(sig_width - 1):0]};
+      NaN_Sig = 0;
+      Inf_Sig = 0;
+      // from 0703-SP2, NaN has always + sign.
+      NaN_Reg = {1'b0, {(exp_width){1'b1}}, NaN_Sig};
+      Inf_Reg = {SIGN, {(exp_width){1'b1}}, Inf_Sig};
+    end
+
+    //
+    // Infinity & NaN Input
+    //
+    if (ieee_compliance && ((MaxEXP_A && ~InfSIG_A) || (MaxEXP_B && ~InfSIG_B))) begin
+      status_reg[2] = 1;
+      z_reg = NaN_Reg;
+    end
+    else if ( (MaxEXP_A) || (MaxEXP_B) )	begin
+
+      if (ieee_compliance == 0) begin
+        status_reg[1] = 1;
+      end
+
+      // 0*Inf = NaN
+      if ( Zero_A || Zero_B ) begin
+        status_reg[2] = 1;
+        z_reg = NaN_Reg;
+      end
+      else begin  // Infinity Case
+        status_reg[1] = 1;
+        z_reg = Inf_Reg;
+      end
+
+    end
+    //
+    // Zero Input
+    //
+    else if (Zero_A || Zero_B) begin
+      status_reg[0] = 1;
+      z_reg = 0;
+      z_reg[(exp_width + sig_width)] = SIGN;
+    end
+    //
+    // Normal & Denormal Inputs
+    //
+    else begin
+
+      // Denormal Check
+      TMP_MA = MA;
+      if (Denorm_A)
+      begin
+        while(TMP_MA[sig_width] != 1)
+        begin
+          TMP_MA = TMP_MA << 1;
+          LZ_INA = LZ_INA + 1;
+        end
+      end
+
+      TMP_MB = MB;
+      if (Denorm_B)
+      begin
+        while(TMP_MB[sig_width] != 1)
+        begin
+          TMP_MB = TMP_MB << 1;
+          LZ_INB = LZ_INB + 1;
+        end
+      end
+
+      LZ_IN = LZ_INA + LZ_INB;
+
+      EZ = EA + EB - LZ_IN + Denorm_A + Denorm_B;
+      MZ = MA * MB;	// Compute with infinite precision.
+
+      // Left shift MZ in case of denormal multiplication
+      if (ieee_compliance) begin
+        MZ = MZ << LZ_IN;
+      end
+
+      // After the computation, left justify the Mantissa to `Movf-1 bit.
+      // Note that the normalized Mantissa after computation is in `Movf-2 bit,
+      // and now we normalize it to `Movf-1 bit.
+      MZ_Movf1 = MZ[`Movf-1];
+
+      if (MZ[`Movf-1] === 1) begin
+        EZ = EZ + 1;
+        minnorm_case = 0;
+      end
+      else begin
+        MZ = MZ << 1;
+        minnorm_case = (EZ - ((1 << (exp_width-1)) - 1) == 0) ? 1 : 0;
+      end
+
+      // Denormal Support
+      if (ieee_compliance) begin
+        Range_Check = EA + EB + Denorm_A + Denorm_B + MZ_Movf1 - ((1 << (exp_width-1)) - 1) - LZ_IN - 1;
+
+        EZ_Shift = -Range_Check;
+
+        if (EZ_Shift >= 0) begin
+          for (i = 0; i < EZ_Shift; i = i + 1) begin
+            {MZ, STK_CHECK} = {MZ, 1'b0} >> 1;
+            STK_EXT = STK_EXT | STK_CHECK;
+          end
+        end
+
+      end
+
+      if (minnorm_case & ~ieee_compliance) begin
+        if ({MZ[`R:0], STK_EXT} === 0) STK = 0;
+        else STK = 1;
+        RND_val = rnd_eval(rnd, SIGN, MZ[`L+1], MZ[`R+1], STK);
+      end
+      else begin
+        if ({MZ[`R-1:0], STK_EXT} === 0) STK = 0;
+        else STK = 1;
+        RND_val = rnd_eval(rnd, SIGN, MZ[`L], MZ[`R], STK);
+      end
+
+      // Round Addition
+      if (RND_val[`RND_Inc] === 1) MZ = MZ + (1<<`L);
+
+      // Normalize the Mantissa for overflow case after rounding.
+      if ( (MZ[`Movf] === 1) ) begin
+        EZ = EZ + 1;
+        MZ = MZ >> 1;
+      end
+
+      // Correction of denomal output.
+      if (ieee_compliance & (EZ <= ((1 << (exp_width-1)) - 1)) & MZ[`Movf - 1]) EZ = EZ + 1;
+
+      EZ_Zero = (EZ == ((1 << (exp_width-1)) - 1));
+
+      // Adjust Exponent ((1 << (exp_width-1)) - 1).
+      // Force EZ = 0 if underflow occurs becuase of subtracting ((1 << (exp_width-1)) - 1),
+      if((EZ[`ez_msb] == 0) & (EZ >= ((1 << (exp_width-1)) - 1))) EZ = EZ - ((1 << (exp_width-1)) - 1);
+      else EZ = 0;
+
+      //
+      // Huge
+      //
+      if (EZ >= ((((1 << (exp_width-1)) - 1) * 2) + 1)) begin
+        status_reg[4] = 1;
+        status_reg[5] = 1;
+
+        if(RND_val[`RND_HugeInfinity] === 1) begin
+          // Infinity
+          MZ[`Movf-2:`L] = Inf_Sig;
+          EZ = ((((1 << (exp_width-1)) - 1) * 2) + 1);
+          status_reg[1] = 1;
+        end
+        else begin
+          // MaxNorm
+          EZ = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
+          MZ[`Movf-2:`L] = -1;
+        end
+      end
+      //
+      // Tiny
+      //
+      else if (EZ == 0 ) begin
+        status_reg[3] = 1;
+
+        if (ieee_compliance == 0) begin
+          status_reg[5] = 1;
+
+          if(RND_val[`RND_TinyminNorm] === 1) begin
+            // MinNorm
+            MZ[`Movf-2:`L] = 0;
+            EZ = 0  + 1;
+          end
+          else begin
+            // 0
+            MZ[`Movf-2:`L] = 0;
+            EZ = 0 ;
+            status_reg[0] = 1;
+          end
+        end
+
+        if ((MZ[`Movf-2:`L] == 0) & (EZ[exp_width - 1:0] == 0)) begin
+          status_reg[0] = 1;
+        end
+
+      end
+
+      status_reg[5] = status_reg[5] | RND_val[`RND_Inexact] | (~(Zero_A | Zero_B) & (EZ[exp_width - 1:0] == 0) & (MZ[`Movf - 2:`L] == 0));
+
+      // Reconstruct the floating point format.
+      z_reg = {SIGN,EZ[exp_width-1:0],MZ[`Movf-2:`L]};
+      end
+  end
+
+  assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bX} : status_reg;
+  assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {sig_width+exp_width+1{1'bX}} : z_reg;
+
+  `undef Mwidth
+  `undef Movf
+  `undef L
+  `undef R
+  `undef RND_Width
+  `undef RND_Inc
+  `undef RND_Inexact
+  `undef RND_HugeInfinity
+  `undef RND_TinyminNorm
+  `undef log_awidth
+  `undef ez_msb
+
+  // synopsys translate_on
+
+endmodule
+
+// verilator lint_on WIDTH
+
+`line 1 "fpu/DW_fp_i2flt.v" 0
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Kyung-Nam Han, Jan. 17, 2006
+//
+// VERSION:   Verilog Simulation Model for DW_fp_i2flt
+//
+// DesignWare_version: 53eb9285
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//-----------------------------------------------------------------------------
+//
+// ABSTRACT:  Integer Number Format to Floatin-point Number Format
+// Converter
+//
+//              This converts an integer number to a floating-point
+//              number. Both 2's complement signed integer and unsigned
+//              integer are supported.
+//
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              isize           integer size,      3 to 512 bits
+//              isign           signed/unsigned number flag
+//                              0 - unsigned, 1 - signed integer (2's complement)
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (isize)-bits
+//                              Integer Input
+//              rnd             3 bits
+//                              Rounding Mode Input
+//              z               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Output
+//              status          8 bits
+//                              Status Flags Output
+//
+// MODIFIED:
+//
+//	8/1/2012    RJK - Tightened isize restriction as per STAR 9000557637
+//-----------------------------------------------------------------------------
+
+module DW_fp_i2flt (a, rnd, z, status);
+
+  parameter sig_width = 23;  // RANGE 2 TO 253
+  parameter exp_width = 8;   // RANGE 3 TO 31
+  parameter isize = 32;      // RANGE 3 TO 512
+  parameter isign = 1;	     // RANGE 0 TO 1
+                             // 0 : unsigned, 1 : signed
+  input  [isize-1:0] a;
+  input  [2:0] rnd; 
+  output [exp_width + sig_width:0] z;
+  output [7:0] status; 
+
+  // synopsys translate_off
+
+
+  `define Mwidth  (sig_width + 4)
+  `define Movf    (`Mwidth - 1)
+  `define ML      2
+  `define MR      1
+  `define MS      0
+  `define rnd_Width  4
+  `define rnd_Inc  0
+  `define rnd_Inexact  1
+  `define rnd_HugeInfinity  2
+  `define rnd_TinyminNorm  3
+  `define ai_lsb ((isize - sig_width - 2 >= 0) ? isize - sig_width - 2 : 0)
+	    
+  // --------------------------------------------------------------------
+  
+
+  //-------------------------------------------------------------------------
+  // Parameter legality check
+  //-------------------------------------------------------------------------
+
+  // XXX: berkin
+  /* verilator lint_off WIDTH */
+    
+ 
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+    
+      
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+      
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+     
+    if ( (isize < 3+isign) || (isize > 512) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m : Parameter isize must be at least 3+isign and no greater than 512" );
+    end 
+      
+    if ( (isign < 0) || (isign > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter isign (legal range: 0 to 1)",
+	isign );
+    end
+    
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check 
+
+  //---------------------------------------------------------------------
+
+
+  
+  function [`rnd_Width-1:0] rnd_eval;
+  
+    input [2:0] rnd;
+    input [0:0] Sign;
+    input [0:0] L,R,stk;
+    
+    
+    begin
+      rnd_eval[`rnd_Inc] = 0;
+      rnd_eval[`rnd_Inexact] = R|stk;
+      rnd_eval[`rnd_HugeInfinity] = 0;
+      rnd_eval[`rnd_TinyminNorm] = 0;
+      
+      if ($time > 0) 
+      begin
+        case (rnd)
+          3'b000:
+          begin
+            // round to nearest (even)
+            rnd_eval[`rnd_Inc] = R&(L|stk);
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b001:
+          begin
+            // round to zero
+            rnd_eval[`rnd_Inc] = 0;
+            rnd_eval[`rnd_HugeInfinity] = 0;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b010:
+          begin
+            // round to positive infinity
+            rnd_eval[`rnd_Inc] = ~Sign & (R|stk);
+            rnd_eval[`rnd_HugeInfinity] = ~Sign;
+            rnd_eval[`rnd_TinyminNorm] = ~Sign;
+          end
+          3'b011:
+          begin
+            // round to negative infinity
+            rnd_eval[`rnd_Inc] = Sign & (R|stk);
+            rnd_eval[`rnd_HugeInfinity] = Sign;
+            rnd_eval[`rnd_TinyminNorm] = Sign;
+          end
+          3'b100:
+          begin
+            // round to nearest (up)
+            rnd_eval[`rnd_Inc] = R;
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 0;
+          end
+          3'b101:
+          begin
+            // round away form 0
+            rnd_eval[`rnd_Inc] = R|stk;
+            rnd_eval[`rnd_HugeInfinity] = 1;
+            rnd_eval[`rnd_TinyminNorm] = 1;
+          end
+          default:
+          begin
+            $display("Error! illegal rounding mode.\n");
+            $display("a : %b", a);
+            $display("rnd : %b", rnd);
+          end
+        endcase
+      end
+    end
+  endfunction
+
+  // --------------------------------------------------------------------
+  
+  reg [isize-1:0] Ai;
+  reg [8    -1:0] status_reg; 
+  reg [(exp_width + sig_width):0] z_reg;
+  reg [isize-1:0] LZ;
+  reg [isize-1:0] num;
+  reg [`Mwidth-1:0] Mf;			// Mantissa for floating points.
+  reg [exp_width:0] EXP;
+  reg [0:0] STK;
+  reg [`rnd_Width-1:0] rnd_val;
+  
+  // --------------------------------------------------------------------
+  
+  always @(a or rnd)
+  begin
+    Ai = a;
+    status_reg = 0;
+    LZ = 0;
+    Mf = 0;
+    EXP = 0;
+    STK = 0;
+  
+    if (Ai === 0)				// Exact Zero
+      begin
+      status_reg[0] = 1; z_reg = 0; 
+      end 
+    else					// Nonzero Integer
+      begin
+      // Convert signed integer (two's complement) to unsigned magnitude representation.
+      // Set the sign bit of Floating Point Number.
+      if (isign === 1)		// Signed
+        begin
+        if(Ai[isize-1] === 1)
+          begin
+          Ai = ~Ai + 1;
+          z_reg[(exp_width + sig_width)] = 1;
+          end
+        else
+          begin
+          z_reg[(exp_width + sig_width)] = 0;
+          end
+        end
+      else				// Unsigned
+        begin
+        z_reg[(exp_width + sig_width)] = 0;
+        end
+  
+      // Convert the unsigned magnitude representation to floating point format.
+      // Left shift to normalize Ai.
+      while(Ai[isize-1] != 1)
+        begin
+        Ai = Ai << 1;
+        LZ = LZ + 1;
+        end
+  
+      // Calculate the Biased Exponent.
+      if(isize - 1 - LZ + ((1 << (exp_width-1)) - 1) >= ((((1 << (exp_width-1)) - 1) * 2) + 1))
+        EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1);
+      else
+        EXP = isize - 1 - LZ + ((1 << (exp_width-1)) - 1);
+  
+      // Converts integer to fraction.
+      if(isize <= sig_width+2)
+        // If the Mantissa fraction (sig_width+2) is big enough to hold Ai,
+        // Left adjustment at `Movf-1: `Movf-1-(isize-1) = `Movf-isize >= 1
+        begin
+        Mf[`Movf-1:0] = Ai << (`Movf-isize);
+        end
+      else
+        // If the Mantissa fraction (sig_width+2) is NOT big enough to hold Ai,
+        // calculate the STK.
+        begin
+        Mf[`Movf-1:`MR] = Ai[isize-1:`ai_lsb];
+        STK = 0;
+        num = isize-sig_width-3;	// the mininum is 0.
+        while(num !== 0)
+          begin
+          STK = STK | Ai[num];
+          num = num - 1;
+          end
+        STK = STK | Ai[num];
+        Mf[`MS] = STK;
+        end
+  
+      // Round the Mantissa according to the rounding modes.
+      rnd_val = rnd_eval(rnd, z_reg[(exp_width + sig_width)], Mf[`ML], Mf[`MR], Mf[`MS]);
+      if (rnd_val[`rnd_Inc] === 1) Mf = Mf + (1<<`ML);
+      status_reg[5] = rnd_val[`rnd_Inexact];
+  
+      // Normalize the Mantissa for overflow case after rounding.
+      if ( (Mf[`Movf] === 1) )
+        begin
+        EXP = EXP + 1;
+        Mf = Mf >> 1;
+        end
+  
+      // Note: "Tiny" situation doesn't exist.
+      if(EXP >= ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Huge
+        begin
+        status_reg[4] = 1;
+        status_reg[5] = 1;
+        if(rnd_val[`rnd_HugeInfinity] === 1)
+          begin
+          // Infinity
+          EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1);
+          //Mf[`Movf-2:`ML] = -1;
+          Mf[`Movf-2:`ML] = 0;
+          status_reg[1] = 1;
+          end
+        else
+          begin
+          // MaxNorm
+          EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
+          Mf[`Movf-2:`ML] = -1;
+          end
+        end
+  
+      z_reg = {z_reg[(exp_width + sig_width)],EXP[exp_width-1:0],Mf[`Movf-2:`ML]};
+      end
+  end
+  
+  assign status = status_reg;
+  assign z = z_reg;
+
+  `undef Mwidth
+  `undef Movf
+  `undef ML
+  `undef MR
+  `undef MS
+  `undef rnd_Width
+  `undef rnd_Inc
+  `undef rnd_Inexact
+  `undef rnd_HugeInfinity
+  `undef rnd_TinyminNorm
+  `undef ai_lsb
+
+  // synopsys translate_on
+  
+ endmodule
+`line 1 "fpu/DW_fp_div.v" 0
+
+////////////////////////////////////////////////////////////////////////////////
+//
+//       This confidential and proprietary software may be used only
+//     as authorized by a licensing agreement from Synopsys Inc.
+//     In the event of publication, the following notice is applicable:
+//
+//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
+//                           ALL RIGHTS RESERVED
+//
+//       The entire notice above must be reproduced on all authorized
+//     copies.
+//
+// AUTHOR:    Kyung-Nam Han, Mar. 22, 2006
+//
+// VERSION:   Verilog Simulation Model for DW_fp_div
+//
+// DesignWare_version: f5eace03
+// DesignWare_release: M-2016.12-DWBB_201612.0
+//
+////////////////////////////////////////////////////////////////////////////////
+
+//-------------------------------------------------------------------------------
+//
+// ABSTRACT: Floating-Point Divider
+//
+//              DW_fp_div calculates the floating-point division
+//              while supporting six rounding modes, including four IEEE
+//              standard rounding modes.
+//
+//              parameters      valid values (defined in the DW manual)
+//              ==========      ============
+//              sig_width       significand size,  2 to 253 bits
+//              exp_width       exponent size,     3 to 31 bits
+//              ieee_compliance support the IEEE Compliance 
+//                              0 - IEEE 754 compatible without denormal support
+//                                  (NaN becomes Infinity, Denormal becomes Zero)
+//                              1 - IEEE 754 compatible with denormal support
+//                                  (NaN and denormal numbers are supported)
+//              faithful_round  select the faithful_rounding that admits 1 ulp error
+//                              0 - default value. it keeps all rounding modes
+//                              1 - z has 1 ulp error. RND input does not affect
+//                                  the output
+//
+//              Input ports     Size & Description
+//              ===========     ==================
+//              a               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              b               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Input
+//              rnd             3 bits
+//                              Rounding Mode Input
+//
+//              Output ports    Size & Description
+//              ============    ==================
+//              z               (sig_width + exp_width + 1)-bits
+//                              Floating-point Number Output
+//              status          8 bits
+//                              Status Flags Output
+//
+// MODIFIED: May   7. 2007 Kyung-Nam Han (from 0703-SP2)
+//             Fixed the rounding error of denormal numbers 
+//             when ieee_compliance = 1
+//           Oct. 18. 2007 Kyung-Nam Han from 0712
+//             Fixed the 'divide by zero' flag when 0/0 
+//           Jan.  2. 2008 Kyung-Nam Han from 0712-SP1
+//             New parameter, faithful_round, is introduced
+//           Jun.  4. 2010 Kyung-Nam Han (from D-2010.03-SP3)
+//             Removed VCS error [IRIPS] when sig_width = 2 and 3.
+//
+//-----------------------------------------------------------------------------
+
+module DW_fp_div (a, b, rnd, z, status);
+
+  parameter sig_width = 23;      // range 2 to 253
+  parameter exp_width = 8;       // range 3 to 31
+  parameter ieee_compliance = 0; // range 0 to 1
+  parameter faithful_round = 0;  // range 0 to 1
+
+  input  [sig_width + exp_width:0] a;
+  input  [sig_width + exp_width:0] b;
+  input  [2:0] rnd;
+  output [sig_width + exp_width:0] z;
+  output [7:0] status;
+
+  // synopsys translate_off
+
+
+
+  //-------------------------------------------------------------------------
+  // parameter legality check
+  //-------------------------------------------------------------------------
+    
+ 
+  initial begin : parameter_check
+    integer param_err_flg;
+
+    param_err_flg = 0;
+    
+      
+    if ( (sig_width < 2) || (sig_width > 253) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
+	sig_width );
+    end
+      
+    if ( (exp_width < 3) || (exp_width > 31) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
+	exp_width );
+    end
+      
+    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
+	ieee_compliance );
+    end
+      
+    if ( (faithful_round < 0) || (faithful_round > 1) ) begin
+      param_err_flg = 1;
+      $display(
+	"ERROR: %m :\n  Invalid value (%d) for parameter faithful_round (legal range: 0 to 1)",
+	faithful_round );
+    end
+    
+    if ( param_err_flg == 1) begin
+      $display(
+        "%m :\n  Simulation aborted due to invalid parameter value(s)");
+      $finish;
+    end
+
+  end // parameter_check 
+
+  //-------------------------------------------------------------------------
+
+
+  function [4-1:0] OIIlOlO1;
+  
+    input [2:0] rnd;
+    input [0:0] I101O11O;
+    input [0:0] I11110O0,O10110O1,O011IOO0;
+
+    begin
+      OIIlOlO1[0] = 0;
+      OIIlOlO1[1] = O10110O1|O011IOO0;
+      OIIlOlO1[2] = 0;
+      OIIlOlO1[3] = 0;
+      
+      if ($time > 0)
+      begin
+        case (rnd)
+          3'b000:
+          begin
+            // round to nearest (even)
+            OIIlOlO1[0] = O10110O1&(I11110O0|O011IOO0);
+            OIIlOlO1[2] = 1;
+            OIIlOlO1[3] = 0;
+          end
+          3'b001:
+          begin
+            // round to zero
+            OIIlOlO1[0] = 0;
+            OIIlOlO1[2] = 0;
+            OIIlOlO1[3] = 0;
+          end
+          3'b010:
+          begin
+            // round to positive infinity
+            OIIlOlO1[0] = ~I101O11O & (O10110O1|O011IOO0);
+            OIIlOlO1[2] = ~I101O11O;
+            OIIlOlO1[3] = ~I101O11O;
+          end
+          3'b011:
+          begin
+            // round to negative infinity
+            OIIlOlO1[0] = I101O11O & (O10110O1|O011IOO0);
+            OIIlOlO1[2] = I101O11O;
+            OIIlOlO1[3] = I101O11O;
+          end
+          3'b100:
+          begin
+            // round to nearest (up)
+            OIIlOlO1[0] = O10110O1;
+            OIIlOlO1[2] = 1;
+            OIIlOlO1[3] = 0;
+          end
+          3'b101:
+          begin
+            // round away form 0
+            OIIlOlO1[0] = O10110O1|O011IOO0;
+            OIIlOlO1[2] = 1;
+            OIIlOlO1[3] = 1;
+          end
+          default:
+          begin
+            $display("error! illegal rounding mode.\n");
+            $display("a : %b", a);
+            $display("rnd : %b", rnd);
+          end
+        endcase
+      end
+    end
+  endfunction
+
+  reg [(exp_width + sig_width):0] IOOIlI0I;
+  reg [exp_width-1:0] l1l1O100,lO101111;
+  reg [exp_width+1:0] lI00O00I;
+  reg IOO1O01O;
+  reg [exp_width+1:0] O10101O1;
+  reg I1O1O11O;
+  reg [exp_width+1:0] lO1O0OI1;
+  reg signed [exp_width+1:0] IO10IOO1;
+  reg l10OO10O;
+  reg [sig_width:0] OlOO00lO,OOIl0010,IOOl0lII,l11Illl0,lO001Ol0;
+  reg [sig_width:0] I0OI1lO0;
+  reg [(2 * sig_width + 2)  :0] IOIlII10;
+  reg [sig_width:0] O10110O1;
+  reg O011IOO0,I101O11O;
+  reg [1:0] lO011100;
+  reg [4-1:0] I11IO1I1;
+  reg [8    -1:0] OO000O0O;
+  reg [(exp_width + sig_width):0] O00OO1I0;
+  reg [(exp_width + sig_width):0] IIl1O10O;
+  reg I00lIO1l;
+  reg lOI111I1;
+  reg O100O11l;
+  reg l10OO1I0;
+  reg l1O1Ol0O;
+  reg I000lO00;
+  reg l1OllI0I;
+  reg lO00I10I;
+  reg IIIl11O1;
+  reg [sig_width - 1:0] OOO111OO;
+  reg [sig_width - 1:0] l000I1O0;
+  reg [7:0] O00O1Ol1;
+  reg [7:0] II01O1O0;
+  reg [exp_width + 1:0] OIIO0OOl;
+  reg [sig_width:0] l0III011;
+  reg [sig_width:0] OO0lIO1O;
+  reg [sig_width:0] II0IIO1O;
+  reg [8:0] O1lO00O0;
+  reg [8:0] I0I0Il0O;
+  reg [9:0] l110l11I;
+  reg [sig_width + 9:0] IO00O1O1;
+  reg IOOlIOOO;
+  reg [8:0] OOI10OIO;
+  reg [sig_width + 9:0] l0IO1lOO;
+  reg [sig_width + 1:0] OO0OO1I0;
+  reg [2 * sig_width - 7:0] O00OI010;
+  reg [sig_width + 3:0] IOIlOO00;
+  reg [sig_width + 3:0] O0O0IIII;
+  reg [sig_width + 3:0] II11llO0;
+  reg l0101100;
+  reg [sig_width + 3:0] l0I1OOll;
+  reg [((sig_width >= 11) ? 2 * sig_width - 21 : 0):0] OIlI10I1;
+  reg [((sig_width >= 11) ? sig_width - 11 : 0):0] Ol1O10O0;
+  reg [((sig_width >= 11) ? 2 * sig_width - 21 : 0):0] O1l11OIO;
+  reg [sig_width + 3:0] Il101Il1;
+  reg IOll10OO;
+  reg [sig_width + 3:0] O0l0O011;
+  reg [((sig_width >= 25) ? sig_width - 25 : 0):0] OOO01OO1;
+  reg [((sig_width >= 24) ? 2 * sig_width - 47 : 0):0] O0O1011O;
+  reg [((sig_width >= 24) ? 2 * sig_width - 47 : 0):0] llOO0II1;
+  reg [((sig_width >= 25) ? sig_width - 25 : 0):0] O010I0IO;
+  reg [sig_width + 3:0] OOOl110I;
+  reg O00O00O1;
+  reg [sig_width + 3:0] lI100I0I;
+  reg [8:0] I10l01Il;
+  reg [sig_width + 3:0] O1O0011O;
+  reg [sig_width + 3:0] O1O1O01l;
+  reg [sig_width + 3:0] l0I1OI0l;
+  reg [8:8 - sig_width] IIOI0lOO;
+  reg [sig_width:0] O11OOOOl;
+  reg [sig_width:0] OO1110O0;
+  reg [sig_width:0] I01II0I0;
+  reg [sig_width:0] IOIOI010;
+  reg IOO101lO;
+  reg OlIlOOIO;
+  reg I010IlI0;
+  reg I11OIl0O;
+  reg Ol01O010;
+
+
+  always @(a or b or rnd) begin : a1000_PROC
+    I101O11O = a[(exp_width + sig_width)] ^ b[(exp_width + sig_width)];
+    l1l1O100 = a[((exp_width + sig_width) - 1):sig_width];
+    lO101111 = b[((exp_width + sig_width) - 1):sig_width];
+    OOO111OO = a[(sig_width - 1):0];
+    l000I1O0 = b[(sig_width - 1):0];
+    O00O1Ol1 = 0;
+    II01O1O0 = 0;
+    I0OI1lO0 = 0;
+
+    OO000O0O = 0;
+
+    // division table for special inputs
+    //
+    //  -------------------------------------------------
+    //         a      /       b      |       result
+    //  -------------------------------------------------
+    //        nan     |      any     |        nan
+    //        any     |      nan     |        nan
+    //        inf     |      inf     |        nan
+    //         0      |       0      |        nan
+    //        inf     |      any     |        inf
+    //        any     |       0      |        inf
+    //         0      |      any     |         0
+    //        any     |      inf     |         0
+    //  -------------------------------------------------
+    // when ieee_compliance = 0, 
+    // denormal numbers are considered as zero and 
+    // nans are considered as infinity
+
+    if (ieee_compliance)
+    begin
+      I00lIO1l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (OOO111OO == 0);
+      lOI111I1 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (l000I1O0 == 0);
+      O100O11l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (OOO111OO != 0);
+      l10OO1I0 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (l000I1O0 != 0);
+      l1O1Ol0O = (l1l1O100 == 0) & (OOO111OO == 0);
+      I000lO00 = (lO101111 == 0) & (l000I1O0 == 0);
+      l1OllI0I = (l1l1O100 == 0) & (OOO111OO != 0);
+      lO00I10I = (lO101111 == 0) & (l000I1O0 != 0);
+
+      O00OO1I0 = {I101O11O, {(exp_width){1'b1}}, {(sig_width){1'b0}}}; 
+      IIl1O10O = {1'b0, {(exp_width){1'b1}}, {(sig_width - 1){1'b0}}, 1'b1};
+    end
+    else
+    begin
+      I00lIO1l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1));
+      lOI111I1 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1));
+      O100O11l = 0;
+      l10OO1I0 = 0;
+      l1O1Ol0O = (l1l1O100 == 0);
+      I000lO00 = (lO101111 == 0);
+      l1OllI0I = 0;
+      lO00I10I = 0;
+
+      O00OO1I0 = {I101O11O, {(exp_width){1'b1}}, {(sig_width){1'b0}}};
+      IIl1O10O = {1'b0, {(exp_width){1'b1}}, {(sig_width){1'b0}}};
+    end
+
+    //OO000O0O[7] = I000lO00 & ~l1O1Ol0O; 
+    OO000O0O[7] = (ieee_compliance) ?
+            I000lO00 & ~(l1O1Ol0O | O100O11l | I00lIO1l) :
+            I000lO00 & ~(l1O1Ol0O | O100O11l); 
+
+    if (O100O11l || l10OO1I0 || (I00lIO1l && lOI111I1) || (l1O1Ol0O && I000lO00))
+    begin
+      IOOIlI0I = IIl1O10O;
+      OO000O0O[2] = 1;
+    end
+    else if (I00lIO1l || I000lO00)
+    begin
+      IOOIlI0I = O00OO1I0;
+      OO000O0O[1] = 1;
+    end
+    else if (l1O1Ol0O || lOI111I1)
+    begin
+      OO000O0O[0] = 1;
+      IOOIlI0I = 0;
+      IOOIlI0I[(exp_width + sig_width)] = I101O11O;
+    end
+  
+    else
+    begin
+      if (ieee_compliance) 
+      begin
+
+        if (l1OllI0I) 
+        begin
+          OlOO00lO = {1'b0, a[(sig_width - 1):0]};
+
+          while(OlOO00lO[sig_width] != 1)
+          begin
+            OlOO00lO = OlOO00lO << 1;
+            O00O1Ol1 = O00O1Ol1 + 1;
+          end
+        end 
+        else
+        begin
+          OlOO00lO = {1'b1, a[(sig_width - 1):0]};
+        end
+
+        if (lO00I10I) 
+        begin
+          OOIl0010 = {1'b0, b[(sig_width - 1):0]};
+          while(OOIl0010[sig_width] != 1)
+          begin
+            OOIl0010 = OOIl0010 << 1;
+            II01O1O0 = II01O1O0 + 1;
+          end
+        end 
+        else
+        begin
+          OOIl0010 = {1'b1, b[(sig_width - 1):0]};
+        end
+      end
+      else
+      begin
+        OlOO00lO = {1'b1, a[(sig_width - 1):0]};
+        OOIl0010 = {1'b1, b[(sig_width - 1):0]};
+      end
+
+      // XXX: berkin
+      /* verilator lint_off WIDTH */
+
+      I010IlI0 = (OlOO00lO == OOIl0010);
+      Ol01O010 = (OOIl0010[sig_width - 1:0] == 0);
+      l0III011 = OlOO00lO;
+      OO0lIO1O = (ieee_compliance) ? OOIl0010 : {1'b1, l000I1O0};
+      II0IIO1O = (faithful_round) ? OO0lIO1O : {OO0lIO1O, 1'b0};
+      O1lO00O0 = (sig_width >= 9) ? II0IIO1O[sig_width - 1:((sig_width >= 9) ? sig_width - 9 : 0)] : {II0IIO1O[sig_width - 1:0], {(((sig_width >= 9) ? 1 : 9 - sig_width)){1'b0}}};
+      l110l11I = {1'b1, O1lO00O0[8:0]};
+      I0I0Il0O = {1'b1, 18'b0} / (l110l11I + 1);
+      IO00O1O1 = I0I0Il0O * l0III011;
+      IOOlIOOO = IO00O1O1[sig_width + 9];
+      OOI10OIO = (IOOlIOOO) ? IO00O1O1[sig_width + 9:sig_width + 1] : IO00O1O1[sig_width + 8:sig_width];
+      l0IO1lOO = II0IIO1O * I0I0Il0O;
+      OO0OO1I0 = ~l0IO1lOO[sig_width + 1:0];
+      O00OI010 = IO00O1O1[((sig_width <= 3) ? 0 : sig_width + 9):((sig_width <= 3) ? 0 : 13)] * OO0OO1I0[((sig_width <= 3) ? 0 : sig_width + 1):((sig_width <= 3) ? 0 : 5)];
+      IOIlOO00 = IO00O1O1[sig_width + 9:6];
+      O0O0IIII = {6'b0, O00OI010[2 * (sig_width - 3) - 1:2 * (sig_width - 3) - 1 - sig_width + 5 - 1]};
+      II11llO0 = IOIlOO00 + O0O0IIII;
+      l0101100 = II11llO0[sig_width + 3];
+      l0I1OOll = (sig_width <= 14) ? ((l0101100) ? II11llO0 : {II11llO0[sig_width + 2:0], 1'b0}) : II11llO0;
+      OIlI10I1 = (sig_width >= 11) ? OO0OO1I0[((sig_width >= 11) ? sig_width + 1 : 0):((sig_width >= 11) ? 12 : 0)] * OO0OO1I0[((sig_width >= 11) ? sig_width + 1 : 0):((sig_width >= 11) ? 12 : 0)] : 0;
+      Ol1O10O0 = (sig_width >= 11) ? OIlI10I1[((sig_width >= 11) ? 2 * sig_width - 21 : 0):((sig_width >= 11) ? sig_width - 10 : 0)] : 0;
+      O1l11OIO = (sig_width >= 11) ? l0I1OOll[((sig_width >= 11) ? sig_width + 3 : 0):((sig_width >= 11) ? 14 : 0)] * Ol1O10O0 : 0;
+      Il101Il1 = l0I1OOll + O1l11OIO[((sig_width >= 11) ? 2 * sig_width - 21 : 0):((sig_width >= 11) ? sig_width - 10 : 0)];
+      IOll10OO = Il101Il1[sig_width + 3];
+      O0l0O011 = (sig_width <= 30) ? ((IOll10OO) ? Il101Il1 : {Il101Il1[sig_width + 2:0], 1'b0}) : Il101Il1;
+      OOO01OO1 = (sig_width >= 25) ? Ol1O10O0[((sig_width >= 25) ? sig_width - 11 : 0):((sig_width >= 25) ? 13 : 0)] : 0;
+      O0O1011O = OOO01OO1 * OOO01OO1;
+      llOO0II1 = (sig_width >= 25) ? O0l0O011[((sig_width >= 25) ? sig_width + 3 : 0):((sig_width >= 25) ? 27 : 0)] * O0O1011O[((sig_width >= 25) ? 2 * sig_width - 47 : 0):((sig_width >= 25) ? sig_width - 23 : 0)] : 0;
+      O010I0IO = (sig_width >= 25) ? llOO0II1[((sig_width >= 25) ? 2 * sig_width - 47 : 0):((sig_width >= 25) ? sig_width - 22 : 0)] : 0;
+      OOOl110I = O0l0O011 + O010I0IO;
+      O00O00O1 = OOOl110I[sig_width + 3];
+      lI100I0I = ((O00O00O1) ? OOOl110I : {OOOl110I[sig_width + 2:0], 1'b0});
+      I10l01Il = (sig_width == 8) ? OOI10OIO + 1 : 
+               (sig_width < 8)  ? OOI10OIO + {1'b1, {(((sig_width >= 8) ? 1 : ((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1)){1'b0}}} : 
+                                  0;
+      O1O0011O = l0I1OOll + 4'b1000;
+      O1O1O01l = O0l0O011 + 4'b1000;
+      l0I1OI0l = lI100I0I + 4'b1000;
+      IIOI0lOO = (sig_width == 8)  ? OOI10OIO[8:0] : 
+                   (OOI10OIO[((sig_width >= 8) ? 0 : 8 - sig_width - 1)]) ? I10l01Il[8:((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1] : 
+                                       OOI10OIO[8:((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1];
+      O11OOOOl = (l0I1OOll[2]) ? O1O0011O[sig_width + 3:3] : l0I1OOll[sig_width + 3:3];
+      OO1110O0 = (O0l0O011[2]) ? O1O1O01l[sig_width + 3:3] : O0l0O011[sig_width + 3:3];
+      I01II0I0 = (lI100I0I[2]) ? l0I1OI0l[sig_width + 3:3] : lI100I0I[sig_width + 3:3];
+      IOIOI010 = (sig_width <= 8) ? IIOI0lOO : (sig_width <= 14) ? O11OOOOl : (sig_width <= 30) ? OO1110O0 : I01II0I0;
+      I11OIl0O = (faithful_round) ? (IOIOI010 == 0) : 0;
+      IOO101lO = (sig_width <= 8) ? IOOlIOOO: (sig_width <= 14) ? l0101100 : (sig_width <= 30) ? IOll10OO : O00O00O1;
+      OlIlOOIO = ~I010IlI0 & (l000I1O0 != 0);
+
+      IOIlII10 = {OlOO00lO,{(sig_width + 2){1'b0}}} / OOIl0010;
+      O10110O1 = (faithful_round) ? OlIlOOIO : {OlOO00lO,{(sig_width + 2){1'b0}}} % OOIl0010;
+
+      lI00O00I = (l1l1O100 - O00O1Ol1 + l1OllI0I) - (lO101111 - II01O1O0 + lO00I10I) + ((1 << (exp_width-1)) - 1);
+      O10101O1 = lI00O00I-1;
+
+      l11Illl0 = (faithful_round) ?
+                   ((Ol01O010 & ~ieee_compliance) ? l0III011 : IOIOI010) :
+                   ((~IOIlII10[(sig_width + 2)]) ? IOIlII10[(sig_width + 2) - 1:1] : IOIlII10[(sig_width + 2):2]);
+      lO011100 = ~IOIlII10[(sig_width + 2)] ? IOIlII10[1:0] : IOIlII10[2:1];
+      IO10IOO1 = ~IOIlII10[(sig_width + 2)] ? O10101O1 : lI00O00I;
+      IIIl11O1 = ((IO10IOO1 <= 0) | (IO10IOO1[exp_width + 1] == 1));
+      O011IOO0 = (faithful_round) ? 
+              ((Ol01O010 | I010IlI0) & ~IIIl11O1 ? 0 : 1) :
+              ((O10110O1===0)?1'b0:1'b1); 
+
+
+      if (ieee_compliance) begin
+        if ((IO10IOO1 <= 0) | (IO10IOO1[exp_width + 1] == 1)) begin
+
+          OIIO0OOl = 1 - IO10IOO1;
+        
+          {l11Illl0, I0OI1lO0} = {l11Illl0, {(sig_width + 1){1'b0}}} >> OIIO0OOl;
+
+          if (OIIO0OOl > sig_width + 1) begin
+            O011IOO0 = 1;
+          end
+
+          lO011100[1] = l11Illl0[0];
+          lO011100[0] = I0OI1lO0[sig_width];
+
+          if (I0OI1lO0[sig_width - 1:0] != 0) begin
+            O011IOO0 = 1;
+          end
+        end
+      end
+
+      I11IO1I1 = OIIlOlO1(rnd, I101O11O, lO011100[1], lO011100[0], O011IOO0);
+   
+      lO001Ol0 = (faithful_round) ? l11Illl0 :
+                    (I11IO1I1[0] === 1)? (l11Illl0+1):l11Illl0;
+
+      if ((IO10IOO1 >= ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (IO10IOO1[exp_width+1] === 1'b0))
+      begin
+        OO000O0O[4] = 1;
+        OO000O0O[5] = 1;
+        if(I11IO1I1[2] === 1)
+        begin
+          IOOl0lII = O00OO1I0[sig_width:0];
+          lO1O0OI1 = ((((1 << (exp_width-1)) - 1) * 2) + 1);
+          OO000O0O[1] = 1;
+        end
+        else
+        begin
+          IOOl0lII = -1;
+          lO1O0OI1 = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
+        end
+      end
+  
+      else if ((IO10IOO1 <= 0) | (IO10IOO1[exp_width+1] === 1'b1)) begin
+        OO000O0O[3] = 1;
+
+        if (ieee_compliance == 0) begin
+          OO000O0O[5] = 1;
+
+          if(I11IO1I1[3] === 1) begin
+            IOOl0lII = 0;
+            lO1O0OI1 = 0 + 1;
+          end
+          else begin
+            IOOl0lII = 0;
+            lO1O0OI1 = 0;
+            OO000O0O[0] = 1;
+          end
+        end
+        else begin
+          IOOl0lII = lO001Ol0;
+
+          lO1O0OI1 = lO001Ol0[sig_width];
+
+        end
+      end
+      else begin
+        IOOl0lII = (I010IlI0 & faithful_round) ? 0 : lO001Ol0;
+        lO1O0OI1 = IO10IOO1;
+      end
+
+      if ((IOOl0lII[sig_width - 1:0] == 0) & (lO1O0OI1[exp_width - 1:0] == 0)) begin
+        OO000O0O[0] = 1;
+      end
+  
+      OO000O0O[5] = OO000O0O[5] | I11IO1I1[1];
+   
+      IOOIlI0I = {I101O11O,lO1O0OI1[exp_width-1:0],IOOl0lII[sig_width-1:0]};
+    end
+  end
+   
+  assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bx} : OO000O0O;
+  assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bx} : IOOIlI0I;
+
+  // synopsys translate_on
+
+endmodule
+  
+  
+  
