@@ -44,6 +44,14 @@ class InstBuffer( Model ):
     s.memreq   = OutValRdyBundle( MemReqMsg(opaque_nbits, addr_nbits, line_nbits) )
     s.memresp  = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
 
+    # Add a bypass queue to fix a potential val-rdy cycle between proc and
+    # arbiter
+
+    s.memresp_queue = SingleElementBypassQueue( MemRespMsg(opaque_nbits, line_nbits) )
+
+    s.connect_pairs( s.memresp_queue.enq, s.memresp )
+
+
     s.inner = DirectMappedInstBuffer( num_entries, line_nbytes )
 
     @s.combinational
@@ -52,40 +60,40 @@ class InstBuffer( Model ):
       if s.L0_disable: # host turns the l0 off, proc <-> mem
 
         # Mute inner.buffreq
-        s.inner.buffreq.val.value  = 0
-        s.inner.buffreq.msg.value  = 0
+        s.inner.buffreq.val.value   = 0
+        s.inner.buffreq.msg.value   = 0
 
         # Mute inner.buffresp
-        s.inner.buffresp.rdy.value = 0
+        s.inner.buffresp.rdy.value  = 0
 
         # Mute inner.memreq
-        s.inner.memreq.rdy.value   = 0
+        s.inner.memreq.rdy.value    = 0
 
         # Mute inner.memresp
-        s.inner.memresp.val.value  = 0
-        s.inner.memresp.msg.value  = 0
+        s.inner.memresp.val.value   = 0
+        s.inner.memresp.msg.value   = 0
 
         # memreq <- buffreq
-        s.memreq.val.value         = s.buffreq.val
+        s.memreq.val.value          = s.buffreq.val
 
-        s.memreq.msg.type_.value   = s.buffreq.msg.type_
-        s.memreq.msg.opaque.value  = s.buffreq.msg.opaque
-        s.memreq.msg.addr.value    = s.buffreq.msg.addr
-        s.memreq.msg.len.value     = data_len
-        s.memreq.msg.data.value    = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
+        s.memreq.msg.type_.value    = s.buffreq.msg.type_
+        s.memreq.msg.opaque.value   = s.buffreq.msg.opaque
+        s.memreq.msg.addr.value     = s.buffreq.msg.addr
+        s.memreq.msg.len.value      = data_len
+        s.memreq.msg.data.value     = concat( Bits(zero_nbits, 0), s.buffreq.msg.data )
 
-        s.buffreq.rdy.value        = s.memreq.rdy
+        s.buffreq.rdy.value         = s.memreq.rdy
 
         # buffresp <- memresp
-        s.buffresp.val.value        = s.memresp.val
+        s.buffresp.val.value        = s.memresp_queue.deq.val
 
-        s.buffresp.msg.type_.value  = s.memresp.msg.type_
-        s.buffresp.msg.opaque.value = s.memresp.msg.opaque
-        s.buffresp.msg.test.value   = s.memresp.msg.test
+        s.buffresp.msg.type_.value  = s.memresp_queue.deq.msg.type_
+        s.buffresp.msg.opaque.value = s.memresp_queue.deq.msg.opaque
+        s.buffresp.msg.test.value   = s.memresp_queue.deq.msg.test
         s.buffresp.msg.len.value    = 0
-        s.buffresp.msg.data.value   = s.memresp.msg[0:data_nbits]
+        s.buffresp.msg.data.value   = s.memresp_queue.deq.msg[0:data_nbits]
 
-        s.memresp.rdy.value         = s.buffresp.rdy
+        s.memresp_queue.deq.rdy.value  = s.buffresp.rdy
 
       else: # otherwise proc <-> inner <-> mem
 

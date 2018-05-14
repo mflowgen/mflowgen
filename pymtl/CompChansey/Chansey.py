@@ -295,14 +295,25 @@ class Chansey( Model ):
 
     # Turn off host_en signals in the adapters
 
-    s.connect( s.mdu_adapter   .host_en,          s.ctrlreg.host_en[0] )
-    s.connect( s.icache_adapter.host_en,          s.ctrlreg.host_en[1] )
-    s.connect( s.dcache_adapter.host_en,          s.ctrlreg.host_en[2] )
-    s.connect( s.icache_coalescer.coalescing_en,  s.ctrlreg.host_en[3] )
+    s.connect( s.mdu_adapter     .host_en,       s.ctrlreg.host_en[0] )
+    s.connect( s.icache_adapter  .host_en,       s.ctrlreg.host_en[1] )
+    s.connect( s.dcache_adapter  .host_en,       s.ctrlreg.host_en[2] )
 
-    # TODO add a ctrlreg for L0_disable
+    # Connect coalescing enable bit from ctrlreg
+
+    s.connect( s.icache_coalescer.coalescing_en, s.ctrlreg.host_en[3] )
+
+    # Connect L0 enable bit from ctrlreg to all L0 instruction buffers
+
+    s.l0idisable = Wire( 1 )
+
+    @s.combinational
+    def comb_l0idisable():
+      # The l0i actually takes a disable bit, so invert the enable
+      s.l0idisable.value = ~s.ctrlreg.host_en[4]
+
     for i in xrange( num_cores ):
-      s.connect( s.l0i[i].L0_disable, 0 )
+      s.connect( s.l0i[i].L0_disable, s.l0idisable)
 
   #-----------------------------------------------------------------------
   # Line tracing

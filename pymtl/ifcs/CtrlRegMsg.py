@@ -34,6 +34,7 @@ class CtrlRegReqMsg( BitStructDefinition ):
   ID_ICACHE_HOSTEN  = 8
   ID_DCACHE_HOSTEN  = 9
   ID_MEMCOALESCE_EN = 10
+  ID_IBUFFER_EN     = 11
 
   def __init__( s ):
     s.type_ = BitField( 1  )

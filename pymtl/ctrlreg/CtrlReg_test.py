@@ -142,11 +142,11 @@ test_case_table = mk_test_case_table([
 def test_generic( test_params, dump_vcd, test_verilog ):
 
   num_cores   = 4
-  valrdy_ifcs = 4
+  valrdy_ifcs = 5
 
   dut = CtrlReg( num_cores, valrdy_ifcs )
 
-  writable_regs = [ 0, 1, 7, 8, 9, 10 ] # These registers are r/w
+  writable_regs = [ 0, 1, 7, 8, 9, 10, 11 ] # These registers are r/w
   num_msgs = 100
   msgs     = test_params.msg_func( writable_regs, num_msgs )
 

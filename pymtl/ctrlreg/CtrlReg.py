@@ -46,9 +46,10 @@
 #      5  ---    |/      for four cores
 #      6  --- <--+
 #      7  --- <--+
-#      8  ---    |\ host_en
-#      9  ---    |/ interface
-#      10 --- <--+
+#      8  ---    |\
+#      9  ---    | > host_en interface
+#      10 ---    |/
+#      11 --- <--+
 #
 # Descriptions
 #
@@ -60,8 +61,8 @@
 #     - CR8  Host enable for icache
 #     - CR9  Host enable for dcache
 #     - CR10 Enable for memory coalescer
+#     - CR11 Enable for L0 buffers (all hooked to bit 0)
 #
-
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
@@ -71,7 +72,7 @@ from ifcs       import CtrlRegReqMsg, CtrlRegRespMsg
 
 class CtrlReg( Model ):
 
-  def __init__( s, num_cores, valrdy_ifcs = 4 ):
+  def __init__( s, num_cores, valrdy_ifcs = 5 ):
 
     #---------------------------------------------------------------------
     # Constants

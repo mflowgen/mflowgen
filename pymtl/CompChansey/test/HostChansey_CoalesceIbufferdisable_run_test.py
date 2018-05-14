@@ -1,5 +1,5 @@
 #=========================================================================
-# HostChansey_Coalesce_run_test.py
+# HostChansey_CoalesceIbufferdisable_run_test.py
 #=========================================================================
 
 import pytest
@@ -37,7 +37,7 @@ def run_test( test, dump_vcd, test_verilog,
   # memory coalescer
 
   if "asm" in test[0]:
-    test[0] = "asm_coalesce"
+    test[0] = "asm_coalesce_and_ibufferdisable"
     print test[0],
 
   run( swshim, test, num_cores, cacheline_nbits,
