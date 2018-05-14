@@ -307,8 +307,9 @@ class Chansey( Model ):
   #-----------------------------------------------------------------------
 
   def line_trace( s ):
-    trace = "I$" + s.icache.line_trace()
-    trace += ' [ ' + s.mdu.line_trace()      + ' ] '
+    trace =  s.icache_coalescer.line_trace()
+    trace += ' I$ ' + s.icache.line_trace()
+    trace += ' [ ' + s.mdu.line_trace() + ' ] '
     for i in xrange(len(s.proc)):
       trace += ' [ ' + s.proc[i].line_trace() + s.l0i[i].line_trace() + ' ] '
     trace += "D$" + s.dcache.line_trace()
