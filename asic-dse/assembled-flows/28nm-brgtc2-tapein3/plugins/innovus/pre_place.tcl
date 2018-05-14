@@ -331,7 +331,15 @@ setAddStripeMode -stacked_via_bottom_layer M8 \
 # blockage is in the way (e.g., connections from core ring to pads).
 # Restrict any routing around blockages to use only layers for power.
 
-addStripe -nets {VSS VDD} -layer M9 -direction vertical \
+# VDD VSS ordering
+#
+# For very small designs, there may only be room for one coarse power
+# strap. If the first strap on both M8 and M9 are VSS, then the block will
+# have no VDD straps. So we place a VSS strap first for M8, and here we
+# place a VDD strap first for M9. Now even for very small designs, there
+# should be a supply for both VSS and VDD available.
+
+addStripe -nets {VDD VSS} -layer M9 -direction vertical \
     -width $M9_str_width                                \
     -spacing $M9_str_intraset_spacing                   \
     -set_to_set_distance $M9_str_interset_pitch         \
@@ -339,5 +347,4 @@ addStripe -nets {VSS VDD} -layer M9 -direction vertical \
     -padcore_ring_bottom_layer_limit M8                 \
     -padcore_ring_top_layer_limit M9                    \
     -start [expr $M9_str_pitch/2]
-
 
