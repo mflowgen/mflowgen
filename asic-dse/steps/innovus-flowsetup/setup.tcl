@@ -347,8 +347,8 @@ set vars(filler_cells) $STDCELLS_FILLER_CELLS
 
 set vars(welltaps)               $STDCELLS_WELL_TAP_CELL
 set vars(welltaps,checkerboard)  true
-set vars(welltaps,verify_rule)   30
-set vars(welltaps,cell_interval) 60
+set vars(welltaps,verify_rule)   60
+set vars(welltaps,cell_interval) 120
 
 # Endcaps
 
@@ -363,6 +363,11 @@ set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
 
 set vars(useful_skew)  true
 #set vars(skew_buffers) ""
+
+# Clock-gate aware
+# FIXME: This should depend on whether we enabled clock gating in DC
+
+set vars(clock_gate_aware) true
 
 # DFM
 
