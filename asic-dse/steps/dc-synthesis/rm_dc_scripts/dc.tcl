@@ -26,7 +26,38 @@ if {[file exists [which ${pre_synthesis_plugin}]]} {
 # Add any additional variables needed for your flow here.
 #################################################################################
 
-# No additional flow variables are being recommended
+# Avoiding X-propagation for synchronous reset DFFs
+#
+# There are two key variables that help avoid X-propagation for
+# synchronous reset DFFs:
+#
+# - set hdlin_ff_always_sync_set_reset true
+#
+#     - Tells DC to use every constant 0 loaded into a DFF with a clock
+#       for synchronous reset, and every constant 1 loaded into a DFF with a
+#       clock for synchronous set
+#
+# - set compile_seqmap_honor_sync_set_reset true
+#
+#     - Tells DC to preserve synchronous reset or preset logic close to
+#       the flip-flop
+#
+# So the hdlin variable first tells DC to treat resets as synchronous, and
+# the compile variable tells DC that for all these synchronous reset DFFs,
+# keep the logic simple and close to the DFF to avoid X-propagation. The
+# hdlin variable applies to the analyze step when we read in the RTL, so
+# it must be set before we read in the Verilog. The second variable
+# applies to compile and must be set before we run compile_ultra.
+#
+# Note: Instead of setting the hdlin_ff_always_sync_set_reset variable to
+# true, you can specifically tell DC about a particular DFF reset using
+# the //synopsys sync_set_reset "reset, int_reset" pragma.
+#
+# By default, the hdlin_ff_always_async_set_reset variable is set to true,
+# and the hdlin_ff_always_sync_set_reset variable is set to false.
+
+set hdlin_ff_always_sync_set_reset      true
+set compile_seqmap_honor_sync_set_reset true
 
 #################################################################################
 # Setup for Formality verification
@@ -313,11 +344,6 @@ if {[shell_is_in_topographical_mode]} {
 #################################################################################
 # Apply Additional Optimization Constraints
 #################################################################################
-
-# Make sure that logic to perform reset remains with the gate to prevent
-# X-propagation problems
-
-set compile_seqmap_honor_sync_set_reset true
 
 # Replace special characters with non-special ones before writing out the synthesized netlist.
 # E.g., "\bus[5]" -> "bus_5_"

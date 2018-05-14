@@ -116,6 +116,8 @@ define commands.innovus-flowsetup
 	mkdir -p $(innovus_reports_dir)
 	mkdir -p $(innovus_results_dir)
 	mkdir -p $(innovus_handoffs_dir)
+# For easy access, put the innovus flow scripts at the top level
+	ln -sf $(handoff_dir.innovus-flowsetup)/INNOVUS s.flow-innovus
 endef
 
 #-------------------------------------------------------------------------
