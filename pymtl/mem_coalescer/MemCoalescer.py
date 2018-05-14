@@ -12,24 +12,29 @@ from pclib.rtl  import RegRst, RegEnRst, RoundRobinArbiterEn, Mux, EqComparator
 
 class MemCoalescer( Model ):
 
-  def __init__( s, nports, MsgType,
-                addr_nbits = 32, data_nbits = 32, opaque_nbits = 8 ):
+  def __init__( s,
+                nports,
+                MsgTypeReq,
+                MsgTypeResp,
+                addr_nbits = 32, opaque_nbits = 8 ):
 
     s.nports = nports
+
+    s.coalescing_en = InPort ( 1 )
 
     #---------------------------------------------------------------------
     # Requesters <-> MemCoalescer
     #---------------------------------------------------------------------
 
-    s.reqs      = InValRdyBundle  [nports]( MsgType.req )
-    s.resps     = OutValRdyBundle [nports]( MsgType.resp )
+    s.reqs      = InValRdyBundle  [nports]( MsgTypeReq )
+    s.resps     = OutValRdyBundle [nports]( MsgTypeResp )
 
     #---------------------------------------------------------------------
     # MemCoalescer <-> Memory
     #---------------------------------------------------------------------
 
-    s.memreq        = OutValRdyBundle( MsgType.req )
-    s.memresp       = InValRdyBundle ( MsgType.resp )
+    s.memreq        = OutValRdyBundle( MsgTypeReq )
+    s.memresp       = InValRdyBundle ( MsgTypeResp )
 
     #---------------------------------------------------------------------
     # Coalescer's states
@@ -37,10 +42,10 @@ class MemCoalescer( Model ):
 
     # Per-port states
 
-    s.PORT_STATE_IDLE     = 0
-    s.PORT_STATE_PENDING  = 1
+    PORT_STATE_IDLE     = 0
+    PORT_STATE_PENDING  = 1
 
-    s.ports_state = RegRst [nports] ( 1, reset_value = s.PORT_STATE_IDLE )
+    s.ports_state = RegRst [nports] ( 1, reset_value = PORT_STATE_IDLE )
 
     #---------------------------------------------------------------------
     # curr_addr_reg: stores address being processed
@@ -132,13 +137,13 @@ class MemCoalescer( Model ):
     def comb_go_bit_set():
 
       for i in range( nports ):
-        s.go_vector[i].value =  ( s.ports_state[i].out == s.PORT_STATE_IDLE ) | \
+        s.go_vector[i].value =  ( s.ports_state[i].out == PORT_STATE_IDLE ) | \
                                 ( s.tmp_resps_val[i] & s.resps[i].rdy )
 
       s.go_bit.value = reduce_and( s.go_vector )
 
     s.memreq_kill = Wire( 1 )
-    s.memreq_tmp_req  = Wire( MsgType.req )
+    s.memreq_tmp_req  = Wire( MsgTypeReq )
 
     # Set memreq
     @s.combinational
@@ -164,16 +169,25 @@ class MemCoalescer( Model ):
     def comb_reqs_rdy_set():
 
       for i in range( nports ):
+        if s.coalescing_en:
 
-        # whether a request can be issued
-        s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
+          # whether a request can be issued
+          s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
 
-        # whether a request can be coalesced
-        s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
-                                ( s.ports_state[i].out == s.PORT_STATE_IDLE ) & ~s.memresp.val
+          # whether a request can be coalesced
+          s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
+                                  ( s.ports_state[i].out == PORT_STATE_IDLE ) & ~s.memresp.val
+
+        else:
+          # issued only if the requesting port is granted
+          s.issued[i].value     = s.go_bit & s.arbiter.grants[i] & s.memreq.rdy
+
+          # no colaescing allowed
+          s.coalesced[i].value  = 0
 
         # ready if a request is either issued or coalesced
         s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
+
 
     s.memresp_rdy_vector = Wire( nports )
 
@@ -182,12 +196,12 @@ class MemCoalescer( Model ):
     def comb_memresp_rdy_set():
 
       for i in range( nports ):
-        s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == s.PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
-                                        ( s.ports_state[i].out == s.PORT_STATE_IDLE )
+        s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
+                                        ( s.ports_state[i].out == PORT_STATE_IDLE )
       s.memresp.rdy.value = reduce_and( s.memresp_rdy_vector )
 
     # PyMTL temps
-    s.tmp_resp  = Wire( MsgType.resp )
+    s.tmp_resp  = Wire( MsgTypeResp )
     s.tmp_resps_val = Wire(    nports    )
 
     # Set resps
@@ -197,7 +211,7 @@ class MemCoalescer( Model ):
       for i in range( nports ):
         s.tmp_resps_val[i].value = s.memresp.val & \
                                s.memresp.rdy & \
-                               ( s.ports_state[i].out == s.PORT_STATE_PENDING )
+                               ( s.ports_state[i].out == PORT_STATE_PENDING )
 
     @s.combinational
     def comb_connect_resp_val():
@@ -245,20 +259,20 @@ class MemCoalescer( Model ):
         next_state = s.ports_state[i].out
 
         # PORT_STATE_IDLE -> PORT_STATE_PENDING
-        if ( curr_state == s.PORT_STATE_IDLE ):
+        if ( curr_state == PORT_STATE_IDLE ):
           if ( s.reqs[i].val and s.reqs[i].rdy ):
-            next_state = s.PORT_STATE_PENDING
+            next_state = PORT_STATE_PENDING
 
         # PORT_STATE_PENDING -> PORT_STATE_IDLE
-        elif ( curr_state == s.PORT_STATE_PENDING ):
+        elif ( curr_state == PORT_STATE_PENDING ):
           if ( s.memresp.rdy and s.memresp.val and ~( s.reqs[i].val and s.reqs[i].rdy ) ):
-            next_state = s.PORT_STATE_IDLE
+            next_state = PORT_STATE_IDLE
 
         s.ports_state[i].in_.value = next_state
 
     # Enable/Disable opaque regs
 
-    s.opaque_tmp_req   = Wire( MsgType.req  )
+    s.opaque_tmp_req   = Wire( MsgTypeReq  )
 
     @s.combinational
     def comb_opaque_regs_en():
@@ -266,7 +280,7 @@ class MemCoalescer( Model ):
       for i in range( nports ):
         # hawajkm: PyMTL bug
         s.opaque_tmp_req.value = s.reqs[i].msg
-        s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == s.PORT_STATE_IDLE )
+        s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == PORT_STATE_IDLE )
         s.opaque_regs[i].in_.value = s.opaque_tmp_req.opaque
 
     @s.combinational

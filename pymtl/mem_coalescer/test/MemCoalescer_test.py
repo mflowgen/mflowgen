@@ -31,7 +31,7 @@ from mem_coalescer.MemCoalescer import MemCoalescer
 
 class TestHarness( Model ):
 
-  def __init__( s, nports, src_msgs, sink_msgs,
+  def __init__( s, nports, coalescing_en, src_msgs, sink_msgs,
                 stall_prob, latency,
                 src_delay, sink_delay,
                 dump_vcd, test_verilog = False ):
@@ -47,10 +47,12 @@ class TestHarness( Model ):
     # Instantiate models
     s.srcs          = [ TestSource ( mem_msgs.req, src_msgs[i::nports], src_delay + i ) \
                           for i in range( nports ) ]
-    s.mem_coalescer = MemCoalescer ( nports, mem_msgs )
+    s.mem_coalescer = MemCoalescer ( nports, mem_msgs.req, mem_msgs.resp )
     s.mem           = TestMemory( mem_msgs, 1, stall_prob, latency )
     s.sinks         = [ TestSink ( mem_msgs.resp, sink_msgs[i::nports], sink_delay ) \
                           for i in range( nports ) ]
+
+    s.mem_coalescer.coalescing_en = coalescing_en
 
     # Dump VCD
 
@@ -114,11 +116,23 @@ def resp( type_, opaque, len_, data ):
 
 #-------------------------------------------------------------------------
 # Test cases
+#
+#   Test case format for n ports
+#
+#     Port 0:   req0, resp0,
+#     Port 1:   req0, resp0,
+#     Port i:   ...
+#     Port n-1: req0, resp0,
+#
+#     Port 0:   req1, resp1,
+#     Port 1:   req1, resp1,
+#     Port i:   ...
+#     Port n-1: req1, resp1,
+#     ...
+#
 #-------------------------------------------------------------------------
 
 def basic_2_ports_1_msg_no_coal( base_addr ):
-
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
 
   return [
     #    type  opq   addr      len  data         type  opq   len  data
@@ -128,8 +142,6 @@ def basic_2_ports_1_msg_no_coal( base_addr ):
 
 def basic_2_ports_1_msg_coal( base_addr ):
 
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
-
   return [
     #    type  opq   addr      len  data         type  opq   len  data
     req( 'rd', 0x00, 0x00000000, 0, 0    ), resp('rd', 0x00,  0, 0xdeadbeef ),
@@ -137,8 +149,6 @@ def basic_2_ports_1_msg_coal( base_addr ):
   ]
 
 def basic_4_ports_1_msg_no_coal( base_addr ):
-
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
 
   return [
     #    type  opq   addr      len  data         type  opq   len  data
@@ -149,8 +159,6 @@ def basic_4_ports_1_msg_no_coal( base_addr ):
   ]
 
 def basic_4_ports_4_msg_no_coal( base_addr ):
-
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
 
   test_list = []
   for _ in range(4):
@@ -166,8 +174,6 @@ def basic_4_ports_4_msg_no_coal( base_addr ):
 
 def basic_4_ports_1_msg_coal_all( base_addr ):
 
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
-
   return [
     #    type  opq   addr      len  data         type  opq   len  data
     req( 'rd', 0x00, 0x00000000, 0, 0    ), resp('rd', 0x00,  0, 0xdeadbeef ),
@@ -177,8 +183,6 @@ def basic_4_ports_1_msg_coal_all( base_addr ):
   ]
 
 def basic_4_ports_1_msg_coal_02( base_addr ):
-
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
 
   return [
     #    type  opq   addr      len  data         type  opq   len  data
@@ -190,8 +194,6 @@ def basic_4_ports_1_msg_coal_02( base_addr ):
 
 def basic_4_ports_1_msg_coal_02_13( base_addr ):
 
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
-
   return [
     #    type  opq   addr      len  data         type  opq   len  data
     req( 'rd', 0x00, 0x00000000, 0, 0    ), resp('rd', 0x00,  0, 0xdeadbeef ),
@@ -201,8 +203,6 @@ def basic_4_ports_1_msg_coal_02_13( base_addr ):
   ]
 
 def basic_4_ports_1_msg_coal_01_23( base_addr ):
-
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
 
   return [
     #    type  opq   addr      len  data         type  opq   len  data
@@ -214,7 +214,6 @@ def basic_4_ports_1_msg_coal_01_23( base_addr ):
 
 def basic_4_ports_rand( base_addr ):
 
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
   test_list = []
 
   ref_data  = mem_data(0)
@@ -227,7 +226,6 @@ def basic_4_ports_rand( base_addr ):
 
 def basic_4_ports_1_addr( base_addr ):
 
-  # opq encoding: 0xab means 'b'-th req/resp from port 'a'
   test_list = []
 
   ref_data  = mem_data(0)
@@ -236,6 +234,7 @@ def basic_4_ports_1_addr( base_addr ):
     test_list = test_list + [ req( 'rd', i, ref_data[0], 0, 0 ), resp('rd', i, 0, ref_data[1] ) ]
 
   return test_list
+
 # Data to be loaded into memory before running the test
 
 def mem_data( base_addr ):
@@ -252,24 +251,47 @@ def mem_data( base_addr ):
 #-------------------------------------------------------------------------
 
 test_case_table_generic = mk_test_case_table([
-  (                                         "msg_func                       mem_data_func   nports stall lat src sink"),
-  [ "basic_2_ports_1_msg_no_coal",          basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  0,  0,  0    ],
-  [ "basic_2_ports_1_msg_coal",             basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  0,  0,  0    ],
-  [ "basic_2_ports_1_msg_no_coal_memd",     basic_2_ports_1_msg_no_coal,    mem_data,       2,     0.0,  1,  0,  0    ],
-  [ "basic_2_ports_1_msg_coal_memd",        basic_2_ports_1_msg_coal,       mem_data,       2,     0.0,  1,  0,  0    ],
+  (                                         "msg_func                       mem_data_func   nports coalescing_en stall lat src sink"),
 
-  [ "basic_4_ports_1_msg_no_coal",          basic_4_ports_1_msg_no_coal,    mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_1_msg_coal_all",         basic_4_ports_1_msg_coal_all,   mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_1_msg_coal_02",          basic_4_ports_1_msg_coal_02,    mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_1_msg_coal_02_13",       basic_4_ports_1_msg_coal_02_13, mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_1_msg_coal_01_23",       basic_4_ports_1_msg_coal_01_23, mem_data,       4,     0.0,  0,  0,  0    ],
+# disable coalescing logic
 
-  [ "basic_4_ports_4_msg_no_coal",          basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.0,  4,  0,  0    ],
-  [ "basic_4_ports_4_msg_no_coal_d",        basic_4_ports_4_msg_no_coal,    mem_data,       4,     0.2,  3,  2,  4    ],
+  [ "nocoal_2_ports_1_msg_no_coal",          basic_2_ports_1_msg_no_coal,    mem_data,       2,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_2_ports_1_msg_coal",             basic_2_ports_1_msg_coal,       mem_data,       2,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_2_ports_1_msg_no_coal_memd",     basic_2_ports_1_msg_no_coal,    mem_data,       2,     0,            0.0,  1,  0,  0    ],
+  [ "nocoal_2_ports_1_msg_coal_memd",        basic_2_ports_1_msg_coal,       mem_data,       2,     0,            0.0,  1,  0,  0    ],
 
-  [ "basic_4_ports_rand",                   basic_4_ports_rand,             mem_data,       4,     0.0,  0,  0,  0    ],
-  [ "basic_4_ports_rand_d",                 basic_4_ports_rand,             mem_data,       4,     0.4,  2,  4,  10    ],
-  [ "basic_4_ports_1_addr",                 basic_4_ports_1_addr,           mem_data,       4,     0.4,  6,  4,  10    ],
+  [ "nocoal_4_ports_1_msg_no_coal",          basic_4_ports_1_msg_no_coal,    mem_data,       4,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_4_ports_1_msg_coal_all",         basic_4_ports_1_msg_coal_all,   mem_data,       4,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_4_ports_1_msg_coal_02",          basic_4_ports_1_msg_coal_02,    mem_data,       4,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_4_ports_1_msg_coal_02_13",       basic_4_ports_1_msg_coal_02_13, mem_data,       4,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_4_ports_1_msg_coal_01_23",       basic_4_ports_1_msg_coal_01_23, mem_data,       4,     0,            0.0,  0,  0,  0    ],
+
+  [ "nocoal_4_ports_4_msg_no_coal",          basic_4_ports_4_msg_no_coal,    mem_data,       4,     0,            0.0,  4,  0,  0    ],
+  [ "nocoal_4_ports_4_msg_no_coal_d",        basic_4_ports_4_msg_no_coal,    mem_data,       4,     0,            0.2,  3,  2,  4    ],
+
+  [ "nocoal_4_ports_rand",                   basic_4_ports_rand,             mem_data,       4,     0,            0.0,  0,  0,  0    ],
+  [ "nocoal_4_ports_rand_d",                 basic_4_ports_rand,             mem_data,       4,     0,            0.4,  2,  4,  10   ],
+  [ "nocoal_4_ports_1_addr",                 basic_4_ports_1_addr,           mem_data,       4,     0,            0.4,  6,  4,  10   ],
+
+# enable coalescing logic
+
+  [ "coal_2_ports_1_msg_no_coal",            basic_2_ports_1_msg_no_coal,    mem_data,       2,     1,            0.0,  0,  0,  0    ],
+  [ "coal_2_ports_1_msg_coal",               basic_2_ports_1_msg_coal,       mem_data,       2,     1,            0.0,  0,  0,  0    ],
+  [ "coal_2_ports_1_msg_no_coal_memd",       basic_2_ports_1_msg_no_coal,    mem_data,       2,     1,            0.0,  1,  0,  0    ],
+  [ "coal_2_ports_1_msg_coal_memd",          basic_2_ports_1_msg_coal,       mem_data,       2,     1,            0.0,  1,  0,  0    ],
+
+  [ "coal_4_ports_1_msg_no_coal",            basic_4_ports_1_msg_no_coal,    mem_data,       4,     1,            0.0,  0,  0,  0    ],
+  [ "coal_4_ports_1_msg_coal_all",           basic_4_ports_1_msg_coal_all,   mem_data,       4,     1,            0.0,  0,  0,  0    ],
+  [ "coal_4_ports_1_msg_coal_02",            basic_4_ports_1_msg_coal_02,    mem_data,       4,     1,            0.0,  0,  0,  0    ],
+  [ "coal_4_ports_1_msg_coal_02_13",         basic_4_ports_1_msg_coal_02_13, mem_data,       4,     1,            0.0,  0,  0,  0    ],
+  [ "coal_4_ports_1_msg_coal_01_23",         basic_4_ports_1_msg_coal_01_23, mem_data,       4,     1,            0.0,  0,  0,  0    ],
+
+  [ "coal_4_ports_4_msg_no_coal",            basic_4_ports_4_msg_no_coal,    mem_data,       4,     1,            0.0,  4,  0,  0    ],
+  [ "coal_4_ports_4_msg_no_coal_d",          basic_4_ports_4_msg_no_coal,    mem_data,       4,     1,            0.2,  3,  2,  4    ],
+
+  [ "coal_4_ports_rand",                     basic_4_ports_rand,             mem_data,       4,     1,            0.0,  0,  0,  0    ],
+  [ "coal_4_ports_rand_d",                   basic_4_ports_rand,             mem_data,       4,     1,            0.4,  2,  4,  10   ],
+  [ "coal_4_ports_1_addr",                   basic_4_ports_1_addr,           mem_data,       4,     1,            0.4,  6,  4,  10   ],
 ])
 
 @pytest.mark.parametrize( **test_case_table_generic )
@@ -280,6 +302,7 @@ def test_generic( test_params, dump_vcd, test_verilog ):
 
   # Instantiate testharness
   harness = TestHarness( test_params.nports,
+                         test_params.coalescing_en,
                          msgs[::2], msgs[1::2],
                          test_params.stall, test_params.lat,
                          test_params.src, test_params.sink,

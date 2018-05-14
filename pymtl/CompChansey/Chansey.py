@@ -100,9 +100,10 @@ class Chansey( Model ):
     s.icache_adapter = HostAdapter( req=s.icache.cachereq, resp=s.icache.cacheresp )
 
     # N L0is <-> icache_coalescer <-> 1 cache
-    s.icache_coalescer  = MemCoalescer( num_cores, s.cache_mem_ifc,
-                                        addr_nbits, cacheline_nbits,
-                                        mopaque_nbits )
+    s.icache_coalescer  = MemCoalescer( num_cores,
+                                        s.cache_mem_ifc.req,
+                                        s.cache_mem_ifc.resp,
+                                        addr_nbits, mopaque_nbits )
 
     # Shared L1D
 
@@ -294,9 +295,10 @@ class Chansey( Model ):
 
     # Turn off host_en signals in the adapters
 
-    s.connect( s.mdu_adapter   .host_en, s.ctrlreg.host_en[0] )
-    s.connect( s.icache_adapter.host_en, s.ctrlreg.host_en[1] )
-    s.connect( s.dcache_adapter.host_en, s.ctrlreg.host_en[2] )
+    s.connect( s.mdu_adapter   .host_en,          s.ctrlreg.host_en[0] )
+    s.connect( s.icache_adapter.host_en,          s.ctrlreg.host_en[1] )
+    s.connect( s.dcache_adapter.host_en,          s.ctrlreg.host_en[2] )
+    s.connect( s.icache_coalescer.coalescing_en,  s.ctrlreg.host_en[3] )
 
     # TODO add a ctrlreg for L0_disable
     for i in xrange( num_cores ):
