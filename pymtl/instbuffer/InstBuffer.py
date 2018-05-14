@@ -98,24 +98,24 @@ class InstBuffer( Model ):
       else: # otherwise proc <-> inner <-> mem
 
         # inner.buffreq <- buffreq
-        s.inner.buffreq.val.value  = s.buffreq.val
-        s.inner.buffreq.msg.value  = s.buffreq.msg
-        s.buffreq.rdy.value        = s.inner.buffreq.rdy
+        s.inner.buffreq.val.value     = s.buffreq.val
+        s.inner.buffreq.msg.value     = s.buffreq.msg
+        s.buffreq.rdy.value           = s.inner.buffreq.rdy
 
         # buffresp <- inner.buffresp
-        s.buffresp.val.value       = s.inner.buffresp.val
-        s.buffresp.msg.value       = s.inner.buffresp.msg
-        s.inner.buffresp.rdy.value = s.buffresp.rdy
+        s.buffresp.val.value          = s.inner.buffresp.val
+        s.buffresp.msg.value          = s.inner.buffresp.msg
+        s.inner.buffresp.rdy.value    = s.buffresp.rdy
 
         # memreq <- inner.memreq
-        s.memreq.val.value         = s.inner.memreq.val
-        s.memreq.msg.value         = s.inner.memreq.msg
-        s.inner.memreq.rdy.value   = s.memreq.rdy
+        s.memreq.val.value            = s.inner.memreq.val
+        s.memreq.msg.value            = s.inner.memreq.msg
+        s.inner.memreq.rdy.value      = s.memreq.rdy
 
         # inner.memresp <- memresp
-        s.inner.memresp.val.value  = s.memresp.val
-        s.inner.memresp.msg.value  = s.memresp.msg
-        s.memresp.rdy.value        = s.inner.memresp.rdy
+        s.inner.memresp.val.value     = s.memresp_queue.deq.val
+        s.inner.memresp.msg.value     = s.memresp_queue.deq.msg
+        s.memresp_queue.deq.rdy.value = s.inner.memresp.rdy
 
   def line_trace( s ):
     if s.L0_disable:  return "(--)"
