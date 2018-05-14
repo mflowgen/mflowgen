@@ -104,7 +104,7 @@ vcs_aprsdfx_custom_options += -negdelay
 
 # Pull in the Innovus SDF file
 
-vcs_aprsdfx_instance_scope  = top.th.swshim.dut
+vcs_aprsdfx_instance_scope  = top.th.dut.dut
 
 vcs_aprsdfx_custom_options += \
 	-sdf max:$(vcs_aprsdfx_instance_scope):$(wildcard $(innovus_results_dir)/*.sdf)
