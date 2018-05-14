@@ -32,15 +32,36 @@
 # Control registers are connected directly to outputs as ports so that
 # they can be hooked up to control other parts of the design.
 #
+#-------------------------------------------------------------------------
+# Register Space
+#-------------------------------------------------------------------------
+#
 # Currently we have these control registers (CRs):
 #
-# - CR0 (r/w) : go bit, unfreezes the processor
-# - CR1 (r/w) : debug bit
-# - CR2 (r  ) : number of committed instructions
-# - CR3 (r  ) : number of cycles
-# - CR4 (r  ) : host enable for MDU
-# - CR5 (r  ) : host enable for iCache
-# - CR6 (r  ) : host enable for dCache
+#      0  --- Go
+#      1  --- Debug
+#      2  --- 32-bit cycle counters
+#      3  --- <--+
+#      4  ---    |\ 32-bit instruction counters
+#      5  ---    |/      for four cores
+#      6  --- <--+
+#      7  --- <--+
+#      8  ---    |\ host_en
+#      9  ---    |/ interface
+#      10 --- <--+
+#
+# Descriptions
+#
+# - CR "Go" is a bitvector (1b per core) that unfreezes the processors
+# - CR "Debug" combinationally goes out of the chip for observation
+#
+# - Host enables
+#     - CR7  Host enable for MDU
+#     - CR8  Host enable for icache
+#     - CR9  Host enable for dcache
+#     - CR10 Enable for memory coalescer
+#
+
 
 from pymtl      import *
 from pclib.ifcs import InValRdyBundle, OutValRdyBundle
@@ -50,7 +71,7 @@ from ifcs       import CtrlRegReqMsg, CtrlRegRespMsg
 
 class CtrlReg( Model ):
 
-  def __init__( s, num_cores, valrdy_ifcs = 3 ):
+  def __init__( s, num_cores, valrdy_ifcs = 4 ):
 
     #---------------------------------------------------------------------
     # Constants
