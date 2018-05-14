@@ -272,6 +272,15 @@ setViaGenMode -reset
 setViaGenMode -viarule_preference default
 setViaGenMode -ignore_DRC false
 
+# The "-allow_wire_shape_change false" option can prevent some DRC
+# violations for corner cases with power strap jogs (e.g., power straps
+# jogging to connect to the core power ring to get around a
+# core-ring-to-io-ring power trunk). Without this option, vias placed
+# during the jog can overlap illegally, especially for jogs over the wider
+# SRAM power straps.
+
+setViaGenMode -allow_wire_shape_change false
+
 setAddStripeMode -reset
 setAddStripeMode -stacked_via_bottom_layer M3 \
                  -stacked_via_top_layer    M9
