@@ -239,12 +239,10 @@ class CtrlReg( Model ):
           s.ctrlregs[ridx].en , s.cr_go_en,
         )
 
-        # Go bit is a special case
-        # Shunning: currently we set the go bit of all cores at the same time
-        # hawajkm : Do we ever want each core to have its own go bit?
+        # Set the go bit vector
         for i in xrange(num_cores):
           s.connect_pairs(
-            s.go[i], s.ctrlregs[cr_go].out[0],
+            s.go[i], s.ctrlregs[cr_go].out[i],
           )
 
       elif ridx == cr_debug:

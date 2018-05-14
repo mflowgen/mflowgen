@@ -118,7 +118,7 @@ asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write
                 req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
                 req_cr( wr,  ID_MEMCOALESCE_EN, 0 ), resp_cr( wr,   0 ), # write False to coalescing_en
                 req_cr( wr,  ID_IBUFFER_EN,     1 ), resp_cr( wr,   0 ), # write True  to instbuffer_en
-                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
+                req_cr( wr,  ID_GO,           0xf ), resp_cr( wr,   0 ), # go
              ]
 mdu_msgs  =  [  req_cr( wr,  ID_GO,             0 ), resp_cr( wr,   0 ), # write False to go
                 req_cr( wr,  ID_ICACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to icache_host_en
@@ -134,7 +134,7 @@ asm_c_msgs = [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write
                 req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
                 req_cr( wr,  ID_MEMCOALESCE_EN, 1 ), resp_cr( wr,   0 ), # write True  to coalescing_en
                 req_cr( wr,  ID_IBUFFER_EN,     1 ), resp_cr( wr,   0 ), # write True  to instbuffer_en
-                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
+                req_cr( wr,  ID_GO,           0xf ), resp_cr( wr,   0 ), # go
              ]
 
 # Asm message with instruction buffer disabled
@@ -144,7 +144,7 @@ asm_i_msgs = [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write
                 req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
                 req_cr( wr,  ID_MEMCOALESCE_EN, 0 ), resp_cr( wr,   0 ), # write False to coalescing_en
                 req_cr( wr,  ID_IBUFFER_EN,     0 ), resp_cr( wr,   0 ), # write False to instbuffer_en
-                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
+                req_cr( wr,  ID_GO,           0xf ), resp_cr( wr,   0 ), # go
              ]
 
 # Asm message with memory coalescing enabled + instruction buffer disabled
@@ -154,7 +154,7 @@ asm_ci_msgs= [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write
                 req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
                 req_cr( wr,  ID_MEMCOALESCE_EN, 1 ), resp_cr( wr,   0 ), # write True  to coalescing_en
                 req_cr( wr,  ID_IBUFFER_EN,     0 ), resp_cr( wr,   0 ), # write False to instbuffer_en
-                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
+                req_cr( wr,  ID_GO,           0xf ), resp_cr( wr,   0 ), # go
              ]
 
 # TODO
