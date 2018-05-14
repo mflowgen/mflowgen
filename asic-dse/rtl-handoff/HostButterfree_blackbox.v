@@ -6748,6 +6748,7 @@ module BlockingCacheCtrlPRTL_0x6ca49c37af2f92fc
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
+  // synopsys sync_set_reset reset
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
@@ -20017,6 +20018,7 @@ module BlockingCacheCtrlPRTL_0x2673bbb0e0f7d38
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
+  // synopsys sync_set_reset reset
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
