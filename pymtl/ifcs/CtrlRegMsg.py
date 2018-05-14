@@ -28,11 +28,12 @@ class CtrlRegReqMsg( BitStructDefinition ):
   TYPE_READ  = 0
   TYPE_WRITE = 1
 
-  ID_GO            = 0
-  ID_DEBUG         = 1
-  ID_MDU_HOSTEN    = 7
-  ID_ICACHE_HOSTEN = 8
-  ID_DCACHE_HOSTEN = 9
+  ID_GO             = 0
+  ID_DEBUG          = 1
+  ID_MDU_HOSTEN     = 7
+  ID_ICACHE_HOSTEN  = 8
+  ID_DCACHE_HOSTEN  = 9
+  ID_MEMCOALESCE_EN = 10
 
   def __init__( s ):
     s.type_ = BitField( 1  )
