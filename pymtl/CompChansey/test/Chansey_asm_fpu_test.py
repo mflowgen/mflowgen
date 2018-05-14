@@ -397,8 +397,64 @@ def test_fcvt_s_w( name, test, src_delay, sink_delay, mem_stall_prob,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 
+#-------------------------------------------------------------------------
+# flw
+#-------------------------------------------------------------------------
 
+from proc.test import inst_flw
 
+@pytest.mark.parametrize(
+      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+  **synthesize_testtable(
+    [
+      asm_test( inst_flw.gen_basic_test    , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_dest_dep_test , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_base_dep_test , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_srcs_dest_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_value_test    , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_random_test   , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_flw.gen_random_test   , 3        , 5         , 0.5           , 3           ) ,
+    ]
+  )
+)
+def test_flw( name, test, src_delay, sink_delay, mem_stall_prob,
+              mem_latency, dump_vcd, test_verilog ):
 
+  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,          [],      [],          [] ]
 
+  run_test( test_vector, dump_vcd, test_verilog,
+            src_delay      = src_delay     , sink_delay  = sink_delay ,
+            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
+#-------------------------------------------------------------------------
+# fsw
+#-------------------------------------------------------------------------
+
+from proc.test import inst_fsw
+
+@pytest.mark.parametrize(
+      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+  **synthesize_testtable(
+    [
+      asm_test( inst_fsw.gen_basic_test    , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_dest_dep_test , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_base_dep_test , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_src_dep_test  , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_srcs_dep_test , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_value_test    , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_random_test   , 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_fsw.gen_random_test   , 3        , 5         , 0.5           , 3           ) ,
+    ]
+  )
+)
+def test_fsw( name, test, src_delay, sink_delay, mem_stall_prob,
+              mem_latency, dump_vcd, test_verilog ):
+
+  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+  test_vector = [ "asm",         test,          [],      [],          [] ]
+
+  run_test( test_vector, dump_vcd, test_verilog,
+            src_delay      = src_delay     , sink_delay  = sink_delay ,
+            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
 

@@ -1239,6 +1239,177 @@ def gen_fp_cvt_value_test( inst, src, result, flt2int=True ):
   return gen_fp_cvt_template( 0, 0, flt2int,
                               inst, src, result )
 
+#-------------------------------------------------------------------------
+# gen_fp_ld_template
+#-------------------------------------------------------------------------
+
+def gen_fp_ld_template(
+  num_nops_base, num_nops_dest,
+  reg_base,
+  inst, offset, base, result
+):
+  return """
+
+    csrr x2, mngr2proc < 0xdeadf00d
+    # Move base value into register
+    csrr {reg_base}, mngr2proc < {base}
+    {nops_base}
+
+    # Instruction under test
+    {inst} f2, {offset}({reg_base})
+    {nops_dest}
+    fmv.x.w x3, f2
+
+    # Check the result
+    csrw proc2mngr, x3 > {result}
+    csrw proc2mngr, x2 > 0xdeadf00d
+
+  """.format(
+    nops_base = gen_nops(num_nops_base),
+    nops_dest = gen_nops(num_nops_dest),
+    **locals()
+  )
+
+#-------------------------------------------------------------------------
+# gen_fp_ld_dest_dep_test
+#-------------------------------------------------------------------------
+# Test the destination bypass path by varying how many nops are
+# inserted between the instruction under test and reading the destination
+# register with a csrr instruction.
+
+def gen_fp_ld_dest_dep_test( num_nops, inst, base, result ):
+  return gen_fp_ld_template( 8, num_nops, "x1", inst, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_ld_base_dep_test
+#-------------------------------------------------------------------------
+# Test the base register bypass paths by varying how many nops are
+# inserted between writing the base register and reading this register in
+# the instruction under test.
+
+def gen_fp_ld_base_dep_test( num_nops, inst, base, result ):
+  return gen_fp_ld_template( num_nops, 0, "x1", inst, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_ld_base_eq_dest_test
+#-------------------------------------------------------------------------
+# Test situation where the base register specifier is the same as the
+# destination register specifier.
+
+def gen_fp_ld_base_eq_dest_test( inst, base, result ):
+  return gen_fp_ld_template( 0, 0, "x3", inst, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_ld_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of a register-register instruction under
+# test. We assume that bypassing has already been tested.
+
+def gen_fp_ld_value_test( inst, offset, base, result ):
+  return gen_fp_ld_template( 0, 0, "x1", inst, offset, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_template
+#-------------------------------------------------------------------------
+# Template for store instructions. We first write the src and base
+# registers before executing the instruction under test. We parameterize
+# the number of nops after writing these register and the instruction
+# under test to enable using this template for testing various bypass
+# paths. We also parameterize the register specifiers to enable using
+# this template to test situations where the base register is equal to
+# the destination register. We use a lw to bring back in the stored data
+# to verify the store. The lw address is formed by simply masking off the
+# lower two bits of the store address. The result needs to be specified
+# accordingly. This helps make sure that the store doesn't store more
+# data then it is supposed to.
+
+def gen_fp_st_template(
+  num_nops_src, num_nops_base, num_nops_dest,
+  reg_src, reg_base,
+  inst, src, offset, base, result
+):
+  return """
+
+    # Move src value into register
+    csrr x2, mngr2proc < {src}
+    fmv.w.x {reg_src}, x2
+    {nops_src}
+
+    # Move base value into register
+    csrr {reg_base}, mngr2proc < {base}
+    {nops_base}
+
+    # Instruction under test
+    {inst} {reg_src}, {offset}({reg_base})
+    {nops_dest}
+
+    # Check the result
+    csrr x4, mngr2proc < {lw_base}
+    lw   x3, 0(x4)
+    csrw proc2mngr, x3 > {result}
+
+  """.format(
+    nops_src  = gen_nops(num_nops_src),
+    nops_base = gen_nops(num_nops_base),
+    nops_dest = gen_nops(num_nops_dest),
+    lw_base   = (base + offset) & 0xfffffffc,
+    **locals()
+  )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_dest_dep_test
+#-------------------------------------------------------------------------
+# Test the destination bypass path by varying how many nops are
+# inserted between the instruction under test and reading the destination
+# register with a lw instruction.
+
+def gen_fp_st_dest_dep_test( num_nops, inst, src, base, result ):
+  return gen_fp_st_template( 0, 8, num_nops, "f1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_base_dep_test
+#-------------------------------------------------------------------------
+# Test the base register bypass paths by varying how many nops are
+# inserted between writing the base register and reading this register in
+# the instruction under test.
+
+def gen_fp_st_base_dep_test( num_nops, inst, src, base, result ):
+  return gen_fp_st_template( 8-num_nops, num_nops, 0, "f1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_src_dep_test
+#-------------------------------------------------------------------------
+# Test the src register bypass paths by varying how many nops are
+# inserted between writing the src register and reading this register in
+# the instruction under test.
+
+def gen_fp_st_src_dep_test( num_nops, inst, src, base, result ):
+  return gen_fp_st_template( num_nops, 0, 0, "f1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_srcs_dep_test
+#-------------------------------------------------------------------------
+# Test both source bypass paths at the same time by varying how many nops
+# are inserted between writing both src registers and reading both
+# registers in the instruction under test.
+
+def gen_fp_st_srcs_dep_test( num_nops, inst, src, base, result ):
+  return gen_fp_st_template( 0, num_nops, 0, "f1", "x2",
+                          inst, src, 0, base, result )
+
+#-------------------------------------------------------------------------
+# gen_fp_st_value_test
+#-------------------------------------------------------------------------
+# Test the actual operation of a store instruction under test. We assume
+# that bypassing has already been tested.
+
+def gen_fp_st_value_test( inst, src, offset, base, result ):
+  return gen_fp_st_template( 0, 0, 0, "f1", "x2",
+                          inst, src, offset, base, result )
+
 
 #=========================================================================
 # TestHarness

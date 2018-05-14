@@ -278,3 +278,47 @@ def test_fcvt_s_w( name, test, dump_vcd, test_verilog ):
 def test_fcvt_s_w_delays( dump_vcd, test_verilog ):
   run_test( ProcRTL, inst_fcvt_s_w.gen_random_test, dump_vcd, test_verilog,
             src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# flw
+#-------------------------------------------------------------------------
+
+import inst_flw
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_flw.gen_basic_test            ),
+  asm_test( inst_flw.gen_dest_dep_test         ),
+  asm_test( inst_flw.gen_base_dep_test         ),
+  asm_test( inst_flw.gen_srcs_dest_test        ),
+  asm_test( inst_flw.gen_value_test            ),
+  asm_test( inst_flw.gen_random_test           ),
+])
+def test_flw( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_flw_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_flw.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
+#-------------------------------------------------------------------------
+# fsw
+#-------------------------------------------------------------------------
+
+import inst_fsw
+
+@pytest.mark.parametrize( "name,test", [
+  asm_test( inst_fsw.gen_basic_test            ),
+  asm_test( inst_fsw.gen_dest_dep_test         ),
+  asm_test( inst_fsw.gen_base_dep_test         ),
+  asm_test( inst_fsw.gen_src_dep_test          ),
+  asm_test( inst_fsw.gen_srcs_dep_test         ),
+  asm_test( inst_fsw.gen_value_test            ),
+  asm_test( inst_fsw.gen_random_test           ),
+])
+def test_fsw( name, test, dump_vcd, test_verilog ):
+  run_test( ProcRTL, test, dump_vcd, test_verilog )
+
+def test_fsw_delays( dump_vcd, test_verilog ):
+  run_test( ProcRTL, inst_fsw.gen_random_test, dump_vcd, test_verilog,
+            src_delay=3, sink_delay=10, mem_stall_prob=0.5, mem_latency=3 )
+
