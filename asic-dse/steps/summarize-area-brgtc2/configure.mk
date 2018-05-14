@@ -14,10 +14,12 @@ descriptions.summarize-area-brgtc2 = \
 # ASCII art
 #-------------------------------------------------------------------------
 
+summarize_area_clock_frequency = $(shell echo "1000/$(clock_period)" | bc)
+
 define ascii.summarize-area-brgtc2
 	@echo -e $(echo_green)
 	@echo '#-------------------------------------------------------------------------------'
-	@echo '# Summarize Area from DC-Synthesis (for BRGTC2)'
+	@echo '# Area Summary -- DC Synthesis ($(design_name), $(summarize_area_clock_frequency) MHz)'
 	@echo '#-------------------------------------------------------------------------------'
 	@echo -e $(echo_nocolor)
 endef
@@ -49,7 +51,7 @@ skipvpath.summarize-area-brgtc2 = yes
 # included into the build Makefile.
 
 define commands.summarize-area-brgtc2
-	./$(summarize_area_script)
+	@./$(summarize_area_script)
 endef
 
 #-------------------------------------------------------------------------
@@ -57,6 +59,10 @@ endef
 #-------------------------------------------------------------------------
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
+
+area-long:
+	$(ascii.summarize-area-brgtc2)
+	@./$(summarize_area_script) --detailed
 
 # Clean
 
