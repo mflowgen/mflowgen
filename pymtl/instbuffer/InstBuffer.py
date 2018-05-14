@@ -41,7 +41,7 @@ class InstBuffer( Model ):
 
     # Mem side
 
-    s.memreq   = OutValRdyBundle( MemReqMsg(opaque_nbits, data_nbits, line_nbits) )
+    s.memreq   = OutValRdyBundle( MemReqMsg(opaque_nbits, addr_nbits, line_nbits) )
     s.memresp  = InValRdyBundle ( MemRespMsg(opaque_nbits, line_nbits) )
 
     s.inner = DirectMappedInstBuffer( num_entries, line_nbytes )

@@ -98,29 +98,38 @@ def resp_cr( type_, data ):
 rd = CtrlRegReqMsg.TYPE_READ
 wr = CtrlRegReqMsg.TYPE_WRITE
 
-ID_GO            = CtrlRegReqMsg.ID_GO
-ID_DEBUG         = CtrlRegReqMsg.ID_DEBUG
-ID_MDU_HOSTEN    = CtrlRegReqMsg.ID_MDU_HOSTEN
-ID_ICACHE_HOSTEN = CtrlRegReqMsg.ID_ICACHE_HOSTEN
-ID_DCACHE_HOSTEN = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+ID_GO             = CtrlRegReqMsg.ID_GO
+ID_DEBUG          = CtrlRegReqMsg.ID_DEBUG
+ID_MDU_HOSTEN     = CtrlRegReqMsg.ID_MDU_HOSTEN
+ID_ICACHE_HOSTEN  = CtrlRegReqMsg.ID_ICACHE_HOSTEN
+ID_DCACHE_HOSTEN  = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+ID_MEMCOALESCE_EN = CtrlRegReqMsg.ID_MEMCOALESCE_EN
 
-#                    Req  Req               Req        Resp Resp
-#                    Type Addr              Data       Type Data
+#                      Req   Req              Req             Resp Resp
+#                      Type  Addr             Data            Type Data
 
-debug_msgs = [  req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   0 ), # read debug
-                req_cr( wr,   ID_DEBUG, 1 ), resp_cr( wr,   0 ), # write debug
-                req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   1 ), # read debug
+debug_msgs = [  req_cr( rd,  ID_DEBUG,          0 ), resp_cr( rd,   0 ), # read debug
+                req_cr( wr,  ID_DEBUG,          1 ), resp_cr( wr,   0 ), # write debug
+                req_cr( rd,  ID_DEBUG,          0 ), resp_cr( rd,   1 ), # read debug
              ]
-asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,    0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
-                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
-                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
-                req_cr( wr,  ID_GO,            1 ), resp_cr( wr,   0 ), # go
+asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( wr,  ID_ICACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
              ]
-mdu_msgs  =  [  req_cr( wr,  ID_GO,            0 ), resp_cr( wr,   0 ), # write False to go
-                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
-                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
-                req_cr( wr,  ID_MDU_HOSTEN,    1 ), resp_cr( wr,   0 ), # write False to mdu_host_en
-                req_cr( rd,  ID_MDU_HOSTEN,    0 ), resp_cr( rd,   1 ), # check mdu_host_en
+mdu_msgs  =  [  req_cr( wr,  ID_GO,             0 ), resp_cr( wr,   0 ), # write False to go
+                req_cr( wr,  ID_ICACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_MDU_HOSTEN,     1 ), resp_cr( wr,   0 ), # write True  to mdu_host_en
+                req_cr( rd,  ID_MDU_HOSTEN,     0 ), resp_cr( rd,   1 ), # check mdu_host_en
+             ]
+
+# Asm message with memory coalescing enabled
+asm_c_msgs = [  req_cr( wr,  ID_MDU_HOSTEN,     0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( wr,  ID_ICACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN,  0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_MEMCOALESCE_EN, 1 ), resp_cr( wr,   0 ), # write True  to coalescing_en
+                req_cr( wr,  ID_GO,             1 ), resp_cr( wr,   0 ), # go
              ]
 # TODO
 icache_msgs = [ ]
@@ -129,9 +138,10 @@ dcache_msgs = [ ]
 # Dispatch
 
 ctrlreg_msgs = {
-  "debug" :  debug_msgs,
-  "asm" :    asm_msgs,
-  "mdu" :    mdu_msgs,
+  "debug"  :  debug_msgs,
+  "asm"    :    asm_msgs,
+  "asm_c"  :  asm_c_msgs,
+  "mdu"    :    mdu_msgs,
   "icache" : icache_msgs,
   "dcache" : dcache_msgs,
 }
@@ -251,11 +261,12 @@ class TestHarness( Model ):
     rd = CtrlRegReqMsg.TYPE_READ
     wr = CtrlRegReqMsg.TYPE_WRITE
 
-    ID_GO            = CtrlRegReqMsg.ID_GO
-    ID_DEBUG         = CtrlRegReqMsg.ID_DEBUG
-    ID_MDU_HOSTEN    = CtrlRegReqMsg.ID_MDU_HOSTEN
-    ID_ICACHE_HOSTEN = CtrlRegReqMsg.ID_ICACHE_HOSTEN
-    ID_DCACHE_HOSTEN = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+    ID_GO             = CtrlRegReqMsg.ID_GO
+    ID_DEBUG          = CtrlRegReqMsg.ID_DEBUG
+    ID_MDU_HOSTEN     = CtrlRegReqMsg.ID_MDU_HOSTEN
+    ID_ICACHE_HOSTEN  = CtrlRegReqMsg.ID_ICACHE_HOSTEN
+    ID_DCACHE_HOSTEN  = CtrlRegReqMsg.ID_DCACHE_HOSTEN
+    ID_MEMCOALESCE_EN = CtrlRegReqMsg.ID_MEMCOALESCE_EN
 
     assert msg_type in ctrlreg_msgs, "{} is not a valid control reg message sequence name.".format( msg_type )
 
