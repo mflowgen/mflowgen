@@ -89,7 +89,16 @@ vcs_aprsdf_custom_options += $(foreach f, $(vcs_aprsdf_srams),-v $f)
 
 # Performance options for post-APR SDF simulation
 
-vcs_aprsdf_custom_options += -hsopt=gates
+# hawajkm:
+#   We cannot have -hsopt=gates or -hsopt=udp when using +vcs+initreg+config.
+#   vcs spits out the following messages
+#
+#        Error-[UNSUPP-W-HSGATES] Unsupported option combination used.
+#          Option '+vcs+initreg+config' is not supported with '-hsopt=gates or 
+#          -hsopt=udp'.
+#
+#
+#vcs_aprsdf_custom_options += -hsopt=gates
 
 # Suppress lint and warnings
 
@@ -105,7 +114,7 @@ vcs_aprsdf_custom_options += -negdelay
 
 # Pull in the Innovus SDF file
 
-vcs_aprsdf_instance_scope  = top.th.swshim.dut
+vcs_aprsdf_instance_scope  = top.th.dut.dut
 
 vcs_aprsdf_custom_options += \
 	-sdf max:$(vcs_aprsdf_instance_scope):$(wildcard $(innovus_results_dir)/*.sdf)
@@ -130,7 +139,8 @@ vcs_aprsdf_custom_options += +define+ARM_NEG_MODEL
 
 # Register initialization
 
-vcs_aprsdf_custom_options += +vcs+initreg+random
+vcs_aprsdf_initreg_config  = $(handoff_dir.vcs-aprsdf-build)/initreg.config
+vcs_aprsdf_custom_options += +vcs+initreg+config+$(vcs_aprsdf_initreg_config)
 
 # ARM memory initialization
 #
@@ -157,6 +167,10 @@ define commands.vcs-aprsdf-build
 
 	mkdir -p $(logs_dir.vcs-aprsdf-build)
 	mkdir -p $(handoff_dir.vcs-aprsdf-build)
+
+# initreg configuration
+
+	echo "modtree $(design_name) 0 random" > $(vcs_aprsdf_initreg_config)
 
 # Build the testing library map
 
