@@ -20,7 +20,6 @@ from cache.BlockingCachePRTL    import BlockingCachePRTL
 from networks.Funnel            import Funnel
 from networks.Router            import Router
 from adapters.HostAdapter       import HostAdapter
-from mem_coalescer.MemCoalescer import MemCoalescer
 
 class Aerodactyl( Model ):
 
@@ -94,10 +93,8 @@ class Aerodactyl( Model ):
     s.icache         = BlockingCachePRTL( 0, wide_access = True )
     s.icache_adapter = HostAdapter( req=s.icache.cachereq, resp=s.icache.cacheresp )
 
-    # N L0is <-> icache_coalescer <-> 1 cache
-    s.icache_coalescer  = MemCoalescer( num_cores, s.cache_mem_ifc,
-                                        addr_nbits, cacheline_nbits,
-                                        mopaque_nbits )
+    s.net_icachereq  = Funnel( num_cores, s.cache_mem_ifc.req  )  # N L0is - to - 1 cache
+    s.net_icacheresp = Router( num_cores, s.cache_mem_ifc.resp )  # 1 cache - to - N L0is
 
     # Shared L1D
 
@@ -169,13 +166,13 @@ class Aerodactyl( Model ):
 
     for i in xrange( num_cores ):
       s.connect_pairs(
-        # proc -> L0i -> icache_coalescer
-        s.proc[i].imemreq,            s.l0i[i].buffreq,
-        s.l0i[i].memreq,              s.icache_coalescer.reqs[i],
+        # proc -> L0i -> net_icachereq
+        s.proc[i].imemreq,       s.l0i[i].buffreq,
+        s.l0i[i].memreq,         s.net_icachereq.in_[i],
 
-        # icache_coalescer -> L0i -> proc
-        s.icache_coalescer.resps[i],  s.l0i[i].memresp,
-        s.l0i[i].buffresp,            s.proc[i].imemresp,
+        # net_icacheresp -> L0i -> proc
+        s.net_icacheresp.out[i], s.l0i[i].memresp,
+        s.l0i[i].buffresp,       s.proc[i].imemresp,
       )
 
     # nets <-> icache <-> imem
@@ -188,8 +185,8 @@ class Aerodactyl( Model ):
       s.host_icachereq,           s.icache_adapter.hostreq,
       s.host_icacheresp,          s.icache_adapter.hostresp,
 
-      s.icache_coalescer.memreq,  s.icache_adapter.realreq,
-      s.icache_coalescer.memresp, s.icache_adapter.realresp,
+      s.net_icachereq.out,        s.icache_adapter.realreq,
+      s.net_icacheresp.in_,       s.icache_adapter.realresp,
 
       s.icache_adapter.req,       s.icache.cachereq,
       s.icache_adapter.resp,      s.icache.cacheresp,
