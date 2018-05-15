@@ -41,11 +41,13 @@ set post_synthesis_plugin       ${dc_plugins_dir}/post_synth.tcl
 #-------------------------------------------------------------------------
 # Interface to the ASIC design kit
 #-------------------------------------------------------------------------
+# hawajkm: for all the various db's, we just want the typical corner
+#          hence the *tt* in the glob
 
 set TARGET_LIBRARY_FILES        [join "
                                   stdcells.db
                                   iocells.db
-                                  [glob -nocomplain $::env(dc_collect_dir)/*.db]
+                                  [glob -nocomplain $::env(dc_collect_dir)/*tt*.db]
                                 "]
 
 set ADDITIONAL_SEARCH_PATH      $::env(adk_dir)

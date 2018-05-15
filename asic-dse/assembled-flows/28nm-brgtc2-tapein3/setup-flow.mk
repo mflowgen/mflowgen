@@ -8,6 +8,7 @@ steps = \
   info \
   gen-sram-verilog \
   gen-sram-lef \
+  gen-sram-lib \
   gen-sram-gds \
   gen-sram-cdl \
   gen-sram-db \
@@ -50,7 +51,7 @@ dependencies.gen-sram-gds        = seed
 dependencies.gen-sram-cdl        = seed
 
 dependencies.dc-synthesis        = seed gen-sram-db
-dependencies.innovus-flowsetup   = dc-synthesis gen-sram-lef gen-sram-db
+dependencies.innovus-flowsetup   = dc-synthesis gen-sram-lef gen-sram-lib gen-sram-db
 dependencies.innovus-init        = innovus-flowsetup
 dependencies.innovus-place       = innovus-flowsetup innovus-init
 dependencies.innovus-cts         = innovus-flowsetup innovus-place
