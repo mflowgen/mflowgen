@@ -35,6 +35,7 @@ endef
 #-------------------------------------------------------------------------
 
 var.dir = ../../pymtl/build/srams
+mem_generator = $(plugins_dir)/srams/gen-srams
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -43,8 +44,17 @@ var.dir = ../../pymtl/build/srams
 # included into the build Makefile.
 
 define commands.gen-sram-cdl
+
+	# Create handoff directory
+
 	mkdir -p $(handoff_dir.gen-sram-cdl)
-	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-cdl) make -f $(plugins_dir)/srams/Makefile cdl
+
+	# For every specs, invoke the memory generator
+
+	for specs in $(var.dir)/*; do \
+	  $(mem_generator) $${specs} -o $(handoff_dir.gen-sram-cdl) -g cdl; \
+	done
+
 endef
 
 #-------------------------------------------------------------------------

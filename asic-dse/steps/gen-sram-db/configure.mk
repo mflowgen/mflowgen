@@ -35,6 +35,7 @@ endef
 #-------------------------------------------------------------------------
 
 var.dir = ../../pymtl/build/srams
+mem_generator = $(plugins_dir)/srams/gen-srams
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -43,9 +44,17 @@ var.dir = ../../pymtl/build/srams
 # included into the build Makefile.
 
 define commands.gen-sram-db
-	# Create Verilog SRAMs
+
+	# Create handoff directory
+
 	mkdir -p $(handoff_dir.gen-sram-db)
-	SPECS_DIR=$(var.dir) OUTPUT_DIR=$(handoff_dir.gen-sram-db) make -f $(plugins_dir)/srams/Makefile db
+
+	# For every specs, invoke the memory generator
+
+	for specs in $(var.dir)/*; do \
+	  $(mem_generator) $${specs} -o $(handoff_dir.gen-sram-db) -g db; \
+	done
+
 endef
 
 #-------------------------------------------------------------------------
