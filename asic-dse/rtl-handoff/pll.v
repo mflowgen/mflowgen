@@ -4067,25 +4067,16 @@ mux_sel_div_re_timed mux_sel_div_re_timed(
 endmodule
 
 
-module inv_logic_n1 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 24;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n1 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -4097,28 +4088,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n1 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 24;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n1 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -4133,191 +4115,37 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n1 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 24;
+module ring_oscillator_top_n1 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
 
 wire pre_out1;
 wire pre_out2;
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n1 stage_num_1 (
+nand2_stage_ring_n1 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n1 delaying_stage (
+inv_logic_n1 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-endmodule
-
-module inv_logic_n10 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 8;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n10 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 8;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n10 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 9;
-parameter N_LOADS_PER_STAGE = 8;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n10 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n10 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
@@ -4338,25 +4166,16 @@ inv_logic inv_at_out_n2(
 
 endmodule
 
-module inv_logic_n11 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 12;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n10 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -4368,28 +4187,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n11 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 12;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n10 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -4404,1288 +4214,37 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n11 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 9;
-parameter N_LOADS_PER_STAGE = 12;
+module ring_oscillator_top_n10 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
 
 wire pre_out1;
 wire pre_out2;
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n11 stage_num_1 (
+nand2_stage_ring_n10 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n11 delaying_stage (
+inv_logic_n10 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-
-endmodule
-
-module inv_logic_n12 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 7;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n12 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 7;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n12 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 11;
-parameter N_LOADS_PER_STAGE = 7;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n12 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n12 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n13 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 9;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n13 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 9;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n13 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 11;
-parameter N_LOADS_PER_STAGE = 9;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n13 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n13 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n14 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 8;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n14 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 8;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n14 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 13;
-parameter N_LOADS_PER_STAGE = 8;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n14 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n14 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n15 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 6;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n15 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 6;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-
-module ring_oscillator_top_n15 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 15;
-parameter N_LOADS_PER_STAGE = 6;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n15 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n15 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n16 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 6;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n16 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 6;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n16 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 17;
-parameter N_LOADS_PER_STAGE = 6;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n16 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n16 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n2 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 24;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n2 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 24;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n2 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 24;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n2 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n2 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-endmodule
-
-module inv_logic_n3 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 30;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n3 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 30;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n3 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 30;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n3 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n3 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-
-endmodule
-
-module inv_logic_n4 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 32;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n4 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 32;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n4 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 32;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n4 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n4 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
-
- //Feedback of the ring oscillator
-assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
-
-//Assign stage of the ring oscillator to output
-assign pre_out1 = pin_in_of_dly_stage[0];
-
-
-//Inverters at output of RO
-inv_logic inv_at_out_n1(
-        .in(pre_out1),
-        .out(pre_out2)
-        );
-inv_logic inv_at_out_n2(
-        .in(pre_out2),
-        .out(out)
-        );
-
-
-endmodule
-
-module inv_logic_n5 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 36;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-
-
-assign out = ~in;
-
-genvar cc;
-
-
-generate
-for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[cc]),
-	.out()
-	);
-end
-endgenerate
-
-
-
-endmodule
-module nand2_stage_ring_n5 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 36;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
-nand2_logic stage_num_1 (
-	.in_1(in_1),
-	.in_2(in_2),
-	.out(out)
-	);
-
-
-//LOADS
-genvar dd;
-generate
-for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
-nand2_logic load (
-	.in_1(out),
-	.in_2(in_ctrl[dd]),
-	.out()
-	);
-end
-endgenerate
-
-
-  endmodule
-module ring_oscillator_top_n5 (
-        in_enable,
-        in_ctrl,
-        out
-        );
-
-parameter N_DELAY_STAGE = 3;
-parameter N_LOADS_PER_STAGE = 36;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
-
-wire pre_out1;
-wire pre_out2;
-
-
-wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
-
-
-
-
-
-//First stage is NAND
-nand2_stage_ring_n5 stage_num_1 (
-	.in_1(in_enable),
-	.in_2(pin_in_of_dly_stage[0]),
-	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
-	.out(pin_in_of_dly_stage[1])
-	);
-
-
-
-
-//Further stages are INV
-genvar cc;
-generate
-for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n5 delaying_stage (
-	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
-	.out(pin_in_of_dly_stage[cc+1])
-	);
-end
-endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
@@ -5706,25 +4265,16 @@ inv_logic inv_at_out_n2(
 
 endmodule
 
-module inv_logic_n6 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 15;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n11 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -5736,28 +4286,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n6 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 15;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n11 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -5772,62 +4313,43 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n6 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 5;
-parameter N_LOADS_PER_STAGE = 15;
+module ring_oscillator_top_n11 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
 
 wire pre_out1;
 wire pre_out2;
-
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n6 stage_num_1 (
+nand2_stage_ring_n11 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n6 delaying_stage (
+inv_logic_n11 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
 
 //Assign stage of the ring oscillator to output
 assign pre_out1 = pin_in_of_dly_stage[0];
-
 
 //Inverters at output of RO
 inv_logic inv_at_out_n1(
@@ -5839,27 +4361,19 @@ inv_logic inv_at_out_n2(
         .out(out)
         );
 
+
 endmodule
 
-module inv_logic_n7 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 21;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n12 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -5871,28 +4385,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n7 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 21;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n12 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -5907,62 +4412,43 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n7 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 5;
-parameter N_LOADS_PER_STAGE = 21;
-
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
+module ring_oscillator_top_n12 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
 
 wire pre_out1;
 wire pre_out2;
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n7 stage_num_1 (
+nand2_stage_ring_n12 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n7 delaying_stage (
+inv_logic_n12 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
 
 //Assign stage of the ring oscillator to output
 assign pre_out1 = pin_in_of_dly_stage[0];
-
 
 //Inverters at output of RO
 inv_logic inv_at_out_n1(
@@ -5975,29 +4461,18 @@ inv_logic inv_at_out_n2(
         );
 
 
-
-
 endmodule
 
-module inv_logic_n8 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 11;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n13 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -6009,28 +4484,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n8 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 11;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n13 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -6045,62 +4511,43 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n8 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 7;
-parameter N_LOADS_PER_STAGE = 11;
+module ring_oscillator_top_n13 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
 
 wire pre_out1;
 wire pre_out2;
-
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n8 stage_num_1 (
+nand2_stage_ring_n13 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n8 delaying_stage (
+inv_logic_n13 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
 
 //Assign stage of the ring oscillator to output
 assign pre_out1 = pin_in_of_dly_stage[0];
-
 
 //Inverters at output of RO
 inv_logic inv_at_out_n1(
@@ -6115,25 +4562,16 @@ inv_logic inv_at_out_n2(
 
 endmodule
 
-module inv_logic_n9 (
-        in,
-        in_ctrl,
-        out
-        );
-
-parameter N_LOADS_PER_STAGE = 15;
-
-input in;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
-
+module inv_logic_n14 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 
 assign out = ~in;
 
+
 genvar cc;
-
-
 generate
 for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
 nand2_logic load (
@@ -6145,28 +4583,19 @@ end
 endgenerate
 
 
-
 endmodule
-module nand2_stage_ring_n9 (
-        in_1,
-        in_2,
-        in_ctrl,
-        out
-        );
 
-parameter N_LOADS_PER_STAGE = 15;
-
-
-input in_1, in_2;
-input [N_LOADS_PER_STAGE-1:0] in_ctrl;
-output out;
+module nand2_stage_ring_n14 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
 
 nand2_logic stage_num_1 (
 	.in_1(in_1),
 	.in_2(in_2),
 	.out(out)
 	);
-
 
 //LOADS
 genvar dd;
@@ -6181,63 +4610,43 @@ end
 endgenerate
 
 
-  endmodule
-module ring_oscillator_top_n9 (
-        in_enable,
-        in_ctrl,
-        out
-        );
+endmodule
 
-parameter N_DELAY_STAGE = 7;
-parameter N_LOADS_PER_STAGE = 15;
+module ring_oscillator_top_n14 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
 
-
-input in_enable;
-input [N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
-output out;
 
 wire pre_out1;
 wire pre_out2;
-
-
 wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
 
-
-
-
-
 //First stage is NAND
-nand2_stage_ring_n9 stage_num_1 (
+nand2_stage_ring_n14 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
 	.in_1(in_enable),
 	.in_2(pin_in_of_dly_stage[0]),
 	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
 	.out(pin_in_of_dly_stage[1])
 	);
 
-
-
-
 //Further stages are INV
 genvar cc;
 generate
 for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
-inv_logic_n9 delaying_stage (
+inv_logic_n14 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
 	.in(pin_in_of_dly_stage[cc]),
-	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]), //.in_ctrl(in_ctrl[3:0]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
 	.out(pin_in_of_dly_stage[cc+1])
 	);
 end
 endgenerate
-
-
 
  //Feedback of the ring oscillator
 assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
 
 //Assign stage of the ring oscillator to output
 assign pre_out1 = pin_in_of_dly_stage[0];
-
-
 
 //Inverters at output of RO
 inv_logic inv_at_out_n1(
@@ -6249,6 +4658,995 @@ inv_logic inv_at_out_n2(
         .out(out)
         );
 
+
+endmodule
+
+module inv_logic_n15 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n15 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n15 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n15 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n15 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n16 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n16 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n16 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n16 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n16 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n2 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n2 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n2 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n2 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n2 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n3 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n3 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n3 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n3 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n3 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n4 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n4 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n4 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n4 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n4 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n5 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n5 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n5 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n5 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n5 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n6 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n6 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n6 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n6 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n6 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n7 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n7 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n7 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n7 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n7 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n8 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n8 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n8 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n8 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n8 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
+
+
+endmodule
+
+module inv_logic_n9 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+
+assign out = ~in;
+
+
+genvar cc;
+generate
+for ( cc = 0 ; cc < N_LOADS_PER_STAGE ; cc = cc + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[cc]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module nand2_stage_ring_n9 #(parameter N_LOADS_PER_STAGE = 24)(
+input	in_1,
+input	in_2,
+input	[N_LOADS_PER_STAGE-1:0] in_ctrl,
+output	out );
+
+nand2_logic stage_num_1 (
+	.in_1(in_1),
+	.in_2(in_2),
+	.out(out)
+	);
+
+//LOADS
+genvar dd;
+generate
+for ( dd = 0 ; dd < N_LOADS_PER_STAGE ; dd = dd + 1 ) begin
+nand2_logic load (
+	.in_1(out),
+	.in_2(in_ctrl[dd]),
+	.out()
+	);
+end
+endgenerate
+
+
+endmodule
+
+module ring_oscillator_top_n9 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
+input	in_enable;
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+output	out );
+
+
+wire pre_out1;
+wire pre_out2;
+wire [N_DELAY_STAGE:0] pin_in_of_dly_stage;
+
+//First stage is NAND
+nand2_stage_ring_n9 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) stage_num_1 (
+	.in_1(in_enable),
+	.in_2(pin_in_of_dly_stage[0]),
+	.in_ctrl(in_ctrl[N_LOADS_PER_STAGE-1:0]),
+	.out(pin_in_of_dly_stage[1])
+	);
+
+//Further stages are INV
+genvar cc;
+generate
+for ( cc = 1 ; cc < N_DELAY_STAGE ; cc = cc + 1 ) begin
+inv_logic_n9 #(.N_LOADS_PER_STAGE(N_LOADS_PER_STAGE)) delaying_stage (
+	.in(pin_in_of_dly_stage[cc]),
+	.in_ctrl(in_ctrl[(N_LOADS_PER_STAGE*cc)+(N_LOADS_PER_STAGE-1):N_LOADS_PER_STAGE*cc]),
+	.out(pin_in_of_dly_stage[cc+1])
+	);
+end
+endgenerate
+
+ //Feedback of the ring oscillator
+assign pin_in_of_dly_stage[0] = pin_in_of_dly_stage[N_DELAY_STAGE];
+
+//Assign stage of the ring oscillator to output
+assign pre_out1 = pin_in_of_dly_stage[0];
+
+//Inverters at output of RO
+inv_logic inv_at_out_n1(
+        .in(pre_out1),
+        .out(pre_out2)
+        );
+inv_logic inv_at_out_n2(
+        .in(pre_out2),
+        .out(out)
+        );
 
 
 endmodule
@@ -6396,97 +5794,97 @@ assign ctrl_n14 [103:72] = in_param_FCE_additional_ctrl[31:0];
 assign ctrl_n15 [89 :72] = in_param_FCE_additional_ctrl[17:0];
 assign ctrl_n16 [101:72] = in_param_FCE_additional_ctrl[29:0];
 
-ring_oscillator_top_n1 ring_oscillator_top_n1 (   //3*24=72
+ring_oscillator_top_n1 #(.N_DELAY_STAGE(3), .N_LOADS_PER_STAGE(24)) ring_oscillator_top_n1 (   //3*24=72
         .in_enable(in_param_enable_n1),
         .in_ctrl(ctrl_n1),
         .out(ro_out_n1)
         );
 
-ring_oscillator_top_n2 ring_oscillator_top_n2 (   //3*24=72
+ring_oscillator_top_n2 #(.N_DELAY_STAGE(3), .N_LOADS_PER_STAGE(24)) ring_oscillator_top_n2 (   //3*24=72
         .in_enable(in_param_enable_n2),
         .in_ctrl(ctrl_n2),
         .out(ro_out_n2)
         );
 
-ring_oscillator_top_n3 ring_oscillator_top_n3 (  //3*30=90
+ring_oscillator_top_n3 #(.N_DELAY_STAGE(3), .N_LOADS_PER_STAGE(30)) ring_oscillator_top_n3 (  //3*30=90
         .in_enable(in_param_enable_n3),
         .in_ctrl(ctrl_n3),
         .out(ro_out_n3)
         );
 
-ring_oscillator_top_n4 ring_oscillator_top_n4 (  //3*32=96
+ring_oscillator_top_n4 #(.N_DELAY_STAGE(3), .N_LOADS_PER_STAGE(32)) ring_oscillator_top_n4 (  //3*32=96
         .in_enable(in_param_enable_n4),
         .in_ctrl(ctrl_n4),
         .out(ro_out_n4)
         );
 
-ring_oscillator_top_n5 ring_oscillator_top_n5 (  //3*36=108
+ring_oscillator_top_n5 #(.N_DELAY_STAGE(3), .N_LOADS_PER_STAGE(36)) ring_oscillator_top_n5 (  //3*36=108
         .in_enable(in_param_enable_n5),
         .in_ctrl(ctrl_n5),
         .out(ro_out_n5)
         );
 
-ring_oscillator_top_n6 ring_oscillator_top_n6 (  //5*15=75
+ring_oscillator_top_n6 #(.N_DELAY_STAGE(5), .N_LOADS_PER_STAGE(15)) ring_oscillator_top_n6 (  //5*15=75
         .in_enable(in_param_enable_n6),
         .in_ctrl(ctrl_n6),
         .out(ro_out_n6)
         );
 	
-ring_oscillator_top_n7 ring_oscillator_top_n7 (  //5*21=105
+ring_oscillator_top_n7 #(.N_DELAY_STAGE(5), .N_LOADS_PER_STAGE(21)) ring_oscillator_top_n7 (  //5*21=105
         .in_enable(in_param_enable_n7),
         .in_ctrl(ctrl_n7),
         .out(ro_out_n7)
         );
 
-ring_oscillator_top_n8 ring_oscillator_top_n8 (  //7*11=77
+ring_oscillator_top_n8 #(.N_DELAY_STAGE(7), .N_LOADS_PER_STAGE(11)) ring_oscillator_top_n8 (  //7*11=77
         .in_enable(in_param_enable_n8),
         .in_ctrl(ctrl_n8),
         .out(ro_out_n8)
         );
 
-ring_oscillator_top_n9 ring_oscillator_top_n9 (  //7*15=105
+ring_oscillator_top_n9 #(.N_DELAY_STAGE(7), .N_LOADS_PER_STAGE(15)) ring_oscillator_top_n9 (  //7*15=105
         .in_enable(in_param_enable_n9),
         .in_ctrl(ctrl_n9),
         .out(ro_out_n9)
         );
 
-ring_oscillator_top_n10 ring_oscillator_top_n10 (  //9*8=72
+ring_oscillator_top_n10 #(.N_DELAY_STAGE(9), .N_LOADS_PER_STAGE(8)) ring_oscillator_top_n10 (  //9*8=72
         .in_enable(in_param_enable_n10),
         .in_ctrl(ctrl_n10),
         .out(ro_out_n10)
         );
 
-ring_oscillator_top_n11 ring_oscillator_top_n11 (  //9*12=108
+ring_oscillator_top_n11 #(.N_DELAY_STAGE(9), .N_LOADS_PER_STAGE(12)) ring_oscillator_top_n11 (  //9*12=108
         .in_enable(in_param_enable_n11),
         .in_ctrl(ctrl_n11),
         .out(ro_out_n11)
         );
 
-ring_oscillator_top_n12 ring_oscillator_top_n12 (  //11*7=77
+ring_oscillator_top_n12 #(.N_DELAY_STAGE(11), .N_LOADS_PER_STAGE(7)) ring_oscillator_top_n12 (  //11*7=77
         .in_enable(in_param_enable_n12),
         .in_ctrl(ctrl_n12),
         .out(ro_out_n12)
         );
 
-ring_oscillator_top_n13 ring_oscillator_top_n13 (  //11*9=99
+ring_oscillator_top_n13 #(.N_DELAY_STAGE(11), .N_LOADS_PER_STAGE(9)) ring_oscillator_top_n13 (  //11*9=99
         .in_enable(in_param_enable_n13),
         .in_ctrl(ctrl_n13),
         .out(ro_out_n13)
         );
 
-ring_oscillator_top_n14 ring_oscillator_top_n14 (  //13*8=104
+ring_oscillator_top_n14 #(.N_DELAY_STAGE(13), .N_LOADS_PER_STAGE(8)) ring_oscillator_top_n14 (  //13*8=104
         .in_enable(in_param_enable_n14),
         .in_ctrl(ctrl_n14),
         .out(ro_out_n14)
         );
 
-ring_oscillator_top_n15 ring_oscillator_top_n15 (  //15*6=90
+ring_oscillator_top_n15 #(.N_DELAY_STAGE(15), .N_LOADS_PER_STAGE(6)) ring_oscillator_top_n15 (  //15*6=90
         .in_enable(in_param_enable_n15),
         .in_ctrl(ctrl_n15),
         .out(ro_out_n15)
         );
 
-ring_oscillator_top_n16 ring_oscillator_top_n16 (  //17*6=102
+ring_oscillator_top_n16 #(.N_DELAY_STAGE(17), .N_LOADS_PER_STAGE(6)) ring_oscillator_top_n16 (  //17*6=102
         .in_enable(in_param_enable_n16),
         .in_ctrl(ctrl_n16),
         .out(ro_out_n16)
