@@ -39,6 +39,7 @@ steps = \
   vcs-aprsdf \
   vcs-aprsdfx-build \
   vcs-aprsdfx \
+  mosis \
 
 # Step dependency graph
 
@@ -89,4 +90,8 @@ dependencies.calibre-fill        = calibre-seal
 dependencies.calibre-drc-filled  = calibre-fill
 
 dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
+
+# MOSIS handoff
+
+dependencies.mosis               = calibre-fill
 
