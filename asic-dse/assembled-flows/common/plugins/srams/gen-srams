@@ -1,0 +1,374 @@
+#!/bin/env python
+#=========================================================================
+# Generate ARM SRAMs with different views
+#=========================================================================
+#
+# Depending on the filename, we invoke the correct compiler and produce
+# the correct results. If some post-processing is needed, the script will
+# takecare of it.
+#
+#   Author: Khalid Al-Hawaj
+#   Date  : May 13, 2018
+#
+
+# General imports
+import os
+import sys
+import argparse
+import re
+import subprocess
+import random
+import glob
+
+# Scripts constants
+script_dir = os.path.dirname(os.path.realpath(__file__))
+cwd        = os.getcwd()
+
+# Database for view <-> view translation
+
+view_translate = {
+  'verilog': 'verilog',
+  'v'      : 'verilog',
+  'lef'    : 'lef-fp' ,
+  'lib'    : 'liberty',
+  'liberty': 'liberty',
+  'db'     : 'db'     ,
+}
+
+#-------------------------------------------------------------------------
+# Command line processing
+#-------------------------------------------------------------------------
+
+class ArgumentParserWithCustomError(argparse.ArgumentParser):
+  def error( self, msg = "" ):
+    if ( msg ): print("\n ERROR: %s" % msg)
+    print("")
+    file = open( sys.argv[0] )
+    for ( lineno, line ) in enumerate( file ):
+      if ( line[0] != '#' ): sys.exit(msg != "")
+      if ( (lineno == 2) or (lineno >= 4) ): print( line[1:].rstrip("\n") )
+
+def parse_cmdline():
+  p = ArgumentParserWithCustomError( add_help=False )
+
+  # Standard command line arguments
+
+  p.add_argument( "-h", "--help",    action="store_true" )
+
+  # Additional commane line arguments for the simulator
+
+  p.add_argument( "-g", "--view", default = "verilog",
+                                  action  = "store"  )
+
+  p.add_argument( "-o", "--output", default = "."     ,
+                                    action  = "store" )
+
+  p.add_argument( "specs_filename" )
+
+  opts = p.parse_args()
+  if opts.help: p.error()
+  return opts
+
+#-------------------------------------------------------------------------
+# Subshell stuff
+#-------------------------------------------------------------------------
+
+def subshell( cmd ):
+
+  # get shell's enviornment
+  env = {}
+  env.update(os.environ)
+
+  process        = subprocess.Popen( cmd                     ,
+                                     stdin  = subprocess.PIPE,
+                                     stdout = subprocess.PIPE,
+                                     stderr = subprocess.PIPE,
+                                     shell  = True           ,
+                                     env    = env            )
+
+  stdout, stderr = process.communicate()
+  status         = process.returncode
+
+  del process
+
+  return stdout, stderr, status
+
+def gen_temp_dir( path = cwd ):
+
+  dir_name = None
+
+  while not dir_name:
+    tmp_name = 'tmp_{}'.format(random.randint(0, 1000))
+    tmp_dir  = os.path.join(cwd, tmp_name)
+    _,_,status = subshell( 'mkdir {}'.format(tmp_dir))
+    if status == 0:
+      dir_name = tmp_dir
+
+  return dir_name
+
+#-------------------------------------------------------------------------
+# Helper methods
+#-------------------------------------------------------------------------
+
+def get_function( name ):
+
+  if name in globals():
+    return globals()[name]
+
+  return None
+
+def get_executable( filename ):
+
+  if filename == None: return None
+
+  stdout, stderr, status = subshell('which {}'.format(filename))
+
+  if status == 0:
+    return filename
+
+  return None
+
+def get_memory_compiler( filename, dry_run=False ):
+
+  # The input filename will be of the following format:
+  #   {configuration}.{mem_compiler}.specs
+  re_matcher = re.compile('([^\.]+)\.([^\.]+).spec')
+
+  mem_compiler_exe = None
+  if len( re_matcher.match( filename ).groups() ) == 2:
+    mem_compiler_exe = re_matcher.match( filename ).groups()[1]
+
+  if not dry_run:
+    # Check if the compiler exists
+    return get_executable( mem_compiler_exe )
+  else:
+    return mem_compiler_exe
+
+def get_module_name( filename ):
+
+  # The input filename will be of the following format:
+  #   {module_name}.{view}
+  re_matcher = re.compile('([^\.]+)\.([^\.]+)')
+
+  mod_name = None
+  if len( re_matcher.match( filename ).groups() ) == 2:
+    mod_name = re_matcher.match( filename ).groups()[0]
+
+  return mod_name
+
+#-------------------------------------------------------------------------
+# Main Generation Routine
+#-------------------------------------------------------------------------
+
+#=================================================
+# General generation routine
+#=================================================
+
+def gen_view( mem_compiler, view, specs_path ):
+
+  # Construct a commandline
+
+  cmd = '{} {} -spec {}'.format( mem_compiler, view, specs_path )
+
+  # Execute the mem_compiler
+
+  stdout, stderr, status = subshell( cmd )
+
+  return status == 0
+
+#=================================================
+# DB stuff ...
+#=================================================
+
+def pre_db( mem_compiler, specs_path ):
+
+  # Get correct view for lib
+
+  view_ = view_translate['lib']
+
+  # Create a lib view needed to generate a db
+
+  gen_view( mem_compiler, view_, specs_path )
+
+def gen_db( mem_compiler, specs_path ):
+
+  # Create a lib for the DB view
+  # We basically read the every DB file in the
+  # current directory and generate a corresponding
+  # db file using LC
+
+  # Get current directory
+  _tmp_cwd   = os.getcwd()
+  target_exp = os.path.join(_tmp_cwd, '*.lib')
+
+  targets = glob.glob(target_exp)
+
+  for target in targets:
+
+    target_filename = os.path.basename( target )
+    mod_name = get_module_name( target_filename )
+
+    if mod_name != None:
+
+      in_ = mod_name + '.lib'
+      out = mod_name + '.db'
+      mod = mod_name
+
+      cmd = """lc_shell -x "read_lib  {};
+                            write_lib -output {} -format db {};
+                            exit" -no_log
+            """.format(in_, out, mod)
+
+      subshell( cmd )
+
+def post_db( mem_compiler, specs_path ):
+
+  # Clean-up
+
+  # Get current directory
+  _tmp_cwd   = os.getcwd()
+  target_exp = os.path.join(_tmp_cwd, '*.lib')
+
+  targets = glob.glob(target_exp)
+
+  for target in targets:
+    os.remove(target)
+
+#-------------------------------------------------------------------------
+# Main routine
+#-------------------------------------------------------------------------
+
+def main_script():
+
+  # Parse arguments
+
+  opts = parse_cmdline()
+
+  # Get parameters
+
+  specs_filename = opts.specs_filename
+  out_dir        = opts.output
+  view           = opts.view
+
+  # Get absolute directories
+
+  out_dir   =                  os.path.realpath(     out_dir    )
+  specs_dir = os.path.dirname( os.path.realpath( specs_filename ) )
+
+  specs_path = os.path.join( specs_dir, specs_filename )
+
+  # Deduce the memory compiler
+
+  mem_compiler = get_memory_compiler( specs_filename )
+
+  # check if valid memory compiler
+
+  if not mem_compiler:
+    mem_compiler = get_memory_compiler( specs_filename, True )
+
+    if mem_compiler:
+      print ''
+      print '  ERROR: cannot find memory compiler {}.'.format( mem_compiler )
+      print ''
+
+    else:
+      print ''
+      print '  ERROR: invalid format for specs file {}.'.format( specs_filename )
+      print ''
+
+    # Exit
+    exit(-1)
+
+  # Check if valid view
+
+  if not view in view_translate:
+
+    print ''
+    print '  ERROR: Undefined view {}'.format( view )
+    print ''
+
+    exit(-1)
+
+  # Check if output directory exists
+
+  if not os.path.isdir( out_dir ):
+
+    print ''
+    print '  ERROR: Output directory {} does not exist.'.format( out_dir )
+    print ''
+
+    exit(-1)
+
+  # For every view, we might want to do three things:
+  #   1.  pre_view
+  #   2.      view
+  #   3. post_view
+
+  attr_preview  = 'pre_{}' .format(view)
+  attr_view     = 'gen_{}' .format(view)
+  attr_postview = 'post_{}'.format(view)
+
+  func_preview  = get_function( attr_preview  )
+  func_view     = get_function( attr_view     )
+  func_postview = get_function( attr_postview )
+
+  # Create a temp working directory
+
+  wd = gen_temp_dir( cwd )
+
+  # Print configuration
+
+  print ''
+  print '#==========================#'
+  print '# Memory Generator Wrapper #'
+  print '#==========================#'
+  print ''
+  print 'Configuration:'
+  print '  Specs file   = {}'.format(specs_filename)
+  print '  Specs path   = {}'.format(specs_dir     )
+  print '  Specs        = {}'.format(specs_path    )
+  print '  Mem compiler = {}'.format(mem_compiler  )
+  print '  View         = {}'.format(view          )
+  print '  Output dir   = {}'.format(out_dir       )
+  print '  Work dir     = {}'.format(wd            )
+  print ''
+
+  # Switch to working directoyr
+
+  os.chdir( wd )
+
+  # Translate view
+
+  view = view_translate[ view ]
+
+  # Call any step that exist
+
+  if func_preview  : func_preview( mem_compiler, specs_path )
+
+  # For the core functionality, if no function exists, we call default
+
+  if   func_view   : func_view ( mem_compiler,       specs_path )
+  else             : gen_view  ( mem_compiler, view, specs_path )
+
+  # Last but not least
+
+  if func_postview : func_postview( mem_compiler, specs_path )
+
+  # Move output files
+
+  subshell( 'mv * {}/'.format( out_dir ) )
+
+  # Move to original directory
+
+  os.chdir( cwd )
+
+  # delete temp directory
+
+  subshell( 'rm -rf {}'.format( wd ) )
+
+#-------------------------------------------------------------------------
+# Be proper Python developers ... *sips Frappuccino*
+#-------------------------------------------------------------------------
+
+if __name__ == '__main__':
+  main_script()
