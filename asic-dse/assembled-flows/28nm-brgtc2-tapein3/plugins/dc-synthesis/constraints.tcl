@@ -32,12 +32,14 @@ set_clock_uncertainty $core_clk_uncertainty [get_clocks $core_clk_name]
 # Make all signals in the design meet good slew.
 #
 # The lib delay tables for the ARM 28nm standard cells seem to show
-# about 300-400ps slew when driving the largest load the cell was
+# about 300-400ps slew when driving the _largest_ load the cell was
 # characterized for (e.g., DFFQ_X1M_A9PP140TS_C30, INV_X11B_A9PP140TS_C30,
-# INV_X4B_A9PP140TS_C30). So 300ps max transition seems like a good target
-# to aim for across the design.
+# INV_X4B_A9PP140TS_C30). A bad slew is more like 150ps. Middle of the
+# table is ~20ps.
+#
+# General rule of thumb for max transition is 20% of the clock period.
 
-set_max_transition 0.3 ${DESIGN_NAME}
+set_max_transition 0.15 ${DESIGN_NAME}
 
 #-------------------------------------------------------------------------
 # Inputs
@@ -73,7 +75,7 @@ set_false_path -to [all_outputs]
 
 set reset_port reset_io
 
-set reset_percent 70
+set reset_percent 75
 set reset_input_delay [expr ((100-$reset_percent) * $core_clk_period) / 100.0]
 
 set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
