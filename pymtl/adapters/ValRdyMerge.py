@@ -10,7 +10,10 @@
 from pymtl             import *
 from pclib.ifcs        import InValRdyBundle, OutValRdyBundle
 from pclib.rtl         import RoundRobinArbiter
-from pclib.rtl.onehot  import Mux as OneHotMux
+
+# Custom BRGTC2 mux without inferred latch
+
+from rtl.onehot        import Mux as OneHotMux
 
 class ValRdyMerge( Model ):
 

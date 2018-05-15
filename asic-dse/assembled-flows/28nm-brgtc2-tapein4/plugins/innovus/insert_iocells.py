@@ -87,7 +87,7 @@ mappings = {
     'east_iocell_4'   :            'reset_iocell', # Input
     'east_iocell_3'   :   'vdd_poc_east_0_iocell', # ------- Power (IO) (POC)
     'east_iocell_2'   :    'vss_dummy_h_8_iocell', # Dummy
-    'east_iocell_1'   :    'vss_dummy_h_7_iocell', # Dummy
+    'east_iocell_1'   :          'clk_out_iocell', # Output
     'east_iocell_0'   :    'vss_io_east_0_iocell', # ------- Ground (IO)
 
     # South side, left to right
@@ -96,7 +96,7 @@ mappings = {
     'south_iocell_1'  :              'clk_iocell', # Clock
     'south_iocell_2'  : 'vss_core_south_0_iocell', # ------- Ground (core)
     'south_iocell_3'  : 'vdd_core_south_0_iocell', # ------- Power (core)
-    'south_iocell_4'  :    'vss_dummy_v_0_iocell', # Dummy
+    'south_iocell_4'  :          'clk_sel_iocell', # Input
     'south_iocell_5'  :        'in__msg_0_iocell', # Input
     'south_iocell_6'  :        'in__msg_1_iocell', # Input
     'south_iocell_7'  :        'in__msg_2_iocell', # Input

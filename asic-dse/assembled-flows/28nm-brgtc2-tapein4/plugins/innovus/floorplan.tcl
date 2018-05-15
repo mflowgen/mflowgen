@@ -89,7 +89,7 @@ addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_3_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_4_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_5_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_6_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_7_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_7_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_9_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_10_iocell; # horizontal
@@ -103,7 +103,7 @@ addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_18_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_19_iocell; # horizontal
 
-addInst -physical -cell PVDD2CDE_V_G -inst  vss_dummy_v_0_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_V_G -inst  vss_dummy_v_0_iocell; # horizontal
 
 #-------------------------------------------------------------------------
 # Bond pads

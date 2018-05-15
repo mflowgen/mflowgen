@@ -9,7 +9,7 @@ module brgtc2_chip
   input  wire [ 7:0] in__msg_io,
   output wire [ 0:0] out_req_io,
   input  wire [ 0:0] out_ack_io,
-  output wire [ 7:0] out_msg_io,
+  output wire [ 7:0] out_msg_io
 //  output wire [ 0:0] observe_io,
 //  input  wire [ 0:0] pll_clk_ref_io,
 //  input  wire [ 0:0] pll_scn_clk_io,
@@ -96,18 +96,18 @@ module brgtc2_chip
     .ST1 (1'b0)           \
   );
 
-  wire [   0:0] clk_ext; // input
-  wire [   0:0] clk_sel; // input
-  wire [   0:0] clk_out; // output
-  wire [   0:0] reset;   // input
-  wire [   0:0] in__req; // input
-  wire [   0:0] in__ack; // output
-  wire [   7:0] in__msg; // input
-  wire [   0:0] out_req; // output
-  wire [   0:0] out_ack; // input
-  wire [   7:0] out_msg; // output
+  wire [   0:0] clk_ext;   // input
+  wire [   0:0] clk_sel;   // input
+  wire [   0:0] clk_out;   // output
+  wire [   0:0] reset_ext; // input
+  wire [   0:0] in__req;   // input
+  wire [   0:0] in__ack;   // output
+  wire [   7:0] in__msg;   // input
+  wire [   0:0] out_req;   // output
+  wire [   0:0] out_ack;   // input
+  wire [   7:0] out_msg;   // output
 
-//  wire [   0:0] observe; // output
+//  wire [   0:0] observe;   // output
 
   wire [   0:0] pll_clk_ref;     // input
   wire [   0:0] pll_scn_clk;     // input
@@ -187,6 +187,7 @@ module brgtc2_chip
   // balanced drive strength. The INV_X16B is a balanced inverter.
 
   wire clk;
+  wire clk_mux_out;
 
   MXIT2_X2M_A9PP140TS_C30 clk_mux
   (
@@ -4047,6 +4048,7 @@ module Mux_0x5c38b318cac8f45c
 
   // logic for logic()
   always @ (*) begin
+    out = 0;
     if (!sel) begin
       out = 0;
     end

@@ -73,12 +73,15 @@ set_false_path -to [all_outputs]
 # The reset input has special treatment. Give reset a set percentage of
 # the core clock cycle to propagate into the chip.
 
-set reset_port reset_io
+# Note: Reset now goes through a synchronizer and does not need any
+#       special treatment
 
-set reset_percent 75
-set reset_input_delay [expr ((100-$reset_percent) * $core_clk_period) / 100.0]
+#set reset_port reset_io
 
-set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
+#set reset_percent 75
+#set reset_input_delay [expr ((100-$reset_percent) * $core_clk_period) / 100.0]
+
+#set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
 
 #-------------------------------------------------------------------------
 # Reports
@@ -86,13 +89,13 @@ set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
 
 # Report constraints on the ports
 
-report_port -verbose -nosplit > reports/dc-synthesis/ports.constraints.rpt
-report_attribute -port        > reports/dc-synthesis/ports.attributes.rpt
+report_port -verbose -nosplit > reports/dc-synthesis/${DESIGN_NAME}.ports.constraints.rpt
+report_attribute -port        > reports/dc-synthesis/${DESIGN_NAME}.ports.attributes.rpt
 
 # Report clocks
 
-report_clock -groups -nosplit       > reports/dc-synthesis/clocks.rpt
-report_clock -groups -nosplit -skew > reports/dc-synthesis/clocks.skew.rpt
+report_clock -groups -nosplit       > reports/dc-synthesis/${DESIGN_NAME}.clocks.rpt
+report_clock -groups -nosplit -skew > reports/dc-synthesis/${DESIGN_NAME}.clocks.skew.rpt
 
 #-------------------------------------------------------------------------
 # Register retiming
