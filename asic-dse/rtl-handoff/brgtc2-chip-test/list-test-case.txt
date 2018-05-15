@@ -1,0 +1,8 @@
+test_add[basic]
+test_add[dest_dep]
+test_add[src0_dep]
+test_add[src1_dep]
+test_add[srcs_dep]
+test_mdu_isolation[direct_mul]
+test_mdu_isolation[direct_mulh]
+test_mdu_isolation[direct_mulhsu]

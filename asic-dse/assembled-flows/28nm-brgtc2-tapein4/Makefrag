@@ -43,8 +43,8 @@ design_v           = rtl-handoff/brgtc2-chip.v
 # For simulation
 
 pytest_target_str  = ../pymtl/CompChansey/test/Chansey_test*
-testing_files      = rtl-handoff/Chansey-test/Chansey_tb.v
-testing_files     += rtl-handoff/HostChansey.swshim.v
+testing_files      = rtl-handoff/brgtc2-chip-test/Chansey_tb.v
+testing_files     += rtl-handoff/brgtc2-chip.swshim.v
 
 #-------------------------------------------------------------------------
 # Export
