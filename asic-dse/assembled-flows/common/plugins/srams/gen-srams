@@ -27,12 +27,23 @@ cwd        = os.getcwd()
 # Database for view <-> view translation
 
 view_translate = {
+
   'verilog': 'verilog',
   'v'      : 'verilog',
+
   'lef'    : 'lef-fp' ,
+  'lef-fp' : 'lef-fp' ,
+
   'lib'    : 'liberty',
   'liberty': 'liberty',
+
   'db'     : 'db'     ,
+
+  'gds'    : 'gds2'   ,
+  'gds2'   : 'gds2'   ,
+
+  'cdl'    : 'lvs'    ,
+  'lvs'    : 'lvs'    ,
 }
 
 #-------------------------------------------------------------------------
@@ -135,7 +146,8 @@ def get_memory_compiler( filename, dry_run=False ):
   re_matcher = re.compile('([^\.]+)\.([^\.]+).spec')
 
   mem_compiler_exe = None
-  if len( re_matcher.match( filename ).groups() ) == 2:
+  matcher = re_matcher.match( filename )
+  if matcher and len( matcher.groups() ) == 2:
     mem_compiler_exe = re_matcher.match( filename ).groups()[1]
 
   if not dry_run:
@@ -246,16 +258,21 @@ def main_script():
 
   # Get parameters
 
+  # FIXME: Handle wildcard for specs
+
   specs_filename = opts.specs_filename
   out_dir        = opts.output
   view           = opts.view
 
   # Get absolute directories
 
-  out_dir   =                  os.path.realpath(     out_dir    )
-  specs_dir = os.path.dirname( os.path.realpath( specs_filename ) )
+  out_dir    =                  os.path.realpath(     out_dir    )
+  specs_dir  = os.path.dirname( os.path.realpath( specs_filename ) )
 
-  specs_path = os.path.join( specs_dir, specs_filename )
+  # Generate aboslute values
+
+  specs_filename = os.path.basename( os.path.realpath( specs_filename ) )
+  specs_path     = os.path.join( specs_dir, specs_filename )
 
   # Deduce the memory compiler
 
