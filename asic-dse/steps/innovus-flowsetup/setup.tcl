@@ -77,9 +77,8 @@ set vars(library_sets)        "libs_typical libs_bc libs_wc"
 set vars(libs_typical,timing) [join "
                                 $adk_dir/stdcells.lib
                                 $adk_dir/iocells.lib
-                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*tt*.lib]
                               "]
-#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*tt*.lib]
 
 # The best case is:
 #
@@ -90,9 +89,8 @@ set vars(libs_typical,timing) [join "
 set vars(libs_bc,timing)      [join "
                                 $adk_dir/stdcells-bc.lib
                                 $adk_dir/iocells-bc.lib
-                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ff*.lib]
                               "]
-#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ff*.lib]
 
 # The worst case is:
 #
@@ -103,9 +101,8 @@ set vars(libs_bc,timing)      [join "
 set vars(libs_wc,timing)      [join "
                                 $adk_dir/stdcells-wc.lib
                                 $adk_dir/iocells-wc.lib
-                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lib]
+                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ss*.lib]
                               "]
-#                                [glob -nocomplain $::env(innovus_ff_collect_dir)/*ss*.lib]
 
 set vars(lef_files) [join "
                       $adk_dir/rtk-tech.lef
