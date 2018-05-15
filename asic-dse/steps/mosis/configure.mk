@@ -51,7 +51,7 @@ $(mosis_output_gds_gz): $(dependencies.mosis)
 	@echo
 	@echo "Compressing GDS..."
 	@echo
-	@gzip -v $(mosis_output_gds)
+	@gzip -vf $(mosis_output_gds)
 
 skipvpath.mosis = yes
 

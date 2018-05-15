@@ -83,6 +83,7 @@ define commands.calibre-fill
 		-in $(calibre_fill_fill_gds) \
 		-out $(calibre_fill_output_gds) \
 	) > $(logs_dir.calibre-fill)/fill-merge.log 2>&1
+	@cat $(logs_dir.calibre-fill)/fill-merge.log
 endef
 
 #-------------------------------------------------------------------------

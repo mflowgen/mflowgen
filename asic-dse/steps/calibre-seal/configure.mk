@@ -61,6 +61,7 @@ define commands.calibre-seal
 		-topcell $(design_name) \
 		-out $(unsealed_gds) \
 	) > $(logs_dir.calibre-seal)/merge-unsealed.log 2>&1
+	@cat $(logs_dir.calibre-seal)/merge-unsealed.log
 
 # Seal the design by merging with the sealring gds
 
@@ -71,6 +72,7 @@ define commands.calibre-seal
 		-createtop top \
 		-out $(sealed_gds) \
 	) > $(logs_dir.calibre-seal)/merge-sealed.log 2>&1
+	@cat $(logs_dir.calibre-seal)/merge-sealed.log
 
 endef
 
