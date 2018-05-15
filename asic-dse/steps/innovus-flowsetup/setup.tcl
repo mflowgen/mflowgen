@@ -371,6 +371,11 @@ set vars(clock_gate_aware) true
 set vars(postroute_spread_wires)       true
 set vars(litho_driven_routing)         true
 
+# OCV (on-chip variation)
+
+set vars(enable_ocv)  pre_postcts
+set vars(enable_cppr) both
+
 # Metal fill is performed using the Calibre fill utility
 # Disabling metal density check at signoff
 
@@ -380,13 +385,17 @@ set vars(signoff,verify_metal_density,skip) true
 
 set vars(local_cpus) 16
 
-# Flow control
+# Hold fixing
 #
 # - Controls when hold optimization is enabled
 # - (false | postcts | postroute | postroute_si)
+#
+# - Allow TNS degradation to try to prevent postroute from fixing hold,
+#   and then fixing setup again, creating additional (unfixed) hold
+#   violations
 
 set vars(fix_hold)                       postcts
-set vars(fix_hold_allow_tns_degradation) false
+set vars(fix_hold_allow_tns_degradation) true
 
 # Flow efforts
 

@@ -9,5 +9,5 @@ setOptMode -usefulSkewPostRoute true
 # postroute extraction compared with signoff extraction
 
 setOptMode -holdTargetSlack  0.020
-setOptMode -setupTargetSlack 0.020
+setOptMode -setupTargetSlack 0.010
 
