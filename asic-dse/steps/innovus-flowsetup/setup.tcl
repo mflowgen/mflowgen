@@ -386,7 +386,7 @@ set vars(local_cpus) 16
 # - (false | postcts | postroute | postroute_si)
 
 set vars(fix_hold)                       postcts
-set vars(fix_hold_allow_tns_degradation) true
+set vars(fix_hold_allow_tns_degradation) false
 
 # Flow efforts
 
