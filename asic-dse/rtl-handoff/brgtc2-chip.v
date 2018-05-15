@@ -1,3 +1,26 @@
+//----------------------------------------------------------------------
+// Reset synchronizer
+//----------------------------------------------------------------------
+
+module ResetSynchronizer
+(
+  input  wire clk,
+  input  wire reset_ext,
+  output  reg reset_synced
+);
+
+  reg reset_int;
+
+  always @ (posedge clk) begin
+    reset_int    <= reset_ext;
+    reset_synced <= reset_int;
+  end
+endmodule
+
+//----------------------------------------------------------------------
+// brgtc2_chip
+//----------------------------------------------------------------------
+
 module brgtc2_chip
 (
   input  wire [ 0:0] clk_io,
@@ -199,8 +222,8 @@ module brgtc2_chip
   );
 
   INV_X16B_A9PP140TS_C30 clk_inv (
-    .A(clk_mux_out),
-    .Y(clk)
+    .A (clk_mux_out),
+    .Y (clk)
   );
 
   assign clk_out = clk;
@@ -209,13 +232,13 @@ module brgtc2_chip
   // Reset synchronizer
   //----------------------------------------------------------------------
 
-  reg reset_sync;
-  reg reset;
+  wire reset;
 
-  always @ (posedge clk) begin
-    reset_sync <= reset_ext;
-    reset      <= reset_sync;
-  end
+  ResetSynchronizer reset_synchronizer (
+    .clk          (clk),
+    .reset_ext    (reset_ext),
+    .reset_synced (reset)
+  );
 
   //----------------------------------------------------------------------
   // Design
