@@ -4118,8 +4118,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n1 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4217,8 +4217,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n10 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4316,8 +4316,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n11 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4415,8 +4415,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n12 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4514,8 +4514,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n13 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4613,8 +4613,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n14 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4712,8 +4712,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n15 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4811,8 +4811,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n16 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -4910,8 +4910,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n2 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5009,8 +5009,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n3 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5108,8 +5108,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n4 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5207,8 +5207,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n5 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5306,8 +5306,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n6 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5405,8 +5405,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n7 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5504,8 +5504,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n8 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
@@ -5603,8 +5603,8 @@ endgenerate
 endmodule
 
 module ring_oscillator_top_n9 #(parameter N_DELAY_STAGE = 3, parameter N_LOADS_PER_STAGE = 24)(
-input	in_enable;
-input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl;
+input	in_enable,
+input	[N_LOADS_PER_STAGE*(N_DELAY_STAGE)-1:0] in_ctrl,
 output	out );
 
 
