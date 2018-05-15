@@ -346,5 +346,30 @@ addStripe -nets {VDD VSS} -layer M9 -direction vertical \
     -max_same_layer_jog_length $M9_str_pitch            \
     -padcore_ring_bottom_layer_limit M8                 \
     -padcore_ring_top_layer_limit M9                    \
-    -start [expr $M9_str_pitch/2]
+    -start [expr $M9_str_pitch/4]
+
+#-------------------------------------------------------------------------
+# SRAM routing halos
+#-------------------------------------------------------------------------
+# Encourage signal router to access block pins with planar access instead
+# of by dropping vias from above. Dropping vias tends to cause DRC
+# violations when vias do not drop cleanly or if they create metal shapes
+# inside the LEF block pin cutout that are too close to other metal shapes
+# inside the block but invisible to Innovus.
+
+addRoutingHalo -inst $mem_macro_paths \
+               -space   1 \
+               -bottom M1 \
+               -top    M4
+
+set i 0
+
+foreach block $mem_macro_paths {
+  createRouteBlk -inst $block \
+                 -cover \
+                 -layer M4 \
+                 -name sram_routeblk_$i
+  incr i
+}
+
 

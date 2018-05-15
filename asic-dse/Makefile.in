@@ -349,12 +349,15 @@ all: $(dependencies.all)
 # clean
 #
 # Try to prefix with "./" to avoid calling "rm -rf /" due to unresolved
-# variables
+# variables. Also remove directories starting with "s.", which is a
+# namespace for useful shortcut directories that the user wants quick
+# access to.
 
 .PHONY: clean
 
 clean:
 	rm -rf $(foreach x, $(junk),./$x)
+	rm -rf ./s.*
 
 # print.%
 #

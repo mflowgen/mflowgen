@@ -115,14 +115,8 @@ set core_ury [expr $die_height - $seal_ring_len - $io_len - $core_margin_len]
 
 # Memory macro variables
 
-set mem_macros  [dbGet top.insts.cell.name sram* -p2]
+set mem_macros      [dbGet top.insts.cell.name sram* -p2]
+set mem_macro_paths [dbGet [dbGet top.insts.cell.name sram* -p2].name]
 
 set sram_margin [expr $r_pitch * 1]; # Halo margin around each SRAM
-
-
-# DFM-related
-
-#set vars(multi_cut_effort)                         high
-#set vars(litho_driven_routing)                     TRUE
-#set vars(postroute_spread_wires)                   TRUE
 
