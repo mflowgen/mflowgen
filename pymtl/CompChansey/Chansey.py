@@ -123,10 +123,10 @@ class Chansey( Model ):
 
     # Shared FPU
 
-    #s.fpu         = DesignWareFloatingPointUnit()
+    s.fpu         = DesignWareFloatingPointUnit()
 
-    #s.net_fpureq  = Funnel( num_cores, FpuReqMsg() )
-    #s.net_fpuresp = Router( num_cores, FpuRespMsg() )
+    s.net_fpureq  = Funnel( num_cores, FpuReqMsg() )
+    s.net_fpuresp = Router( num_cores, FpuRespMsg() )
 
     # Control Register
 
@@ -281,17 +281,17 @@ class Chansey( Model ):
 
     # FPU connections
 
-    #for i in xrange( num_cores ):
-    #  # proc -> net_fpureq
-    #  s.connect( s.proc[i].fpureq,  s.net_fpureq.in_[i] )
+    for i in xrange( num_cores ):
+      # proc -> net_fpureq
+      s.connect( s.proc[i].fpureq,  s.net_fpureq.in_[i] )
 
-    #  # net_fpuresp -> proc
-    #  s.connect( s.net_fpuresp.out[i], s.proc[i].fpuresp )
+      # net_fpuresp -> proc
+      s.connect( s.net_fpuresp.out[i], s.proc[i].fpuresp )
 
-    #s.connect_pairs(
-    #  s.net_fpureq.out,  s.fpu.req,
-    #  s.net_fpuresp.in_, s.fpu.resp,
-    #)
+    s.connect_pairs(
+      s.net_fpureq.out,  s.fpu.req,
+      s.net_fpuresp.in_, s.fpu.resp,
+    )
 
     # Turn off host_en signals in the adapters
 
