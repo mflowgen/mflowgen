@@ -95,11 +95,21 @@ define_design_lib WORK -path ${RESULTS}/WORK
 
 # Analyze the RTL source files
 
-if { ![analyze -format sverilog ${RTL_SOURCE_FILES}] } {
-  exit 1
+# Source the read design plugin if it exists
+
+if {[file exists [which ${read_design_plugin}]]} {
+  puts "Info: Sourcing the read design plugin [which ${read_design_plugin}]\n"
+  source -echo -verbose ${read_design_plugin}
+} else {
+
+  # If no read design plugin exists, then do a default read
+
+  if { ![analyze -format sverilog ${RTL_SOURCE_FILES}] } {
+    exit 1
+  }
+  elaborate ${DESIGN_NAME}
 }
 
-elaborate ${DESIGN_NAME}
 current_design ${DESIGN_NAME}
 link
 

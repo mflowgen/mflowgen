@@ -38,6 +38,8 @@ set DCRM_CONSTRAINTS_INPUT_FILE ${dc_plugins_dir}/constraints.tcl
 set pre_synthesis_plugin        ${dc_plugins_dir}/pre_synth.tcl
 set post_synthesis_plugin       ${dc_plugins_dir}/post_synth.tcl
 
+set read_design_plugin          ${dc_plugins_dir}/read_design.tcl
+
 #-------------------------------------------------------------------------
 # Interface to the ASIC design kit
 #-------------------------------------------------------------------------
