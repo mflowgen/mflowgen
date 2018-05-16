@@ -428,7 +428,7 @@ set vars(local_cpus) 16
 #   and then fixing setup again, creating additional (unfixed) hold
 #   violations
 
-set vars(fix_hold)                       true
+set vars(fix_hold)                       postcts
 set vars(fix_hold_allow_tns_degradation) true
 set vars(fix_fanout_load)                true
 
