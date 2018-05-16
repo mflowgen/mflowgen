@@ -3,7 +3,9 @@
 #=========================================================================
 # This plug-in script is called before the corresponding Innovus flow step
 
-setOptMode -usefulSkewPostRoute true
+# Enable verbose mode, which prints why hold violations were not fixed
+
+setOptMode -verbose true
 
 # Help meet hold timing.. this target slack adjusts for inaccuracies in
 # postroute extraction compared with signoff extraction
@@ -13,4 +15,6 @@ setOptMode -usefulSkewPostRoute true
 
 setOptMode -holdTargetSlack  0.005
 setOptMode -setupTargetSlack 0.000
+
+setOptMode -usefulSkewPostRoute true
 
