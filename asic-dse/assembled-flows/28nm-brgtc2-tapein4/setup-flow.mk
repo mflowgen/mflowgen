@@ -65,7 +65,7 @@ dependencies.all                 = innovus-signoff
 
 # Signoff tools
 
-dependencies.pt-signoff          = innovus-signoff
+dependencies.pt-signoff          = innovus-signoff gen-sram-db
 
 # Simulation targets are purposely kept independent so that we don't
 # accidentally re-trigger dc/innovus rebuilds when running simulation
