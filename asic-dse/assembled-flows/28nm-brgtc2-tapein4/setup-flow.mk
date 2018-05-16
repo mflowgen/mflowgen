@@ -28,6 +28,8 @@ steps = \
   calibre-fill \
   calibre-drc-filled \
   calibre-lvs \
+  calibre-lvs-sealed \
+  calibre-lvs-filled \
   sim-prep \
   vcs-common-build \
   vcs-rtl-build \
@@ -95,6 +97,8 @@ dependencies.calibre-fill        = calibre-seal
 dependencies.calibre-drc-filled  = calibre-fill
 
 dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
+dependencies.calibre-lvs-sealed  = innovus-signoff calibre-seal gen-sram-cdl
+dependencies.calibre-lvs-filled  = innovus-signoff calibre-fill gen-sram-cdl
 
 # MOSIS handoff
 

@@ -9,7 +9,6 @@
 # Don't touch the balanced clock mux built with hand-instantiated stdcells
 
 set_dont_touch clk_mux
-set_dont_touch clk_inv
 
 # Make sure that min_delay has priority. The chip will not work if this is
 # not honored.
