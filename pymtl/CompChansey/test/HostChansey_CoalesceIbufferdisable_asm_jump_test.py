@@ -1,5 +1,5 @@
 #=========================================================================
-# HostChansey_Coalesce_asm_fpu_test.py
+# HostChansey_CoalesceIbufferdisable_asm_jump_test.py
 #=========================================================================
 
 import os
@@ -7,19 +7,19 @@ import importlib
 
 import pytest
 
-from pymtl                      import *
-from fpga                       import SwShim
+from pymtl                   import *
+from fpga                    import SwShim
 
-from Chansey_harness            import asm_test
-from Chansey_harness            import TestHarness
-from Chansey_harness            import run_test as run
+from Chansey_harness         import asm_test
+from Chansey_harness         import TestHarness
+from Chansey_harness         import run_test as run
 
 # Import designs
-from CompChansey.Chansey        import Chansey
-from CompChansey.HostChansey    import HostChansey
+from CompChansey.Chansey     import Chansey
+from CompChansey.HostChansey import HostChansey
 
 # Import new run_test
-from HostChansey_Coalesce_run_test       import run_test as _run_test
+from HostChansey_CoalesceIbufferdisable_run_test    import run_test as _run_test
 
 #-------------------------------------------------------------------------
 # Import original run_test
@@ -44,7 +44,7 @@ filename = os.path.basename(__file__).rsplit('.', 1)[0]
 
 if filename.startswith('Host'): filename = filename[len('Host'):]
 
-filename = filename.replace( '_Coalesce', '' )
+filename = filename.replace( '_CoalesceIbufferdisable', '' )
 
 # Get Host filename
 module = importlib.import_module('.' + filename, __package__)

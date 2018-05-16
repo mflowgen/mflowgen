@@ -1,5 +1,5 @@
 #=========================================================================
-# HostChansey_CoalesceIbufferdisable_asm_test.py
+# HostChansey_CoalesceIbufferdisable_asm_branch_test.py
 #=========================================================================
 
 import os
