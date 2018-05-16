@@ -7,14 +7,14 @@
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.calibre-drc-filled = \
+descriptions.calibre-drc-top = \
 	"DRC for sealed and filled design"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.calibre-drc-filled
+define ascii.calibre-drc-top
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                            ____    _____     _____                            #'
@@ -32,7 +32,7 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-abbr.calibre-drc-filled = drc-filled
+abbr.calibre-drc-top = drc-top
 
 #-------------------------------------------------------------------------
 # Collect
@@ -44,7 +44,7 @@ abbr.calibre-drc-filled = drc-filled
 # constructed the collect dir, so we temporarily magically reach into the
 # correct handoff dir.
 
-calibre_drc_filled_gds = $(handoff_dir.calibre-fill)/top.gds
+calibre_drc_top_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
 
 #-------------------------------------------------------------------------
 # Variables
@@ -52,43 +52,43 @@ calibre_drc_filled_gds = $(handoff_dir.calibre-fill)/top.gds
 
 # Runset files -- the template will be populated to generate the runset
 
-calibre_drc_filled_runset_template      = $(plugins_dir)/calibre/drc-filled.runset.template
+calibre_drc_top_runset_template      = $(plugins_dir)/calibre/drc-top.runset.template
 
-calibre_drc_filled_runset_chip          = $(results_dir.calibre-drc-filled)/drc-filled-chip.runset
-calibre_drc_filled_runset_antenna       = $(results_dir.calibre-drc-filled)/drc-filled-antenna.runset
-calibre_drc_filled_runset_wirebond      = $(results_dir.calibre-drc-filled)/drc-filled-wirebond.runset
+calibre_drc_top_runset_chip          = $(results_dir.calibre-drc-top)/drc-top-chip.runset
+calibre_drc_top_runset_antenna       = $(results_dir.calibre-drc-top)/drc-top-antenna.runset
+calibre_drc_top_runset_wirebond      = $(results_dir.calibre-drc-top)/drc-top-wirebond.runset
 
 # DRC rules files
 
-calibre_drc_filled_rulesfile_chip       = $(adk_dir)/calibre-drc-chip.rule
-calibre_drc_filled_rulesfile_antenna    = $(adk_dir)/calibre-drc-antenna.rule
-calibre_drc_filled_rulesfile_wirebond   = $(adk_dir)/calibre-drc-wirebond.rule
+calibre_drc_top_rulesfile_chip       = $(adk_dir)/calibre-drc-chip.rule
+calibre_drc_top_rulesfile_antenna    = $(adk_dir)/calibre-drc-antenna.rule
+calibre_drc_top_rulesfile_wirebond   = $(adk_dir)/calibre-drc-wirebond.rule
 
 # DRC log files
 
-calibre_drc_filled_logsfile_chip        = $(logs_dir.calibre-drc-filled)/drc-chip.log
-calibre_drc_filled_logsfile_antenna     = $(logs_dir.calibre-drc-filled)/drc-antenna.log
-calibre_drc_filled_logsfile_wirebond    = $(logs_dir.calibre-drc-filled)/drc-wirebond.log
+calibre_drc_top_logsfile_chip        = $(logs_dir.calibre-drc-top)/drc-chip.log
+calibre_drc_top_logsfile_antenna     = $(logs_dir.calibre-drc-top)/drc-antenna.log
+calibre_drc_top_logsfile_wirebond    = $(logs_dir.calibre-drc-top)/drc-wirebond.log
 
 # DRC results files
 
-calibre_drc_filled_resultsfile_chip     = $(results_dir.calibre-drc-filled)/drc-chip.results
-calibre_drc_filled_resultsfile_antenna  = $(results_dir.calibre-drc-filled)/drc-antenna.results
-calibre_drc_filled_resultsfile_wirebond = $(results_dir.calibre-drc-filled)/drc-wirebond.results
+calibre_drc_top_resultsfile_chip     = $(results_dir.calibre-drc-top)/drc-chip.results
+calibre_drc_top_resultsfile_antenna  = $(results_dir.calibre-drc-top)/drc-antenna.results
+calibre_drc_top_resultsfile_wirebond = $(results_dir.calibre-drc-top)/drc-wirebond.results
 
 # DRC summary files
 
-calibre_drc_filled_summaryfile_chip     = $(results_dir.calibre-drc-filled)/drc-chip.summary
-calibre_drc_filled_summaryfile_antenna  = $(results_dir.calibre-drc-filled)/drc-antenna.summary
-calibre_drc_filled_summaryfile_wirebond = $(results_dir.calibre-drc-filled)/drc-wirebond.summary
+calibre_drc_top_summaryfile_chip     = $(results_dir.calibre-drc-top)/drc-chip.summary
+calibre_drc_top_summaryfile_antenna  = $(results_dir.calibre-drc-top)/drc-antenna.summary
+calibre_drc_top_summaryfile_wirebond = $(results_dir.calibre-drc-top)/drc-wirebond.summary
 
 # Common variables to substitute into the runset template
 #
 # Note: The paths must be absolute or Calibre will complain
 
-export calibre_drc_filled_rundir        = $(PWD)/$(results_dir.calibre-drc-filled)
-export calibre_drc_filled_layoutpaths   = $(PWD)/$(calibre_drc_filled_gds)
-export calibre_drc_filled_layoutprimary = top
+export calibre_drc_top_rundir        = $(PWD)/$(results_dir.calibre-drc-top)
+export calibre_drc_top_layoutpaths   = $(PWD)/$(calibre_drc_top_gds)
+export calibre_drc_top_layoutprimary = top_stamped
 
 #-------------------------------------------------------------------------
 # Targets for individual DRC checks
@@ -96,57 +96,57 @@ export calibre_drc_filled_layoutprimary = top
 
 # Chip DRC
 
-$(calibre_drc_filled_logsfile_chip): $(dependencies.calibre-drc-filled)
-	@mkdir -p $(logs_dir.calibre-drc-filled)
-	@mkdir -p $(results_dir.calibre-drc-filled)
+$(calibre_drc_top_logsfile_chip): $(dependencies.calibre-drc-top)
+	@mkdir -p $(logs_dir.calibre-drc-top)
+	@mkdir -p $(results_dir.calibre-drc-top)
 	@touch $@.start
 	@echo '================================================================================'
 	@echo 'Chip DRC'
 	@echo '================================================================================'
 # Select the DRC rules file and generate the drc runset from the template
-	( export calibre_drc_filled_rulesfile=$(calibre_drc_filled_rulesfile_chip); \
-		export calibre_drc_filled_transcriptfile=$(PWD)/$(calibre_drc_filled_logsfile_chip); \
-		export calibre_drc_filled_resultsfile=$(PWD)/$(calibre_drc_filled_resultsfile_chip); \
-		export calibre_drc_filled_summaryfile=$(PWD)/$(calibre_drc_filled_summaryfile_chip); \
-		envsubst < $(calibre_drc_filled_runset_template) > $(calibre_drc_filled_runset_chip) )
+	( export calibre_drc_top_rulesfile=$(calibre_drc_top_rulesfile_chip); \
+		export calibre_drc_top_transcriptfile=$(PWD)/$(calibre_drc_top_logsfile_chip); \
+		export calibre_drc_top_resultsfile=$(PWD)/$(calibre_drc_top_resultsfile_chip); \
+		export calibre_drc_top_summaryfile=$(PWD)/$(calibre_drc_top_summaryfile_chip); \
+		envsubst < $(calibre_drc_top_runset_template) > $(calibre_drc_top_runset_chip) )
 # Run drc using the runset
-	calibre -gui -drc -batch -runset $(calibre_drc_filled_runset_chip)
+	calibre -gui -drc -batch -runset $(calibre_drc_top_runset_chip)
 
 # Antenna DRC
 
-$(calibre_drc_filled_logsfile_antenna): $(dependencies.calibre-drc-filled)
-	@mkdir -p $(logs_dir.calibre-drc-filled)
-	@mkdir -p $(results_dir.calibre-drc-filled)
+$(calibre_drc_top_logsfile_antenna): $(dependencies.calibre-drc-top)
+	@mkdir -p $(logs_dir.calibre-drc-top)
+	@mkdir -p $(results_dir.calibre-drc-top)
 	@touch $@.start
 	@echo '================================================================================'
 	@echo 'Antenna DRC'
 	@echo '================================================================================'
 # Select the DRC rules file and generate the drc runset from the template
-	( export calibre_drc_filled_rulesfile=$(calibre_drc_filled_rulesfile_antenna); \
-		export calibre_drc_filled_transcriptfile=$(PWD)/$(calibre_drc_filled_logsfile_antenna); \
-		export calibre_drc_filled_resultsfile=$(PWD)/$(calibre_drc_filled_resultsfile_antenna); \
-		export calibre_drc_filled_summaryfile=$(PWD)/$(calibre_drc_filled_summaryfile_antenna); \
-		envsubst < $(calibre_drc_filled_runset_template) > $(calibre_drc_filled_runset_antenna) )
+	( export calibre_drc_top_rulesfile=$(calibre_drc_top_rulesfile_antenna); \
+		export calibre_drc_top_transcriptfile=$(PWD)/$(calibre_drc_top_logsfile_antenna); \
+		export calibre_drc_top_resultsfile=$(PWD)/$(calibre_drc_top_resultsfile_antenna); \
+		export calibre_drc_top_summaryfile=$(PWD)/$(calibre_drc_top_summaryfile_antenna); \
+		envsubst < $(calibre_drc_top_runset_template) > $(calibre_drc_top_runset_antenna) )
 # Run drc using the runset
-	calibre -gui -drc -batch -runset $(calibre_drc_filled_runset_antenna)
+	calibre -gui -drc -batch -runset $(calibre_drc_top_runset_antenna)
 
 # Wirebond DRC
 
-$(calibre_drc_filled_logsfile_wirebond): $(dependencies.calibre-drc-filled)
-	@mkdir -p $(logs_dir.calibre-drc-filled)
-	@mkdir -p $(results_dir.calibre-drc-filled)
+$(calibre_drc_top_logsfile_wirebond): $(dependencies.calibre-drc-top)
+	@mkdir -p $(logs_dir.calibre-drc-top)
+	@mkdir -p $(results_dir.calibre-drc-top)
 	@touch $@.start
 	@echo '================================================================================'
 	@echo 'Wirebond DRC'
 	@echo '================================================================================'
 # Select the DRC rules file and generate the drc runset from the template
-	( export calibre_drc_filled_rulesfile=$(calibre_drc_filled_rulesfile_wirebond); \
-		export calibre_drc_filled_transcriptfile=$(PWD)/$(calibre_drc_filled_logsfile_wirebond); \
-		export calibre_drc_filled_resultsfile=$(PWD)/$(calibre_drc_filled_resultsfile_wirebond); \
-		export calibre_drc_filled_summaryfile=$(PWD)/$(calibre_drc_filled_summaryfile_wirebond); \
-		envsubst < $(calibre_drc_filled_runset_template) > $(calibre_drc_filled_runset_wirebond) )
+	( export calibre_drc_top_rulesfile=$(calibre_drc_top_rulesfile_wirebond); \
+		export calibre_drc_top_transcriptfile=$(PWD)/$(calibre_drc_top_logsfile_wirebond); \
+		export calibre_drc_top_resultsfile=$(PWD)/$(calibre_drc_top_resultsfile_wirebond); \
+		export calibre_drc_top_summaryfile=$(PWD)/$(calibre_drc_top_summaryfile_wirebond); \
+		envsubst < $(calibre_drc_top_runset_template) > $(calibre_drc_top_runset_wirebond) )
 # Run drc using the runset
-	calibre -gui -drc -batch -runset $(calibre_drc_filled_runset_wirebond)
+	calibre -gui -drc -batch -runset $(calibre_drc_top_runset_wirebond)
 
 #-------------------------------------------------------------------------
 # Options
@@ -165,9 +165,9 @@ $(calibre_drc_filled_logsfile_wirebond): $(dependencies.calibre-drc-filled)
 # Extra dependencies
 #-------------------------------------------------------------------------
 
-extra_dependencies.calibre-drc-filled += $(calibre_drc_filled_logsfile_chip)
-extra_dependencies.calibre-drc-filled += $(calibre_drc_filled_logsfile_antenna)
-extra_dependencies.calibre-drc-filled += $(calibre_drc_filled_logsfile_wirebond)
+extra_dependencies.calibre-drc-top += $(calibre_drc_top_logsfile_chip)
+extra_dependencies.calibre-drc-top += $(calibre_drc_top_logsfile_antenna)
+extra_dependencies.calibre-drc-top += $(calibre_drc_top_logsfile_wirebond)
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -175,27 +175,27 @@ extra_dependencies.calibre-drc-filled += $(calibre_drc_filled_logsfile_wirebond)
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-skipvpath.calibre-drc-filled = yes
+skipvpath.calibre-drc-top = yes
 
-define commands.calibre-drc-filled
+define commands.calibre-drc-top
 	@echo '================================================================================'
 	@echo 'Chip DRC'
 	@echo '================================================================================'
-	@tail -11 $(calibre_drc_filled_logsfile_chip)
+	@tail -11 $(calibre_drc_top_logsfile_chip)
 	@echo '================================================================================'
 	@echo 'Antenna DRC'
 	@echo '================================================================================'
-	@tail -11 $(calibre_drc_filled_logsfile_antenna)
+	@tail -11 $(calibre_drc_top_logsfile_antenna)
 	@echo '================================================================================'
 	@echo 'Wirebond DRC'
 	@echo '================================================================================'
-	@tail -11 $(calibre_drc_filled_logsfile_wirebond)
+	@tail -11 $(calibre_drc_top_logsfile_wirebond)
 	@echo '================================================================================'
 	@echo 'DRC Summary'
 	@echo '================================================================================'
-	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_filled_logsfile_chip)
-	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_filled_logsfile_antenna)
-	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_filled_logsfile_wirebond)
+	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_top_logsfile_chip)
+	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_top_logsfile_antenna)
+	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_top_logsfile_wirebond)
 endef
 
 #-------------------------------------------------------------------------
@@ -204,32 +204,32 @@ endef
 # These are extra useful targets when working with this step. These
 # targets are included into the build Makefile.
 
-drc: calibre-drc-filled
+drc: calibre-drc-top
 
 # Clean
 
-clean-calibre-drc-filled:
-	rm -rf ./$(VPATH)/calibre-drc-filled
-	rm -rf ./$(logs_dir.calibre-drc-filled)
-	rm -rf ./$(collect_dir.calibre-drc-filled)
-	rm -rf ./$(results_dir.calibre-drc-filled)
+clean-calibre-drc-top:
+	rm -rf ./$(VPATH)/calibre-drc-top
+	rm -rf ./$(logs_dir.calibre-drc-top)
+	rm -rf ./$(collect_dir.calibre-drc-top)
+	rm -rf ./$(results_dir.calibre-drc-top)
 
-clean-drc-filled: clean-calibre-drc-filled
+clean-drc-top: clean-calibre-drc-top
 
 # Debug
 
-debug-drc-filled-chip:
-	calibredrv -m $(calibre_drc_filled_gds) \
+debug-drc-top-chip:
+	calibredrv -m $(calibre_drc_top_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -drc $(calibre_drc_filled_resultsfile_chip)
+	           -rve -drc $(calibre_drc_top_resultsfile_chip)
 
-debug-drc-filled-antenna:
-	calibredrv -m $(calibre_drc_filled_gds) \
+debug-drc-top-antenna:
+	calibredrv -m $(calibre_drc_top_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -drc $(calibre_drc_filled_resultsfile_antenna)
+	           -rve -drc $(calibre_drc_top_resultsfile_antenna)
 
-debug-drc-filled-wirebond:
-	calibredrv -m $(calibre_drc_filled_gds) \
+debug-drc-top-wirebond:
+	calibredrv -m $(calibre_drc_top_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -drc $(calibre_drc_filled_resultsfile_wirebond)
+	           -rve -drc $(calibre_drc_top_resultsfile_wirebond)
 

@@ -342,7 +342,7 @@ module HostChansey
 
   // out_serialize temporaries
   wire   [   0:0] out_serialize$out_rdy;
-  wire   [ 185:0] out_serialize$in__msg;
+  wire   [ 186:0] out_serialize$in__msg;
   wire   [   0:0] out_serialize$in__val;
   wire   [   0:0] out_serialize$clk;
   wire   [   0:0] out_serialize$reset;
@@ -350,7 +350,7 @@ module HostChansey
   wire   [   0:0] out_serialize$out_val;
   wire   [   0:0] out_serialize$in__rdy;
 
-  ValRdySerializer_0x4786b4d82317711b out_serialize
+  ValRdySerializer_0x6bb4bece356dc384 out_serialize
   (
     .out_rdy ( out_serialize$out_rdy ),
     .in__msg ( out_serialize$in__msg ),
@@ -668,9 +668,11 @@ module HostChansey
   wire   [   0:0] out_merge$in_$008_val;
   wire   [ 175:0] out_merge$in_$009_msg;
   wire   [   0:0] out_merge$in_$009_val;
+  wire   [ 175:0] out_merge$in_$010_msg;
+  wire   [   0:0] out_merge$in_$010_val;
   wire   [   0:0] out_merge$clk;
   wire   [   0:0] out_merge$reset;
-  wire   [ 185:0] out_merge$out_msg;
+  wire   [ 186:0] out_merge$out_msg;
   wire   [   0:0] out_merge$out_val;
   wire   [   0:0] out_merge$in_$000_rdy;
   wire   [   0:0] out_merge$in_$001_rdy;
@@ -682,8 +684,9 @@ module HostChansey
   wire   [   0:0] out_merge$in_$007_rdy;
   wire   [   0:0] out_merge$in_$008_rdy;
   wire   [   0:0] out_merge$in_$009_rdy;
+  wire   [   0:0] out_merge$in_$010_rdy;
 
-  ValRdyMerge_0x2543de4f552d5e2b out_merge
+  ValRdyMerge_0x54d375052bc9fe8a out_merge
   (
     .out_rdy     ( out_merge$out_rdy ),
     .in_$000_msg ( out_merge$in_$000_msg ),
@@ -706,6 +709,8 @@ module HostChansey
     .in_$008_val ( out_merge$in_$008_val ),
     .in_$009_msg ( out_merge$in_$009_msg ),
     .in_$009_val ( out_merge$in_$009_val ),
+    .in_$010_msg ( out_merge$in_$010_msg ),
+    .in_$010_val ( out_merge$in_$010_val ),
     .clk         ( out_merge$clk ),
     .reset       ( out_merge$reset ),
     .out_msg     ( out_merge$out_msg ),
@@ -719,7 +724,8 @@ module HostChansey
     .in_$006_rdy ( out_merge$in_$006_rdy ),
     .in_$007_rdy ( out_merge$in_$007_rdy ),
     .in_$008_rdy ( out_merge$in_$008_rdy ),
-    .in_$009_rdy ( out_merge$in_$009_rdy )
+    .in_$009_rdy ( out_merge$in_$009_rdy ),
+    .in_$010_rdy ( out_merge$in_$010_rdy )
   );
 
   // dut temporaries
@@ -930,6 +936,62 @@ module HostChansey
     .in__rdy     ( in_split$in__rdy )
   );
 
+  // flow_control temporaries
+  wire   [   0:0] flow_control$clk;
+  wire   [   0:0] flow_control$update_rdy;
+  wire   [   0:0] flow_control$req_val$000;
+  wire   [   0:0] flow_control$req_val$001;
+  wire   [   0:0] flow_control$req_val$002;
+  wire   [   0:0] flow_control$req_val$003;
+  wire   [   0:0] flow_control$req_val$004;
+  wire   [   0:0] flow_control$req_val$005;
+  wire   [   0:0] flow_control$req_val$006;
+  wire   [   0:0] flow_control$req_val$007;
+  wire   [   0:0] flow_control$req_val$008;
+  wire   [   0:0] flow_control$req_val$009;
+  wire   [   0:0] flow_control$reset;
+  wire   [   0:0] flow_control$req_rdy$000;
+  wire   [   0:0] flow_control$req_rdy$001;
+  wire   [   0:0] flow_control$req_rdy$002;
+  wire   [   0:0] flow_control$req_rdy$003;
+  wire   [   0:0] flow_control$req_rdy$004;
+  wire   [   0:0] flow_control$req_rdy$005;
+  wire   [   0:0] flow_control$req_rdy$006;
+  wire   [   0:0] flow_control$req_rdy$007;
+  wire   [   0:0] flow_control$req_rdy$008;
+  wire   [   0:0] flow_control$req_rdy$009;
+  wire   [  49:0] flow_control$update_msg;
+  wire   [   0:0] flow_control$update_val;
+
+  FlowControlOut_0x3b27d8429613db76 flow_control
+  (
+    .clk         ( flow_control$clk ),
+    .update_rdy  ( flow_control$update_rdy ),
+    .req_val$000 ( flow_control$req_val$000 ),
+    .req_val$001 ( flow_control$req_val$001 ),
+    .req_val$002 ( flow_control$req_val$002 ),
+    .req_val$003 ( flow_control$req_val$003 ),
+    .req_val$004 ( flow_control$req_val$004 ),
+    .req_val$005 ( flow_control$req_val$005 ),
+    .req_val$006 ( flow_control$req_val$006 ),
+    .req_val$007 ( flow_control$req_val$007 ),
+    .req_val$008 ( flow_control$req_val$008 ),
+    .req_val$009 ( flow_control$req_val$009 ),
+    .reset       ( flow_control$reset ),
+    .req_rdy$000 ( flow_control$req_rdy$000 ),
+    .req_rdy$001 ( flow_control$req_rdy$001 ),
+    .req_rdy$002 ( flow_control$req_rdy$002 ),
+    .req_rdy$003 ( flow_control$req_rdy$003 ),
+    .req_rdy$004 ( flow_control$req_rdy$004 ),
+    .req_rdy$005 ( flow_control$req_rdy$005 ),
+    .req_rdy$006 ( flow_control$req_rdy$006 ),
+    .req_rdy$007 ( flow_control$req_rdy$007 ),
+    .req_rdy$008 ( flow_control$req_rdy$008 ),
+    .req_rdy$009 ( flow_control$req_rdy$009 ),
+    .update_msg  ( flow_control$update_msg ),
+    .update_val  ( flow_control$update_val )
+  );
+
   // in_reqAckToValRdy temporaries
   wire   [   0:0] in_reqAckToValRdy$out_rdy;
   wire   [   7:0] in_reqAckToValRdy$in__msg;
@@ -1045,6 +1107,29 @@ module HostChansey
   assign dut_out_val$007                = dut$proc2mngr_1_val;
   assign dut_out_val$008                = dut$host_mduresp_val;
   assign dut_out_val$009                = dut$ctrlregresp_val;
+  assign flow_control$clk               = clk;
+  assign flow_control$req_rdy$000       = in_q$000$deq_rdy;
+  assign flow_control$req_rdy$001       = in_q$001$deq_rdy;
+  assign flow_control$req_rdy$002       = in_q$002$deq_rdy;
+  assign flow_control$req_rdy$003       = in_q$003$deq_rdy;
+  assign flow_control$req_rdy$004       = in_q$004$deq_rdy;
+  assign flow_control$req_rdy$005       = in_q$005$deq_rdy;
+  assign flow_control$req_rdy$006       = in_q$006$deq_rdy;
+  assign flow_control$req_rdy$007       = in_q$007$deq_rdy;
+  assign flow_control$req_rdy$008       = in_q$008$deq_rdy;
+  assign flow_control$req_rdy$009       = in_q$009$deq_rdy;
+  assign flow_control$req_val$000       = in_q$000$deq_val;
+  assign flow_control$req_val$001       = in_q$001$deq_val;
+  assign flow_control$req_val$002       = in_q$002$deq_val;
+  assign flow_control$req_val$003       = in_q$003$deq_val;
+  assign flow_control$req_val$004       = in_q$004$deq_val;
+  assign flow_control$req_val$005       = in_q$005$deq_val;
+  assign flow_control$req_val$006       = in_q$006$deq_val;
+  assign flow_control$req_val$007       = in_q$007$deq_val;
+  assign flow_control$req_val$008       = in_q$008$deq_val;
+  assign flow_control$req_val$009       = in_q$009$deq_val;
+  assign flow_control$reset             = reset;
+  assign flow_control$update_rdy        = out_merge$in_$010_rdy;
   assign in__ack                        = in_reqAckToValRdy$in__ack;
   assign in_deserialize$clk             = clk;
   assign in_deserialize$in__msg         = in_reqAckToValRdy$out_msg;
@@ -1149,6 +1234,9 @@ module HostChansey
   assign out_merge$in_$009_msg[175:33]  = 143'd0;
   assign out_merge$in_$009_msg[32:0]    = dut_out_msg$009;
   assign out_merge$in_$009_val          = dut_out_val$009;
+  assign out_merge$in_$010_msg[175:50]  = 126'd0;
+  assign out_merge$in_$010_msg[49:0]    = flow_control$update_msg;
+  assign out_merge$in_$010_val          = flow_control$update_val;
   assign out_merge$out_rdy              = out_serialize$in__rdy;
   assign out_merge$reset                = reset;
   assign out_msg                        = out_valRdyToReqAck$out_msg;
@@ -1170,17 +1258,17 @@ endmodule // HostChansey
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// ValRdySerializer_0x4786b4d82317711b
+// ValRdySerializer_0x6bb4bece356dc384
 //-----------------------------------------------------------------------------
-// dtype_in: 186
+// dtype_in: 187
 // dtype_out: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module ValRdySerializer_0x4786b4d82317711b
+module ValRdySerializer_0x6bb4bece356dc384
 (
   input  wire [   0:0] clk,
-  input  wire [ 185:0] in__msg,
+  input  wire [ 186:0] in__msg,
   output reg  [   0:0] in__rdy,
   input  wire [   0:0] in__val,
   output wire [   7:0] out_msg,
@@ -1343,8 +1431,8 @@ module ValRdySerializer_0x4786b4d82317711b
   assign reg_$en         = reg_en;
   assign reg_$in_        = reg_in;
   assign reg_$reset      = reset;
-  assign reg_in[185:0]   = in__msg;
-  assign reg_in[191:186] = 6'd0;
+  assign reg_in[186:0]   = in__msg;
+  assign reg_in[191:187] = 5'd0;
   assign reg_out         = reg_$out;
   assign state$clk       = clk;
   assign state$reset     = reset;
@@ -1435,7 +1523,7 @@ module ValRdySerializer_0x4786b4d82317711b
   end
 
 
-endmodule // ValRdySerializer_0x4786b4d82317711b
+endmodule // ValRdySerializer_0x6bb4bece356dc384
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -2283,7 +2371,6 @@ module NormalQueueCtrl_0x7e615dc0798cc6a5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -3845,19 +3932,22 @@ endmodule // RegisterFile_0x66d40fda46b4658e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// ValRdyMerge_0x2543de4f552d5e2b
+// ValRdyMerge_0x54d375052bc9fe8a
 //-----------------------------------------------------------------------------
-// p_nports: 10
+// p_nports: 11
 // p_nbits: 176
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module ValRdyMerge_0x2543de4f552d5e2b
+module ValRdyMerge_0x54d375052bc9fe8a
 (
   input  wire [   0:0] clk,
   input  wire [ 175:0] in_$000_msg,
   output wire [   0:0] in_$000_rdy,
   input  wire [   0:0] in_$000_val,
+  input  wire [ 175:0] in_$010_msg,
+  output wire [   0:0] in_$010_rdy,
+  input  wire [   0:0] in_$010_val,
   input  wire [ 175:0] in_$001_msg,
   output wire [   0:0] in_$001_rdy,
   input  wire [   0:0] in_$001_val,
@@ -3885,23 +3975,23 @@ module ValRdyMerge_0x2543de4f552d5e2b
   input  wire [ 175:0] in_$009_msg,
   output wire [   0:0] in_$009_rdy,
   input  wire [   0:0] in_$009_val,
-  output wire [ 185:0] out_msg,
+  output wire [ 186:0] out_msg,
   input  wire [   0:0] out_rdy,
   output reg  [   0:0] out_val,
   input  wire [   0:0] reset
 );
 
   // wire declarations
-  wire   [   9:0] grants;
-  wire   [   9:0] in_val;
+  wire   [  10:0] grants;
+  wire   [  10:0] in_val;
 
 
   // register declarations
-  reg    [   9:0] in_rdy;
-  reg    [   9:0] reqs;
+  reg    [  10:0] in_rdy;
+  reg    [  10:0] reqs;
 
   // localparam declarations
-  localparam p_nports = 10;
+  localparam p_nports = 11;
 
   // mux temporaries
   wire   [   0:0] mux$reset;
@@ -3915,11 +4005,12 @@ module ValRdyMerge_0x2543de4f552d5e2b
   wire   [ 175:0] mux$in_$007;
   wire   [ 175:0] mux$in_$008;
   wire   [ 175:0] mux$in_$009;
+  wire   [ 175:0] mux$in_$010;
   wire   [   0:0] mux$clk;
-  wire   [   9:0] mux$sel;
+  wire   [  10:0] mux$sel;
   wire   [ 175:0] mux$out;
 
-  Mux_0x5c38b318cac8f45c mux
+  Mux_0x375f449a6357a6ad mux
   (
     .reset   ( mux$reset ),
     .in_$000 ( mux$in_$000 ),
@@ -3932,18 +4023,19 @@ module ValRdyMerge_0x2543de4f552d5e2b
     .in_$007 ( mux$in_$007 ),
     .in_$008 ( mux$in_$008 ),
     .in_$009 ( mux$in_$009 ),
+    .in_$010 ( mux$in_$010 ),
     .clk     ( mux$clk ),
     .sel     ( mux$sel ),
     .out     ( mux$out )
   );
 
   // arbiter temporaries
-  wire   [   9:0] arbiter$reqs;
+  wire   [  10:0] arbiter$reqs;
   wire   [   0:0] arbiter$clk;
   wire   [   0:0] arbiter$reset;
-  wire   [   9:0] arbiter$grants;
+  wire   [  10:0] arbiter$grants;
 
-  RoundRobinArbiter_0x3adf7ff6e05597a1 arbiter
+  RoundRobinArbiter_0x2a9df58db487f22a arbiter
   (
     .reqs   ( arbiter$reqs ),
     .clk    ( arbiter$clk ),
@@ -3966,7 +4058,9 @@ module ValRdyMerge_0x2543de4f552d5e2b
   assign in_$007_rdy      = in_rdy[7];
   assign in_$008_rdy      = in_rdy[8];
   assign in_$009_rdy      = in_rdy[9];
+  assign in_$010_rdy      = in_rdy[10];
   assign in_val[0]        = in_$000_val;
+  assign in_val[10]       = in_$010_val;
   assign in_val[1]        = in_$001_val;
   assign in_val[2]        = in_$002_val;
   assign in_val[3]        = in_$003_val;
@@ -3987,10 +4081,11 @@ module ValRdyMerge_0x2543de4f552d5e2b
   assign mux$in_$007      = in_$007_msg;
   assign mux$in_$008      = in_$008_msg;
   assign mux$in_$009      = in_$009_msg;
+  assign mux$in_$010      = in_$010_msg;
   assign mux$reset        = reset;
   assign mux$sel          = grants;
   assign out_msg[175:0]   = mux$out;
-  assign out_msg[185:176] = grants;
+  assign out_msg[186:176] = grants;
 
 
   // PYMTL SOURCE:
@@ -4009,21 +4104,22 @@ module ValRdyMerge_0x2543de4f552d5e2b
   end
 
 
-endmodule // ValRdyMerge_0x2543de4f552d5e2b
+endmodule // ValRdyMerge_0x54d375052bc9fe8a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// Mux_0x5c38b318cac8f45c
+// Mux_0x375f449a6357a6ad
 //-----------------------------------------------------------------------------
-// nports: 10
+// nports: 11
 // dtype: 176
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module Mux_0x5c38b318cac8f45c
+module Mux_0x375f449a6357a6ad
 (
   input  wire [   0:0] clk,
   input  wire [ 175:0] in_$000,
+  input  wire [ 175:0] in_$010,
   input  wire [ 175:0] in_$001,
   input  wire [ 175:0] in_$002,
   input  wire [ 175:0] in_$003,
@@ -4035,18 +4131,18 @@ module Mux_0x5c38b318cac8f45c
   input  wire [ 175:0] in_$009,
   output reg  [ 175:0] out,
   input  wire [   0:0] reset,
-  input  wire [   9:0] sel
+  input  wire [  10:0] sel
 );
 
   // localparam declarations
-  localparam nports = 10;
+  localparam nports = 11;
 
   // loop variable declarations
   integer i;
 
 
   // array declarations
-  wire   [ 175:0] in_[0:9];
+  wire   [ 175:0] in_[0:10];
   assign in_[  0] = in_$000;
   assign in_[  1] = in_$001;
   assign in_[  2] = in_$002;
@@ -4057,11 +4153,13 @@ module Mux_0x5c38b318cac8f45c
   assign in_[  7] = in_$007;
   assign in_[  8] = in_$008;
   assign in_[  9] = in_$009;
+  assign in_[ 10] = in_$010;
 
   // PYMTL SOURCE:
   //
   // @s.combinational
   // def logic():
+  //       s.out.value = 0
   //       if not s.sel:
   //         s.out.value = 0
   //       else:
@@ -4088,34 +4186,34 @@ module Mux_0x5c38b318cac8f45c
   end
 
 
-endmodule // Mux_0x5c38b318cac8f45c
+endmodule // Mux_0x375f449a6357a6ad
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RoundRobinArbiter_0x3adf7ff6e05597a1
+// RoundRobinArbiter_0x2a9df58db487f22a
 //-----------------------------------------------------------------------------
-// nreqs: 10
+// nreqs: 11
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RoundRobinArbiter_0x3adf7ff6e05597a1
+module RoundRobinArbiter_0x2a9df58db487f22a
 (
   input  wire [   0:0] clk,
-  output reg  [   9:0] grants,
-  input  wire [   9:0] reqs,
+  output reg  [  10:0] grants,
+  input  wire [  10:0] reqs,
   input  wire [   0:0] reset
 );
 
   // register declarations
-  reg    [  19:0] grants_int;
-  reg    [  20:0] kills;
+  reg    [  21:0] grants_int;
+  reg    [  22:0] kills;
   reg    [   0:0] priority_en;
-  reg    [  19:0] priority_int;
-  reg    [  19:0] reqs_int;
+  reg    [  21:0] priority_int;
+  reg    [  21:0] reqs_int;
 
   // localparam declarations
-  localparam nreqs = 10;
-  localparam nreqsX2 = 20;
+  localparam nreqs = 11;
+  localparam nreqsX2 = 22;
 
   // loop variable declarations
   integer i;
@@ -4124,10 +4222,10 @@ module RoundRobinArbiter_0x3adf7ff6e05597a1
   wire   [   0:0] priority_reg$reset;
   wire   [   0:0] priority_reg$en;
   wire   [   0:0] priority_reg$clk;
-  wire   [   9:0] priority_reg$in_;
-  wire   [   9:0] priority_reg$out;
+  wire   [  10:0] priority_reg$in_;
+  wire   [  10:0] priority_reg$out;
 
-  RegEnRst_0x3ec4cf214db81cc7 priority_reg
+  RegEnRst_0x6764088a1f7fee4e priority_reg
   (
     .reset ( priority_reg$reset ),
     .en    ( priority_reg$en ),
@@ -4137,11 +4235,11 @@ module RoundRobinArbiter_0x3adf7ff6e05597a1
   );
 
   // signal connections
-  assign priority_reg$clk      = clk;
-  assign priority_reg$en       = priority_en;
-  assign priority_reg$in_[0]   = grants[9];
-  assign priority_reg$in_[9:1] = grants[8:0];
-  assign priority_reg$reset    = reset;
+  assign priority_reg$clk       = clk;
+  assign priority_reg$en        = priority_en;
+  assign priority_reg$in_[0]    = grants[10];
+  assign priority_reg$in_[10:1] = grants[9:0];
+  assign priority_reg$reset     = reset;
 
 
   // PYMTL SOURCE:
@@ -4208,23 +4306,23 @@ module RoundRobinArbiter_0x3adf7ff6e05597a1
   end
 
 
-endmodule // RoundRobinArbiter_0x3adf7ff6e05597a1
+endmodule // RoundRobinArbiter_0x2a9df58db487f22a
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegEnRst_0x3ec4cf214db81cc7
+// RegEnRst_0x6764088a1f7fee4e
 //-----------------------------------------------------------------------------
-// dtype: 10
+// dtype: 11
 // reset_value: 1
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module RegEnRst_0x3ec4cf214db81cc7
+module RegEnRst_0x6764088a1f7fee4e
 (
   input  wire [   0:0] clk,
   input  wire [   0:0] en,
-  input  wire [   9:0] in_,
-  output reg  [   9:0] out,
+  input  wire [  10:0] in_,
+  output reg  [  10:0] out,
   input  wire [   0:0] reset
 );
 
@@ -4257,7 +4355,7 @@ module RegEnRst_0x3ec4cf214db81cc7
   end
 
 
-endmodule // RegEnRst_0x3ec4cf214db81cc7
+endmodule // RegEnRst_0x6764088a1f7fee4e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -5411,7 +5509,7 @@ module Chansey
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$000
+  BloomFilterXcel_0x3d686cffb3385e79 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -5439,7 +5537,7 @@ module Chansey
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$001
+  BloomFilterXcel_0x3d686cffb3385e79 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -5467,7 +5565,7 @@ module Chansey
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$002
+  BloomFilterXcel_0x3d686cffb3385e79 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -5495,7 +5593,7 @@ module Chansey
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$003
+  BloomFilterXcel_0x3d686cffb3385e79 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5920,8 +6018,8 @@ endmodule // Chansey
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f07452db9d0>
-// req: <pymtl.model.signals.InPort object at 0x7f07452db690>
+// resp: <pymtl.model.signals.OutPort object at 0x7fedc93577d0>
+// req: <pymtl.model.signals.InPort object at 0x7fedc9357490>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -6048,8 +6146,13 @@ module Router_0x52846acbae83db71
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   2:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -6103,12 +6206,17 @@ module Router_0x52846acbae83db71
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(40)-1:37]];
+    msg_opaque = in__msg[(40)-1:37];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -7182,7 +7290,6 @@ module BlockingCacheCtrlPRTL_0x6ca49c37af2f92fc
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
@@ -11442,8 +11549,13 @@ module Router_0x6c4e178e4038f207
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   7:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -11497,12 +11609,17 @@ module Router_0x6c4e178e4038f207
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(44)-1:36]];
+    msg_opaque = in__msg[(44)-1:36];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -12188,7 +12305,7 @@ module DW_fp_flt2i_0x3cd77562127ffa78
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_flt2i.v
 
   DW_fp_flt2i#(
     .ieee_compliance ( 1 )
@@ -12348,7 +12465,6 @@ module NormalQueueCtrl_0x7a42a348c9205b5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -12820,7 +12936,7 @@ module DW_fp_addsub_0x3cb0331b99cfb5df
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_addsub.v
 
   DW_fp_addsub#(
     .ieee_compliance ( 1 )
@@ -12862,7 +12978,7 @@ module DW_fp_cmp_0x15bdbff0d8f765a1
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_cmp.v
 
   DW_fp_cmp#(
     .ieee_compliance ( 1 )
@@ -12903,7 +13019,7 @@ module DW_fp_mult_0x1eaed5d9d53885e0
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_mult.v
 
   DW_fp_mult#(
     .ieee_compliance ( 1 )
@@ -12936,7 +13052,7 @@ module DW_fp_i2flt_0x215a2bada2e33c4b
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_i2flt.v
 
   DW_fp_i2flt#(
 
@@ -13133,7 +13249,7 @@ module DW_fp_div_0x124edb2c88d843aa
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_div.v
 
   DW_fp_div#(
     .faithful_round ( 0 ),
@@ -13530,8 +13646,13 @@ module Router_0x4c184f1ee5bd8508
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   2:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -13585,12 +13706,17 @@ module Router_0x4c184f1ee5bd8508
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(35)-1:32]];
+    msg_opaque = in__msg[(35)-1:32];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -23457,7 +23583,6 @@ module BlockingCacheCtrlPRTL_0x2673bbb0e0f7d38
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
@@ -26460,8 +26585,8 @@ endmodule // EqComparator_0x20454677a5a72bab
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f0744d37310>
-// req: <pymtl.model.signals.InPort object at 0x7f0744dafd10>
+// resp: <pymtl.model.signals.OutPort object at 0x7fedc8e2ded0>
+// req: <pymtl.model.signals.InPort object at 0x7fedc8e1b990>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -27561,16 +27686,16 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x6330a5c196d8525f
+// BloomFilterXcel_0x3d686cffb3385e79
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f074585c750>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fedc994b1d0>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x6330a5c196d8525f
+module BloomFilterXcel_0x3d686cffb3385e79
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -28013,7 +28138,7 @@ module BloomFilterXcel_0x6330a5c196d8525f
   end
 
 
-endmodule // BloomFilterXcel_0x6330a5c196d8525f
+endmodule // BloomFilterXcel_0x3d686cffb3385e79
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -28205,7 +28330,6 @@ module NormalQueueCtrl_0x4c319dcf628a6cd4
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -29432,8 +29556,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f07457f8450>
-// req: <pymtl.model.signals.InPort object at 0x7f07457f8110>
+// resp: <pymtl.model.signals.OutPort object at 0x7fedc98e7410>
+// req: <pymtl.model.signals.InPort object at 0x7fedc98e70d0>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -29741,6 +29865,391 @@ module Demux_0x5c38b318cac8f45c
 
 
 endmodule // Demux_0x5c38b318cac8f45c
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// FlowControlOut_0x3b27d8429613db76
+//-----------------------------------------------------------------------------
+// num_ports: 10
+// max_credit: 16
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module FlowControlOut_0x3b27d8429613db76
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] req_rdy$000,
+  input  wire [   0:0] req_rdy$001,
+  input  wire [   0:0] req_rdy$002,
+  input  wire [   0:0] req_rdy$003,
+  input  wire [   0:0] req_rdy$004,
+  input  wire [   0:0] req_rdy$005,
+  input  wire [   0:0] req_rdy$006,
+  input  wire [   0:0] req_rdy$007,
+  input  wire [   0:0] req_rdy$008,
+  input  wire [   0:0] req_rdy$009,
+  input  wire [   0:0] req_val$000,
+  input  wire [   0:0] req_val$001,
+  input  wire [   0:0] req_val$002,
+  input  wire [   0:0] req_val$003,
+  input  wire [   0:0] req_val$004,
+  input  wire [   0:0] req_val$005,
+  input  wire [   0:0] req_val$006,
+  input  wire [   0:0] req_val$007,
+  input  wire [   0:0] req_val$008,
+  input  wire [   0:0] req_val$009,
+  input  wire [   0:0] reset,
+  output reg  [  49:0] update_msg,
+  input  wire [   0:0] update_rdy,
+  output reg  [   0:0] update_val
+);
+
+  // wire declarations
+  wire   [   4:0] n_credits$000;
+  wire   [   4:0] n_credits$001;
+  wire   [   4:0] n_credits$002;
+  wire   [   4:0] n_credits$003;
+  wire   [   4:0] n_credits$004;
+  wire   [   4:0] n_credits$005;
+  wire   [   4:0] n_credits$006;
+  wire   [   4:0] n_credits$007;
+  wire   [   4:0] n_credits$008;
+  wire   [   4:0] n_credits$009;
+  wire   [  49:0] vec_credits;
+  wire   [   4:0] credits$000;
+  wire   [   4:0] credits$001;
+  wire   [   4:0] credits$002;
+  wire   [   4:0] credits$003;
+  wire   [   4:0] credits$004;
+  wire   [   4:0] credits$005;
+  wire   [   4:0] credits$006;
+  wire   [   4:0] credits$007;
+  wire   [   4:0] credits$008;
+  wire   [   4:0] credits$009;
+  wire   [   0:0] send_update;
+  wire   [   4:0] c_credits$000;
+  wire   [   4:0] c_credits$001;
+  wire   [   4:0] c_credits$002;
+  wire   [   4:0] c_credits$003;
+  wire   [   4:0] c_credits$004;
+  wire   [   4:0] c_credits$005;
+  wire   [   4:0] c_credits$006;
+  wire   [   4:0] c_credits$007;
+  wire   [   4:0] c_credits$008;
+  wire   [   4:0] c_credits$009;
+
+
+  // register declarations
+  reg    [   3:0] c_trigger_cnt;
+  reg    [   8:0] n_trigger_cnt;
+  reg    [   9:0] tokens;
+  reg    [   0:0] trigger;
+  reg    [   8:0] trigger_cnt;
+
+  // localparam declarations
+  localparam num_ports = 10;
+  localparam trigger_threshold = 5'd8;
+
+  // loop variable declarations
+  integer i;
+
+  // signal connections
+  assign vec_credits[14:10] = credits$002;
+  assign vec_credits[19:15] = credits$003;
+  assign vec_credits[24:20] = credits$004;
+  assign vec_credits[29:25] = credits$005;
+  assign vec_credits[34:30] = credits$006;
+  assign vec_credits[39:35] = credits$007;
+  assign vec_credits[44:40] = credits$008;
+  assign vec_credits[49:45] = credits$009;
+  assign vec_credits[4:0]   = credits$000;
+  assign vec_credits[9:5]   = credits$001;
+
+  // array declarations
+  reg    [   4:0] c_credits[0:9];
+  assign c_credits$000 = c_credits[  0];
+  assign c_credits$001 = c_credits[  1];
+  assign c_credits$002 = c_credits[  2];
+  assign c_credits$003 = c_credits[  3];
+  assign c_credits$004 = c_credits[  4];
+  assign c_credits$005 = c_credits[  5];
+  assign c_credits$006 = c_credits[  6];
+  assign c_credits$007 = c_credits[  7];
+  assign c_credits$008 = c_credits[  8];
+  assign c_credits$009 = c_credits[  9];
+  reg    [   4:0] credits[0:9];
+  assign credits$000 = credits[  0];
+  assign credits$001 = credits[  1];
+  assign credits$002 = credits[  2];
+  assign credits$003 = credits[  3];
+  assign credits$004 = credits[  4];
+  assign credits$005 = credits[  5];
+  assign credits$006 = credits[  6];
+  assign credits$007 = credits[  7];
+  assign credits$008 = credits[  8];
+  assign credits$009 = credits[  9];
+  reg    [   4:0] n_credits[0:9];
+  assign n_credits$000 = n_credits[  0];
+  assign n_credits$001 = n_credits[  1];
+  assign n_credits$002 = n_credits[  2];
+  assign n_credits$003 = n_credits[  3];
+  assign n_credits$004 = n_credits[  4];
+  assign n_credits$005 = n_credits[  5];
+  assign n_credits$006 = n_credits[  6];
+  assign n_credits$007 = n_credits[  7];
+  assign n_credits$008 = n_credits[  8];
+  assign n_credits$009 = n_credits[  9];
+  wire   [   0:0] req_rdy[0:9];
+  assign req_rdy[  0] = req_rdy$000;
+  assign req_rdy[  1] = req_rdy$001;
+  assign req_rdy[  2] = req_rdy$002;
+  assign req_rdy[  3] = req_rdy$003;
+  assign req_rdy[  4] = req_rdy$004;
+  assign req_rdy[  5] = req_rdy$005;
+  assign req_rdy[  6] = req_rdy$006;
+  assign req_rdy[  7] = req_rdy$007;
+  assign req_rdy[  8] = req_rdy$008;
+  assign req_rdy[  9] = req_rdy$009;
+  wire   [   0:0] req_val[0:9];
+  assign req_val[  0] = req_val$000;
+  assign req_val[  1] = req_val$001;
+  assign req_val[  2] = req_val$002;
+  assign req_val[  3] = req_val$003;
+  assign req_val[  4] = req_val$004;
+  assign req_val[  5] = req_val$005;
+  assign req_val[  6] = req_val$006;
+  assign req_val[  7] = req_val$007;
+  assign req_val[  8] = req_val$008;
+  assign req_val[  9] = req_val$009;
+
+  // PYMTL SOURCE:
+  //
+  // @s.tick_rtl
+  // def seq():
+  //
+  //       # Credit counters
+  //
+  //       for i in xrange( num_ports ):
+  //         s.credits[i].next = s.n_credits[i]
+  //
+  //       # Trigger counter
+  //
+  //       s.trigger_cnt.next = s.n_trigger_cnt
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      credits[i] <= n_credits[i];
+    end
+    trigger_cnt <= n_trigger_cnt;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_trigger():
+  //
+  //       s.trigger.value = 0
+  //
+  //       if s.trigger_cnt >= s.trigger_threshold:
+  //         s.trigger.value = 1
+
+  // logic for gen_trigger()
+  always @ (*) begin
+    trigger = 0;
+    if ((trigger_cnt >= trigger_threshold)) begin
+      trigger = 1;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_tokens():
+  //
+  //       s.tokens.value = 0
+  //
+  //       for i in xrange( num_ports ):
+  //         s.tokens[i].value = s.req_val[i] & s.req_rdy[i]
+
+  // logic for gen_tokens()
+  always @ (*) begin
+    tokens = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      tokens[i] = (req_val[i]&req_rdy[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_trigger_counter():
+  //
+  //       # Initialization
+  //
+  //       s.n_trigger_cnt.value = s.trigger_cnt
+  //
+  //       # Iterate through all tokens and count them
+  //
+  //       s.c_trigger_cnt.value = 0
+  //
+  //       for i in xrange( num_ports ):
+  //         s.c_trigger_cnt.value = s.c_trigger_cnt + s.tokens[i]
+  //
+  //       # Update the trigger counter
+  //
+  //       if s.trigger and s.update.rdy:
+  //         s.n_trigger_cnt.value = 0
+  //       else:
+  //         s.n_trigger_cnt.value = s.n_trigger_cnt + s.c_trigger_cnt
+  //
+  //       # Reset :)
+  //
+  //       if s.reset:
+  //         s.n_trigger_cnt.value = 0
+
+  // logic for update_trigger_counter()
+  always @ (*) begin
+    n_trigger_cnt = trigger_cnt;
+    c_trigger_cnt = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      c_trigger_cnt = (c_trigger_cnt+tokens[i]);
+    end
+    if ((trigger&&update_rdy)) begin
+      n_trigger_cnt = 0;
+    end
+    else begin
+      n_trigger_cnt = (n_trigger_cnt+c_trigger_cnt);
+    end
+    if (reset) begin
+      n_trigger_cnt = 0;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_update_msg():
+  //
+  //       # Depending on the trigger
+  //
+  //       if   s.trigger: s.update.msg.value = s.vec_credits
+  //       else          : s.update.msg.value = 0
+
+  // logic for gen_update_msg()
+  always @ (*) begin
+    if (trigger) begin
+      update_msg = vec_credits;
+    end
+    else begin
+      update_msg = 0;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_logic():
+  //
+  //       # Gather all the different signal views
+  //
+  //       for i in xrange( num_ports ):
+  //         s.c_credits[i].value = s.credits[i]
+  //
+  //       # Combinational signals initialization
+  //
+  //       s.update.val.value = 0
+  //
+  //       # Two states, really: Triggered or not triggered
+  //
+  //       if s.trigger:
+  //         s.update.val.value = 1
+  //
+  //       if s.trigger and s.update.rdy:
+  //         # All credits are redeemed, reset c_credits
+  //         for i in xrange( num_ports ):
+  //           s.c_credits[i].value = 0
+  //
+  //       # Reset :)
+  //       if s.reset:
+  //         s.update.val.value = 0
+
+  // logic for update_logic()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      c_credits[i] = credits[i];
+    end
+    update_val = 0;
+    if (trigger) begin
+      update_val = 1;
+    end
+    else begin
+    end
+    if ((trigger&&update_rdy)) begin
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        c_credits[i] = 0;
+      end
+    end
+    else begin
+    end
+    if (reset) begin
+      update_val = 0;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_credit():
+  //
+  //       for i in xrange( num_ports ):
+  //         s.n_credits[i].value = s.c_credits[i]
+  //
+  //       for i in xrange( num_ports ):
+  //         if s.tokens[i]:
+  //           s.n_credits[i].value = s.n_credits[i] + s.tokens[i]
+  //
+  //       if s.reset:
+  //         for i in xrange( num_ports ):
+  //           s.n_credits[i].value = 0
+
+  // logic for update_credit()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      n_credits[i] = c_credits[i];
+    end
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      if (tokens[i]) begin
+        n_credits[i] = (n_credits[i]+tokens[i]);
+      end
+      else begin
+      end
+    end
+    if (reset) begin
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        n_credits[i] = 0;
+      end
+    end
+    else begin
+    end
+  end
+
+
+endmodule // FlowControlOut_0x3b27d8429613db76
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -32563,6 +33072,4 @@ module DW_fp_div (a, b, rnd, z, status);
   // synopsys translate_on
 
 endmodule
-  
-  
-  
+

@@ -16,20 +16,21 @@ reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 #-------------------------------------------------------------------------
 # Global net connections for PG pins
 #-------------------------------------------------------------------------
-# The CPF handles global net connections for VDD and VSS
+# The CPF handles global net connections for VDD and VSS, but it caused
+# DRC violations in route, so this chip flow is not using CPF...
 
-# # PG Pins used by stdcells
-#
-# globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
-# globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
-# globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
-# globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
-#
-# # PG Pins used by SRAMs
-#
-# globalNetConnect VDD    -type pgpin -pin VDDCE  -inst * -verbose
-# globalNetConnect VDD    -type pgpin -pin VDDPE  -inst * -verbose
-# globalNetConnect VSS    -type pgpin -pin VSSE   -inst * -verbose
+# PG Pins used by stdcells
+
+globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
+globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
+globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
+globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
+
+# PG Pins used by SRAMs
+
+globalNetConnect VDD    -type pgpin -pin VDDCE  -inst * -verbose
+globalNetConnect VDD    -type pgpin -pin VDDPE  -inst * -verbose
+globalNetConnect VSS    -type pgpin -pin VSSE   -inst * -verbose
 
 # IO PG pins
 

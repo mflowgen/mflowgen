@@ -913,7 +913,7 @@ module top;
       $finish(1);
     end
     if ( !$value$plusargs( "max_cycles=%d", max_cycles ) ) begin
-      max_cycles = 350000;
+      max_cycles = 500000;
     end
   end
   //----------------------------------------------------------------------

@@ -74,6 +74,16 @@ class FlowControlIn( Model ):
     s.r_credits   = Wire[num_ports]( max_credit_lg )
     s.n_credits   = Wire[num_ports]( max_credit_lg )
     s.c_updates   = Wire[num_ports]( max_credit_lg )
+    s.s_updates   = Wire[num_ports]( max_credit_lg ) # sliced :)
+
+    #------------------------------------------------
+    # Sliced update credit
+    #------------------------------------------------
+
+    for i in xrange( num_ports ):
+      l = (i + 0) * max_credit_lg
+      h = (i + 1) * max_credit_lg
+      s.connect_wire( s.s_updates[i], s.update.msg[l:h] )
 
     #------------------------------------------------
     # Generate throttle signal
@@ -145,7 +155,7 @@ class FlowControlIn( Model ):
 
         # Get all updates
         for i in xrange( num_ports ):
-          s.c_updates[i].value = s.update.msg[i*max_credit_lg : (i+1)*max_credit_lg]
+          s.c_updates[i].value = s.s_updates[i]
 
       # Update the credits
 

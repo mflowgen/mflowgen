@@ -2,15 +2,17 @@
 # HostChansey.py
 #===============================================================================
 
-from pymtl      import *
-from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.rtl  import RegEn
-from pclib.rtl  import NormalQueue
+from pymtl       import *
+from pclib.ifcs  import InValRdyBundle, OutValRdyBundle
+from pclib.rtl   import RegEn
+from pclib.rtl   import NormalQueue
 
-from ifcs       import InReqAckBundle, OutReqAckBundle
-from adapters   import *
+from ifcs        import InReqAckBundle, OutReqAckBundle
+from adapters    import *
 
-from Chansey    import Chansey
+from FlowControl import FlowControlIn, FlowControlOut
+
+from Chansey     import Chansey
 
 class HostChansey( Model ):
 
@@ -57,8 +59,10 @@ class HostChansey( Model ):
       nbits = s.connect_dut_port( obj, OutValRdyBundle )
       if( nbits > p_out_width ) : p_out_width = nbits
 
-    p_in_nports  = len( s.dut_in_msg )
-    p_out_nports = len( s.dut_out_msg )
+    # hawajkm: Add one output port for flow-control
+
+    p_in_nports  = len( s.dut_in_msg  )
+    p_out_nports = len( s.dut_out_msg ) + 1
 
     #-Structural Composition---------------------------------------------
 
@@ -83,6 +87,10 @@ class HostChansey( Model ):
     s.connect( m.in_.val, s.in_deserialize.out.val )
     s.connect( m.in_.rdy, s.in_deserialize.out.rdy )
 
+    # Instantiate flow control
+
+    s.flow_control = m = FlowControlOut( p_in_nports, 16 )
+
     # DUT
 
     s.in_q = []
@@ -106,25 +114,47 @@ class HostChansey( Model ):
       queue = NormalQueue( 16, dtype )
       s.in_q.append( queue )
       # s.q_ct.append( 0 )
-      s.connect( m.out[ _ ].msg[ 0:width ], queue.enq.msg )
-      s.connect( m.out[ _ ].val           , queue.enq.val )
-      s.connect( m.out[ _ ].rdy           , queue.enq.rdy )
+      s.connect( s.in_split.out[ _ ].msg[ 0:width ], queue.enq.msg )
+      s.connect( s.in_split.out[ _ ].val           , queue.enq.val )
+      s.connect( s.in_split.out[ _ ].rdy           , queue.enq.rdy )
       s.connect( queue.deq.msg, s.dut_in_msg[ _ ] )
       s.connect( queue.deq.val, s.dut_in_val[ _ ] )
       s.connect( queue.deq.rdy, s.dut_in_rdy[ _ ] )
+      # Connect the dequeue monitoring interface
+      # This interface is essential in keeping track of
+      # each stream's credit
+      #
+      # hawajkm: PyMTL translation bug! We use connect_wire to
+      #          explicitly set the direction of connectivity
+      s.connect_wire( s.flow_control.req_val[ _ ], queue.deq.val )
+      s.connect_wire( s.flow_control.req_rdy[ _ ], queue.deq.rdy )
 
     # Output ValRdy Merge
 
     s.out_merge = m = ValRdyMerge( p_out_nports, p_out_width )
     for _ in range( p_out_nports ):
-      width   = s.dut_out_msg[ _ ].nbits
-      m_width = m.in_[ _ ].msg.nbits
-      s.connect( m.in_[ _ ].msg[ 0:width ], s.dut_out_msg[ _ ] )
-      s.connect( m.in_[ _ ].val, s.dut_out_val[ _ ] )
-      s.connect( m.in_[ _ ].rdy, s.dut_out_rdy[ _ ] )
-      # connect extra pins to zero
-      if m_width > width:
-        s.connect( m.in_[ _ ].msg[ width:m_width ], 0 )
+
+      if _ < p_out_nports - 1:
+        # Normal queue
+        bw   = s.dut_out_msg[ _ ].nbits
+        m_bw = m.in_[ _ ].msg.nbits
+        s.connect( m.in_[ _ ].msg[0:bw], s.dut_out_msg[ _ ] )
+        s.connect( m.in_[ _ ].val      , s.dut_out_val[ _ ] )
+        s.connect( m.in_[ _ ].rdy      , s.dut_out_rdy[ _ ] )
+        # connect extra pins to zero
+        if m_bw > bw:
+          s.connect( m.in_[ _ ].msg[bw:m_bw], 0 )
+
+      else:
+        # Flow control
+        bw   = s.flow_control.update.msg.nbits
+        m_bw = m.in_[ _ ].msg.nbits
+        s.connect( m.in_[ _ ].msg[0:bw], s.flow_control.update.msg )
+        s.connect( m.in_[ _ ].val      , s.flow_control.update.val )
+        s.connect( m.in_[ _ ].rdy      , s.flow_control.update.rdy )
+        # connect extra pins to zero
+        if m_bw > bw:
+          s.connect( m.in_[ _ ].msg[bw:m_bw], 0 )
 
     # Output ValRdy Serialize
 

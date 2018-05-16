@@ -7,17 +7,17 @@
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.mosis = \
-	"Checksum and compress the final gds"
+descriptions.calibre-stamp = \
+	"Stamp the final gds"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.mosis
+define ascii.calibre-stamp
 	@echo -e $(echo_green)
 	@echo '#-------------------------------------------------------------------------------'
-	@echo '# Mosis prep'
+	@echo '# Calibre -- Stamp'
 	@echo '#-------------------------------------------------------------------------------'
 	@echo -e $(echo_nocolor)
 endef
@@ -26,40 +26,23 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-#abbr.mosis = template
+abbr.calibre-stamp = stamp
 
 #-------------------------------------------------------------------------
-# Misc
+# Variables
 #-------------------------------------------------------------------------
 
-# Input GDS
+# Logo gds
 
-mosis_input_gds     = $(handoff_dir.calibre-stamp)/top_stamped.gds
+brg_logo_gds             = $(plugins_dir)/calibre/brg_logo.gds.gz
 
-# Output checksum and compressed GDS
+# Input gds
 
-mosis_cksum         = $(handoff_dir.mosis)/top_stamped.cksum
-mosis_output_gds    = $(handoff_dir.mosis)/top_stamped.gds
-mosis_output_gds_gz = $(handoff_dir.mosis)/top_stamped.gds.gz
+calibre_stamp_input_gds  = $(handoff_dir.calibre-fill)/top.gds
 
-$(mosis_output_gds_gz): $(dependencies.mosis)
-	@mkdir -p $(handoff_dir.mosis)
-	@cp -f $(mosis_input_gds) $(mosis_output_gds)
-	@echo "Running checksum..."
-	@echo
-	@cksum $(mosis_output_gds) | tee $(mosis_cksum)
-	@echo
-	@echo "Compressing GDS..."
-	@echo
-	@gzip -vf $(mosis_output_gds)
+# Output gds
 
-skipvpath.mosis = yes
-
-#-------------------------------------------------------------------------
-# Extra dependencies
-#-------------------------------------------------------------------------
-
-extra_dependencies.mosis = $(mosis_output_gds_gz)
+calibre_stamp_output_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -67,17 +50,21 @@ extra_dependencies.mosis = $(mosis_output_gds_gz)
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-define commands.mosis
-	@echo    "- Source GDS      : " $(PWD)/$(mosis_input_gds)
-	@echo    "- Checksum file   : " $(PWD)/$(mosis_cksum)
-	@echo -n "- Checksum        : "
-	@awk '{print $$1}' $(mosis_cksum)
+define commands.calibre-stamp
+	mkdir -p $(logs_dir.calibre-stamp)
+	mkdir -p $(handoff_dir.calibre-stamp)
 
-	@echo -n "- Checksum bytes  : "
-	@awk '{print $$2}' $(mosis_cksum)
+# Stamp the design by merging with the logo gds
 
-	@echo    "- Submit to MOSIS : " $(PWD)/$(mosis_output_gds_gz)
-	@echo
+	(set -x; \
+	calibredrv -a layout filemerge \
+		-in $(brg_logo_gds) \
+		-in $(calibre_stamp_input_gds) \
+		-createtop top_stamped \
+		-out $(calibre_stamp_output_gds) \
+	) > $(logs_dir.calibre-stamp)/stamp.log 2>&1
+	@cat $(logs_dir.calibre-stamp)/stamp.log
+
 endef
 
 #-------------------------------------------------------------------------
@@ -88,10 +75,17 @@ endef
 
 # Clean
 
-clean-mosis:
-	rm -rf ./$(VPATH)/mosis
-	rm -rf ./$(collect_dir.mosis)
-	rm -rf ./$(handoff_dir.mosis)
+clean-calibre-stamp:
+	rm -rf ./$(VPATH)/calibre-stamp
+	rm -rf ./$(logs_dir.calibre-stamp)
+	rm -rf ./$(collect_dir.calibre-stamp)
+	rm -rf ./$(handoff_dir.calibre-stamp)
 
-#clean-ex: clean-mosis
+clean-stamp: clean-calibre-stamp
+
+# Debug
+
+debug-stamp:
+	calibredrv -m $(calibre_stamp_output_gds) \
+	           -l $(adk_dir)/calibre.layerprops
 

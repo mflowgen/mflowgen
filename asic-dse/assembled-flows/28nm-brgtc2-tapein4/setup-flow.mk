@@ -26,7 +26,8 @@ steps = \
   calibre-seal \
   calibre-drc-sealed \
   calibre-fill \
-  calibre-drc-filled \
+  calibre-stamp \
+  calibre-drc-top \
   calibre-lvs \
   calibre-lvs-sealed \
   calibre-lvs-filled \
@@ -94,7 +95,8 @@ dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
 dependencies.calibre-seal        = innovus-signoff gen-sram-gds
 dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-fill        = calibre-seal
-dependencies.calibre-drc-filled  = calibre-fill
+dependencies.calibre-stamp       = calibre-fill
+dependencies.calibre-drc-top     = calibre-stamp
 
 dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
 dependencies.calibre-lvs-sealed  = innovus-signoff calibre-seal gen-sram-cdl
