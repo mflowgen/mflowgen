@@ -102,6 +102,7 @@ instances = [
   'brgtc2/dut/mdu',
   'brgtc2/dut/mdu/idiv',
   'brgtc2/dut/mdu/imul',
+  'brgtc2/dut/icache_coalescer',
   'brgtc2/dut/net_dcachereq',
   'brgtc2/dut/net_dcacheresp',
   'brgtc2/dut/net_mdureq',
