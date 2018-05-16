@@ -111,16 +111,16 @@ debug_msgs = [  req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   0 ), # read debug
                 req_cr( wr,   ID_DEBUG, 1 ), resp_cr( wr,   0 ), # write debug
                 req_cr( rd,   ID_DEBUG, 0 ), resp_cr( rd,   1 ), # read debug
              ]
-asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,    0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
-                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
-                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
-                req_cr( wr,  ID_GO,            1 ), resp_cr( wr,   0 ), # go
+asm_msgs  =  [  req_cr( wr,  ID_MDU_HOSTEN,    0x0 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( wr,  ID_ICACHE_HOSTEN, 0x0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN, 0x0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_GO,            0xf ), resp_cr( wr,   0 ), # go
              ]
-mdu_msgs  =  [  req_cr( wr,  ID_GO,            0 ), resp_cr( wr,   0 ), # write False to go
-                req_cr( wr,  ID_ICACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to icache_host_en
-                req_cr( wr,  ID_DCACHE_HOSTEN, 0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
-                req_cr( wr,  ID_MDU_HOSTEN,    1 ), resp_cr( wr,   0 ), # write False to mdu_host_en
-                req_cr( rd,  ID_MDU_HOSTEN,    0 ), resp_cr( rd,   1 ), # check mdu_host_en
+mdu_msgs  =  [  req_cr( wr,  ID_GO,            0x0 ), resp_cr( wr,   0 ), # write False to go
+                req_cr( wr,  ID_ICACHE_HOSTEN, 0x0 ), resp_cr( wr,   0 ), # write False to icache_host_en
+                req_cr( wr,  ID_DCACHE_HOSTEN, 0x0 ), resp_cr( wr,   0 ), # write False to dcache_host_en
+                req_cr( wr,  ID_MDU_HOSTEN,    0x1 ), resp_cr( wr,   0 ), # write False to mdu_host_en
+                req_cr( rd,  ID_MDU_HOSTEN,    0x0 ), resp_cr( rd,   1 ), # check mdu_host_en
              ]
 # TODO
 icache_msgs = [ ]
