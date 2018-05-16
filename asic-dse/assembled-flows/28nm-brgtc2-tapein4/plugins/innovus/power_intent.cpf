@@ -1,0 +1,39 @@
+#-------------------------------------------------------------------------
+# Power intent
+#-------------------------------------------------------------------------
+
+set_cpf_version 1.1
+
+# Define top design
+
+set_design [dbGet top.name]
+
+create_power_domain -name CORE -default
+
+# Create nominal conditions
+
+create_nominal_condition -name NOMINAL -voltage 0.9
+
+# Create power mode
+
+create_power_mode -name PM -domain_conditions {CORE@NOMINAL} -default
+
+# Create power and ground nets
+
+create_ground_nets -nets VSS
+create_power_nets  -nets VDD -voltage 0.9
+
+# Global net connect
+
+foreach net "VDD VNW VDDCE VDDPE" {
+  create_global_connection -net VDD -pins $net
+}
+
+foreach net "VSS VPW VSSE" {
+  create_global_connection -net VSS -pins $net
+}
+
+update_power_domain -name CORE -primary_power_net VDD -primary_ground_net VSS
+
+end_design
+

@@ -16,11 +16,23 @@ reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 #-------------------------------------------------------------------------
 # Global net connections for PG pins
 #-------------------------------------------------------------------------
+# The CPF handles global net connections for VDD and VSS
 
-globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
-globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
-globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
-globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
+# # PG Pins used by stdcells
+#
+# globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
+# globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
+# globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
+# globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
+#
+# # PG Pins used by SRAMs
+#
+# globalNetConnect VDD    -type pgpin -pin VDDCE  -inst * -verbose
+# globalNetConnect VDD    -type pgpin -pin VDDPE  -inst * -verbose
+# globalNetConnect VSS    -type pgpin -pin VSSE   -inst * -verbose
+
+# IO PG pins
+
 globalNetConnect VDDPST -type pgpin -pin VDDPST -inst * -verbose
 globalNetConnect VSSPST -type pgpin -pin VSSPST -inst * -verbose
 globalNetConnect POC    -type pgpin -pin POC    -inst * -verbose
@@ -49,12 +61,6 @@ add_gui_text -label VDDPST -pt $label_vddpst_llx $label_vddpst_lly -layer CUSTOM
 add_gui_text -label VSS    -pt $label_vss_llx    $label_vss_lly    -layer CUSTOM_BRG_LVS_M5 -height 5
 add_gui_text -label VDD    -pt $label_vdd_llx    $label_vdd_lly    -layer CUSTOM_BRG_LVS_M3 -height 5
 add_gui_text -label POC    -pt $label_poc_llx    $label_poc_lly    -layer CUSTOM_BRG_LVS_M3 -height 5
-
-# PG Pins used by SRAMs
-
-globalNetConnect VDD    -type pgpin -pin VDDCE  -inst * -verbose
-globalNetConnect VDD    -type pgpin -pin VDDPE  -inst * -verbose
-globalNetConnect VSS    -type pgpin -pin VSSE   -inst * -verbose
 
 #-------------------------------------------------------------------------
 # M2 power rail preroute

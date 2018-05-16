@@ -249,7 +249,7 @@ set vars(power_analysis_view)                  analysis_default
 # Power-related
 #-------------------------------------------------------------------------
 
-##set vars(cpf_file)                                 "$::env(FF_DESIGN_SCRIPTS_DIR)/power_intent.cpf"
+#set vars(cpf_file)                                 $vars(plug_dir)/power_intent.cpf
 #set vars(cpf_keep_rows)                            TRUE
 #set vars(cpf_power_domain)                         FALSE
 #set vars(cpf_power_switch)                         FALSE
