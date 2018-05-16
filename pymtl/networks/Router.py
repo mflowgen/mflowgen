@@ -19,6 +19,12 @@ class Router( Model ):
     assert hasattr( MsgType, "opaque" ), "This Router requires \"opaque\" field in MsgType"
 
     #---------------------------------------------------------------------
+    # Internal parameters
+    #---------------------------------------------------------------------
+
+    nports_lg = clog2( nports )
+
+    #---------------------------------------------------------------------
     # Interface
     #---------------------------------------------------------------------
 
@@ -42,10 +48,18 @@ class Router( Model ):
         s.out[ s.in_.msg.opaque ].msg.value = s.in_.msg
         # s.out[ s.in_.msg.opaque ].msg.opaque.value = 0
 
+    s.msg_opaque = Wire( MsgType().opaque.nbits )
+    s.msg_dest   = Wire(      nports_lg         )
+
+    # There is a val -> rdy combinational dependency in the following logic
     @s.combinational
     def comb_in_rdy():
+      s.msg_opaque.value = s.in_.msg.opaque
+      s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+
       # in_rdy is the rdy status of the opaque-th output
-      s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+      s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
+
   #-----------------------------------------------------------------------
   # line_trace
   #-----------------------------------------------------------------------
