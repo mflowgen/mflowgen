@@ -10,9 +10,14 @@ set_design [dbGet top.name]
 
 create_power_domain -name CORE -default
 
+# Library
+
+define_library_set -name ttlibs -libraries $vars(libs_typical,timing)
+
 # Create nominal conditions
 
 create_nominal_condition -name NOMINAL -voltage 0.9
+update_nominal_condition -name NOMINAL -library_set ttlibs
 
 # Create power mode
 
@@ -23,6 +28,11 @@ create_power_mode -name PM -domain_conditions {CORE@NOMINAL} -default
 create_ground_nets -nets VSS
 create_power_nets  -nets VDD -voltage 0.9
 
+create_ground_nets -nets VSSPST
+create_power_nets  -nets VDDPST -voltage 1.8
+
+create_power_nets  -nets POC
+
 # Global net connect
 
 foreach net "VDD VNW VDDCE VDDPE" {
@@ -32,6 +42,9 @@ foreach net "VDD VNW VDDCE VDDPE" {
 foreach net "VSS VPW VSSE" {
   create_global_connection -net VSS -pins $net
 }
+
+create_global_connection -net VDDPST -pins VDDPST
+create_global_connection -net VSSPST -pins VSSPST
 
 update_power_domain -name CORE -primary_power_net VDD -primary_ground_net VSS
 
