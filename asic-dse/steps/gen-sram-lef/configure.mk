@@ -34,7 +34,7 @@ endef
 # Stuff
 #-------------------------------------------------------------------------
 
-var.dir = ../../pymtl/build/srams
+var.dir = ../rtl-handoff/Chansey-sram
 mem_generator = $(plugins_dir)/srams/gen-srams
 
 #-------------------------------------------------------------------------
