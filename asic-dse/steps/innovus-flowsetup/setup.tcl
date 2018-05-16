@@ -131,22 +131,32 @@ set vars(rcworst,qx_tech_file)              $adk_dir/pdk-rcworst-qrcTechFile
 set vars(rcworst,T)                         25
 
 #-------------------------------------------------------------------------
-# Delay Corners
+# Delay Corners (OCV style)
 #-------------------------------------------------------------------------
 
-set vars(delay_corners)                     "delay_typical delay_bc_typical delay_bc_rcbest delay_wc_rcworst"
+set vars(delay_corners)                      "delay_default"
 
-set vars(delay_typical,library_set)         libs_typical
-set vars(delay_typical,rc_corner)           typical
+set vars(delay_default,early_library_set)    libs_bc
+set vars(delay_default,late_library_set)     libs_typical
+set vars(delay_default,rc_corner)            typical
 
-set vars(delay_bc_typical,library_set)      libs_bc
-set vars(delay_bc_typical,rc_corner)        typical
-
-set vars(delay_bc_rcbest,library_set)       libs_bc
-set vars(delay_bc_rcbest,rc_corner)         rcbest
-
-set vars(delay_wc_rcworst,library_set)      libs_wc
-set vars(delay_wc_rcworst,rc_corner)        rcworst
+#-------------------------------------------------------------------------
+# Delay Corners (old bc_wc style)
+#-------------------------------------------------------------------------
+# set vars(delay_corners)                     "delay_typical delay_bc_typical delay_bc_rcbest delay_wc_rcworst"
+#
+# set vars(delay_typical,library_set)         libs_typical
+# set vars(delay_typical,rc_corner)           typical
+#
+# set vars(delay_bc_typical,library_set)      libs_bc
+# set vars(delay_bc_typical,rc_corner)        typical
+#
+# set vars(delay_bc_rcbest,library_set)       libs_bc
+# set vars(delay_bc_rcbest,rc_corner)         rcbest
+#
+# set vars(delay_wc_rcworst,library_set)      libs_wc
+# set vars(delay_wc_rcworst,rc_corner)        rcworst
+#-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # Constraint Modes
@@ -158,22 +168,13 @@ set vars(constraints_default,pre_cts_sdc)   $vars(dc_results_dir)/$vars(design).
 set vars(constraints_default,post_cts_sdc)  $vars(dc_results_dir)/$vars(design).mapped.sdc
 
 #-------------------------------------------------------------------------
-# Analysis Views
+# Analysis Views (OCV style)
 #-------------------------------------------------------------------------
 
-set vars(analysis_views)                       "analysis_default analysis_bc_typical analysis_bc_rcbest analysis_wc_rcworst"
+set vars(analysis_views)                       "analysis_default"
 
-set vars(analysis_default,delay_corner)        delay_typical
+set vars(analysis_default,delay_corner)        delay_default
 set vars(analysis_default,constraint_mode)     constraints_default
-
-set vars(analysis_bc_typical,delay_corner)     delay_bc_typical
-set vars(analysis_bc_typical,constraint_mode)  constraints_default
-
-set vars(analysis_bc_rcbest,delay_corner)      delay_bc_rcbest
-set vars(analysis_bc_rcbest,constraint_mode)   constraints_default
-
-set vars(analysis_wc_rcworst,delay_corner)     delay_wc_rcworst
-set vars(analysis_wc_rcworst,constraint_mode)  constraints_default
 
 # Analysis views for setup and hold
 #
@@ -204,12 +205,45 @@ set vars(setup_analysis_views)                 "analysis_default"
 set vars(active_setup_views)                   "analysis_default"
 
 set vars(default_hold_view)                    "analysis_default"
-set vars(hold_analysis_views)                  "analysis_default analysis_bc_typical"
-set vars(active_hold_views)                    "analysis_default analysis_bc_typical"
+set vars(hold_analysis_views)                  "analysis_default"
+set vars(active_hold_views)                    "analysis_default"
 
 # Misc
 
 set vars(power_analysis_view)                  analysis_default
+
+#-------------------------------------------------------------------------
+# Analysis Views (old bc_wc style)
+#-------------------------------------------------------------------------
+# set vars(analysis_views)                       "analysis_default analysis_bc_typical analysis_bc_rcbest analysis_wc_rcworst"
+#
+# set vars(analysis_default,delay_corner)        delay_typical
+# set vars(analysis_default,constraint_mode)     constraints_default
+#
+# set vars(analysis_bc_typical,delay_corner)     delay_bc_typical
+# set vars(analysis_bc_typical,constraint_mode)  constraints_default
+#
+# set vars(analysis_bc_rcbest,delay_corner)      delay_bc_rcbest
+# set vars(analysis_bc_rcbest,constraint_mode)   constraints_default
+#
+# set vars(analysis_wc_rcworst,delay_corner)     delay_wc_rcworst
+# set vars(analysis_wc_rcworst,constraint_mode)  constraints_default
+#
+# # Analysis views for setup and hold
+#
+# set vars(default_setup_view)                   "analysis_default"
+# set vars(setup_analysis_views)                 "analysis_default"
+# set vars(active_setup_views)                   "analysis_default"
+#
+# set vars(default_hold_view)                    "analysis_default"
+# set vars(hold_analysis_views)                  "analysis_default analysis_bc_typical"
+# set vars(active_hold_views)                    "analysis_default analysis_bc_typical"
+#
+# # Misc
+#
+# set vars(power_analysis_view)                  analysis_default
+#
+#-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # Power-related
@@ -373,7 +407,7 @@ set vars(litho_driven_routing)         true
 
 # OCV (on-chip variation)
 
-set vars(enable_ocv)  pre_postcts
+set vars(enable_ocv)  pre_place
 set vars(enable_cppr) both
 
 # Metal fill is performed using the Calibre fill utility

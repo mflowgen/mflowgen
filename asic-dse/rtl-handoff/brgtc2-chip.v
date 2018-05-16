@@ -216,7 +216,7 @@ module brgtc2_chip
   (
     .A  (clk_ext),     // S0 = 0, pick A
 //    .B  (pll_out_clk), // S0 = 1, pick B
-    .B  (1'b0), // S0 = 1, pick B
+    .B  (1'b0),        // S0 = 1, pick B
     .S0 (clk_sel),
     .Y  (clk_mux_out)
   );
