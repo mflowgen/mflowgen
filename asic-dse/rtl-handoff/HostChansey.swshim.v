@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------------------
 // SwShim
 //-----------------------------------------------------------------------------
-// dut: <CompChansey.Chansey.Chansey object at 0x7f5390206110>
-// dut_asynch: <CompChansey.HostChansey.HostChansey object at 0x7f538c7e5dd0>
+// dut: <CompChansey.Chansey.Chansey object at 0x7fcee8640e90>
+// dut_asynch: <CompChansey.HostChansey.HostChansey object at 0x7fcee7421110>
 // asynch_bitwidth: 8
 // dump_vcd: 
 // translate: zeros
@@ -76,6 +76,7 @@ module HostChansey_SwShim
 );
 
   // wire declarations
+  wire   [   9:0] in_rdy;
   wire   [   0:0] dut_out_val$000;
   wire   [   0:0] dut_out_val$001;
   wire   [   0:0] dut_out_val$002;
@@ -116,6 +117,8 @@ module HostChansey_SwShim
   wire   [  31:0] dut_out_msg$007;
   wire   [  34:0] dut_out_msg$008;
   wire   [  32:0] dut_out_msg$009;
+  wire   [   9:0] in_val;
+  wire   [   9:0] tokens;
   wire   [   0:0] dut_in_val$000;
   wire   [   0:0] dut_in_val$001;
   wire   [   0:0] dut_in_val$002;
@@ -136,6 +139,7 @@ module HostChansey_SwShim
   wire   [  31:0] dut_in_msg$007;
   wire   [  31:0] dut_in_msg$008;
   wire   [  31:0] dut_in_msg$009;
+  wire   [   9:0] throttle;
 
 
   // in_deserialize temporaries
@@ -144,11 +148,11 @@ module HostChansey_SwShim
   wire   [   0:0] in_deserialize$in__val;
   wire   [   0:0] in_deserialize$clk;
   wire   [   0:0] in_deserialize$reset;
-  wire   [ 185:0] in_deserialize$out_msg;
+  wire   [ 186:0] in_deserialize$out_msg;
   wire   [   0:0] in_deserialize$out_val;
   wire   [   0:0] in_deserialize$in__rdy;
 
-  ValRdyDeserializer_0x3af46cc9f334024 in_deserialize
+  ValRdyDeserializer_0x71d00ee0b679887b in_deserialize
   (
     .out_rdy ( in_deserialize$out_rdy ),
     .in__msg ( in_deserialize$in__msg ),
@@ -291,7 +295,8 @@ module HostChansey_SwShim
   wire   [   0:0] in_split$out$007_rdy;
   wire   [   0:0] in_split$out$008_rdy;
   wire   [   0:0] in_split$out$009_rdy;
-  wire   [ 185:0] in_split$in__msg;
+  wire   [   0:0] in_split$out$010_rdy;
+  wire   [ 186:0] in_split$in__msg;
   wire   [   0:0] in_split$in__val;
   wire   [   0:0] in_split$clk;
   wire   [   0:0] in_split$reset;
@@ -315,9 +320,11 @@ module HostChansey_SwShim
   wire   [   0:0] in_split$out$008_val;
   wire   [ 175:0] in_split$out$009_msg;
   wire   [   0:0] in_split$out$009_val;
+  wire   [ 175:0] in_split$out$010_msg;
+  wire   [   0:0] in_split$out$010_val;
   wire   [   0:0] in_split$in__rdy;
 
-  ValRdySplit_0x3e9b0f76bc7cb9b3 in_split
+  ValRdySplit_0x46e437479843b32e in_split
   (
     .out$000_rdy ( in_split$out$000_rdy ),
     .out$001_rdy ( in_split$out$001_rdy ),
@@ -329,6 +336,7 @@ module HostChansey_SwShim
     .out$007_rdy ( in_split$out$007_rdy ),
     .out$008_rdy ( in_split$out$008_rdy ),
     .out$009_rdy ( in_split$out$009_rdy ),
+    .out$010_rdy ( in_split$out$010_rdy ),
     .in__msg     ( in_split$in__msg ),
     .in__val     ( in_split$in__val ),
     .clk         ( in_split$clk ),
@@ -353,6 +361,8 @@ module HostChansey_SwShim
     .out$008_val ( in_split$out$008_val ),
     .out$009_msg ( in_split$out$009_msg ),
     .out$009_val ( in_split$out$009_val ),
+    .out$010_msg ( in_split$out$010_msg ),
+    .out$010_val ( in_split$out$010_val ),
     .in__rdy     ( in_split$in__rdy )
   );
 
@@ -376,6 +386,102 @@ module HostChansey_SwShim
     .out_msg ( in_reqAckToValRdy$out_msg ),
     .out_val ( in_reqAckToValRdy$out_val ),
     .in__ack ( in_reqAckToValRdy$in__ack )
+  );
+
+  // flow_control temporaries
+  wire   [   0:0] flow_control$clk;
+  wire   [   0:0] flow_control$p_val$000;
+  wire   [   0:0] flow_control$p_val$001;
+  wire   [   0:0] flow_control$p_val$002;
+  wire   [   0:0] flow_control$p_val$003;
+  wire   [   0:0] flow_control$p_val$004;
+  wire   [   0:0] flow_control$p_val$005;
+  wire   [   0:0] flow_control$p_val$006;
+  wire   [   0:0] flow_control$p_val$007;
+  wire   [   0:0] flow_control$p_val$008;
+  wire   [   0:0] flow_control$p_val$009;
+  wire   [  49:0] flow_control$update_msg;
+  wire   [   0:0] flow_control$update_val;
+  wire   [   0:0] flow_control$a_rdy$000;
+  wire   [   0:0] flow_control$a_rdy$001;
+  wire   [   0:0] flow_control$a_rdy$002;
+  wire   [   0:0] flow_control$a_rdy$003;
+  wire   [   0:0] flow_control$a_rdy$004;
+  wire   [   0:0] flow_control$a_rdy$005;
+  wire   [   0:0] flow_control$a_rdy$006;
+  wire   [   0:0] flow_control$a_rdy$007;
+  wire   [   0:0] flow_control$a_rdy$008;
+  wire   [   0:0] flow_control$a_rdy$009;
+  wire   [   0:0] flow_control$reset;
+  wire   [   0:0] flow_control$update_rdy;
+  wire   [   0:0] flow_control$p_rdy$000;
+  wire   [   0:0] flow_control$p_rdy$001;
+  wire   [   0:0] flow_control$p_rdy$002;
+  wire   [   0:0] flow_control$p_rdy$003;
+  wire   [   0:0] flow_control$p_rdy$004;
+  wire   [   0:0] flow_control$p_rdy$005;
+  wire   [   0:0] flow_control$p_rdy$006;
+  wire   [   0:0] flow_control$p_rdy$007;
+  wire   [   0:0] flow_control$p_rdy$008;
+  wire   [   0:0] flow_control$p_rdy$009;
+  wire   [   0:0] flow_control$a_val$000;
+  wire   [   0:0] flow_control$a_val$001;
+  wire   [   0:0] flow_control$a_val$002;
+  wire   [   0:0] flow_control$a_val$003;
+  wire   [   0:0] flow_control$a_val$004;
+  wire   [   0:0] flow_control$a_val$005;
+  wire   [   0:0] flow_control$a_val$006;
+  wire   [   0:0] flow_control$a_val$007;
+  wire   [   0:0] flow_control$a_val$008;
+  wire   [   0:0] flow_control$a_val$009;
+
+  FlowControlIn_0x67f060f464276bb4 flow_control
+  (
+    .clk        ( flow_control$clk ),
+    .p_val$000  ( flow_control$p_val$000 ),
+    .p_val$001  ( flow_control$p_val$001 ),
+    .p_val$002  ( flow_control$p_val$002 ),
+    .p_val$003  ( flow_control$p_val$003 ),
+    .p_val$004  ( flow_control$p_val$004 ),
+    .p_val$005  ( flow_control$p_val$005 ),
+    .p_val$006  ( flow_control$p_val$006 ),
+    .p_val$007  ( flow_control$p_val$007 ),
+    .p_val$008  ( flow_control$p_val$008 ),
+    .p_val$009  ( flow_control$p_val$009 ),
+    .update_msg ( flow_control$update_msg ),
+    .update_val ( flow_control$update_val ),
+    .a_rdy$000  ( flow_control$a_rdy$000 ),
+    .a_rdy$001  ( flow_control$a_rdy$001 ),
+    .a_rdy$002  ( flow_control$a_rdy$002 ),
+    .a_rdy$003  ( flow_control$a_rdy$003 ),
+    .a_rdy$004  ( flow_control$a_rdy$004 ),
+    .a_rdy$005  ( flow_control$a_rdy$005 ),
+    .a_rdy$006  ( flow_control$a_rdy$006 ),
+    .a_rdy$007  ( flow_control$a_rdy$007 ),
+    .a_rdy$008  ( flow_control$a_rdy$008 ),
+    .a_rdy$009  ( flow_control$a_rdy$009 ),
+    .reset      ( flow_control$reset ),
+    .update_rdy ( flow_control$update_rdy ),
+    .p_rdy$000  ( flow_control$p_rdy$000 ),
+    .p_rdy$001  ( flow_control$p_rdy$001 ),
+    .p_rdy$002  ( flow_control$p_rdy$002 ),
+    .p_rdy$003  ( flow_control$p_rdy$003 ),
+    .p_rdy$004  ( flow_control$p_rdy$004 ),
+    .p_rdy$005  ( flow_control$p_rdy$005 ),
+    .p_rdy$006  ( flow_control$p_rdy$006 ),
+    .p_rdy$007  ( flow_control$p_rdy$007 ),
+    .p_rdy$008  ( flow_control$p_rdy$008 ),
+    .p_rdy$009  ( flow_control$p_rdy$009 ),
+    .a_val$000  ( flow_control$a_val$000 ),
+    .a_val$001  ( flow_control$a_val$001 ),
+    .a_val$002  ( flow_control$a_val$002 ),
+    .a_val$003  ( flow_control$a_val$003 ),
+    .a_val$004  ( flow_control$a_val$004 ),
+    .a_val$005  ( flow_control$a_val$005 ),
+    .a_val$006  ( flow_control$a_val$006 ),
+    .a_val$007  ( flow_control$a_val$007 ),
+    .a_val$008  ( flow_control$a_val$008 ),
+    .a_val$009  ( flow_control$a_val$009 )
   );
 
   // in_valRdyToReqAck temporaries
@@ -422,16 +528,16 @@ module HostChansey_SwShim
   assign dut_in_msg$007              = mngr2proc_3_msg;
   assign dut_in_msg$008              = mngr2proc_0_msg;
   assign dut_in_msg$009              = mngr2proc_1_msg;
-  assign dut_in_rdy$000              = in_merge$in_$000_rdy;
-  assign dut_in_rdy$001              = in_merge$in_$001_rdy;
-  assign dut_in_rdy$002              = in_merge$in_$002_rdy;
-  assign dut_in_rdy$003              = in_merge$in_$003_rdy;
-  assign dut_in_rdy$004              = in_merge$in_$004_rdy;
-  assign dut_in_rdy$005              = in_merge$in_$005_rdy;
-  assign dut_in_rdy$006              = in_merge$in_$006_rdy;
-  assign dut_in_rdy$007              = in_merge$in_$007_rdy;
-  assign dut_in_rdy$008              = in_merge$in_$008_rdy;
-  assign dut_in_rdy$009              = in_merge$in_$009_rdy;
+  assign dut_in_rdy$000              = flow_control$p_rdy$000;
+  assign dut_in_rdy$001              = flow_control$p_rdy$001;
+  assign dut_in_rdy$002              = flow_control$p_rdy$002;
+  assign dut_in_rdy$003              = flow_control$p_rdy$003;
+  assign dut_in_rdy$004              = flow_control$p_rdy$004;
+  assign dut_in_rdy$005              = flow_control$p_rdy$005;
+  assign dut_in_rdy$006              = flow_control$p_rdy$006;
+  assign dut_in_rdy$007              = flow_control$p_rdy$007;
+  assign dut_in_rdy$008              = flow_control$p_rdy$008;
+  assign dut_in_rdy$009              = flow_control$p_rdy$009;
   assign dut_in_val$000              = dmemresp_val;
   assign dut_in_val$001              = host_icachereq_val;
   assign dut_in_val$002              = ctrlregreq_val;
@@ -472,6 +578,30 @@ module HostChansey_SwShim
   assign dut_out_val$007             = in_split$out$007_val;
   assign dut_out_val$008             = in_split$out$008_val;
   assign dut_out_val$009             = in_split$out$009_val;
+  assign flow_control$a_rdy$000      = in_merge$in_$000_rdy;
+  assign flow_control$a_rdy$001      = in_merge$in_$001_rdy;
+  assign flow_control$a_rdy$002      = in_merge$in_$002_rdy;
+  assign flow_control$a_rdy$003      = in_merge$in_$003_rdy;
+  assign flow_control$a_rdy$004      = in_merge$in_$004_rdy;
+  assign flow_control$a_rdy$005      = in_merge$in_$005_rdy;
+  assign flow_control$a_rdy$006      = in_merge$in_$006_rdy;
+  assign flow_control$a_rdy$007      = in_merge$in_$007_rdy;
+  assign flow_control$a_rdy$008      = in_merge$in_$008_rdy;
+  assign flow_control$a_rdy$009      = in_merge$in_$009_rdy;
+  assign flow_control$clk            = clk;
+  assign flow_control$p_val$000      = dut_in_val$000;
+  assign flow_control$p_val$001      = dut_in_val$001;
+  assign flow_control$p_val$002      = dut_in_val$002;
+  assign flow_control$p_val$003      = dut_in_val$003;
+  assign flow_control$p_val$004      = dut_in_val$004;
+  assign flow_control$p_val$005      = dut_in_val$005;
+  assign flow_control$p_val$006      = dut_in_val$006;
+  assign flow_control$p_val$007      = dut_in_val$007;
+  assign flow_control$p_val$008      = dut_in_val$008;
+  assign flow_control$p_val$009      = dut_in_val$009;
+  assign flow_control$reset          = reset;
+  assign flow_control$update_msg     = in_split$out$010_msg[49:0];
+  assign flow_control$update_val     = in_split$out$010_val;
   assign host_dcachereq_rdy          = dut_in_rdy$003;
   assign host_dcacheresp_msg         = dut_out_msg$002;
   assign host_dcacheresp_val         = dut_out_val$002;
@@ -491,25 +621,25 @@ module HostChansey_SwShim
   assign in_deserialize$reset        = reset;
   assign in_merge$clk                = clk;
   assign in_merge$in_$000_msg[145:0] = dut_in_msg$000;
-  assign in_merge$in_$000_val        = dut_in_val$000;
+  assign in_merge$in_$000_val        = flow_control$a_val$000;
   assign in_merge$in_$001_msg[175:0] = dut_in_msg$001;
-  assign in_merge$in_$001_val        = dut_in_val$001;
+  assign in_merge$in_$001_val        = flow_control$a_val$001;
   assign in_merge$in_$002_msg[36:0]  = dut_in_msg$002;
-  assign in_merge$in_$002_val        = dut_in_val$002;
+  assign in_merge$in_$002_val        = flow_control$a_val$002;
   assign in_merge$in_$003_msg[77:0]  = dut_in_msg$003;
-  assign in_merge$in_$003_val        = dut_in_val$003;
+  assign in_merge$in_$003_val        = flow_control$a_val$003;
   assign in_merge$in_$004_msg[145:0] = dut_in_msg$004;
-  assign in_merge$in_$004_val        = dut_in_val$004;
+  assign in_merge$in_$004_val        = flow_control$a_val$004;
   assign in_merge$in_$005_msg[69:0]  = dut_in_msg$005;
-  assign in_merge$in_$005_val        = dut_in_val$005;
+  assign in_merge$in_$005_val        = flow_control$a_val$005;
   assign in_merge$in_$006_msg[31:0]  = dut_in_msg$006;
-  assign in_merge$in_$006_val        = dut_in_val$006;
+  assign in_merge$in_$006_val        = flow_control$a_val$006;
   assign in_merge$in_$007_msg[31:0]  = dut_in_msg$007;
-  assign in_merge$in_$007_val        = dut_in_val$007;
+  assign in_merge$in_$007_val        = flow_control$a_val$007;
   assign in_merge$in_$008_msg[31:0]  = dut_in_msg$008;
-  assign in_merge$in_$008_val        = dut_in_val$008;
+  assign in_merge$in_$008_val        = flow_control$a_val$008;
   assign in_merge$in_$009_msg[31:0]  = dut_in_msg$009;
-  assign in_merge$in_$009_val        = dut_in_val$009;
+  assign in_merge$in_$009_val        = flow_control$a_val$009;
   assign in_merge$out_rdy            = in_serialize$in__rdy;
   assign in_merge$reset              = reset;
   assign in_reqAckToValRdy$clk       = clk;
@@ -535,6 +665,7 @@ module HostChansey_SwShim
   assign in_split$out$007_rdy        = dut_out_rdy$007;
   assign in_split$out$008_rdy        = dut_out_rdy$008;
   assign in_split$out$009_rdy        = dut_out_rdy$009;
+  assign in_split$out$010_rdy        = flow_control$update_rdy;
   assign in_split$reset              = reset;
   assign in_valRdyToReqAck$clk       = clk;
   assign in_valRdyToReqAck$in__msg   = in_serialize$out_msg;
@@ -560,20 +691,20 @@ endmodule // SwShim
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// ValRdyDeserializer_0x3af46cc9f334024
+// ValRdyDeserializer_0x71d00ee0b679887b
 //-----------------------------------------------------------------------------
 // dtype_in: 8
-// dtype_out: 186
+// dtype_out: 187
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module ValRdyDeserializer_0x3af46cc9f334024
+module ValRdyDeserializer_0x71d00ee0b679887b
 (
   input  wire [   0:0] clk,
   input  wire [   7:0] in__msg,
   output reg  [   0:0] in__rdy,
   input  wire [   0:0] in__val,
-  output wire [ 185:0] out_msg,
+  output wire [ 186:0] out_msg,
   input  wire [   0:0] out_rdy,
   output reg  [   0:0] out_val,
   input  wire [   0:0] reset
@@ -639,7 +770,7 @@ module ValRdyDeserializer_0x3af46cc9f334024
   // signal connections
   assign counter$clk       = clk;
   assign counter$reset     = reset;
-  assign out_msg           = reg_out[185:0];
+  assign out_msg           = reg_out[186:0];
   assign reg_$clk          = clk;
   assign reg_$en           = reg_en;
   assign reg_$in_[183:0]   = reg_out[191:8];
@@ -742,7 +873,7 @@ module ValRdyDeserializer_0x3af46cc9f334024
   end
 
 
-endmodule // ValRdyDeserializer_0x3af46cc9f334024
+endmodule // ValRdyDeserializer_0x71d00ee0b679887b
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -946,7 +1077,7 @@ module ValRdyMerge_0x2543de4f552d5e2b
   wire   [   9:0] mux$sel;
   wire   [ 175:0] mux$out;
 
-  Mux_0x5c38b318cac8f45c mux
+  Mux_0x5a53629a26510acc mux
   (
     .reset   ( mux$reset ),
     .in_$000 ( mux$in_$000 ),
@@ -1040,14 +1171,14 @@ endmodule // ValRdyMerge_0x2543de4f552d5e2b
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// Mux_0x5c38b318cac8f45c
+// Mux_0x5a53629a26510acc
 //-----------------------------------------------------------------------------
 // nports: 10
 // dtype: 176
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module Mux_0x5c38b318cac8f45c
+module Mux_0x5a53629a26510acc
 (
   input  wire [   0:0] clk,
   input  wire [ 175:0] in_$000,
@@ -1089,6 +1220,7 @@ module Mux_0x5c38b318cac8f45c
   //
   // @s.combinational
   // def logic():
+  //       s.out.value = 0
   //       if not s.sel:
   //         s.out.value = 0
   //       else:
@@ -1098,6 +1230,7 @@ module Mux_0x5c38b318cac8f45c
 
   // logic for logic()
   always @ (*) begin
+    out = 0;
     if (!sel) begin
       out = 0;
     end
@@ -1114,7 +1247,7 @@ module Mux_0x5c38b318cac8f45c
   end
 
 
-endmodule // Mux_0x5c38b318cac8f45c
+endmodule // Mux_0x5a53629a26510acc
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -1672,6 +1805,461 @@ module Reg_0x6962a37616d57c7e
 
 
 endmodule // Reg_0x6962a37616d57c7e
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// ValRdySerializer_0x6bb4bece356dc384
+//-----------------------------------------------------------------------------
+// dtype_in: 187
+// dtype_out: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdySerializer_0x6bb4bece356dc384
+(
+  input  wire [   0:0] clk,
+  input  wire [ 186:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  output wire [   7:0] out_msg,
+  input  wire [   0:0] out_rdy,
+  output reg  [   0:0] out_val,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [ 191:0] reg_out;
+  wire   [ 191:0] reg_in;
+
+
+  // register declarations
+  reg    [   4:0] counter$in_;
+  reg    [   0:0] reg_en;
+  reg    [   0:0] state$in_;
+
+  // localparam declarations
+  localparam STATE_IDLE = 0;
+  localparam STATE_SEND = 1;
+  localparam p_nmsgs = 24;
+
+  // mux temporaries
+  wire   [   0:0] mux$reset;
+  wire   [   7:0] mux$in_$000;
+  wire   [   7:0] mux$in_$001;
+  wire   [   7:0] mux$in_$002;
+  wire   [   7:0] mux$in_$003;
+  wire   [   7:0] mux$in_$004;
+  wire   [   7:0] mux$in_$005;
+  wire   [   7:0] mux$in_$006;
+  wire   [   7:0] mux$in_$007;
+  wire   [   7:0] mux$in_$008;
+  wire   [   7:0] mux$in_$009;
+  wire   [   7:0] mux$in_$010;
+  wire   [   7:0] mux$in_$011;
+  wire   [   7:0] mux$in_$012;
+  wire   [   7:0] mux$in_$013;
+  wire   [   7:0] mux$in_$014;
+  wire   [   7:0] mux$in_$015;
+  wire   [   7:0] mux$in_$016;
+  wire   [   7:0] mux$in_$017;
+  wire   [   7:0] mux$in_$018;
+  wire   [   7:0] mux$in_$019;
+  wire   [   7:0] mux$in_$020;
+  wire   [   7:0] mux$in_$021;
+  wire   [   7:0] mux$in_$022;
+  wire   [   7:0] mux$in_$023;
+  wire   [   0:0] mux$clk;
+  wire   [   4:0] mux$sel;
+  wire   [   7:0] mux$out;
+
+  Mux_0x38dea885888b8200 mux
+  (
+    .reset   ( mux$reset ),
+    .in_$000 ( mux$in_$000 ),
+    .in_$001 ( mux$in_$001 ),
+    .in_$002 ( mux$in_$002 ),
+    .in_$003 ( mux$in_$003 ),
+    .in_$004 ( mux$in_$004 ),
+    .in_$005 ( mux$in_$005 ),
+    .in_$006 ( mux$in_$006 ),
+    .in_$007 ( mux$in_$007 ),
+    .in_$008 ( mux$in_$008 ),
+    .in_$009 ( mux$in_$009 ),
+    .in_$010 ( mux$in_$010 ),
+    .in_$011 ( mux$in_$011 ),
+    .in_$012 ( mux$in_$012 ),
+    .in_$013 ( mux$in_$013 ),
+    .in_$014 ( mux$in_$014 ),
+    .in_$015 ( mux$in_$015 ),
+    .in_$016 ( mux$in_$016 ),
+    .in_$017 ( mux$in_$017 ),
+    .in_$018 ( mux$in_$018 ),
+    .in_$019 ( mux$in_$019 ),
+    .in_$020 ( mux$in_$020 ),
+    .in_$021 ( mux$in_$021 ),
+    .in_$022 ( mux$in_$022 ),
+    .in_$023 ( mux$in_$023 ),
+    .clk     ( mux$clk ),
+    .sel     ( mux$sel ),
+    .out     ( mux$out )
+  );
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
+
+  // reg_ temporaries
+  wire   [   0:0] reg_$reset;
+  wire   [ 191:0] reg_$in_;
+  wire   [   0:0] reg_$clk;
+  wire   [   0:0] reg_$en;
+  wire   [ 191:0] reg_$out;
+
+  RegEn_0x1a7aaf1e305d27ab reg_
+  (
+    .reset ( reg_$reset ),
+    .in_   ( reg_$in_ ),
+    .clk   ( reg_$clk ),
+    .en    ( reg_$en ),
+    .out   ( reg_$out )
+  );
+
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   4:0] counter$out;
+
+  Reg_0x6962a37616d57c7e counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
+  // signal connections
+  assign counter$clk     = clk;
+  assign counter$reset   = reset;
+  assign mux$clk         = clk;
+  assign mux$in_$000     = reg_out[7:0];
+  assign mux$in_$001     = reg_out[15:8];
+  assign mux$in_$002     = reg_out[23:16];
+  assign mux$in_$003     = reg_out[31:24];
+  assign mux$in_$004     = reg_out[39:32];
+  assign mux$in_$005     = reg_out[47:40];
+  assign mux$in_$006     = reg_out[55:48];
+  assign mux$in_$007     = reg_out[63:56];
+  assign mux$in_$008     = reg_out[71:64];
+  assign mux$in_$009     = reg_out[79:72];
+  assign mux$in_$010     = reg_out[87:80];
+  assign mux$in_$011     = reg_out[95:88];
+  assign mux$in_$012     = reg_out[103:96];
+  assign mux$in_$013     = reg_out[111:104];
+  assign mux$in_$014     = reg_out[119:112];
+  assign mux$in_$015     = reg_out[127:120];
+  assign mux$in_$016     = reg_out[135:128];
+  assign mux$in_$017     = reg_out[143:136];
+  assign mux$in_$018     = reg_out[151:144];
+  assign mux$in_$019     = reg_out[159:152];
+  assign mux$in_$020     = reg_out[167:160];
+  assign mux$in_$021     = reg_out[175:168];
+  assign mux$in_$022     = reg_out[183:176];
+  assign mux$in_$023     = reg_out[191:184];
+  assign mux$reset       = reset;
+  assign mux$sel         = counter$out;
+  assign out_msg         = mux$out;
+  assign reg_$clk        = clk;
+  assign reg_$en         = reg_en;
+  assign reg_$in_        = reg_in;
+  assign reg_$reset      = reset;
+  assign reg_in[186:0]   = in__msg;
+  assign reg_in[191:187] = 5'd0;
+  assign reg_out         = reg_$out;
+  assign state$clk       = clk;
+  assign state$reset     = reset;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_IDLE:
+  //         if s.in_.val:
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_IDLE
+
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_IDLE)) begin
+      if (in__val) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          state$in_ = STATE_IDLE;
+        end
+        else begin
+        end
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_IDLE:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = 1
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //
+  //         if s.out.rdy & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.out.rdy
+
+  // logic for state_outputs()
+  always @ (*) begin
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_IDLE)) begin
+      in__rdy = 1;
+      reg_en = 1;
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if ((out_rdy&(counter$out == (p_nmsgs-1)))) begin
+          counter$in_ = 0;
+        end
+        else begin
+          counter$in_ = (counter$out+out_rdy);
+        end
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // ValRdySerializer_0x6bb4bece356dc384
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// ValRdyDeserializer_0x3af46cc9f334024
+//-----------------------------------------------------------------------------
+// dtype_in: 8
+// dtype_out: 186
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdyDeserializer_0x3af46cc9f334024
+(
+  input  wire [   0:0] clk,
+  input  wire [   7:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  output wire [ 185:0] out_msg,
+  input  wire [   0:0] out_rdy,
+  output reg  [   0:0] out_val,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [ 191:0] reg_out;
+  wire   [ 191:0] reg_in;
+
+
+  // register declarations
+  reg    [   4:0] counter$in_;
+  reg    [   0:0] reg_en;
+  reg    [   0:0] state$in_;
+
+  // localparam declarations
+  localparam STATE_RECV = 0;
+  localparam STATE_SEND = 1;
+  localparam p_nmsgs = 24;
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   0:0] state$out;
+
+  RegRst_0x2ce052f8c32c5c39 state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
+
+  // reg_ temporaries
+  wire   [   0:0] reg_$reset;
+  wire   [ 191:0] reg_$in_;
+  wire   [   0:0] reg_$clk;
+  wire   [   0:0] reg_$en;
+  wire   [ 191:0] reg_$out;
+
+  RegEn_0x1a7aaf1e305d27ab reg_
+  (
+    .reset ( reg_$reset ),
+    .in_   ( reg_$in_ ),
+    .clk   ( reg_$clk ),
+    .en    ( reg_$en ),
+    .out   ( reg_$out )
+  );
+
+  // counter temporaries
+  wire   [   0:0] counter$reset;
+  wire   [   0:0] counter$clk;
+  wire   [   4:0] counter$out;
+
+  RegRst_0x7595e02357c57db5 counter
+  (
+    .reset ( counter$reset ),
+    .in_   ( counter$in_ ),
+    .clk   ( counter$clk ),
+    .out   ( counter$out )
+  );
+
+  // signal connections
+  assign counter$clk       = clk;
+  assign counter$reset     = reset;
+  assign out_msg           = reg_out[185:0];
+  assign reg_$clk          = clk;
+  assign reg_$en           = reg_en;
+  assign reg_$in_[183:0]   = reg_out[191:8];
+  assign reg_$in_[191:184] = in__msg;
+  assign reg_$reset        = reset;
+  assign reg_out           = reg_$out;
+  assign state$clk         = clk;
+  assign state$reset       = reset;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.out.rdy:
+  //           s.state.in_.value = s.STATE_RECV
+
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        if (out_rdy) begin
+          state$in_ = STATE_RECV;
+        end
+        else begin
+        end
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_outputs():
+  //       s.in_.rdy.value     = 0
+  //       s.out.val.value     = 0
+  //
+  //       s.counter.in_.value = 0
+  //       s.reg_en.value      = 0
+  //
+  //       if s.state.out == s.STATE_RECV:
+  //         s.in_.rdy.value = 1
+  //         s.reg_en.value  = s.in_.val
+  //
+  //         if s.in_.val & (s.counter.out == p_nmsgs-1):
+  //           s.counter.in_.value = 0
+  //         else:
+  //           s.counter.in_.value = s.counter.out + s.in_.val
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         s.out.val.value = 1
+  //         if ~s.out.rdy:
+  //           s.counter.in_.value = s.counter.out
+
+  // logic for state_outputs()
+  always @ (*) begin
+    in__rdy = 0;
+    out_val = 0;
+    counter$in_ = 0;
+    reg_en = 0;
+    if ((state$out == STATE_RECV)) begin
+      in__rdy = 1;
+      reg_en = in__val;
+      if ((in__val&(counter$out == (p_nmsgs-1)))) begin
+        counter$in_ = 0;
+      end
+      else begin
+        counter$in_ = (counter$out+in__val);
+      end
+    end
+    else begin
+      if ((state$out == STATE_SEND)) begin
+        out_val = 1;
+        if (~out_rdy) begin
+          counter$in_ = counter$out;
+        end
+        else begin
+        end
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // ValRdyDeserializer_0x3af46cc9f334024
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -3649,6 +4237,433 @@ endmodule // RegisterFile_0x66d40fda46b4658e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// ValRdyMerge_0x54d375052bc9fe8a
+//-----------------------------------------------------------------------------
+// p_nports: 11
+// p_nbits: 176
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdyMerge_0x54d375052bc9fe8a
+(
+  input  wire [   0:0] clk,
+  input  wire [ 175:0] in_$000_msg,
+  output wire [   0:0] in_$000_rdy,
+  input  wire [   0:0] in_$000_val,
+  input  wire [ 175:0] in_$010_msg,
+  output wire [   0:0] in_$010_rdy,
+  input  wire [   0:0] in_$010_val,
+  input  wire [ 175:0] in_$001_msg,
+  output wire [   0:0] in_$001_rdy,
+  input  wire [   0:0] in_$001_val,
+  input  wire [ 175:0] in_$002_msg,
+  output wire [   0:0] in_$002_rdy,
+  input  wire [   0:0] in_$002_val,
+  input  wire [ 175:0] in_$003_msg,
+  output wire [   0:0] in_$003_rdy,
+  input  wire [   0:0] in_$003_val,
+  input  wire [ 175:0] in_$004_msg,
+  output wire [   0:0] in_$004_rdy,
+  input  wire [   0:0] in_$004_val,
+  input  wire [ 175:0] in_$005_msg,
+  output wire [   0:0] in_$005_rdy,
+  input  wire [   0:0] in_$005_val,
+  input  wire [ 175:0] in_$006_msg,
+  output wire [   0:0] in_$006_rdy,
+  input  wire [   0:0] in_$006_val,
+  input  wire [ 175:0] in_$007_msg,
+  output wire [   0:0] in_$007_rdy,
+  input  wire [   0:0] in_$007_val,
+  input  wire [ 175:0] in_$008_msg,
+  output wire [   0:0] in_$008_rdy,
+  input  wire [   0:0] in_$008_val,
+  input  wire [ 175:0] in_$009_msg,
+  output wire [   0:0] in_$009_rdy,
+  input  wire [   0:0] in_$009_val,
+  output wire [ 186:0] out_msg,
+  input  wire [   0:0] out_rdy,
+  output reg  [   0:0] out_val,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [  10:0] grants;
+  wire   [  10:0] in_val;
+
+
+  // register declarations
+  reg    [  10:0] in_rdy;
+  reg    [  10:0] reqs;
+
+  // localparam declarations
+  localparam p_nports = 11;
+
+  // mux temporaries
+  wire   [   0:0] mux$reset;
+  wire   [ 175:0] mux$in_$000;
+  wire   [ 175:0] mux$in_$001;
+  wire   [ 175:0] mux$in_$002;
+  wire   [ 175:0] mux$in_$003;
+  wire   [ 175:0] mux$in_$004;
+  wire   [ 175:0] mux$in_$005;
+  wire   [ 175:0] mux$in_$006;
+  wire   [ 175:0] mux$in_$007;
+  wire   [ 175:0] mux$in_$008;
+  wire   [ 175:0] mux$in_$009;
+  wire   [ 175:0] mux$in_$010;
+  wire   [   0:0] mux$clk;
+  wire   [  10:0] mux$sel;
+  wire   [ 175:0] mux$out;
+
+  Mux_0x375f449a6357a6ad mux
+  (
+    .reset   ( mux$reset ),
+    .in_$000 ( mux$in_$000 ),
+    .in_$001 ( mux$in_$001 ),
+    .in_$002 ( mux$in_$002 ),
+    .in_$003 ( mux$in_$003 ),
+    .in_$004 ( mux$in_$004 ),
+    .in_$005 ( mux$in_$005 ),
+    .in_$006 ( mux$in_$006 ),
+    .in_$007 ( mux$in_$007 ),
+    .in_$008 ( mux$in_$008 ),
+    .in_$009 ( mux$in_$009 ),
+    .in_$010 ( mux$in_$010 ),
+    .clk     ( mux$clk ),
+    .sel     ( mux$sel ),
+    .out     ( mux$out )
+  );
+
+  // arbiter temporaries
+  wire   [  10:0] arbiter$reqs;
+  wire   [   0:0] arbiter$clk;
+  wire   [   0:0] arbiter$reset;
+  wire   [  10:0] arbiter$grants;
+
+  RoundRobinArbiter_0x2a9df58db487f22a arbiter
+  (
+    .reqs   ( arbiter$reqs ),
+    .clk    ( arbiter$clk ),
+    .reset  ( arbiter$reset ),
+    .grants ( arbiter$grants )
+  );
+
+  // signal connections
+  assign arbiter$clk      = clk;
+  assign arbiter$reqs     = reqs;
+  assign arbiter$reset    = reset;
+  assign grants           = arbiter$grants;
+  assign in_$000_rdy      = in_rdy[0];
+  assign in_$001_rdy      = in_rdy[1];
+  assign in_$002_rdy      = in_rdy[2];
+  assign in_$003_rdy      = in_rdy[3];
+  assign in_$004_rdy      = in_rdy[4];
+  assign in_$005_rdy      = in_rdy[5];
+  assign in_$006_rdy      = in_rdy[6];
+  assign in_$007_rdy      = in_rdy[7];
+  assign in_$008_rdy      = in_rdy[8];
+  assign in_$009_rdy      = in_rdy[9];
+  assign in_$010_rdy      = in_rdy[10];
+  assign in_val[0]        = in_$000_val;
+  assign in_val[10]       = in_$010_val;
+  assign in_val[1]        = in_$001_val;
+  assign in_val[2]        = in_$002_val;
+  assign in_val[3]        = in_$003_val;
+  assign in_val[4]        = in_$004_val;
+  assign in_val[5]        = in_$005_val;
+  assign in_val[6]        = in_$006_val;
+  assign in_val[7]        = in_$007_val;
+  assign in_val[8]        = in_$008_val;
+  assign in_val[9]        = in_$009_val;
+  assign mux$clk          = clk;
+  assign mux$in_$000      = in_$000_msg;
+  assign mux$in_$001      = in_$001_msg;
+  assign mux$in_$002      = in_$002_msg;
+  assign mux$in_$003      = in_$003_msg;
+  assign mux$in_$004      = in_$004_msg;
+  assign mux$in_$005      = in_$005_msg;
+  assign mux$in_$006      = in_$006_msg;
+  assign mux$in_$007      = in_$007_msg;
+  assign mux$in_$008      = in_$008_msg;
+  assign mux$in_$009      = in_$009_msg;
+  assign mux$in_$010      = in_$010_msg;
+  assign mux$reset        = reset;
+  assign mux$sel          = grants;
+  assign out_msg[175:0]   = mux$out;
+  assign out_msg[186:176] = grants;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def combinational_logic():
+  //         s.reqs.value    = s.in_val & sext( s.out.rdy, p_nports )
+  //         s.in_rdy.value  = s.grants & sext( s.out.rdy, p_nports )
+  //         s.out.val.value = reduce_or( s.reqs & s.in_val )
+
+  // logic for combinational_logic()
+  always @ (*) begin
+    reqs = (in_val&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
+    in_rdy = (grants&{ { p_nports-1 { out_rdy[0] } }, out_rdy[0:0] });
+    out_val = (|(reqs&in_val));
+  end
+
+
+endmodule // ValRdyMerge_0x54d375052bc9fe8a
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x375f449a6357a6ad
+//-----------------------------------------------------------------------------
+// nports: 11
+// dtype: 176
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x375f449a6357a6ad
+(
+  input  wire [   0:0] clk,
+  input  wire [ 175:0] in_$000,
+  input  wire [ 175:0] in_$010,
+  input  wire [ 175:0] in_$001,
+  input  wire [ 175:0] in_$002,
+  input  wire [ 175:0] in_$003,
+  input  wire [ 175:0] in_$004,
+  input  wire [ 175:0] in_$005,
+  input  wire [ 175:0] in_$006,
+  input  wire [ 175:0] in_$007,
+  input  wire [ 175:0] in_$008,
+  input  wire [ 175:0] in_$009,
+  output reg  [ 175:0] out,
+  input  wire [   0:0] reset,
+  input  wire [  10:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 11;
+
+  // loop variable declarations
+  integer i;
+
+
+  // array declarations
+  wire   [ 175:0] in_[0:10];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+  assign in_[  2] = in_$002;
+  assign in_[  3] = in_$003;
+  assign in_[  4] = in_$004;
+  assign in_[  5] = in_$005;
+  assign in_[  6] = in_$006;
+  assign in_[  7] = in_$007;
+  assign in_[  8] = in_$008;
+  assign in_[  9] = in_$009;
+  assign in_[ 10] = in_$010;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def logic():
+  //       s.out.value = 0
+  //       if not s.sel:
+  //         s.out.value = 0
+  //       else:
+  //         for i in range( nports ):
+  //           if s.sel[i]:
+  //             s.out.value = s.in_[i]
+
+  // logic for logic()
+  always @ (*) begin
+    out = 0;
+    if (!sel) begin
+      out = 0;
+    end
+    else begin
+      for (i=0; i < nports; i=i+1)
+      begin
+        if (sel[i]) begin
+          out = in_[i];
+        end
+        else begin
+        end
+      end
+    end
+  end
+
+
+endmodule // Mux_0x375f449a6357a6ad
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RoundRobinArbiter_0x2a9df58db487f22a
+//-----------------------------------------------------------------------------
+// nreqs: 11
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RoundRobinArbiter_0x2a9df58db487f22a
+(
+  input  wire [   0:0] clk,
+  output reg  [  10:0] grants,
+  input  wire [  10:0] reqs,
+  input  wire [   0:0] reset
+);
+
+  // register declarations
+  reg    [  21:0] grants_int;
+  reg    [  22:0] kills;
+  reg    [   0:0] priority_en;
+  reg    [  21:0] priority_int;
+  reg    [  21:0] reqs_int;
+
+  // localparam declarations
+  localparam nreqs = 11;
+  localparam nreqsX2 = 22;
+
+  // loop variable declarations
+  integer i;
+
+  // priority_reg temporaries
+  wire   [   0:0] priority_reg$reset;
+  wire   [   0:0] priority_reg$en;
+  wire   [   0:0] priority_reg$clk;
+  wire   [  10:0] priority_reg$in_;
+  wire   [  10:0] priority_reg$out;
+
+  RegEnRst_0x6764088a1f7fee4e priority_reg
+  (
+    .reset ( priority_reg$reset ),
+    .en    ( priority_reg$en ),
+    .clk   ( priority_reg$clk ),
+    .in_   ( priority_reg$in_ ),
+    .out   ( priority_reg$out )
+  );
+
+  // signal connections
+  assign priority_reg$clk       = clk;
+  assign priority_reg$en        = priority_en;
+  assign priority_reg$in_[0]    = grants[10];
+  assign priority_reg$in_[10:1] = grants[9:0];
+  assign priority_reg$reset     = reset;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //
+  //       s.kills[0].value = 1
+  //
+  //       s.priority_int[    0:nreqs  ].value = s.priority_reg.out
+  //       s.priority_int[nreqs:nreqsX2].value = 0
+  //       s.reqs_int    [    0:nreqs  ].value = s.reqs
+  //       s.reqs_int    [nreqs:nreqsX2].value = s.reqs
+  //
+  //       # Calculate the kill chain
+  //       for i in range( nreqsX2 ):
+  //
+  //         # Set internal grants
+  //         if s.priority_int[i].value:
+  //           s.grants_int[i].value = s.reqs_int[i]
+  //         else:
+  //           s.grants_int[i].value = ~s.kills[i] & s.reqs_int[i]
+  //
+  //         # Set kill signals
+  //         if s.priority_int[i].value:
+  //           s.kills[i+1].value = s.grants_int[i]
+  //         else:
+  //           s.kills[i+1].value = s.kills[i] | s.grants_int[i]
+  //
+  //       # Assign the output ports
+  //       for i in range( nreqs ):
+  //         s.grants[i].value = s.grants_int[i] | s.grants_int[nreqs+i]
+  //
+  //       # Set the priority enable
+  //       s.priority_en.value = ( s.grants != 0 )
+
+  // logic for comb()
+  always @ (*) begin
+    kills[0] = 1;
+    priority_int[(nreqs)-1:0] = priority_reg$out;
+    priority_int[(nreqsX2)-1:nreqs] = 0;
+    reqs_int[(nreqs)-1:0] = reqs;
+    reqs_int[(nreqsX2)-1:nreqs] = reqs;
+    for (i=0; i < nreqsX2; i=i+1)
+    begin
+      if (priority_int[i]) begin
+        grants_int[i] = reqs_int[i];
+      end
+      else begin
+        grants_int[i] = (~kills[i]&reqs_int[i]);
+      end
+      if (priority_int[i]) begin
+        kills[(i+1)] = grants_int[i];
+      end
+      else begin
+        kills[(i+1)] = (kills[i]|grants_int[i]);
+      end
+    end
+    for (i=0; i < nreqs; i=i+1)
+    begin
+      grants[i] = (grants_int[i]|grants_int[(nreqs+i)]);
+    end
+    priority_en = (grants != 0);
+  end
+
+
+endmodule // RoundRobinArbiter_0x2a9df58db487f22a
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEnRst_0x6764088a1f7fee4e
+//-----------------------------------------------------------------------------
+// dtype: 11
+// reset_value: 1
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEnRst_0x6764088a1f7fee4e
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  10:0] in_,
+  output reg  [  10:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 1;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       elif s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      if (en) begin
+        out <= in_;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // RegEnRst_0x6764088a1f7fee4e
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // Chansey
 //-----------------------------------------------------------------------------
 // cacheline_nbits: 128
@@ -3776,46 +4791,6 @@ module Chansey
     .realresp_val ( dcache_adapter$realresp_val ),
     .hostresp_msg ( dcache_adapter$hostresp_msg ),
     .hostresp_val ( dcache_adapter$hostresp_val )
-  );
-
-  // net_fpuresp temporaries
-  wire   [   0:0] net_fpuresp$reset;
-  wire   [  39:0] net_fpuresp$in__msg;
-  wire   [   0:0] net_fpuresp$in__val;
-  wire   [   0:0] net_fpuresp$clk;
-  wire   [   0:0] net_fpuresp$out$000_rdy;
-  wire   [   0:0] net_fpuresp$out$001_rdy;
-  wire   [   0:0] net_fpuresp$out$002_rdy;
-  wire   [   0:0] net_fpuresp$out$003_rdy;
-  wire   [   0:0] net_fpuresp$in__rdy;
-  wire   [  39:0] net_fpuresp$out$000_msg;
-  wire   [   0:0] net_fpuresp$out$000_val;
-  wire   [  39:0] net_fpuresp$out$001_msg;
-  wire   [   0:0] net_fpuresp$out$001_val;
-  wire   [  39:0] net_fpuresp$out$002_msg;
-  wire   [   0:0] net_fpuresp$out$002_val;
-  wire   [  39:0] net_fpuresp$out$003_msg;
-  wire   [   0:0] net_fpuresp$out$003_val;
-
-  Router_0x52846acbae83db71 net_fpuresp
-  (
-    .reset       ( net_fpuresp$reset ),
-    .in__msg     ( net_fpuresp$in__msg ),
-    .in__val     ( net_fpuresp$in__val ),
-    .clk         ( net_fpuresp$clk ),
-    .out$000_rdy ( net_fpuresp$out$000_rdy ),
-    .out$001_rdy ( net_fpuresp$out$001_rdy ),
-    .out$002_rdy ( net_fpuresp$out$002_rdy ),
-    .out$003_rdy ( net_fpuresp$out$003_rdy ),
-    .in__rdy     ( net_fpuresp$in__rdy ),
-    .out$000_msg ( net_fpuresp$out$000_msg ),
-    .out$000_val ( net_fpuresp$out$000_val ),
-    .out$001_msg ( net_fpuresp$out$001_msg ),
-    .out$001_val ( net_fpuresp$out$001_val ),
-    .out$002_msg ( net_fpuresp$out$002_msg ),
-    .out$002_val ( net_fpuresp$out$002_val ),
-    .out$003_msg ( net_fpuresp$out$003_msg ),
-    .out$003_val ( net_fpuresp$out$003_val )
   );
 
   // net_mdureq temporaries
@@ -3970,68 +4945,6 @@ module Chansey
     .out$002_val ( net_dcacheresp$out$002_val ),
     .out$003_msg ( net_dcacheresp$out$003_msg ),
     .out$003_val ( net_dcacheresp$out$003_val )
-  );
-
-  // fpu temporaries
-  wire   [   0:0] fpu$resp_rdy;
-  wire   [   0:0] fpu$clk;
-  wire   [  73:0] fpu$req_msg;
-  wire   [   0:0] fpu$req_val;
-  wire   [   0:0] fpu$reset;
-  wire   [  39:0] fpu$resp_msg;
-  wire   [   0:0] fpu$resp_val;
-  wire   [   0:0] fpu$req_rdy;
-
-  DesignWareFloatingPointUnit fpu
-  (
-    .resp_rdy ( fpu$resp_rdy ),
-    .clk      ( fpu$clk ),
-    .req_msg  ( fpu$req_msg ),
-    .req_val  ( fpu$req_val ),
-    .reset    ( fpu$reset ),
-    .resp_msg ( fpu$resp_msg ),
-    .resp_val ( fpu$resp_val ),
-    .req_rdy  ( fpu$req_rdy )
-  );
-
-  // net_fpureq temporaries
-  wire   [   0:0] net_fpureq$reset;
-  wire   [  73:0] net_fpureq$in_$000_msg;
-  wire   [   0:0] net_fpureq$in_$000_val;
-  wire   [  73:0] net_fpureq$in_$001_msg;
-  wire   [   0:0] net_fpureq$in_$001_val;
-  wire   [  73:0] net_fpureq$in_$002_msg;
-  wire   [   0:0] net_fpureq$in_$002_val;
-  wire   [  73:0] net_fpureq$in_$003_msg;
-  wire   [   0:0] net_fpureq$in_$003_val;
-  wire   [   0:0] net_fpureq$clk;
-  wire   [   0:0] net_fpureq$out_rdy;
-  wire   [   0:0] net_fpureq$in_$000_rdy;
-  wire   [   0:0] net_fpureq$in_$001_rdy;
-  wire   [   0:0] net_fpureq$in_$002_rdy;
-  wire   [   0:0] net_fpureq$in_$003_rdy;
-  wire   [  73:0] net_fpureq$out_msg;
-  wire   [   0:0] net_fpureq$out_val;
-
-  Funnel_0x58a91bbf80713154 net_fpureq
-  (
-    .reset       ( net_fpureq$reset ),
-    .in_$000_msg ( net_fpureq$in_$000_msg ),
-    .in_$000_val ( net_fpureq$in_$000_val ),
-    .in_$001_msg ( net_fpureq$in_$001_msg ),
-    .in_$001_val ( net_fpureq$in_$001_val ),
-    .in_$002_msg ( net_fpureq$in_$002_msg ),
-    .in_$002_val ( net_fpureq$in_$002_val ),
-    .in_$003_msg ( net_fpureq$in_$003_msg ),
-    .in_$003_val ( net_fpureq$in_$003_val ),
-    .clk         ( net_fpureq$clk ),
-    .out_rdy     ( net_fpureq$out_rdy ),
-    .in_$000_rdy ( net_fpureq$in_$000_rdy ),
-    .in_$001_rdy ( net_fpureq$in_$001_rdy ),
-    .in_$002_rdy ( net_fpureq$in_$002_rdy ),
-    .in_$003_rdy ( net_fpureq$in_$003_rdy ),
-    .out_msg     ( net_fpureq$out_msg ),
-    .out_val     ( net_fpureq$out_val )
   );
 
   // net_mduresp temporaries
@@ -4799,7 +5712,7 @@ module Chansey
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$000
+  BloomFilterXcel_0x24e6e081f2b85343 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -4827,7 +5740,7 @@ module Chansey
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$001
+  BloomFilterXcel_0x24e6e081f2b85343 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -4855,7 +5768,7 @@ module Chansey
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$002
+  BloomFilterXcel_0x24e6e081f2b85343 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -4883,7 +5796,7 @@ module Chansey
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x29c0cb3fc5b013ad xcel$003
+  BloomFilterXcel_0x24e6e081f2b85343 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -4983,11 +5896,6 @@ module Chansey
   assign dmemreq_msg                    = dcache$memreq_msg;
   assign dmemreq_val                    = dcache$memreq_val;
   assign dmemresp_rdy                   = dcache$memresp_rdy;
-  assign fpu$clk                        = clk;
-  assign fpu$req_msg                    = net_fpureq$out_msg;
-  assign fpu$req_val                    = net_fpureq$out_val;
-  assign fpu$reset                      = reset;
-  assign fpu$resp_rdy                   = net_fpuresp$in__rdy;
   assign host_dcachereq_rdy             = dcache_adapter$hostreq_rdy;
   assign host_dcacheresp_msg            = dcache_adapter$hostresp_msg;
   assign host_dcacheresp_val            = dcache_adapter$hostresp_val;
@@ -5114,25 +6022,6 @@ module Chansey
   assign net_dcacheresp$out$002_rdy     = proc$002$dmemresp_rdy;
   assign net_dcacheresp$out$003_rdy     = proc$003$dmemresp_rdy;
   assign net_dcacheresp$reset           = reset;
-  assign net_fpureq$clk                 = clk;
-  assign net_fpureq$in_$000_msg         = proc$000$fpureq_msg;
-  assign net_fpureq$in_$000_val         = proc$000$fpureq_val;
-  assign net_fpureq$in_$001_msg         = proc$001$fpureq_msg;
-  assign net_fpureq$in_$001_val         = proc$001$fpureq_val;
-  assign net_fpureq$in_$002_msg         = proc$002$fpureq_msg;
-  assign net_fpureq$in_$002_val         = proc$002$fpureq_val;
-  assign net_fpureq$in_$003_msg         = proc$003$fpureq_msg;
-  assign net_fpureq$in_$003_val         = proc$003$fpureq_val;
-  assign net_fpureq$out_rdy             = fpu$req_rdy;
-  assign net_fpureq$reset               = reset;
-  assign net_fpuresp$clk                = clk;
-  assign net_fpuresp$in__msg            = fpu$resp_msg;
-  assign net_fpuresp$in__val            = fpu$resp_val;
-  assign net_fpuresp$out$000_rdy        = proc$000$fpuresp_rdy;
-  assign net_fpuresp$out$001_rdy        = proc$001$fpuresp_rdy;
-  assign net_fpuresp$out$002_rdy        = proc$002$fpuresp_rdy;
-  assign net_fpuresp$out$003_rdy        = proc$003$fpuresp_rdy;
-  assign net_fpuresp$reset              = reset;
   assign net_mdureq$clk                 = clk;
   assign net_mdureq$in_$000_msg         = proc$000$mdureq_msg;
   assign net_mdureq$in_$000_val         = proc$000$mdureq_val;
@@ -5157,9 +6046,6 @@ module Chansey
   assign proc$000$dmemreq_rdy           = net_dcachereq$in_$000_rdy;
   assign proc$000$dmemresp_msg          = net_dcacheresp$out$000_msg;
   assign proc$000$dmemresp_val          = net_dcacheresp$out$000_val;
-  assign proc$000$fpureq_rdy            = net_fpureq$in_$000_rdy;
-  assign proc$000$fpuresp_msg           = net_fpuresp$out$000_msg;
-  assign proc$000$fpuresp_val           = net_fpuresp$out$000_val;
   assign proc$000$go                    = ctrlreg$go[0];
   assign proc$000$imemreq_rdy           = l0i$000$buffreq_rdy;
   assign proc$000$imemresp_msg          = l0i$000$buffresp_msg;
@@ -5179,9 +6065,6 @@ module Chansey
   assign proc$001$dmemreq_rdy           = net_dcachereq$in_$001_rdy;
   assign proc$001$dmemresp_msg          = net_dcacheresp$out$001_msg;
   assign proc$001$dmemresp_val          = net_dcacheresp$out$001_val;
-  assign proc$001$fpureq_rdy            = net_fpureq$in_$001_rdy;
-  assign proc$001$fpuresp_msg           = net_fpuresp$out$001_msg;
-  assign proc$001$fpuresp_val           = net_fpuresp$out$001_val;
   assign proc$001$go                    = ctrlreg$go[1];
   assign proc$001$imemreq_rdy           = l0i$001$buffreq_rdy;
   assign proc$001$imemresp_msg          = l0i$001$buffresp_msg;
@@ -5201,9 +6084,6 @@ module Chansey
   assign proc$002$dmemreq_rdy           = net_dcachereq$in_$002_rdy;
   assign proc$002$dmemresp_msg          = net_dcacheresp$out$002_msg;
   assign proc$002$dmemresp_val          = net_dcacheresp$out$002_val;
-  assign proc$002$fpureq_rdy            = net_fpureq$in_$002_rdy;
-  assign proc$002$fpuresp_msg           = net_fpuresp$out$002_msg;
-  assign proc$002$fpuresp_val           = net_fpuresp$out$002_val;
   assign proc$002$go                    = ctrlreg$go[2];
   assign proc$002$imemreq_rdy           = l0i$002$buffreq_rdy;
   assign proc$002$imemresp_msg          = l0i$002$buffresp_msg;
@@ -5223,9 +6103,6 @@ module Chansey
   assign proc$003$dmemreq_rdy           = net_dcachereq$in_$003_rdy;
   assign proc$003$dmemresp_msg          = net_dcacheresp$out$003_msg;
   assign proc$003$dmemresp_val          = net_dcacheresp$out$003_val;
-  assign proc$003$fpureq_rdy            = net_fpureq$in_$003_rdy;
-  assign proc$003$fpuresp_msg           = net_fpuresp$out$003_msg;
-  assign proc$003$fpuresp_val           = net_fpuresp$out$003_val;
   assign proc$003$go                    = ctrlreg$go[3];
   assign proc$003$imemreq_rdy           = l0i$003$buffreq_rdy;
   assign proc$003$imemresp_msg          = l0i$003$buffresp_msg;
@@ -5308,8 +6185,8 @@ endmodule // Chansey
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f538c2689d0>
-// req: <pymtl.model.signals.InPort object at 0x7f538c268690>
+// resp: <pymtl.model.signals.OutPort object at 0x7fcee6eaef90>
+// req: <pymtl.model.signals.InPort object at 0x7fcee6eaec50>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -5405,102 +6282,6 @@ module HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 
 
 endmodule // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Router_0x52846acbae83db71
-//-----------------------------------------------------------------------------
-// nports: 4
-// MsgType: 40
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Router_0x52846acbae83db71
-(
-  input  wire [   0:0] clk,
-  input  wire [  39:0] in__msg,
-  output reg  [   0:0] in__rdy,
-  input  wire [   0:0] in__val,
-  output wire [  39:0] out$000_msg,
-  input  wire [   0:0] out$000_rdy,
-  output wire [   0:0] out$000_val,
-  output wire [  39:0] out$001_msg,
-  input  wire [   0:0] out$001_rdy,
-  output wire [   0:0] out$001_val,
-  output wire [  39:0] out$002_msg,
-  input  wire [   0:0] out$002_rdy,
-  output wire [   0:0] out$002_val,
-  output wire [  39:0] out$003_msg,
-  input  wire [   0:0] out$003_rdy,
-  output wire [   0:0] out$003_val,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam nports = 4;
-
-  // loop variable declarations
-  integer i;
-
-
-  // array declarations
-  reg    [  39:0] out_msg[0:3];
-  assign out$000_msg = out_msg[  0];
-  assign out$001_msg = out_msg[  1];
-  assign out$002_msg = out_msg[  2];
-  assign out$003_msg = out_msg[  3];
-  wire   [   0:0] out_rdy[0:3];
-  assign out_rdy[  0] = out$000_rdy;
-  assign out_rdy[  1] = out$001_rdy;
-  assign out_rdy[  2] = out$002_rdy;
-  assign out_rdy[  3] = out$003_rdy;
-  reg    [   0:0] out_val[0:3];
-  assign out$000_val = out_val[  0];
-  assign out$001_val = out_val[  1];
-  assign out$002_val = out_val[  2];
-  assign out$003_val = out_val[  3];
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_out_val():
-  //       for i in xrange( nports ):
-  //         s.out[i].val.value = 0
-  //         s.out[i].msg.value = 0
-  //
-  //       if s.in_.val:
-  //         s.out[ s.in_.msg.opaque ].val.value = s.in_.val
-  //         s.out[ s.in_.msg.opaque ].msg.value = s.in_.msg
-
-  // logic for comb_out_val()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      out_val[i] = 0;
-      out_msg[i] = 0;
-    end
-    if (in__val) begin
-      out_val[in__msg[(40)-1:37]] = in__val;
-      out_msg[in__msg[(40)-1:37]] = in__msg;
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_in_rdy():
-  //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
-
-  // logic for comb_in_rdy()
-  always @ (*) begin
-    in__rdy = out_rdy[in__msg[(40)-1:37]];
-  end
-
-
-endmodule // Router_0x52846acbae83db71
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -10138,7 +10919,6 @@ module SramWrapper28nmPRTL_0x79c097bc28415054
     .cen       ( mem$000$000$cen ),
     .tgwen     ( mem$000$000$tgwen ),
     .twen      ( mem$000$000$twen ),
-    .reset     ( mem$000$000$reset ),
     .ema       ( mem$000$000$ema ),
     .d         ( mem$000$000$d ),
     .si        ( mem$000$000$si ),
@@ -10226,6 +11006,7 @@ endmodule // SramWrapper28nmPRTL_0x79c097bc28415054
 // module_name: sram_28nm_1024x32_SP
 // dump-vcd: False
 // verilator-xinit: zeros
+// This module is treated as a black box
 `default_nettype none
 module sram_28nm_1024x32_SP
 (
@@ -10242,7 +11023,6 @@ module sram_28nm_1024x32_SP
   input  wire [   0:0] gwen,
   output wire [   0:0] gweny,
   output reg  [  31:0] q,
-  input  wire [   0:0] reset,
   input  wire [   0:0] ret1n,
   input  wire [   0:0] se,
   input  wire [   1:0] si,
@@ -10256,2111 +11036,6 @@ module sram_28nm_1024x32_SP
   input  wire [  31:0] wen,
   output wire [  31:0] weny
 );
-
-  // wire declarations
-  wire   [  31:0] ram$000;
-  wire   [  31:0] ram$001;
-  wire   [  31:0] ram$002;
-  wire   [  31:0] ram$003;
-  wire   [  31:0] ram$004;
-  wire   [  31:0] ram$005;
-  wire   [  31:0] ram$006;
-  wire   [  31:0] ram$007;
-  wire   [  31:0] ram$008;
-  wire   [  31:0] ram$009;
-  wire   [  31:0] ram$010;
-  wire   [  31:0] ram$011;
-  wire   [  31:0] ram$012;
-  wire   [  31:0] ram$013;
-  wire   [  31:0] ram$014;
-  wire   [  31:0] ram$015;
-  wire   [  31:0] ram$016;
-  wire   [  31:0] ram$017;
-  wire   [  31:0] ram$018;
-  wire   [  31:0] ram$019;
-  wire   [  31:0] ram$020;
-  wire   [  31:0] ram$021;
-  wire   [  31:0] ram$022;
-  wire   [  31:0] ram$023;
-  wire   [  31:0] ram$024;
-  wire   [  31:0] ram$025;
-  wire   [  31:0] ram$026;
-  wire   [  31:0] ram$027;
-  wire   [  31:0] ram$028;
-  wire   [  31:0] ram$029;
-  wire   [  31:0] ram$030;
-  wire   [  31:0] ram$031;
-  wire   [  31:0] ram$032;
-  wire   [  31:0] ram$033;
-  wire   [  31:0] ram$034;
-  wire   [  31:0] ram$035;
-  wire   [  31:0] ram$036;
-  wire   [  31:0] ram$037;
-  wire   [  31:0] ram$038;
-  wire   [  31:0] ram$039;
-  wire   [  31:0] ram$040;
-  wire   [  31:0] ram$041;
-  wire   [  31:0] ram$042;
-  wire   [  31:0] ram$043;
-  wire   [  31:0] ram$044;
-  wire   [  31:0] ram$045;
-  wire   [  31:0] ram$046;
-  wire   [  31:0] ram$047;
-  wire   [  31:0] ram$048;
-  wire   [  31:0] ram$049;
-  wire   [  31:0] ram$050;
-  wire   [  31:0] ram$051;
-  wire   [  31:0] ram$052;
-  wire   [  31:0] ram$053;
-  wire   [  31:0] ram$054;
-  wire   [  31:0] ram$055;
-  wire   [  31:0] ram$056;
-  wire   [  31:0] ram$057;
-  wire   [  31:0] ram$058;
-  wire   [  31:0] ram$059;
-  wire   [  31:0] ram$060;
-  wire   [  31:0] ram$061;
-  wire   [  31:0] ram$062;
-  wire   [  31:0] ram$063;
-  wire   [  31:0] ram$064;
-  wire   [  31:0] ram$065;
-  wire   [  31:0] ram$066;
-  wire   [  31:0] ram$067;
-  wire   [  31:0] ram$068;
-  wire   [  31:0] ram$069;
-  wire   [  31:0] ram$070;
-  wire   [  31:0] ram$071;
-  wire   [  31:0] ram$072;
-  wire   [  31:0] ram$073;
-  wire   [  31:0] ram$074;
-  wire   [  31:0] ram$075;
-  wire   [  31:0] ram$076;
-  wire   [  31:0] ram$077;
-  wire   [  31:0] ram$078;
-  wire   [  31:0] ram$079;
-  wire   [  31:0] ram$080;
-  wire   [  31:0] ram$081;
-  wire   [  31:0] ram$082;
-  wire   [  31:0] ram$083;
-  wire   [  31:0] ram$084;
-  wire   [  31:0] ram$085;
-  wire   [  31:0] ram$086;
-  wire   [  31:0] ram$087;
-  wire   [  31:0] ram$088;
-  wire   [  31:0] ram$089;
-  wire   [  31:0] ram$090;
-  wire   [  31:0] ram$091;
-  wire   [  31:0] ram$092;
-  wire   [  31:0] ram$093;
-  wire   [  31:0] ram$094;
-  wire   [  31:0] ram$095;
-  wire   [  31:0] ram$096;
-  wire   [  31:0] ram$097;
-  wire   [  31:0] ram$098;
-  wire   [  31:0] ram$099;
-  wire   [  31:0] ram$100;
-  wire   [  31:0] ram$101;
-  wire   [  31:0] ram$102;
-  wire   [  31:0] ram$103;
-  wire   [  31:0] ram$104;
-  wire   [  31:0] ram$105;
-  wire   [  31:0] ram$106;
-  wire   [  31:0] ram$107;
-  wire   [  31:0] ram$108;
-  wire   [  31:0] ram$109;
-  wire   [  31:0] ram$110;
-  wire   [  31:0] ram$111;
-  wire   [  31:0] ram$112;
-  wire   [  31:0] ram$113;
-  wire   [  31:0] ram$114;
-  wire   [  31:0] ram$115;
-  wire   [  31:0] ram$116;
-  wire   [  31:0] ram$117;
-  wire   [  31:0] ram$118;
-  wire   [  31:0] ram$119;
-  wire   [  31:0] ram$120;
-  wire   [  31:0] ram$121;
-  wire   [  31:0] ram$122;
-  wire   [  31:0] ram$123;
-  wire   [  31:0] ram$124;
-  wire   [  31:0] ram$125;
-  wire   [  31:0] ram$126;
-  wire   [  31:0] ram$127;
-  wire   [  31:0] ram$128;
-  wire   [  31:0] ram$129;
-  wire   [  31:0] ram$130;
-  wire   [  31:0] ram$131;
-  wire   [  31:0] ram$132;
-  wire   [  31:0] ram$133;
-  wire   [  31:0] ram$134;
-  wire   [  31:0] ram$135;
-  wire   [  31:0] ram$136;
-  wire   [  31:0] ram$137;
-  wire   [  31:0] ram$138;
-  wire   [  31:0] ram$139;
-  wire   [  31:0] ram$140;
-  wire   [  31:0] ram$141;
-  wire   [  31:0] ram$142;
-  wire   [  31:0] ram$143;
-  wire   [  31:0] ram$144;
-  wire   [  31:0] ram$145;
-  wire   [  31:0] ram$146;
-  wire   [  31:0] ram$147;
-  wire   [  31:0] ram$148;
-  wire   [  31:0] ram$149;
-  wire   [  31:0] ram$150;
-  wire   [  31:0] ram$151;
-  wire   [  31:0] ram$152;
-  wire   [  31:0] ram$153;
-  wire   [  31:0] ram$154;
-  wire   [  31:0] ram$155;
-  wire   [  31:0] ram$156;
-  wire   [  31:0] ram$157;
-  wire   [  31:0] ram$158;
-  wire   [  31:0] ram$159;
-  wire   [  31:0] ram$160;
-  wire   [  31:0] ram$161;
-  wire   [  31:0] ram$162;
-  wire   [  31:0] ram$163;
-  wire   [  31:0] ram$164;
-  wire   [  31:0] ram$165;
-  wire   [  31:0] ram$166;
-  wire   [  31:0] ram$167;
-  wire   [  31:0] ram$168;
-  wire   [  31:0] ram$169;
-  wire   [  31:0] ram$170;
-  wire   [  31:0] ram$171;
-  wire   [  31:0] ram$172;
-  wire   [  31:0] ram$173;
-  wire   [  31:0] ram$174;
-  wire   [  31:0] ram$175;
-  wire   [  31:0] ram$176;
-  wire   [  31:0] ram$177;
-  wire   [  31:0] ram$178;
-  wire   [  31:0] ram$179;
-  wire   [  31:0] ram$180;
-  wire   [  31:0] ram$181;
-  wire   [  31:0] ram$182;
-  wire   [  31:0] ram$183;
-  wire   [  31:0] ram$184;
-  wire   [  31:0] ram$185;
-  wire   [  31:0] ram$186;
-  wire   [  31:0] ram$187;
-  wire   [  31:0] ram$188;
-  wire   [  31:0] ram$189;
-  wire   [  31:0] ram$190;
-  wire   [  31:0] ram$191;
-  wire   [  31:0] ram$192;
-  wire   [  31:0] ram$193;
-  wire   [  31:0] ram$194;
-  wire   [  31:0] ram$195;
-  wire   [  31:0] ram$196;
-  wire   [  31:0] ram$197;
-  wire   [  31:0] ram$198;
-  wire   [  31:0] ram$199;
-  wire   [  31:0] ram$200;
-  wire   [  31:0] ram$201;
-  wire   [  31:0] ram$202;
-  wire   [  31:0] ram$203;
-  wire   [  31:0] ram$204;
-  wire   [  31:0] ram$205;
-  wire   [  31:0] ram$206;
-  wire   [  31:0] ram$207;
-  wire   [  31:0] ram$208;
-  wire   [  31:0] ram$209;
-  wire   [  31:0] ram$210;
-  wire   [  31:0] ram$211;
-  wire   [  31:0] ram$212;
-  wire   [  31:0] ram$213;
-  wire   [  31:0] ram$214;
-  wire   [  31:0] ram$215;
-  wire   [  31:0] ram$216;
-  wire   [  31:0] ram$217;
-  wire   [  31:0] ram$218;
-  wire   [  31:0] ram$219;
-  wire   [  31:0] ram$220;
-  wire   [  31:0] ram$221;
-  wire   [  31:0] ram$222;
-  wire   [  31:0] ram$223;
-  wire   [  31:0] ram$224;
-  wire   [  31:0] ram$225;
-  wire   [  31:0] ram$226;
-  wire   [  31:0] ram$227;
-  wire   [  31:0] ram$228;
-  wire   [  31:0] ram$229;
-  wire   [  31:0] ram$230;
-  wire   [  31:0] ram$231;
-  wire   [  31:0] ram$232;
-  wire   [  31:0] ram$233;
-  wire   [  31:0] ram$234;
-  wire   [  31:0] ram$235;
-  wire   [  31:0] ram$236;
-  wire   [  31:0] ram$237;
-  wire   [  31:0] ram$238;
-  wire   [  31:0] ram$239;
-  wire   [  31:0] ram$240;
-  wire   [  31:0] ram$241;
-  wire   [  31:0] ram$242;
-  wire   [  31:0] ram$243;
-  wire   [  31:0] ram$244;
-  wire   [  31:0] ram$245;
-  wire   [  31:0] ram$246;
-  wire   [  31:0] ram$247;
-  wire   [  31:0] ram$248;
-  wire   [  31:0] ram$249;
-  wire   [  31:0] ram$250;
-  wire   [  31:0] ram$251;
-  wire   [  31:0] ram$252;
-  wire   [  31:0] ram$253;
-  wire   [  31:0] ram$254;
-  wire   [  31:0] ram$255;
-  wire   [  31:0] ram$256;
-  wire   [  31:0] ram$257;
-  wire   [  31:0] ram$258;
-  wire   [  31:0] ram$259;
-  wire   [  31:0] ram$260;
-  wire   [  31:0] ram$261;
-  wire   [  31:0] ram$262;
-  wire   [  31:0] ram$263;
-  wire   [  31:0] ram$264;
-  wire   [  31:0] ram$265;
-  wire   [  31:0] ram$266;
-  wire   [  31:0] ram$267;
-  wire   [  31:0] ram$268;
-  wire   [  31:0] ram$269;
-  wire   [  31:0] ram$270;
-  wire   [  31:0] ram$271;
-  wire   [  31:0] ram$272;
-  wire   [  31:0] ram$273;
-  wire   [  31:0] ram$274;
-  wire   [  31:0] ram$275;
-  wire   [  31:0] ram$276;
-  wire   [  31:0] ram$277;
-  wire   [  31:0] ram$278;
-  wire   [  31:0] ram$279;
-  wire   [  31:0] ram$280;
-  wire   [  31:0] ram$281;
-  wire   [  31:0] ram$282;
-  wire   [  31:0] ram$283;
-  wire   [  31:0] ram$284;
-  wire   [  31:0] ram$285;
-  wire   [  31:0] ram$286;
-  wire   [  31:0] ram$287;
-  wire   [  31:0] ram$288;
-  wire   [  31:0] ram$289;
-  wire   [  31:0] ram$290;
-  wire   [  31:0] ram$291;
-  wire   [  31:0] ram$292;
-  wire   [  31:0] ram$293;
-  wire   [  31:0] ram$294;
-  wire   [  31:0] ram$295;
-  wire   [  31:0] ram$296;
-  wire   [  31:0] ram$297;
-  wire   [  31:0] ram$298;
-  wire   [  31:0] ram$299;
-  wire   [  31:0] ram$300;
-  wire   [  31:0] ram$301;
-  wire   [  31:0] ram$302;
-  wire   [  31:0] ram$303;
-  wire   [  31:0] ram$304;
-  wire   [  31:0] ram$305;
-  wire   [  31:0] ram$306;
-  wire   [  31:0] ram$307;
-  wire   [  31:0] ram$308;
-  wire   [  31:0] ram$309;
-  wire   [  31:0] ram$310;
-  wire   [  31:0] ram$311;
-  wire   [  31:0] ram$312;
-  wire   [  31:0] ram$313;
-  wire   [  31:0] ram$314;
-  wire   [  31:0] ram$315;
-  wire   [  31:0] ram$316;
-  wire   [  31:0] ram$317;
-  wire   [  31:0] ram$318;
-  wire   [  31:0] ram$319;
-  wire   [  31:0] ram$320;
-  wire   [  31:0] ram$321;
-  wire   [  31:0] ram$322;
-  wire   [  31:0] ram$323;
-  wire   [  31:0] ram$324;
-  wire   [  31:0] ram$325;
-  wire   [  31:0] ram$326;
-  wire   [  31:0] ram$327;
-  wire   [  31:0] ram$328;
-  wire   [  31:0] ram$329;
-  wire   [  31:0] ram$330;
-  wire   [  31:0] ram$331;
-  wire   [  31:0] ram$332;
-  wire   [  31:0] ram$333;
-  wire   [  31:0] ram$334;
-  wire   [  31:0] ram$335;
-  wire   [  31:0] ram$336;
-  wire   [  31:0] ram$337;
-  wire   [  31:0] ram$338;
-  wire   [  31:0] ram$339;
-  wire   [  31:0] ram$340;
-  wire   [  31:0] ram$341;
-  wire   [  31:0] ram$342;
-  wire   [  31:0] ram$343;
-  wire   [  31:0] ram$344;
-  wire   [  31:0] ram$345;
-  wire   [  31:0] ram$346;
-  wire   [  31:0] ram$347;
-  wire   [  31:0] ram$348;
-  wire   [  31:0] ram$349;
-  wire   [  31:0] ram$350;
-  wire   [  31:0] ram$351;
-  wire   [  31:0] ram$352;
-  wire   [  31:0] ram$353;
-  wire   [  31:0] ram$354;
-  wire   [  31:0] ram$355;
-  wire   [  31:0] ram$356;
-  wire   [  31:0] ram$357;
-  wire   [  31:0] ram$358;
-  wire   [  31:0] ram$359;
-  wire   [  31:0] ram$360;
-  wire   [  31:0] ram$361;
-  wire   [  31:0] ram$362;
-  wire   [  31:0] ram$363;
-  wire   [  31:0] ram$364;
-  wire   [  31:0] ram$365;
-  wire   [  31:0] ram$366;
-  wire   [  31:0] ram$367;
-  wire   [  31:0] ram$368;
-  wire   [  31:0] ram$369;
-  wire   [  31:0] ram$370;
-  wire   [  31:0] ram$371;
-  wire   [  31:0] ram$372;
-  wire   [  31:0] ram$373;
-  wire   [  31:0] ram$374;
-  wire   [  31:0] ram$375;
-  wire   [  31:0] ram$376;
-  wire   [  31:0] ram$377;
-  wire   [  31:0] ram$378;
-  wire   [  31:0] ram$379;
-  wire   [  31:0] ram$380;
-  wire   [  31:0] ram$381;
-  wire   [  31:0] ram$382;
-  wire   [  31:0] ram$383;
-  wire   [  31:0] ram$384;
-  wire   [  31:0] ram$385;
-  wire   [  31:0] ram$386;
-  wire   [  31:0] ram$387;
-  wire   [  31:0] ram$388;
-  wire   [  31:0] ram$389;
-  wire   [  31:0] ram$390;
-  wire   [  31:0] ram$391;
-  wire   [  31:0] ram$392;
-  wire   [  31:0] ram$393;
-  wire   [  31:0] ram$394;
-  wire   [  31:0] ram$395;
-  wire   [  31:0] ram$396;
-  wire   [  31:0] ram$397;
-  wire   [  31:0] ram$398;
-  wire   [  31:0] ram$399;
-  wire   [  31:0] ram$400;
-  wire   [  31:0] ram$401;
-  wire   [  31:0] ram$402;
-  wire   [  31:0] ram$403;
-  wire   [  31:0] ram$404;
-  wire   [  31:0] ram$405;
-  wire   [  31:0] ram$406;
-  wire   [  31:0] ram$407;
-  wire   [  31:0] ram$408;
-  wire   [  31:0] ram$409;
-  wire   [  31:0] ram$410;
-  wire   [  31:0] ram$411;
-  wire   [  31:0] ram$412;
-  wire   [  31:0] ram$413;
-  wire   [  31:0] ram$414;
-  wire   [  31:0] ram$415;
-  wire   [  31:0] ram$416;
-  wire   [  31:0] ram$417;
-  wire   [  31:0] ram$418;
-  wire   [  31:0] ram$419;
-  wire   [  31:0] ram$420;
-  wire   [  31:0] ram$421;
-  wire   [  31:0] ram$422;
-  wire   [  31:0] ram$423;
-  wire   [  31:0] ram$424;
-  wire   [  31:0] ram$425;
-  wire   [  31:0] ram$426;
-  wire   [  31:0] ram$427;
-  wire   [  31:0] ram$428;
-  wire   [  31:0] ram$429;
-  wire   [  31:0] ram$430;
-  wire   [  31:0] ram$431;
-  wire   [  31:0] ram$432;
-  wire   [  31:0] ram$433;
-  wire   [  31:0] ram$434;
-  wire   [  31:0] ram$435;
-  wire   [  31:0] ram$436;
-  wire   [  31:0] ram$437;
-  wire   [  31:0] ram$438;
-  wire   [  31:0] ram$439;
-  wire   [  31:0] ram$440;
-  wire   [  31:0] ram$441;
-  wire   [  31:0] ram$442;
-  wire   [  31:0] ram$443;
-  wire   [  31:0] ram$444;
-  wire   [  31:0] ram$445;
-  wire   [  31:0] ram$446;
-  wire   [  31:0] ram$447;
-  wire   [  31:0] ram$448;
-  wire   [  31:0] ram$449;
-  wire   [  31:0] ram$450;
-  wire   [  31:0] ram$451;
-  wire   [  31:0] ram$452;
-  wire   [  31:0] ram$453;
-  wire   [  31:0] ram$454;
-  wire   [  31:0] ram$455;
-  wire   [  31:0] ram$456;
-  wire   [  31:0] ram$457;
-  wire   [  31:0] ram$458;
-  wire   [  31:0] ram$459;
-  wire   [  31:0] ram$460;
-  wire   [  31:0] ram$461;
-  wire   [  31:0] ram$462;
-  wire   [  31:0] ram$463;
-  wire   [  31:0] ram$464;
-  wire   [  31:0] ram$465;
-  wire   [  31:0] ram$466;
-  wire   [  31:0] ram$467;
-  wire   [  31:0] ram$468;
-  wire   [  31:0] ram$469;
-  wire   [  31:0] ram$470;
-  wire   [  31:0] ram$471;
-  wire   [  31:0] ram$472;
-  wire   [  31:0] ram$473;
-  wire   [  31:0] ram$474;
-  wire   [  31:0] ram$475;
-  wire   [  31:0] ram$476;
-  wire   [  31:0] ram$477;
-  wire   [  31:0] ram$478;
-  wire   [  31:0] ram$479;
-  wire   [  31:0] ram$480;
-  wire   [  31:0] ram$481;
-  wire   [  31:0] ram$482;
-  wire   [  31:0] ram$483;
-  wire   [  31:0] ram$484;
-  wire   [  31:0] ram$485;
-  wire   [  31:0] ram$486;
-  wire   [  31:0] ram$487;
-  wire   [  31:0] ram$488;
-  wire   [  31:0] ram$489;
-  wire   [  31:0] ram$490;
-  wire   [  31:0] ram$491;
-  wire   [  31:0] ram$492;
-  wire   [  31:0] ram$493;
-  wire   [  31:0] ram$494;
-  wire   [  31:0] ram$495;
-  wire   [  31:0] ram$496;
-  wire   [  31:0] ram$497;
-  wire   [  31:0] ram$498;
-  wire   [  31:0] ram$499;
-  wire   [  31:0] ram$500;
-  wire   [  31:0] ram$501;
-  wire   [  31:0] ram$502;
-  wire   [  31:0] ram$503;
-  wire   [  31:0] ram$504;
-  wire   [  31:0] ram$505;
-  wire   [  31:0] ram$506;
-  wire   [  31:0] ram$507;
-  wire   [  31:0] ram$508;
-  wire   [  31:0] ram$509;
-  wire   [  31:0] ram$510;
-  wire   [  31:0] ram$511;
-  wire   [  31:0] ram$512;
-  wire   [  31:0] ram$513;
-  wire   [  31:0] ram$514;
-  wire   [  31:0] ram$515;
-  wire   [  31:0] ram$516;
-  wire   [  31:0] ram$517;
-  wire   [  31:0] ram$518;
-  wire   [  31:0] ram$519;
-  wire   [  31:0] ram$520;
-  wire   [  31:0] ram$521;
-  wire   [  31:0] ram$522;
-  wire   [  31:0] ram$523;
-  wire   [  31:0] ram$524;
-  wire   [  31:0] ram$525;
-  wire   [  31:0] ram$526;
-  wire   [  31:0] ram$527;
-  wire   [  31:0] ram$528;
-  wire   [  31:0] ram$529;
-  wire   [  31:0] ram$530;
-  wire   [  31:0] ram$531;
-  wire   [  31:0] ram$532;
-  wire   [  31:0] ram$533;
-  wire   [  31:0] ram$534;
-  wire   [  31:0] ram$535;
-  wire   [  31:0] ram$536;
-  wire   [  31:0] ram$537;
-  wire   [  31:0] ram$538;
-  wire   [  31:0] ram$539;
-  wire   [  31:0] ram$540;
-  wire   [  31:0] ram$541;
-  wire   [  31:0] ram$542;
-  wire   [  31:0] ram$543;
-  wire   [  31:0] ram$544;
-  wire   [  31:0] ram$545;
-  wire   [  31:0] ram$546;
-  wire   [  31:0] ram$547;
-  wire   [  31:0] ram$548;
-  wire   [  31:0] ram$549;
-  wire   [  31:0] ram$550;
-  wire   [  31:0] ram$551;
-  wire   [  31:0] ram$552;
-  wire   [  31:0] ram$553;
-  wire   [  31:0] ram$554;
-  wire   [  31:0] ram$555;
-  wire   [  31:0] ram$556;
-  wire   [  31:0] ram$557;
-  wire   [  31:0] ram$558;
-  wire   [  31:0] ram$559;
-  wire   [  31:0] ram$560;
-  wire   [  31:0] ram$561;
-  wire   [  31:0] ram$562;
-  wire   [  31:0] ram$563;
-  wire   [  31:0] ram$564;
-  wire   [  31:0] ram$565;
-  wire   [  31:0] ram$566;
-  wire   [  31:0] ram$567;
-  wire   [  31:0] ram$568;
-  wire   [  31:0] ram$569;
-  wire   [  31:0] ram$570;
-  wire   [  31:0] ram$571;
-  wire   [  31:0] ram$572;
-  wire   [  31:0] ram$573;
-  wire   [  31:0] ram$574;
-  wire   [  31:0] ram$575;
-  wire   [  31:0] ram$576;
-  wire   [  31:0] ram$577;
-  wire   [  31:0] ram$578;
-  wire   [  31:0] ram$579;
-  wire   [  31:0] ram$580;
-  wire   [  31:0] ram$581;
-  wire   [  31:0] ram$582;
-  wire   [  31:0] ram$583;
-  wire   [  31:0] ram$584;
-  wire   [  31:0] ram$585;
-  wire   [  31:0] ram$586;
-  wire   [  31:0] ram$587;
-  wire   [  31:0] ram$588;
-  wire   [  31:0] ram$589;
-  wire   [  31:0] ram$590;
-  wire   [  31:0] ram$591;
-  wire   [  31:0] ram$592;
-  wire   [  31:0] ram$593;
-  wire   [  31:0] ram$594;
-  wire   [  31:0] ram$595;
-  wire   [  31:0] ram$596;
-  wire   [  31:0] ram$597;
-  wire   [  31:0] ram$598;
-  wire   [  31:0] ram$599;
-  wire   [  31:0] ram$600;
-  wire   [  31:0] ram$601;
-  wire   [  31:0] ram$602;
-  wire   [  31:0] ram$603;
-  wire   [  31:0] ram$604;
-  wire   [  31:0] ram$605;
-  wire   [  31:0] ram$606;
-  wire   [  31:0] ram$607;
-  wire   [  31:0] ram$608;
-  wire   [  31:0] ram$609;
-  wire   [  31:0] ram$610;
-  wire   [  31:0] ram$611;
-  wire   [  31:0] ram$612;
-  wire   [  31:0] ram$613;
-  wire   [  31:0] ram$614;
-  wire   [  31:0] ram$615;
-  wire   [  31:0] ram$616;
-  wire   [  31:0] ram$617;
-  wire   [  31:0] ram$618;
-  wire   [  31:0] ram$619;
-  wire   [  31:0] ram$620;
-  wire   [  31:0] ram$621;
-  wire   [  31:0] ram$622;
-  wire   [  31:0] ram$623;
-  wire   [  31:0] ram$624;
-  wire   [  31:0] ram$625;
-  wire   [  31:0] ram$626;
-  wire   [  31:0] ram$627;
-  wire   [  31:0] ram$628;
-  wire   [  31:0] ram$629;
-  wire   [  31:0] ram$630;
-  wire   [  31:0] ram$631;
-  wire   [  31:0] ram$632;
-  wire   [  31:0] ram$633;
-  wire   [  31:0] ram$634;
-  wire   [  31:0] ram$635;
-  wire   [  31:0] ram$636;
-  wire   [  31:0] ram$637;
-  wire   [  31:0] ram$638;
-  wire   [  31:0] ram$639;
-  wire   [  31:0] ram$640;
-  wire   [  31:0] ram$641;
-  wire   [  31:0] ram$642;
-  wire   [  31:0] ram$643;
-  wire   [  31:0] ram$644;
-  wire   [  31:0] ram$645;
-  wire   [  31:0] ram$646;
-  wire   [  31:0] ram$647;
-  wire   [  31:0] ram$648;
-  wire   [  31:0] ram$649;
-  wire   [  31:0] ram$650;
-  wire   [  31:0] ram$651;
-  wire   [  31:0] ram$652;
-  wire   [  31:0] ram$653;
-  wire   [  31:0] ram$654;
-  wire   [  31:0] ram$655;
-  wire   [  31:0] ram$656;
-  wire   [  31:0] ram$657;
-  wire   [  31:0] ram$658;
-  wire   [  31:0] ram$659;
-  wire   [  31:0] ram$660;
-  wire   [  31:0] ram$661;
-  wire   [  31:0] ram$662;
-  wire   [  31:0] ram$663;
-  wire   [  31:0] ram$664;
-  wire   [  31:0] ram$665;
-  wire   [  31:0] ram$666;
-  wire   [  31:0] ram$667;
-  wire   [  31:0] ram$668;
-  wire   [  31:0] ram$669;
-  wire   [  31:0] ram$670;
-  wire   [  31:0] ram$671;
-  wire   [  31:0] ram$672;
-  wire   [  31:0] ram$673;
-  wire   [  31:0] ram$674;
-  wire   [  31:0] ram$675;
-  wire   [  31:0] ram$676;
-  wire   [  31:0] ram$677;
-  wire   [  31:0] ram$678;
-  wire   [  31:0] ram$679;
-  wire   [  31:0] ram$680;
-  wire   [  31:0] ram$681;
-  wire   [  31:0] ram$682;
-  wire   [  31:0] ram$683;
-  wire   [  31:0] ram$684;
-  wire   [  31:0] ram$685;
-  wire   [  31:0] ram$686;
-  wire   [  31:0] ram$687;
-  wire   [  31:0] ram$688;
-  wire   [  31:0] ram$689;
-  wire   [  31:0] ram$690;
-  wire   [  31:0] ram$691;
-  wire   [  31:0] ram$692;
-  wire   [  31:0] ram$693;
-  wire   [  31:0] ram$694;
-  wire   [  31:0] ram$695;
-  wire   [  31:0] ram$696;
-  wire   [  31:0] ram$697;
-  wire   [  31:0] ram$698;
-  wire   [  31:0] ram$699;
-  wire   [  31:0] ram$700;
-  wire   [  31:0] ram$701;
-  wire   [  31:0] ram$702;
-  wire   [  31:0] ram$703;
-  wire   [  31:0] ram$704;
-  wire   [  31:0] ram$705;
-  wire   [  31:0] ram$706;
-  wire   [  31:0] ram$707;
-  wire   [  31:0] ram$708;
-  wire   [  31:0] ram$709;
-  wire   [  31:0] ram$710;
-  wire   [  31:0] ram$711;
-  wire   [  31:0] ram$712;
-  wire   [  31:0] ram$713;
-  wire   [  31:0] ram$714;
-  wire   [  31:0] ram$715;
-  wire   [  31:0] ram$716;
-  wire   [  31:0] ram$717;
-  wire   [  31:0] ram$718;
-  wire   [  31:0] ram$719;
-  wire   [  31:0] ram$720;
-  wire   [  31:0] ram$721;
-  wire   [  31:0] ram$722;
-  wire   [  31:0] ram$723;
-  wire   [  31:0] ram$724;
-  wire   [  31:0] ram$725;
-  wire   [  31:0] ram$726;
-  wire   [  31:0] ram$727;
-  wire   [  31:0] ram$728;
-  wire   [  31:0] ram$729;
-  wire   [  31:0] ram$730;
-  wire   [  31:0] ram$731;
-  wire   [  31:0] ram$732;
-  wire   [  31:0] ram$733;
-  wire   [  31:0] ram$734;
-  wire   [  31:0] ram$735;
-  wire   [  31:0] ram$736;
-  wire   [  31:0] ram$737;
-  wire   [  31:0] ram$738;
-  wire   [  31:0] ram$739;
-  wire   [  31:0] ram$740;
-  wire   [  31:0] ram$741;
-  wire   [  31:0] ram$742;
-  wire   [  31:0] ram$743;
-  wire   [  31:0] ram$744;
-  wire   [  31:0] ram$745;
-  wire   [  31:0] ram$746;
-  wire   [  31:0] ram$747;
-  wire   [  31:0] ram$748;
-  wire   [  31:0] ram$749;
-  wire   [  31:0] ram$750;
-  wire   [  31:0] ram$751;
-  wire   [  31:0] ram$752;
-  wire   [  31:0] ram$753;
-  wire   [  31:0] ram$754;
-  wire   [  31:0] ram$755;
-  wire   [  31:0] ram$756;
-  wire   [  31:0] ram$757;
-  wire   [  31:0] ram$758;
-  wire   [  31:0] ram$759;
-  wire   [  31:0] ram$760;
-  wire   [  31:0] ram$761;
-  wire   [  31:0] ram$762;
-  wire   [  31:0] ram$763;
-  wire   [  31:0] ram$764;
-  wire   [  31:0] ram$765;
-  wire   [  31:0] ram$766;
-  wire   [  31:0] ram$767;
-  wire   [  31:0] ram$768;
-  wire   [  31:0] ram$769;
-  wire   [  31:0] ram$770;
-  wire   [  31:0] ram$771;
-  wire   [  31:0] ram$772;
-  wire   [  31:0] ram$773;
-  wire   [  31:0] ram$774;
-  wire   [  31:0] ram$775;
-  wire   [  31:0] ram$776;
-  wire   [  31:0] ram$777;
-  wire   [  31:0] ram$778;
-  wire   [  31:0] ram$779;
-  wire   [  31:0] ram$780;
-  wire   [  31:0] ram$781;
-  wire   [  31:0] ram$782;
-  wire   [  31:0] ram$783;
-  wire   [  31:0] ram$784;
-  wire   [  31:0] ram$785;
-  wire   [  31:0] ram$786;
-  wire   [  31:0] ram$787;
-  wire   [  31:0] ram$788;
-  wire   [  31:0] ram$789;
-  wire   [  31:0] ram$790;
-  wire   [  31:0] ram$791;
-  wire   [  31:0] ram$792;
-  wire   [  31:0] ram$793;
-  wire   [  31:0] ram$794;
-  wire   [  31:0] ram$795;
-  wire   [  31:0] ram$796;
-  wire   [  31:0] ram$797;
-  wire   [  31:0] ram$798;
-  wire   [  31:0] ram$799;
-  wire   [  31:0] ram$800;
-  wire   [  31:0] ram$801;
-  wire   [  31:0] ram$802;
-  wire   [  31:0] ram$803;
-  wire   [  31:0] ram$804;
-  wire   [  31:0] ram$805;
-  wire   [  31:0] ram$806;
-  wire   [  31:0] ram$807;
-  wire   [  31:0] ram$808;
-  wire   [  31:0] ram$809;
-  wire   [  31:0] ram$810;
-  wire   [  31:0] ram$811;
-  wire   [  31:0] ram$812;
-  wire   [  31:0] ram$813;
-  wire   [  31:0] ram$814;
-  wire   [  31:0] ram$815;
-  wire   [  31:0] ram$816;
-  wire   [  31:0] ram$817;
-  wire   [  31:0] ram$818;
-  wire   [  31:0] ram$819;
-  wire   [  31:0] ram$820;
-  wire   [  31:0] ram$821;
-  wire   [  31:0] ram$822;
-  wire   [  31:0] ram$823;
-  wire   [  31:0] ram$824;
-  wire   [  31:0] ram$825;
-  wire   [  31:0] ram$826;
-  wire   [  31:0] ram$827;
-  wire   [  31:0] ram$828;
-  wire   [  31:0] ram$829;
-  wire   [  31:0] ram$830;
-  wire   [  31:0] ram$831;
-  wire   [  31:0] ram$832;
-  wire   [  31:0] ram$833;
-  wire   [  31:0] ram$834;
-  wire   [  31:0] ram$835;
-  wire   [  31:0] ram$836;
-  wire   [  31:0] ram$837;
-  wire   [  31:0] ram$838;
-  wire   [  31:0] ram$839;
-  wire   [  31:0] ram$840;
-  wire   [  31:0] ram$841;
-  wire   [  31:0] ram$842;
-  wire   [  31:0] ram$843;
-  wire   [  31:0] ram$844;
-  wire   [  31:0] ram$845;
-  wire   [  31:0] ram$846;
-  wire   [  31:0] ram$847;
-  wire   [  31:0] ram$848;
-  wire   [  31:0] ram$849;
-  wire   [  31:0] ram$850;
-  wire   [  31:0] ram$851;
-  wire   [  31:0] ram$852;
-  wire   [  31:0] ram$853;
-  wire   [  31:0] ram$854;
-  wire   [  31:0] ram$855;
-  wire   [  31:0] ram$856;
-  wire   [  31:0] ram$857;
-  wire   [  31:0] ram$858;
-  wire   [  31:0] ram$859;
-  wire   [  31:0] ram$860;
-  wire   [  31:0] ram$861;
-  wire   [  31:0] ram$862;
-  wire   [  31:0] ram$863;
-  wire   [  31:0] ram$864;
-  wire   [  31:0] ram$865;
-  wire   [  31:0] ram$866;
-  wire   [  31:0] ram$867;
-  wire   [  31:0] ram$868;
-  wire   [  31:0] ram$869;
-  wire   [  31:0] ram$870;
-  wire   [  31:0] ram$871;
-  wire   [  31:0] ram$872;
-  wire   [  31:0] ram$873;
-  wire   [  31:0] ram$874;
-  wire   [  31:0] ram$875;
-  wire   [  31:0] ram$876;
-  wire   [  31:0] ram$877;
-  wire   [  31:0] ram$878;
-  wire   [  31:0] ram$879;
-  wire   [  31:0] ram$880;
-  wire   [  31:0] ram$881;
-  wire   [  31:0] ram$882;
-  wire   [  31:0] ram$883;
-  wire   [  31:0] ram$884;
-  wire   [  31:0] ram$885;
-  wire   [  31:0] ram$886;
-  wire   [  31:0] ram$887;
-  wire   [  31:0] ram$888;
-  wire   [  31:0] ram$889;
-  wire   [  31:0] ram$890;
-  wire   [  31:0] ram$891;
-  wire   [  31:0] ram$892;
-  wire   [  31:0] ram$893;
-  wire   [  31:0] ram$894;
-  wire   [  31:0] ram$895;
-  wire   [  31:0] ram$896;
-  wire   [  31:0] ram$897;
-  wire   [  31:0] ram$898;
-  wire   [  31:0] ram$899;
-  wire   [  31:0] ram$900;
-  wire   [  31:0] ram$901;
-  wire   [  31:0] ram$902;
-  wire   [  31:0] ram$903;
-  wire   [  31:0] ram$904;
-  wire   [  31:0] ram$905;
-  wire   [  31:0] ram$906;
-  wire   [  31:0] ram$907;
-  wire   [  31:0] ram$908;
-  wire   [  31:0] ram$909;
-  wire   [  31:0] ram$910;
-  wire   [  31:0] ram$911;
-  wire   [  31:0] ram$912;
-  wire   [  31:0] ram$913;
-  wire   [  31:0] ram$914;
-  wire   [  31:0] ram$915;
-  wire   [  31:0] ram$916;
-  wire   [  31:0] ram$917;
-  wire   [  31:0] ram$918;
-  wire   [  31:0] ram$919;
-  wire   [  31:0] ram$920;
-  wire   [  31:0] ram$921;
-  wire   [  31:0] ram$922;
-  wire   [  31:0] ram$923;
-  wire   [  31:0] ram$924;
-  wire   [  31:0] ram$925;
-  wire   [  31:0] ram$926;
-  wire   [  31:0] ram$927;
-  wire   [  31:0] ram$928;
-  wire   [  31:0] ram$929;
-  wire   [  31:0] ram$930;
-  wire   [  31:0] ram$931;
-  wire   [  31:0] ram$932;
-  wire   [  31:0] ram$933;
-  wire   [  31:0] ram$934;
-  wire   [  31:0] ram$935;
-  wire   [  31:0] ram$936;
-  wire   [  31:0] ram$937;
-  wire   [  31:0] ram$938;
-  wire   [  31:0] ram$939;
-  wire   [  31:0] ram$940;
-  wire   [  31:0] ram$941;
-  wire   [  31:0] ram$942;
-  wire   [  31:0] ram$943;
-  wire   [  31:0] ram$944;
-  wire   [  31:0] ram$945;
-  wire   [  31:0] ram$946;
-  wire   [  31:0] ram$947;
-  wire   [  31:0] ram$948;
-  wire   [  31:0] ram$949;
-  wire   [  31:0] ram$950;
-  wire   [  31:0] ram$951;
-  wire   [  31:0] ram$952;
-  wire   [  31:0] ram$953;
-  wire   [  31:0] ram$954;
-  wire   [  31:0] ram$955;
-  wire   [  31:0] ram$956;
-  wire   [  31:0] ram$957;
-  wire   [  31:0] ram$958;
-  wire   [  31:0] ram$959;
-  wire   [  31:0] ram$960;
-  wire   [  31:0] ram$961;
-  wire   [  31:0] ram$962;
-  wire   [  31:0] ram$963;
-  wire   [  31:0] ram$964;
-  wire   [  31:0] ram$965;
-  wire   [  31:0] ram$966;
-  wire   [  31:0] ram$967;
-  wire   [  31:0] ram$968;
-  wire   [  31:0] ram$969;
-  wire   [  31:0] ram$970;
-  wire   [  31:0] ram$971;
-  wire   [  31:0] ram$972;
-  wire   [  31:0] ram$973;
-  wire   [  31:0] ram$974;
-  wire   [  31:0] ram$975;
-  wire   [  31:0] ram$976;
-  wire   [  31:0] ram$977;
-  wire   [  31:0] ram$978;
-  wire   [  31:0] ram$979;
-  wire   [  31:0] ram$980;
-  wire   [  31:0] ram$981;
-  wire   [  31:0] ram$982;
-  wire   [  31:0] ram$983;
-  wire   [  31:0] ram$984;
-  wire   [  31:0] ram$985;
-  wire   [  31:0] ram$986;
-  wire   [  31:0] ram$987;
-  wire   [  31:0] ram$988;
-  wire   [  31:0] ram$989;
-  wire   [  31:0] ram$990;
-  wire   [  31:0] ram$991;
-  wire   [  31:0] ram$992;
-  wire   [  31:0] ram$993;
-  wire   [  31:0] ram$994;
-  wire   [  31:0] ram$995;
-  wire   [  31:0] ram$996;
-  wire   [  31:0] ram$997;
-  wire   [  31:0] ram$998;
-  wire   [  31:0] ram$999;
-  wire   [  31:0] ram$1000;
-  wire   [  31:0] ram$1001;
-  wire   [  31:0] ram$1002;
-  wire   [  31:0] ram$1003;
-  wire   [  31:0] ram$1004;
-  wire   [  31:0] ram$1005;
-  wire   [  31:0] ram$1006;
-  wire   [  31:0] ram$1007;
-  wire   [  31:0] ram$1008;
-  wire   [  31:0] ram$1009;
-  wire   [  31:0] ram$1010;
-  wire   [  31:0] ram$1011;
-  wire   [  31:0] ram$1012;
-  wire   [  31:0] ram$1013;
-  wire   [  31:0] ram$1014;
-  wire   [  31:0] ram$1015;
-  wire   [  31:0] ram$1016;
-  wire   [  31:0] ram$1017;
-  wire   [  31:0] ram$1018;
-  wire   [  31:0] ram$1019;
-  wire   [  31:0] ram$1020;
-  wire   [  31:0] ram$1021;
-  wire   [  31:0] ram$1022;
-  wire   [  31:0] ram$1023;
-
-
-  // register declarations
-  reg    [  31:0] dout;
-
-
-  // array declarations
-  reg    [  31:0] ram[0:1023];
-  assign ram$000 = ram[  0];
-  assign ram$001 = ram[  1];
-  assign ram$002 = ram[  2];
-  assign ram$003 = ram[  3];
-  assign ram$004 = ram[  4];
-  assign ram$005 = ram[  5];
-  assign ram$006 = ram[  6];
-  assign ram$007 = ram[  7];
-  assign ram$008 = ram[  8];
-  assign ram$009 = ram[  9];
-  assign ram$010 = ram[ 10];
-  assign ram$011 = ram[ 11];
-  assign ram$012 = ram[ 12];
-  assign ram$013 = ram[ 13];
-  assign ram$014 = ram[ 14];
-  assign ram$015 = ram[ 15];
-  assign ram$016 = ram[ 16];
-  assign ram$017 = ram[ 17];
-  assign ram$018 = ram[ 18];
-  assign ram$019 = ram[ 19];
-  assign ram$020 = ram[ 20];
-  assign ram$021 = ram[ 21];
-  assign ram$022 = ram[ 22];
-  assign ram$023 = ram[ 23];
-  assign ram$024 = ram[ 24];
-  assign ram$025 = ram[ 25];
-  assign ram$026 = ram[ 26];
-  assign ram$027 = ram[ 27];
-  assign ram$028 = ram[ 28];
-  assign ram$029 = ram[ 29];
-  assign ram$030 = ram[ 30];
-  assign ram$031 = ram[ 31];
-  assign ram$032 = ram[ 32];
-  assign ram$033 = ram[ 33];
-  assign ram$034 = ram[ 34];
-  assign ram$035 = ram[ 35];
-  assign ram$036 = ram[ 36];
-  assign ram$037 = ram[ 37];
-  assign ram$038 = ram[ 38];
-  assign ram$039 = ram[ 39];
-  assign ram$040 = ram[ 40];
-  assign ram$041 = ram[ 41];
-  assign ram$042 = ram[ 42];
-  assign ram$043 = ram[ 43];
-  assign ram$044 = ram[ 44];
-  assign ram$045 = ram[ 45];
-  assign ram$046 = ram[ 46];
-  assign ram$047 = ram[ 47];
-  assign ram$048 = ram[ 48];
-  assign ram$049 = ram[ 49];
-  assign ram$050 = ram[ 50];
-  assign ram$051 = ram[ 51];
-  assign ram$052 = ram[ 52];
-  assign ram$053 = ram[ 53];
-  assign ram$054 = ram[ 54];
-  assign ram$055 = ram[ 55];
-  assign ram$056 = ram[ 56];
-  assign ram$057 = ram[ 57];
-  assign ram$058 = ram[ 58];
-  assign ram$059 = ram[ 59];
-  assign ram$060 = ram[ 60];
-  assign ram$061 = ram[ 61];
-  assign ram$062 = ram[ 62];
-  assign ram$063 = ram[ 63];
-  assign ram$064 = ram[ 64];
-  assign ram$065 = ram[ 65];
-  assign ram$066 = ram[ 66];
-  assign ram$067 = ram[ 67];
-  assign ram$068 = ram[ 68];
-  assign ram$069 = ram[ 69];
-  assign ram$070 = ram[ 70];
-  assign ram$071 = ram[ 71];
-  assign ram$072 = ram[ 72];
-  assign ram$073 = ram[ 73];
-  assign ram$074 = ram[ 74];
-  assign ram$075 = ram[ 75];
-  assign ram$076 = ram[ 76];
-  assign ram$077 = ram[ 77];
-  assign ram$078 = ram[ 78];
-  assign ram$079 = ram[ 79];
-  assign ram$080 = ram[ 80];
-  assign ram$081 = ram[ 81];
-  assign ram$082 = ram[ 82];
-  assign ram$083 = ram[ 83];
-  assign ram$084 = ram[ 84];
-  assign ram$085 = ram[ 85];
-  assign ram$086 = ram[ 86];
-  assign ram$087 = ram[ 87];
-  assign ram$088 = ram[ 88];
-  assign ram$089 = ram[ 89];
-  assign ram$090 = ram[ 90];
-  assign ram$091 = ram[ 91];
-  assign ram$092 = ram[ 92];
-  assign ram$093 = ram[ 93];
-  assign ram$094 = ram[ 94];
-  assign ram$095 = ram[ 95];
-  assign ram$096 = ram[ 96];
-  assign ram$097 = ram[ 97];
-  assign ram$098 = ram[ 98];
-  assign ram$099 = ram[ 99];
-  assign ram$100 = ram[100];
-  assign ram$101 = ram[101];
-  assign ram$102 = ram[102];
-  assign ram$103 = ram[103];
-  assign ram$104 = ram[104];
-  assign ram$105 = ram[105];
-  assign ram$106 = ram[106];
-  assign ram$107 = ram[107];
-  assign ram$108 = ram[108];
-  assign ram$109 = ram[109];
-  assign ram$110 = ram[110];
-  assign ram$111 = ram[111];
-  assign ram$112 = ram[112];
-  assign ram$113 = ram[113];
-  assign ram$114 = ram[114];
-  assign ram$115 = ram[115];
-  assign ram$116 = ram[116];
-  assign ram$117 = ram[117];
-  assign ram$118 = ram[118];
-  assign ram$119 = ram[119];
-  assign ram$120 = ram[120];
-  assign ram$121 = ram[121];
-  assign ram$122 = ram[122];
-  assign ram$123 = ram[123];
-  assign ram$124 = ram[124];
-  assign ram$125 = ram[125];
-  assign ram$126 = ram[126];
-  assign ram$127 = ram[127];
-  assign ram$128 = ram[128];
-  assign ram$129 = ram[129];
-  assign ram$130 = ram[130];
-  assign ram$131 = ram[131];
-  assign ram$132 = ram[132];
-  assign ram$133 = ram[133];
-  assign ram$134 = ram[134];
-  assign ram$135 = ram[135];
-  assign ram$136 = ram[136];
-  assign ram$137 = ram[137];
-  assign ram$138 = ram[138];
-  assign ram$139 = ram[139];
-  assign ram$140 = ram[140];
-  assign ram$141 = ram[141];
-  assign ram$142 = ram[142];
-  assign ram$143 = ram[143];
-  assign ram$144 = ram[144];
-  assign ram$145 = ram[145];
-  assign ram$146 = ram[146];
-  assign ram$147 = ram[147];
-  assign ram$148 = ram[148];
-  assign ram$149 = ram[149];
-  assign ram$150 = ram[150];
-  assign ram$151 = ram[151];
-  assign ram$152 = ram[152];
-  assign ram$153 = ram[153];
-  assign ram$154 = ram[154];
-  assign ram$155 = ram[155];
-  assign ram$156 = ram[156];
-  assign ram$157 = ram[157];
-  assign ram$158 = ram[158];
-  assign ram$159 = ram[159];
-  assign ram$160 = ram[160];
-  assign ram$161 = ram[161];
-  assign ram$162 = ram[162];
-  assign ram$163 = ram[163];
-  assign ram$164 = ram[164];
-  assign ram$165 = ram[165];
-  assign ram$166 = ram[166];
-  assign ram$167 = ram[167];
-  assign ram$168 = ram[168];
-  assign ram$169 = ram[169];
-  assign ram$170 = ram[170];
-  assign ram$171 = ram[171];
-  assign ram$172 = ram[172];
-  assign ram$173 = ram[173];
-  assign ram$174 = ram[174];
-  assign ram$175 = ram[175];
-  assign ram$176 = ram[176];
-  assign ram$177 = ram[177];
-  assign ram$178 = ram[178];
-  assign ram$179 = ram[179];
-  assign ram$180 = ram[180];
-  assign ram$181 = ram[181];
-  assign ram$182 = ram[182];
-  assign ram$183 = ram[183];
-  assign ram$184 = ram[184];
-  assign ram$185 = ram[185];
-  assign ram$186 = ram[186];
-  assign ram$187 = ram[187];
-  assign ram$188 = ram[188];
-  assign ram$189 = ram[189];
-  assign ram$190 = ram[190];
-  assign ram$191 = ram[191];
-  assign ram$192 = ram[192];
-  assign ram$193 = ram[193];
-  assign ram$194 = ram[194];
-  assign ram$195 = ram[195];
-  assign ram$196 = ram[196];
-  assign ram$197 = ram[197];
-  assign ram$198 = ram[198];
-  assign ram$199 = ram[199];
-  assign ram$200 = ram[200];
-  assign ram$201 = ram[201];
-  assign ram$202 = ram[202];
-  assign ram$203 = ram[203];
-  assign ram$204 = ram[204];
-  assign ram$205 = ram[205];
-  assign ram$206 = ram[206];
-  assign ram$207 = ram[207];
-  assign ram$208 = ram[208];
-  assign ram$209 = ram[209];
-  assign ram$210 = ram[210];
-  assign ram$211 = ram[211];
-  assign ram$212 = ram[212];
-  assign ram$213 = ram[213];
-  assign ram$214 = ram[214];
-  assign ram$215 = ram[215];
-  assign ram$216 = ram[216];
-  assign ram$217 = ram[217];
-  assign ram$218 = ram[218];
-  assign ram$219 = ram[219];
-  assign ram$220 = ram[220];
-  assign ram$221 = ram[221];
-  assign ram$222 = ram[222];
-  assign ram$223 = ram[223];
-  assign ram$224 = ram[224];
-  assign ram$225 = ram[225];
-  assign ram$226 = ram[226];
-  assign ram$227 = ram[227];
-  assign ram$228 = ram[228];
-  assign ram$229 = ram[229];
-  assign ram$230 = ram[230];
-  assign ram$231 = ram[231];
-  assign ram$232 = ram[232];
-  assign ram$233 = ram[233];
-  assign ram$234 = ram[234];
-  assign ram$235 = ram[235];
-  assign ram$236 = ram[236];
-  assign ram$237 = ram[237];
-  assign ram$238 = ram[238];
-  assign ram$239 = ram[239];
-  assign ram$240 = ram[240];
-  assign ram$241 = ram[241];
-  assign ram$242 = ram[242];
-  assign ram$243 = ram[243];
-  assign ram$244 = ram[244];
-  assign ram$245 = ram[245];
-  assign ram$246 = ram[246];
-  assign ram$247 = ram[247];
-  assign ram$248 = ram[248];
-  assign ram$249 = ram[249];
-  assign ram$250 = ram[250];
-  assign ram$251 = ram[251];
-  assign ram$252 = ram[252];
-  assign ram$253 = ram[253];
-  assign ram$254 = ram[254];
-  assign ram$255 = ram[255];
-  assign ram$256 = ram[256];
-  assign ram$257 = ram[257];
-  assign ram$258 = ram[258];
-  assign ram$259 = ram[259];
-  assign ram$260 = ram[260];
-  assign ram$261 = ram[261];
-  assign ram$262 = ram[262];
-  assign ram$263 = ram[263];
-  assign ram$264 = ram[264];
-  assign ram$265 = ram[265];
-  assign ram$266 = ram[266];
-  assign ram$267 = ram[267];
-  assign ram$268 = ram[268];
-  assign ram$269 = ram[269];
-  assign ram$270 = ram[270];
-  assign ram$271 = ram[271];
-  assign ram$272 = ram[272];
-  assign ram$273 = ram[273];
-  assign ram$274 = ram[274];
-  assign ram$275 = ram[275];
-  assign ram$276 = ram[276];
-  assign ram$277 = ram[277];
-  assign ram$278 = ram[278];
-  assign ram$279 = ram[279];
-  assign ram$280 = ram[280];
-  assign ram$281 = ram[281];
-  assign ram$282 = ram[282];
-  assign ram$283 = ram[283];
-  assign ram$284 = ram[284];
-  assign ram$285 = ram[285];
-  assign ram$286 = ram[286];
-  assign ram$287 = ram[287];
-  assign ram$288 = ram[288];
-  assign ram$289 = ram[289];
-  assign ram$290 = ram[290];
-  assign ram$291 = ram[291];
-  assign ram$292 = ram[292];
-  assign ram$293 = ram[293];
-  assign ram$294 = ram[294];
-  assign ram$295 = ram[295];
-  assign ram$296 = ram[296];
-  assign ram$297 = ram[297];
-  assign ram$298 = ram[298];
-  assign ram$299 = ram[299];
-  assign ram$300 = ram[300];
-  assign ram$301 = ram[301];
-  assign ram$302 = ram[302];
-  assign ram$303 = ram[303];
-  assign ram$304 = ram[304];
-  assign ram$305 = ram[305];
-  assign ram$306 = ram[306];
-  assign ram$307 = ram[307];
-  assign ram$308 = ram[308];
-  assign ram$309 = ram[309];
-  assign ram$310 = ram[310];
-  assign ram$311 = ram[311];
-  assign ram$312 = ram[312];
-  assign ram$313 = ram[313];
-  assign ram$314 = ram[314];
-  assign ram$315 = ram[315];
-  assign ram$316 = ram[316];
-  assign ram$317 = ram[317];
-  assign ram$318 = ram[318];
-  assign ram$319 = ram[319];
-  assign ram$320 = ram[320];
-  assign ram$321 = ram[321];
-  assign ram$322 = ram[322];
-  assign ram$323 = ram[323];
-  assign ram$324 = ram[324];
-  assign ram$325 = ram[325];
-  assign ram$326 = ram[326];
-  assign ram$327 = ram[327];
-  assign ram$328 = ram[328];
-  assign ram$329 = ram[329];
-  assign ram$330 = ram[330];
-  assign ram$331 = ram[331];
-  assign ram$332 = ram[332];
-  assign ram$333 = ram[333];
-  assign ram$334 = ram[334];
-  assign ram$335 = ram[335];
-  assign ram$336 = ram[336];
-  assign ram$337 = ram[337];
-  assign ram$338 = ram[338];
-  assign ram$339 = ram[339];
-  assign ram$340 = ram[340];
-  assign ram$341 = ram[341];
-  assign ram$342 = ram[342];
-  assign ram$343 = ram[343];
-  assign ram$344 = ram[344];
-  assign ram$345 = ram[345];
-  assign ram$346 = ram[346];
-  assign ram$347 = ram[347];
-  assign ram$348 = ram[348];
-  assign ram$349 = ram[349];
-  assign ram$350 = ram[350];
-  assign ram$351 = ram[351];
-  assign ram$352 = ram[352];
-  assign ram$353 = ram[353];
-  assign ram$354 = ram[354];
-  assign ram$355 = ram[355];
-  assign ram$356 = ram[356];
-  assign ram$357 = ram[357];
-  assign ram$358 = ram[358];
-  assign ram$359 = ram[359];
-  assign ram$360 = ram[360];
-  assign ram$361 = ram[361];
-  assign ram$362 = ram[362];
-  assign ram$363 = ram[363];
-  assign ram$364 = ram[364];
-  assign ram$365 = ram[365];
-  assign ram$366 = ram[366];
-  assign ram$367 = ram[367];
-  assign ram$368 = ram[368];
-  assign ram$369 = ram[369];
-  assign ram$370 = ram[370];
-  assign ram$371 = ram[371];
-  assign ram$372 = ram[372];
-  assign ram$373 = ram[373];
-  assign ram$374 = ram[374];
-  assign ram$375 = ram[375];
-  assign ram$376 = ram[376];
-  assign ram$377 = ram[377];
-  assign ram$378 = ram[378];
-  assign ram$379 = ram[379];
-  assign ram$380 = ram[380];
-  assign ram$381 = ram[381];
-  assign ram$382 = ram[382];
-  assign ram$383 = ram[383];
-  assign ram$384 = ram[384];
-  assign ram$385 = ram[385];
-  assign ram$386 = ram[386];
-  assign ram$387 = ram[387];
-  assign ram$388 = ram[388];
-  assign ram$389 = ram[389];
-  assign ram$390 = ram[390];
-  assign ram$391 = ram[391];
-  assign ram$392 = ram[392];
-  assign ram$393 = ram[393];
-  assign ram$394 = ram[394];
-  assign ram$395 = ram[395];
-  assign ram$396 = ram[396];
-  assign ram$397 = ram[397];
-  assign ram$398 = ram[398];
-  assign ram$399 = ram[399];
-  assign ram$400 = ram[400];
-  assign ram$401 = ram[401];
-  assign ram$402 = ram[402];
-  assign ram$403 = ram[403];
-  assign ram$404 = ram[404];
-  assign ram$405 = ram[405];
-  assign ram$406 = ram[406];
-  assign ram$407 = ram[407];
-  assign ram$408 = ram[408];
-  assign ram$409 = ram[409];
-  assign ram$410 = ram[410];
-  assign ram$411 = ram[411];
-  assign ram$412 = ram[412];
-  assign ram$413 = ram[413];
-  assign ram$414 = ram[414];
-  assign ram$415 = ram[415];
-  assign ram$416 = ram[416];
-  assign ram$417 = ram[417];
-  assign ram$418 = ram[418];
-  assign ram$419 = ram[419];
-  assign ram$420 = ram[420];
-  assign ram$421 = ram[421];
-  assign ram$422 = ram[422];
-  assign ram$423 = ram[423];
-  assign ram$424 = ram[424];
-  assign ram$425 = ram[425];
-  assign ram$426 = ram[426];
-  assign ram$427 = ram[427];
-  assign ram$428 = ram[428];
-  assign ram$429 = ram[429];
-  assign ram$430 = ram[430];
-  assign ram$431 = ram[431];
-  assign ram$432 = ram[432];
-  assign ram$433 = ram[433];
-  assign ram$434 = ram[434];
-  assign ram$435 = ram[435];
-  assign ram$436 = ram[436];
-  assign ram$437 = ram[437];
-  assign ram$438 = ram[438];
-  assign ram$439 = ram[439];
-  assign ram$440 = ram[440];
-  assign ram$441 = ram[441];
-  assign ram$442 = ram[442];
-  assign ram$443 = ram[443];
-  assign ram$444 = ram[444];
-  assign ram$445 = ram[445];
-  assign ram$446 = ram[446];
-  assign ram$447 = ram[447];
-  assign ram$448 = ram[448];
-  assign ram$449 = ram[449];
-  assign ram$450 = ram[450];
-  assign ram$451 = ram[451];
-  assign ram$452 = ram[452];
-  assign ram$453 = ram[453];
-  assign ram$454 = ram[454];
-  assign ram$455 = ram[455];
-  assign ram$456 = ram[456];
-  assign ram$457 = ram[457];
-  assign ram$458 = ram[458];
-  assign ram$459 = ram[459];
-  assign ram$460 = ram[460];
-  assign ram$461 = ram[461];
-  assign ram$462 = ram[462];
-  assign ram$463 = ram[463];
-  assign ram$464 = ram[464];
-  assign ram$465 = ram[465];
-  assign ram$466 = ram[466];
-  assign ram$467 = ram[467];
-  assign ram$468 = ram[468];
-  assign ram$469 = ram[469];
-  assign ram$470 = ram[470];
-  assign ram$471 = ram[471];
-  assign ram$472 = ram[472];
-  assign ram$473 = ram[473];
-  assign ram$474 = ram[474];
-  assign ram$475 = ram[475];
-  assign ram$476 = ram[476];
-  assign ram$477 = ram[477];
-  assign ram$478 = ram[478];
-  assign ram$479 = ram[479];
-  assign ram$480 = ram[480];
-  assign ram$481 = ram[481];
-  assign ram$482 = ram[482];
-  assign ram$483 = ram[483];
-  assign ram$484 = ram[484];
-  assign ram$485 = ram[485];
-  assign ram$486 = ram[486];
-  assign ram$487 = ram[487];
-  assign ram$488 = ram[488];
-  assign ram$489 = ram[489];
-  assign ram$490 = ram[490];
-  assign ram$491 = ram[491];
-  assign ram$492 = ram[492];
-  assign ram$493 = ram[493];
-  assign ram$494 = ram[494];
-  assign ram$495 = ram[495];
-  assign ram$496 = ram[496];
-  assign ram$497 = ram[497];
-  assign ram$498 = ram[498];
-  assign ram$499 = ram[499];
-  assign ram$500 = ram[500];
-  assign ram$501 = ram[501];
-  assign ram$502 = ram[502];
-  assign ram$503 = ram[503];
-  assign ram$504 = ram[504];
-  assign ram$505 = ram[505];
-  assign ram$506 = ram[506];
-  assign ram$507 = ram[507];
-  assign ram$508 = ram[508];
-  assign ram$509 = ram[509];
-  assign ram$510 = ram[510];
-  assign ram$511 = ram[511];
-  assign ram$512 = ram[512];
-  assign ram$513 = ram[513];
-  assign ram$514 = ram[514];
-  assign ram$515 = ram[515];
-  assign ram$516 = ram[516];
-  assign ram$517 = ram[517];
-  assign ram$518 = ram[518];
-  assign ram$519 = ram[519];
-  assign ram$520 = ram[520];
-  assign ram$521 = ram[521];
-  assign ram$522 = ram[522];
-  assign ram$523 = ram[523];
-  assign ram$524 = ram[524];
-  assign ram$525 = ram[525];
-  assign ram$526 = ram[526];
-  assign ram$527 = ram[527];
-  assign ram$528 = ram[528];
-  assign ram$529 = ram[529];
-  assign ram$530 = ram[530];
-  assign ram$531 = ram[531];
-  assign ram$532 = ram[532];
-  assign ram$533 = ram[533];
-  assign ram$534 = ram[534];
-  assign ram$535 = ram[535];
-  assign ram$536 = ram[536];
-  assign ram$537 = ram[537];
-  assign ram$538 = ram[538];
-  assign ram$539 = ram[539];
-  assign ram$540 = ram[540];
-  assign ram$541 = ram[541];
-  assign ram$542 = ram[542];
-  assign ram$543 = ram[543];
-  assign ram$544 = ram[544];
-  assign ram$545 = ram[545];
-  assign ram$546 = ram[546];
-  assign ram$547 = ram[547];
-  assign ram$548 = ram[548];
-  assign ram$549 = ram[549];
-  assign ram$550 = ram[550];
-  assign ram$551 = ram[551];
-  assign ram$552 = ram[552];
-  assign ram$553 = ram[553];
-  assign ram$554 = ram[554];
-  assign ram$555 = ram[555];
-  assign ram$556 = ram[556];
-  assign ram$557 = ram[557];
-  assign ram$558 = ram[558];
-  assign ram$559 = ram[559];
-  assign ram$560 = ram[560];
-  assign ram$561 = ram[561];
-  assign ram$562 = ram[562];
-  assign ram$563 = ram[563];
-  assign ram$564 = ram[564];
-  assign ram$565 = ram[565];
-  assign ram$566 = ram[566];
-  assign ram$567 = ram[567];
-  assign ram$568 = ram[568];
-  assign ram$569 = ram[569];
-  assign ram$570 = ram[570];
-  assign ram$571 = ram[571];
-  assign ram$572 = ram[572];
-  assign ram$573 = ram[573];
-  assign ram$574 = ram[574];
-  assign ram$575 = ram[575];
-  assign ram$576 = ram[576];
-  assign ram$577 = ram[577];
-  assign ram$578 = ram[578];
-  assign ram$579 = ram[579];
-  assign ram$580 = ram[580];
-  assign ram$581 = ram[581];
-  assign ram$582 = ram[582];
-  assign ram$583 = ram[583];
-  assign ram$584 = ram[584];
-  assign ram$585 = ram[585];
-  assign ram$586 = ram[586];
-  assign ram$587 = ram[587];
-  assign ram$588 = ram[588];
-  assign ram$589 = ram[589];
-  assign ram$590 = ram[590];
-  assign ram$591 = ram[591];
-  assign ram$592 = ram[592];
-  assign ram$593 = ram[593];
-  assign ram$594 = ram[594];
-  assign ram$595 = ram[595];
-  assign ram$596 = ram[596];
-  assign ram$597 = ram[597];
-  assign ram$598 = ram[598];
-  assign ram$599 = ram[599];
-  assign ram$600 = ram[600];
-  assign ram$601 = ram[601];
-  assign ram$602 = ram[602];
-  assign ram$603 = ram[603];
-  assign ram$604 = ram[604];
-  assign ram$605 = ram[605];
-  assign ram$606 = ram[606];
-  assign ram$607 = ram[607];
-  assign ram$608 = ram[608];
-  assign ram$609 = ram[609];
-  assign ram$610 = ram[610];
-  assign ram$611 = ram[611];
-  assign ram$612 = ram[612];
-  assign ram$613 = ram[613];
-  assign ram$614 = ram[614];
-  assign ram$615 = ram[615];
-  assign ram$616 = ram[616];
-  assign ram$617 = ram[617];
-  assign ram$618 = ram[618];
-  assign ram$619 = ram[619];
-  assign ram$620 = ram[620];
-  assign ram$621 = ram[621];
-  assign ram$622 = ram[622];
-  assign ram$623 = ram[623];
-  assign ram$624 = ram[624];
-  assign ram$625 = ram[625];
-  assign ram$626 = ram[626];
-  assign ram$627 = ram[627];
-  assign ram$628 = ram[628];
-  assign ram$629 = ram[629];
-  assign ram$630 = ram[630];
-  assign ram$631 = ram[631];
-  assign ram$632 = ram[632];
-  assign ram$633 = ram[633];
-  assign ram$634 = ram[634];
-  assign ram$635 = ram[635];
-  assign ram$636 = ram[636];
-  assign ram$637 = ram[637];
-  assign ram$638 = ram[638];
-  assign ram$639 = ram[639];
-  assign ram$640 = ram[640];
-  assign ram$641 = ram[641];
-  assign ram$642 = ram[642];
-  assign ram$643 = ram[643];
-  assign ram$644 = ram[644];
-  assign ram$645 = ram[645];
-  assign ram$646 = ram[646];
-  assign ram$647 = ram[647];
-  assign ram$648 = ram[648];
-  assign ram$649 = ram[649];
-  assign ram$650 = ram[650];
-  assign ram$651 = ram[651];
-  assign ram$652 = ram[652];
-  assign ram$653 = ram[653];
-  assign ram$654 = ram[654];
-  assign ram$655 = ram[655];
-  assign ram$656 = ram[656];
-  assign ram$657 = ram[657];
-  assign ram$658 = ram[658];
-  assign ram$659 = ram[659];
-  assign ram$660 = ram[660];
-  assign ram$661 = ram[661];
-  assign ram$662 = ram[662];
-  assign ram$663 = ram[663];
-  assign ram$664 = ram[664];
-  assign ram$665 = ram[665];
-  assign ram$666 = ram[666];
-  assign ram$667 = ram[667];
-  assign ram$668 = ram[668];
-  assign ram$669 = ram[669];
-  assign ram$670 = ram[670];
-  assign ram$671 = ram[671];
-  assign ram$672 = ram[672];
-  assign ram$673 = ram[673];
-  assign ram$674 = ram[674];
-  assign ram$675 = ram[675];
-  assign ram$676 = ram[676];
-  assign ram$677 = ram[677];
-  assign ram$678 = ram[678];
-  assign ram$679 = ram[679];
-  assign ram$680 = ram[680];
-  assign ram$681 = ram[681];
-  assign ram$682 = ram[682];
-  assign ram$683 = ram[683];
-  assign ram$684 = ram[684];
-  assign ram$685 = ram[685];
-  assign ram$686 = ram[686];
-  assign ram$687 = ram[687];
-  assign ram$688 = ram[688];
-  assign ram$689 = ram[689];
-  assign ram$690 = ram[690];
-  assign ram$691 = ram[691];
-  assign ram$692 = ram[692];
-  assign ram$693 = ram[693];
-  assign ram$694 = ram[694];
-  assign ram$695 = ram[695];
-  assign ram$696 = ram[696];
-  assign ram$697 = ram[697];
-  assign ram$698 = ram[698];
-  assign ram$699 = ram[699];
-  assign ram$700 = ram[700];
-  assign ram$701 = ram[701];
-  assign ram$702 = ram[702];
-  assign ram$703 = ram[703];
-  assign ram$704 = ram[704];
-  assign ram$705 = ram[705];
-  assign ram$706 = ram[706];
-  assign ram$707 = ram[707];
-  assign ram$708 = ram[708];
-  assign ram$709 = ram[709];
-  assign ram$710 = ram[710];
-  assign ram$711 = ram[711];
-  assign ram$712 = ram[712];
-  assign ram$713 = ram[713];
-  assign ram$714 = ram[714];
-  assign ram$715 = ram[715];
-  assign ram$716 = ram[716];
-  assign ram$717 = ram[717];
-  assign ram$718 = ram[718];
-  assign ram$719 = ram[719];
-  assign ram$720 = ram[720];
-  assign ram$721 = ram[721];
-  assign ram$722 = ram[722];
-  assign ram$723 = ram[723];
-  assign ram$724 = ram[724];
-  assign ram$725 = ram[725];
-  assign ram$726 = ram[726];
-  assign ram$727 = ram[727];
-  assign ram$728 = ram[728];
-  assign ram$729 = ram[729];
-  assign ram$730 = ram[730];
-  assign ram$731 = ram[731];
-  assign ram$732 = ram[732];
-  assign ram$733 = ram[733];
-  assign ram$734 = ram[734];
-  assign ram$735 = ram[735];
-  assign ram$736 = ram[736];
-  assign ram$737 = ram[737];
-  assign ram$738 = ram[738];
-  assign ram$739 = ram[739];
-  assign ram$740 = ram[740];
-  assign ram$741 = ram[741];
-  assign ram$742 = ram[742];
-  assign ram$743 = ram[743];
-  assign ram$744 = ram[744];
-  assign ram$745 = ram[745];
-  assign ram$746 = ram[746];
-  assign ram$747 = ram[747];
-  assign ram$748 = ram[748];
-  assign ram$749 = ram[749];
-  assign ram$750 = ram[750];
-  assign ram$751 = ram[751];
-  assign ram$752 = ram[752];
-  assign ram$753 = ram[753];
-  assign ram$754 = ram[754];
-  assign ram$755 = ram[755];
-  assign ram$756 = ram[756];
-  assign ram$757 = ram[757];
-  assign ram$758 = ram[758];
-  assign ram$759 = ram[759];
-  assign ram$760 = ram[760];
-  assign ram$761 = ram[761];
-  assign ram$762 = ram[762];
-  assign ram$763 = ram[763];
-  assign ram$764 = ram[764];
-  assign ram$765 = ram[765];
-  assign ram$766 = ram[766];
-  assign ram$767 = ram[767];
-  assign ram$768 = ram[768];
-  assign ram$769 = ram[769];
-  assign ram$770 = ram[770];
-  assign ram$771 = ram[771];
-  assign ram$772 = ram[772];
-  assign ram$773 = ram[773];
-  assign ram$774 = ram[774];
-  assign ram$775 = ram[775];
-  assign ram$776 = ram[776];
-  assign ram$777 = ram[777];
-  assign ram$778 = ram[778];
-  assign ram$779 = ram[779];
-  assign ram$780 = ram[780];
-  assign ram$781 = ram[781];
-  assign ram$782 = ram[782];
-  assign ram$783 = ram[783];
-  assign ram$784 = ram[784];
-  assign ram$785 = ram[785];
-  assign ram$786 = ram[786];
-  assign ram$787 = ram[787];
-  assign ram$788 = ram[788];
-  assign ram$789 = ram[789];
-  assign ram$790 = ram[790];
-  assign ram$791 = ram[791];
-  assign ram$792 = ram[792];
-  assign ram$793 = ram[793];
-  assign ram$794 = ram[794];
-  assign ram$795 = ram[795];
-  assign ram$796 = ram[796];
-  assign ram$797 = ram[797];
-  assign ram$798 = ram[798];
-  assign ram$799 = ram[799];
-  assign ram$800 = ram[800];
-  assign ram$801 = ram[801];
-  assign ram$802 = ram[802];
-  assign ram$803 = ram[803];
-  assign ram$804 = ram[804];
-  assign ram$805 = ram[805];
-  assign ram$806 = ram[806];
-  assign ram$807 = ram[807];
-  assign ram$808 = ram[808];
-  assign ram$809 = ram[809];
-  assign ram$810 = ram[810];
-  assign ram$811 = ram[811];
-  assign ram$812 = ram[812];
-  assign ram$813 = ram[813];
-  assign ram$814 = ram[814];
-  assign ram$815 = ram[815];
-  assign ram$816 = ram[816];
-  assign ram$817 = ram[817];
-  assign ram$818 = ram[818];
-  assign ram$819 = ram[819];
-  assign ram$820 = ram[820];
-  assign ram$821 = ram[821];
-  assign ram$822 = ram[822];
-  assign ram$823 = ram[823];
-  assign ram$824 = ram[824];
-  assign ram$825 = ram[825];
-  assign ram$826 = ram[826];
-  assign ram$827 = ram[827];
-  assign ram$828 = ram[828];
-  assign ram$829 = ram[829];
-  assign ram$830 = ram[830];
-  assign ram$831 = ram[831];
-  assign ram$832 = ram[832];
-  assign ram$833 = ram[833];
-  assign ram$834 = ram[834];
-  assign ram$835 = ram[835];
-  assign ram$836 = ram[836];
-  assign ram$837 = ram[837];
-  assign ram$838 = ram[838];
-  assign ram$839 = ram[839];
-  assign ram$840 = ram[840];
-  assign ram$841 = ram[841];
-  assign ram$842 = ram[842];
-  assign ram$843 = ram[843];
-  assign ram$844 = ram[844];
-  assign ram$845 = ram[845];
-  assign ram$846 = ram[846];
-  assign ram$847 = ram[847];
-  assign ram$848 = ram[848];
-  assign ram$849 = ram[849];
-  assign ram$850 = ram[850];
-  assign ram$851 = ram[851];
-  assign ram$852 = ram[852];
-  assign ram$853 = ram[853];
-  assign ram$854 = ram[854];
-  assign ram$855 = ram[855];
-  assign ram$856 = ram[856];
-  assign ram$857 = ram[857];
-  assign ram$858 = ram[858];
-  assign ram$859 = ram[859];
-  assign ram$860 = ram[860];
-  assign ram$861 = ram[861];
-  assign ram$862 = ram[862];
-  assign ram$863 = ram[863];
-  assign ram$864 = ram[864];
-  assign ram$865 = ram[865];
-  assign ram$866 = ram[866];
-  assign ram$867 = ram[867];
-  assign ram$868 = ram[868];
-  assign ram$869 = ram[869];
-  assign ram$870 = ram[870];
-  assign ram$871 = ram[871];
-  assign ram$872 = ram[872];
-  assign ram$873 = ram[873];
-  assign ram$874 = ram[874];
-  assign ram$875 = ram[875];
-  assign ram$876 = ram[876];
-  assign ram$877 = ram[877];
-  assign ram$878 = ram[878];
-  assign ram$879 = ram[879];
-  assign ram$880 = ram[880];
-  assign ram$881 = ram[881];
-  assign ram$882 = ram[882];
-  assign ram$883 = ram[883];
-  assign ram$884 = ram[884];
-  assign ram$885 = ram[885];
-  assign ram$886 = ram[886];
-  assign ram$887 = ram[887];
-  assign ram$888 = ram[888];
-  assign ram$889 = ram[889];
-  assign ram$890 = ram[890];
-  assign ram$891 = ram[891];
-  assign ram$892 = ram[892];
-  assign ram$893 = ram[893];
-  assign ram$894 = ram[894];
-  assign ram$895 = ram[895];
-  assign ram$896 = ram[896];
-  assign ram$897 = ram[897];
-  assign ram$898 = ram[898];
-  assign ram$899 = ram[899];
-  assign ram$900 = ram[900];
-  assign ram$901 = ram[901];
-  assign ram$902 = ram[902];
-  assign ram$903 = ram[903];
-  assign ram$904 = ram[904];
-  assign ram$905 = ram[905];
-  assign ram$906 = ram[906];
-  assign ram$907 = ram[907];
-  assign ram$908 = ram[908];
-  assign ram$909 = ram[909];
-  assign ram$910 = ram[910];
-  assign ram$911 = ram[911];
-  assign ram$912 = ram[912];
-  assign ram$913 = ram[913];
-  assign ram$914 = ram[914];
-  assign ram$915 = ram[915];
-  assign ram$916 = ram[916];
-  assign ram$917 = ram[917];
-  assign ram$918 = ram[918];
-  assign ram$919 = ram[919];
-  assign ram$920 = ram[920];
-  assign ram$921 = ram[921];
-  assign ram$922 = ram[922];
-  assign ram$923 = ram[923];
-  assign ram$924 = ram[924];
-  assign ram$925 = ram[925];
-  assign ram$926 = ram[926];
-  assign ram$927 = ram[927];
-  assign ram$928 = ram[928];
-  assign ram$929 = ram[929];
-  assign ram$930 = ram[930];
-  assign ram$931 = ram[931];
-  assign ram$932 = ram[932];
-  assign ram$933 = ram[933];
-  assign ram$934 = ram[934];
-  assign ram$935 = ram[935];
-  assign ram$936 = ram[936];
-  assign ram$937 = ram[937];
-  assign ram$938 = ram[938];
-  assign ram$939 = ram[939];
-  assign ram$940 = ram[940];
-  assign ram$941 = ram[941];
-  assign ram$942 = ram[942];
-  assign ram$943 = ram[943];
-  assign ram$944 = ram[944];
-  assign ram$945 = ram[945];
-  assign ram$946 = ram[946];
-  assign ram$947 = ram[947];
-  assign ram$948 = ram[948];
-  assign ram$949 = ram[949];
-  assign ram$950 = ram[950];
-  assign ram$951 = ram[951];
-  assign ram$952 = ram[952];
-  assign ram$953 = ram[953];
-  assign ram$954 = ram[954];
-  assign ram$955 = ram[955];
-  assign ram$956 = ram[956];
-  assign ram$957 = ram[957];
-  assign ram$958 = ram[958];
-  assign ram$959 = ram[959];
-  assign ram$960 = ram[960];
-  assign ram$961 = ram[961];
-  assign ram$962 = ram[962];
-  assign ram$963 = ram[963];
-  assign ram$964 = ram[964];
-  assign ram$965 = ram[965];
-  assign ram$966 = ram[966];
-  assign ram$967 = ram[967];
-  assign ram$968 = ram[968];
-  assign ram$969 = ram[969];
-  assign ram$970 = ram[970];
-  assign ram$971 = ram[971];
-  assign ram$972 = ram[972];
-  assign ram$973 = ram[973];
-  assign ram$974 = ram[974];
-  assign ram$975 = ram[975];
-  assign ram$976 = ram[976];
-  assign ram$977 = ram[977];
-  assign ram$978 = ram[978];
-  assign ram$979 = ram[979];
-  assign ram$980 = ram[980];
-  assign ram$981 = ram[981];
-  assign ram$982 = ram[982];
-  assign ram$983 = ram[983];
-  assign ram$984 = ram[984];
-  assign ram$985 = ram[985];
-  assign ram$986 = ram[986];
-  assign ram$987 = ram[987];
-  assign ram$988 = ram[988];
-  assign ram$989 = ram[989];
-  assign ram$990 = ram[990];
-  assign ram$991 = ram[991];
-  assign ram$992 = ram[992];
-  assign ram$993 = ram[993];
-  assign ram$994 = ram[994];
-  assign ram$995 = ram[995];
-  assign ram$996 = ram[996];
-  assign ram$997 = ram[997];
-  assign ram$998 = ram[998];
-  assign ram$999 = ram[999];
-  assign ram$1000 = ram[1000];
-  assign ram$1001 = ram[1001];
-  assign ram$1002 = ram[1002];
-  assign ram$1003 = ram[1003];
-  assign ram$1004 = ram[1004];
-  assign ram$1005 = ram[1005];
-  assign ram$1006 = ram[1006];
-  assign ram$1007 = ram[1007];
-  assign ram$1008 = ram[1008];
-  assign ram$1009 = ram[1009];
-  assign ram$1010 = ram[1010];
-  assign ram$1011 = ram[1011];
-  assign ram$1012 = ram[1012];
-  assign ram$1013 = ram[1013];
-  assign ram$1014 = ram[1014];
-  assign ram$1015 = ram[1015];
-  assign ram$1016 = ram[1016];
-  assign ram$1017 = ram[1017];
-  assign ram$1018 = ram[1018];
-  assign ram$1019 = ram[1019];
-  assign ram$1020 = ram[1020];
-  assign ram$1021 = ram[1021];
-  assign ram$1022 = ram[1022];
-  assign ram$1023 = ram[1023];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def read_logic():
-  //       if ( not s.cen ) and s.gwen:
-  //         s.dout.next = s.ram[ s.a ]
-  //       else:
-  //         s.dout.next = 0
-
-  // logic for read_logic()
-  always @ (posedge clk) begin
-    if ((!cen&&gwen)) begin
-      dout <= ram[a];
-    end
-    else begin
-      dout <= 0;
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def write_logic():
-  //       if ( not s.cen ) and ( not s.gwen ):
-  //         s.ram[s.a].next = (s.ram[s.a] & s.wen) | (s.d & ~s.wen)
-
-  // logic for write_logic()
-  always @ (posedge clk) begin
-    if ((!cen&&!gwen)) begin
-      ram[a] <= ((ram[a]&wen)|(d&~wen));
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       s.q.value = s.dout
-
-  // logic for comb_logic()
-  always @ (*) begin
-    q = dout;
-  end
-
 
 endmodule // sram_28nm_1024x32_SP
 `default_nettype wire
@@ -12569,7 +11244,6 @@ module SramWrapper28nmPRTL_0x6865ae273cdbc0f4
     .cen       ( mem$000$000$cen ),
     .tgwen     ( mem$000$000$tgwen ),
     .twen      ( mem$000$000$twen ),
-    .reset     ( mem$000$000$reset ),
     .ema       ( mem$000$000$ema ),
     .d         ( mem$000$000$d ),
     .si        ( mem$000$000$si ),
@@ -12657,6 +11331,7 @@ endmodule // SramWrapper28nmPRTL_0x6865ae273cdbc0f4
 // module_name: sram_28nm_1024x128_SP
 // dump-vcd: False
 // verilator-xinit: zeros
+// This module is treated as a black box
 `default_nettype none
 module sram_28nm_1024x128_SP
 (
@@ -12673,7 +11348,6 @@ module sram_28nm_1024x128_SP
   input  wire [   0:0] gwen,
   output wire [   0:0] gweny,
   output reg  [ 127:0] q,
-  input  wire [   0:0] reset,
   input  wire [   0:0] ret1n,
   input  wire [   0:0] se,
   input  wire [   1:0] si,
@@ -12687,2111 +11361,6 @@ module sram_28nm_1024x128_SP
   input  wire [ 127:0] wen,
   output wire [ 127:0] weny
 );
-
-  // wire declarations
-  wire   [ 127:0] ram$000;
-  wire   [ 127:0] ram$001;
-  wire   [ 127:0] ram$002;
-  wire   [ 127:0] ram$003;
-  wire   [ 127:0] ram$004;
-  wire   [ 127:0] ram$005;
-  wire   [ 127:0] ram$006;
-  wire   [ 127:0] ram$007;
-  wire   [ 127:0] ram$008;
-  wire   [ 127:0] ram$009;
-  wire   [ 127:0] ram$010;
-  wire   [ 127:0] ram$011;
-  wire   [ 127:0] ram$012;
-  wire   [ 127:0] ram$013;
-  wire   [ 127:0] ram$014;
-  wire   [ 127:0] ram$015;
-  wire   [ 127:0] ram$016;
-  wire   [ 127:0] ram$017;
-  wire   [ 127:0] ram$018;
-  wire   [ 127:0] ram$019;
-  wire   [ 127:0] ram$020;
-  wire   [ 127:0] ram$021;
-  wire   [ 127:0] ram$022;
-  wire   [ 127:0] ram$023;
-  wire   [ 127:0] ram$024;
-  wire   [ 127:0] ram$025;
-  wire   [ 127:0] ram$026;
-  wire   [ 127:0] ram$027;
-  wire   [ 127:0] ram$028;
-  wire   [ 127:0] ram$029;
-  wire   [ 127:0] ram$030;
-  wire   [ 127:0] ram$031;
-  wire   [ 127:0] ram$032;
-  wire   [ 127:0] ram$033;
-  wire   [ 127:0] ram$034;
-  wire   [ 127:0] ram$035;
-  wire   [ 127:0] ram$036;
-  wire   [ 127:0] ram$037;
-  wire   [ 127:0] ram$038;
-  wire   [ 127:0] ram$039;
-  wire   [ 127:0] ram$040;
-  wire   [ 127:0] ram$041;
-  wire   [ 127:0] ram$042;
-  wire   [ 127:0] ram$043;
-  wire   [ 127:0] ram$044;
-  wire   [ 127:0] ram$045;
-  wire   [ 127:0] ram$046;
-  wire   [ 127:0] ram$047;
-  wire   [ 127:0] ram$048;
-  wire   [ 127:0] ram$049;
-  wire   [ 127:0] ram$050;
-  wire   [ 127:0] ram$051;
-  wire   [ 127:0] ram$052;
-  wire   [ 127:0] ram$053;
-  wire   [ 127:0] ram$054;
-  wire   [ 127:0] ram$055;
-  wire   [ 127:0] ram$056;
-  wire   [ 127:0] ram$057;
-  wire   [ 127:0] ram$058;
-  wire   [ 127:0] ram$059;
-  wire   [ 127:0] ram$060;
-  wire   [ 127:0] ram$061;
-  wire   [ 127:0] ram$062;
-  wire   [ 127:0] ram$063;
-  wire   [ 127:0] ram$064;
-  wire   [ 127:0] ram$065;
-  wire   [ 127:0] ram$066;
-  wire   [ 127:0] ram$067;
-  wire   [ 127:0] ram$068;
-  wire   [ 127:0] ram$069;
-  wire   [ 127:0] ram$070;
-  wire   [ 127:0] ram$071;
-  wire   [ 127:0] ram$072;
-  wire   [ 127:0] ram$073;
-  wire   [ 127:0] ram$074;
-  wire   [ 127:0] ram$075;
-  wire   [ 127:0] ram$076;
-  wire   [ 127:0] ram$077;
-  wire   [ 127:0] ram$078;
-  wire   [ 127:0] ram$079;
-  wire   [ 127:0] ram$080;
-  wire   [ 127:0] ram$081;
-  wire   [ 127:0] ram$082;
-  wire   [ 127:0] ram$083;
-  wire   [ 127:0] ram$084;
-  wire   [ 127:0] ram$085;
-  wire   [ 127:0] ram$086;
-  wire   [ 127:0] ram$087;
-  wire   [ 127:0] ram$088;
-  wire   [ 127:0] ram$089;
-  wire   [ 127:0] ram$090;
-  wire   [ 127:0] ram$091;
-  wire   [ 127:0] ram$092;
-  wire   [ 127:0] ram$093;
-  wire   [ 127:0] ram$094;
-  wire   [ 127:0] ram$095;
-  wire   [ 127:0] ram$096;
-  wire   [ 127:0] ram$097;
-  wire   [ 127:0] ram$098;
-  wire   [ 127:0] ram$099;
-  wire   [ 127:0] ram$100;
-  wire   [ 127:0] ram$101;
-  wire   [ 127:0] ram$102;
-  wire   [ 127:0] ram$103;
-  wire   [ 127:0] ram$104;
-  wire   [ 127:0] ram$105;
-  wire   [ 127:0] ram$106;
-  wire   [ 127:0] ram$107;
-  wire   [ 127:0] ram$108;
-  wire   [ 127:0] ram$109;
-  wire   [ 127:0] ram$110;
-  wire   [ 127:0] ram$111;
-  wire   [ 127:0] ram$112;
-  wire   [ 127:0] ram$113;
-  wire   [ 127:0] ram$114;
-  wire   [ 127:0] ram$115;
-  wire   [ 127:0] ram$116;
-  wire   [ 127:0] ram$117;
-  wire   [ 127:0] ram$118;
-  wire   [ 127:0] ram$119;
-  wire   [ 127:0] ram$120;
-  wire   [ 127:0] ram$121;
-  wire   [ 127:0] ram$122;
-  wire   [ 127:0] ram$123;
-  wire   [ 127:0] ram$124;
-  wire   [ 127:0] ram$125;
-  wire   [ 127:0] ram$126;
-  wire   [ 127:0] ram$127;
-  wire   [ 127:0] ram$128;
-  wire   [ 127:0] ram$129;
-  wire   [ 127:0] ram$130;
-  wire   [ 127:0] ram$131;
-  wire   [ 127:0] ram$132;
-  wire   [ 127:0] ram$133;
-  wire   [ 127:0] ram$134;
-  wire   [ 127:0] ram$135;
-  wire   [ 127:0] ram$136;
-  wire   [ 127:0] ram$137;
-  wire   [ 127:0] ram$138;
-  wire   [ 127:0] ram$139;
-  wire   [ 127:0] ram$140;
-  wire   [ 127:0] ram$141;
-  wire   [ 127:0] ram$142;
-  wire   [ 127:0] ram$143;
-  wire   [ 127:0] ram$144;
-  wire   [ 127:0] ram$145;
-  wire   [ 127:0] ram$146;
-  wire   [ 127:0] ram$147;
-  wire   [ 127:0] ram$148;
-  wire   [ 127:0] ram$149;
-  wire   [ 127:0] ram$150;
-  wire   [ 127:0] ram$151;
-  wire   [ 127:0] ram$152;
-  wire   [ 127:0] ram$153;
-  wire   [ 127:0] ram$154;
-  wire   [ 127:0] ram$155;
-  wire   [ 127:0] ram$156;
-  wire   [ 127:0] ram$157;
-  wire   [ 127:0] ram$158;
-  wire   [ 127:0] ram$159;
-  wire   [ 127:0] ram$160;
-  wire   [ 127:0] ram$161;
-  wire   [ 127:0] ram$162;
-  wire   [ 127:0] ram$163;
-  wire   [ 127:0] ram$164;
-  wire   [ 127:0] ram$165;
-  wire   [ 127:0] ram$166;
-  wire   [ 127:0] ram$167;
-  wire   [ 127:0] ram$168;
-  wire   [ 127:0] ram$169;
-  wire   [ 127:0] ram$170;
-  wire   [ 127:0] ram$171;
-  wire   [ 127:0] ram$172;
-  wire   [ 127:0] ram$173;
-  wire   [ 127:0] ram$174;
-  wire   [ 127:0] ram$175;
-  wire   [ 127:0] ram$176;
-  wire   [ 127:0] ram$177;
-  wire   [ 127:0] ram$178;
-  wire   [ 127:0] ram$179;
-  wire   [ 127:0] ram$180;
-  wire   [ 127:0] ram$181;
-  wire   [ 127:0] ram$182;
-  wire   [ 127:0] ram$183;
-  wire   [ 127:0] ram$184;
-  wire   [ 127:0] ram$185;
-  wire   [ 127:0] ram$186;
-  wire   [ 127:0] ram$187;
-  wire   [ 127:0] ram$188;
-  wire   [ 127:0] ram$189;
-  wire   [ 127:0] ram$190;
-  wire   [ 127:0] ram$191;
-  wire   [ 127:0] ram$192;
-  wire   [ 127:0] ram$193;
-  wire   [ 127:0] ram$194;
-  wire   [ 127:0] ram$195;
-  wire   [ 127:0] ram$196;
-  wire   [ 127:0] ram$197;
-  wire   [ 127:0] ram$198;
-  wire   [ 127:0] ram$199;
-  wire   [ 127:0] ram$200;
-  wire   [ 127:0] ram$201;
-  wire   [ 127:0] ram$202;
-  wire   [ 127:0] ram$203;
-  wire   [ 127:0] ram$204;
-  wire   [ 127:0] ram$205;
-  wire   [ 127:0] ram$206;
-  wire   [ 127:0] ram$207;
-  wire   [ 127:0] ram$208;
-  wire   [ 127:0] ram$209;
-  wire   [ 127:0] ram$210;
-  wire   [ 127:0] ram$211;
-  wire   [ 127:0] ram$212;
-  wire   [ 127:0] ram$213;
-  wire   [ 127:0] ram$214;
-  wire   [ 127:0] ram$215;
-  wire   [ 127:0] ram$216;
-  wire   [ 127:0] ram$217;
-  wire   [ 127:0] ram$218;
-  wire   [ 127:0] ram$219;
-  wire   [ 127:0] ram$220;
-  wire   [ 127:0] ram$221;
-  wire   [ 127:0] ram$222;
-  wire   [ 127:0] ram$223;
-  wire   [ 127:0] ram$224;
-  wire   [ 127:0] ram$225;
-  wire   [ 127:0] ram$226;
-  wire   [ 127:0] ram$227;
-  wire   [ 127:0] ram$228;
-  wire   [ 127:0] ram$229;
-  wire   [ 127:0] ram$230;
-  wire   [ 127:0] ram$231;
-  wire   [ 127:0] ram$232;
-  wire   [ 127:0] ram$233;
-  wire   [ 127:0] ram$234;
-  wire   [ 127:0] ram$235;
-  wire   [ 127:0] ram$236;
-  wire   [ 127:0] ram$237;
-  wire   [ 127:0] ram$238;
-  wire   [ 127:0] ram$239;
-  wire   [ 127:0] ram$240;
-  wire   [ 127:0] ram$241;
-  wire   [ 127:0] ram$242;
-  wire   [ 127:0] ram$243;
-  wire   [ 127:0] ram$244;
-  wire   [ 127:0] ram$245;
-  wire   [ 127:0] ram$246;
-  wire   [ 127:0] ram$247;
-  wire   [ 127:0] ram$248;
-  wire   [ 127:0] ram$249;
-  wire   [ 127:0] ram$250;
-  wire   [ 127:0] ram$251;
-  wire   [ 127:0] ram$252;
-  wire   [ 127:0] ram$253;
-  wire   [ 127:0] ram$254;
-  wire   [ 127:0] ram$255;
-  wire   [ 127:0] ram$256;
-  wire   [ 127:0] ram$257;
-  wire   [ 127:0] ram$258;
-  wire   [ 127:0] ram$259;
-  wire   [ 127:0] ram$260;
-  wire   [ 127:0] ram$261;
-  wire   [ 127:0] ram$262;
-  wire   [ 127:0] ram$263;
-  wire   [ 127:0] ram$264;
-  wire   [ 127:0] ram$265;
-  wire   [ 127:0] ram$266;
-  wire   [ 127:0] ram$267;
-  wire   [ 127:0] ram$268;
-  wire   [ 127:0] ram$269;
-  wire   [ 127:0] ram$270;
-  wire   [ 127:0] ram$271;
-  wire   [ 127:0] ram$272;
-  wire   [ 127:0] ram$273;
-  wire   [ 127:0] ram$274;
-  wire   [ 127:0] ram$275;
-  wire   [ 127:0] ram$276;
-  wire   [ 127:0] ram$277;
-  wire   [ 127:0] ram$278;
-  wire   [ 127:0] ram$279;
-  wire   [ 127:0] ram$280;
-  wire   [ 127:0] ram$281;
-  wire   [ 127:0] ram$282;
-  wire   [ 127:0] ram$283;
-  wire   [ 127:0] ram$284;
-  wire   [ 127:0] ram$285;
-  wire   [ 127:0] ram$286;
-  wire   [ 127:0] ram$287;
-  wire   [ 127:0] ram$288;
-  wire   [ 127:0] ram$289;
-  wire   [ 127:0] ram$290;
-  wire   [ 127:0] ram$291;
-  wire   [ 127:0] ram$292;
-  wire   [ 127:0] ram$293;
-  wire   [ 127:0] ram$294;
-  wire   [ 127:0] ram$295;
-  wire   [ 127:0] ram$296;
-  wire   [ 127:0] ram$297;
-  wire   [ 127:0] ram$298;
-  wire   [ 127:0] ram$299;
-  wire   [ 127:0] ram$300;
-  wire   [ 127:0] ram$301;
-  wire   [ 127:0] ram$302;
-  wire   [ 127:0] ram$303;
-  wire   [ 127:0] ram$304;
-  wire   [ 127:0] ram$305;
-  wire   [ 127:0] ram$306;
-  wire   [ 127:0] ram$307;
-  wire   [ 127:0] ram$308;
-  wire   [ 127:0] ram$309;
-  wire   [ 127:0] ram$310;
-  wire   [ 127:0] ram$311;
-  wire   [ 127:0] ram$312;
-  wire   [ 127:0] ram$313;
-  wire   [ 127:0] ram$314;
-  wire   [ 127:0] ram$315;
-  wire   [ 127:0] ram$316;
-  wire   [ 127:0] ram$317;
-  wire   [ 127:0] ram$318;
-  wire   [ 127:0] ram$319;
-  wire   [ 127:0] ram$320;
-  wire   [ 127:0] ram$321;
-  wire   [ 127:0] ram$322;
-  wire   [ 127:0] ram$323;
-  wire   [ 127:0] ram$324;
-  wire   [ 127:0] ram$325;
-  wire   [ 127:0] ram$326;
-  wire   [ 127:0] ram$327;
-  wire   [ 127:0] ram$328;
-  wire   [ 127:0] ram$329;
-  wire   [ 127:0] ram$330;
-  wire   [ 127:0] ram$331;
-  wire   [ 127:0] ram$332;
-  wire   [ 127:0] ram$333;
-  wire   [ 127:0] ram$334;
-  wire   [ 127:0] ram$335;
-  wire   [ 127:0] ram$336;
-  wire   [ 127:0] ram$337;
-  wire   [ 127:0] ram$338;
-  wire   [ 127:0] ram$339;
-  wire   [ 127:0] ram$340;
-  wire   [ 127:0] ram$341;
-  wire   [ 127:0] ram$342;
-  wire   [ 127:0] ram$343;
-  wire   [ 127:0] ram$344;
-  wire   [ 127:0] ram$345;
-  wire   [ 127:0] ram$346;
-  wire   [ 127:0] ram$347;
-  wire   [ 127:0] ram$348;
-  wire   [ 127:0] ram$349;
-  wire   [ 127:0] ram$350;
-  wire   [ 127:0] ram$351;
-  wire   [ 127:0] ram$352;
-  wire   [ 127:0] ram$353;
-  wire   [ 127:0] ram$354;
-  wire   [ 127:0] ram$355;
-  wire   [ 127:0] ram$356;
-  wire   [ 127:0] ram$357;
-  wire   [ 127:0] ram$358;
-  wire   [ 127:0] ram$359;
-  wire   [ 127:0] ram$360;
-  wire   [ 127:0] ram$361;
-  wire   [ 127:0] ram$362;
-  wire   [ 127:0] ram$363;
-  wire   [ 127:0] ram$364;
-  wire   [ 127:0] ram$365;
-  wire   [ 127:0] ram$366;
-  wire   [ 127:0] ram$367;
-  wire   [ 127:0] ram$368;
-  wire   [ 127:0] ram$369;
-  wire   [ 127:0] ram$370;
-  wire   [ 127:0] ram$371;
-  wire   [ 127:0] ram$372;
-  wire   [ 127:0] ram$373;
-  wire   [ 127:0] ram$374;
-  wire   [ 127:0] ram$375;
-  wire   [ 127:0] ram$376;
-  wire   [ 127:0] ram$377;
-  wire   [ 127:0] ram$378;
-  wire   [ 127:0] ram$379;
-  wire   [ 127:0] ram$380;
-  wire   [ 127:0] ram$381;
-  wire   [ 127:0] ram$382;
-  wire   [ 127:0] ram$383;
-  wire   [ 127:0] ram$384;
-  wire   [ 127:0] ram$385;
-  wire   [ 127:0] ram$386;
-  wire   [ 127:0] ram$387;
-  wire   [ 127:0] ram$388;
-  wire   [ 127:0] ram$389;
-  wire   [ 127:0] ram$390;
-  wire   [ 127:0] ram$391;
-  wire   [ 127:0] ram$392;
-  wire   [ 127:0] ram$393;
-  wire   [ 127:0] ram$394;
-  wire   [ 127:0] ram$395;
-  wire   [ 127:0] ram$396;
-  wire   [ 127:0] ram$397;
-  wire   [ 127:0] ram$398;
-  wire   [ 127:0] ram$399;
-  wire   [ 127:0] ram$400;
-  wire   [ 127:0] ram$401;
-  wire   [ 127:0] ram$402;
-  wire   [ 127:0] ram$403;
-  wire   [ 127:0] ram$404;
-  wire   [ 127:0] ram$405;
-  wire   [ 127:0] ram$406;
-  wire   [ 127:0] ram$407;
-  wire   [ 127:0] ram$408;
-  wire   [ 127:0] ram$409;
-  wire   [ 127:0] ram$410;
-  wire   [ 127:0] ram$411;
-  wire   [ 127:0] ram$412;
-  wire   [ 127:0] ram$413;
-  wire   [ 127:0] ram$414;
-  wire   [ 127:0] ram$415;
-  wire   [ 127:0] ram$416;
-  wire   [ 127:0] ram$417;
-  wire   [ 127:0] ram$418;
-  wire   [ 127:0] ram$419;
-  wire   [ 127:0] ram$420;
-  wire   [ 127:0] ram$421;
-  wire   [ 127:0] ram$422;
-  wire   [ 127:0] ram$423;
-  wire   [ 127:0] ram$424;
-  wire   [ 127:0] ram$425;
-  wire   [ 127:0] ram$426;
-  wire   [ 127:0] ram$427;
-  wire   [ 127:0] ram$428;
-  wire   [ 127:0] ram$429;
-  wire   [ 127:0] ram$430;
-  wire   [ 127:0] ram$431;
-  wire   [ 127:0] ram$432;
-  wire   [ 127:0] ram$433;
-  wire   [ 127:0] ram$434;
-  wire   [ 127:0] ram$435;
-  wire   [ 127:0] ram$436;
-  wire   [ 127:0] ram$437;
-  wire   [ 127:0] ram$438;
-  wire   [ 127:0] ram$439;
-  wire   [ 127:0] ram$440;
-  wire   [ 127:0] ram$441;
-  wire   [ 127:0] ram$442;
-  wire   [ 127:0] ram$443;
-  wire   [ 127:0] ram$444;
-  wire   [ 127:0] ram$445;
-  wire   [ 127:0] ram$446;
-  wire   [ 127:0] ram$447;
-  wire   [ 127:0] ram$448;
-  wire   [ 127:0] ram$449;
-  wire   [ 127:0] ram$450;
-  wire   [ 127:0] ram$451;
-  wire   [ 127:0] ram$452;
-  wire   [ 127:0] ram$453;
-  wire   [ 127:0] ram$454;
-  wire   [ 127:0] ram$455;
-  wire   [ 127:0] ram$456;
-  wire   [ 127:0] ram$457;
-  wire   [ 127:0] ram$458;
-  wire   [ 127:0] ram$459;
-  wire   [ 127:0] ram$460;
-  wire   [ 127:0] ram$461;
-  wire   [ 127:0] ram$462;
-  wire   [ 127:0] ram$463;
-  wire   [ 127:0] ram$464;
-  wire   [ 127:0] ram$465;
-  wire   [ 127:0] ram$466;
-  wire   [ 127:0] ram$467;
-  wire   [ 127:0] ram$468;
-  wire   [ 127:0] ram$469;
-  wire   [ 127:0] ram$470;
-  wire   [ 127:0] ram$471;
-  wire   [ 127:0] ram$472;
-  wire   [ 127:0] ram$473;
-  wire   [ 127:0] ram$474;
-  wire   [ 127:0] ram$475;
-  wire   [ 127:0] ram$476;
-  wire   [ 127:0] ram$477;
-  wire   [ 127:0] ram$478;
-  wire   [ 127:0] ram$479;
-  wire   [ 127:0] ram$480;
-  wire   [ 127:0] ram$481;
-  wire   [ 127:0] ram$482;
-  wire   [ 127:0] ram$483;
-  wire   [ 127:0] ram$484;
-  wire   [ 127:0] ram$485;
-  wire   [ 127:0] ram$486;
-  wire   [ 127:0] ram$487;
-  wire   [ 127:0] ram$488;
-  wire   [ 127:0] ram$489;
-  wire   [ 127:0] ram$490;
-  wire   [ 127:0] ram$491;
-  wire   [ 127:0] ram$492;
-  wire   [ 127:0] ram$493;
-  wire   [ 127:0] ram$494;
-  wire   [ 127:0] ram$495;
-  wire   [ 127:0] ram$496;
-  wire   [ 127:0] ram$497;
-  wire   [ 127:0] ram$498;
-  wire   [ 127:0] ram$499;
-  wire   [ 127:0] ram$500;
-  wire   [ 127:0] ram$501;
-  wire   [ 127:0] ram$502;
-  wire   [ 127:0] ram$503;
-  wire   [ 127:0] ram$504;
-  wire   [ 127:0] ram$505;
-  wire   [ 127:0] ram$506;
-  wire   [ 127:0] ram$507;
-  wire   [ 127:0] ram$508;
-  wire   [ 127:0] ram$509;
-  wire   [ 127:0] ram$510;
-  wire   [ 127:0] ram$511;
-  wire   [ 127:0] ram$512;
-  wire   [ 127:0] ram$513;
-  wire   [ 127:0] ram$514;
-  wire   [ 127:0] ram$515;
-  wire   [ 127:0] ram$516;
-  wire   [ 127:0] ram$517;
-  wire   [ 127:0] ram$518;
-  wire   [ 127:0] ram$519;
-  wire   [ 127:0] ram$520;
-  wire   [ 127:0] ram$521;
-  wire   [ 127:0] ram$522;
-  wire   [ 127:0] ram$523;
-  wire   [ 127:0] ram$524;
-  wire   [ 127:0] ram$525;
-  wire   [ 127:0] ram$526;
-  wire   [ 127:0] ram$527;
-  wire   [ 127:0] ram$528;
-  wire   [ 127:0] ram$529;
-  wire   [ 127:0] ram$530;
-  wire   [ 127:0] ram$531;
-  wire   [ 127:0] ram$532;
-  wire   [ 127:0] ram$533;
-  wire   [ 127:0] ram$534;
-  wire   [ 127:0] ram$535;
-  wire   [ 127:0] ram$536;
-  wire   [ 127:0] ram$537;
-  wire   [ 127:0] ram$538;
-  wire   [ 127:0] ram$539;
-  wire   [ 127:0] ram$540;
-  wire   [ 127:0] ram$541;
-  wire   [ 127:0] ram$542;
-  wire   [ 127:0] ram$543;
-  wire   [ 127:0] ram$544;
-  wire   [ 127:0] ram$545;
-  wire   [ 127:0] ram$546;
-  wire   [ 127:0] ram$547;
-  wire   [ 127:0] ram$548;
-  wire   [ 127:0] ram$549;
-  wire   [ 127:0] ram$550;
-  wire   [ 127:0] ram$551;
-  wire   [ 127:0] ram$552;
-  wire   [ 127:0] ram$553;
-  wire   [ 127:0] ram$554;
-  wire   [ 127:0] ram$555;
-  wire   [ 127:0] ram$556;
-  wire   [ 127:0] ram$557;
-  wire   [ 127:0] ram$558;
-  wire   [ 127:0] ram$559;
-  wire   [ 127:0] ram$560;
-  wire   [ 127:0] ram$561;
-  wire   [ 127:0] ram$562;
-  wire   [ 127:0] ram$563;
-  wire   [ 127:0] ram$564;
-  wire   [ 127:0] ram$565;
-  wire   [ 127:0] ram$566;
-  wire   [ 127:0] ram$567;
-  wire   [ 127:0] ram$568;
-  wire   [ 127:0] ram$569;
-  wire   [ 127:0] ram$570;
-  wire   [ 127:0] ram$571;
-  wire   [ 127:0] ram$572;
-  wire   [ 127:0] ram$573;
-  wire   [ 127:0] ram$574;
-  wire   [ 127:0] ram$575;
-  wire   [ 127:0] ram$576;
-  wire   [ 127:0] ram$577;
-  wire   [ 127:0] ram$578;
-  wire   [ 127:0] ram$579;
-  wire   [ 127:0] ram$580;
-  wire   [ 127:0] ram$581;
-  wire   [ 127:0] ram$582;
-  wire   [ 127:0] ram$583;
-  wire   [ 127:0] ram$584;
-  wire   [ 127:0] ram$585;
-  wire   [ 127:0] ram$586;
-  wire   [ 127:0] ram$587;
-  wire   [ 127:0] ram$588;
-  wire   [ 127:0] ram$589;
-  wire   [ 127:0] ram$590;
-  wire   [ 127:0] ram$591;
-  wire   [ 127:0] ram$592;
-  wire   [ 127:0] ram$593;
-  wire   [ 127:0] ram$594;
-  wire   [ 127:0] ram$595;
-  wire   [ 127:0] ram$596;
-  wire   [ 127:0] ram$597;
-  wire   [ 127:0] ram$598;
-  wire   [ 127:0] ram$599;
-  wire   [ 127:0] ram$600;
-  wire   [ 127:0] ram$601;
-  wire   [ 127:0] ram$602;
-  wire   [ 127:0] ram$603;
-  wire   [ 127:0] ram$604;
-  wire   [ 127:0] ram$605;
-  wire   [ 127:0] ram$606;
-  wire   [ 127:0] ram$607;
-  wire   [ 127:0] ram$608;
-  wire   [ 127:0] ram$609;
-  wire   [ 127:0] ram$610;
-  wire   [ 127:0] ram$611;
-  wire   [ 127:0] ram$612;
-  wire   [ 127:0] ram$613;
-  wire   [ 127:0] ram$614;
-  wire   [ 127:0] ram$615;
-  wire   [ 127:0] ram$616;
-  wire   [ 127:0] ram$617;
-  wire   [ 127:0] ram$618;
-  wire   [ 127:0] ram$619;
-  wire   [ 127:0] ram$620;
-  wire   [ 127:0] ram$621;
-  wire   [ 127:0] ram$622;
-  wire   [ 127:0] ram$623;
-  wire   [ 127:0] ram$624;
-  wire   [ 127:0] ram$625;
-  wire   [ 127:0] ram$626;
-  wire   [ 127:0] ram$627;
-  wire   [ 127:0] ram$628;
-  wire   [ 127:0] ram$629;
-  wire   [ 127:0] ram$630;
-  wire   [ 127:0] ram$631;
-  wire   [ 127:0] ram$632;
-  wire   [ 127:0] ram$633;
-  wire   [ 127:0] ram$634;
-  wire   [ 127:0] ram$635;
-  wire   [ 127:0] ram$636;
-  wire   [ 127:0] ram$637;
-  wire   [ 127:0] ram$638;
-  wire   [ 127:0] ram$639;
-  wire   [ 127:0] ram$640;
-  wire   [ 127:0] ram$641;
-  wire   [ 127:0] ram$642;
-  wire   [ 127:0] ram$643;
-  wire   [ 127:0] ram$644;
-  wire   [ 127:0] ram$645;
-  wire   [ 127:0] ram$646;
-  wire   [ 127:0] ram$647;
-  wire   [ 127:0] ram$648;
-  wire   [ 127:0] ram$649;
-  wire   [ 127:0] ram$650;
-  wire   [ 127:0] ram$651;
-  wire   [ 127:0] ram$652;
-  wire   [ 127:0] ram$653;
-  wire   [ 127:0] ram$654;
-  wire   [ 127:0] ram$655;
-  wire   [ 127:0] ram$656;
-  wire   [ 127:0] ram$657;
-  wire   [ 127:0] ram$658;
-  wire   [ 127:0] ram$659;
-  wire   [ 127:0] ram$660;
-  wire   [ 127:0] ram$661;
-  wire   [ 127:0] ram$662;
-  wire   [ 127:0] ram$663;
-  wire   [ 127:0] ram$664;
-  wire   [ 127:0] ram$665;
-  wire   [ 127:0] ram$666;
-  wire   [ 127:0] ram$667;
-  wire   [ 127:0] ram$668;
-  wire   [ 127:0] ram$669;
-  wire   [ 127:0] ram$670;
-  wire   [ 127:0] ram$671;
-  wire   [ 127:0] ram$672;
-  wire   [ 127:0] ram$673;
-  wire   [ 127:0] ram$674;
-  wire   [ 127:0] ram$675;
-  wire   [ 127:0] ram$676;
-  wire   [ 127:0] ram$677;
-  wire   [ 127:0] ram$678;
-  wire   [ 127:0] ram$679;
-  wire   [ 127:0] ram$680;
-  wire   [ 127:0] ram$681;
-  wire   [ 127:0] ram$682;
-  wire   [ 127:0] ram$683;
-  wire   [ 127:0] ram$684;
-  wire   [ 127:0] ram$685;
-  wire   [ 127:0] ram$686;
-  wire   [ 127:0] ram$687;
-  wire   [ 127:0] ram$688;
-  wire   [ 127:0] ram$689;
-  wire   [ 127:0] ram$690;
-  wire   [ 127:0] ram$691;
-  wire   [ 127:0] ram$692;
-  wire   [ 127:0] ram$693;
-  wire   [ 127:0] ram$694;
-  wire   [ 127:0] ram$695;
-  wire   [ 127:0] ram$696;
-  wire   [ 127:0] ram$697;
-  wire   [ 127:0] ram$698;
-  wire   [ 127:0] ram$699;
-  wire   [ 127:0] ram$700;
-  wire   [ 127:0] ram$701;
-  wire   [ 127:0] ram$702;
-  wire   [ 127:0] ram$703;
-  wire   [ 127:0] ram$704;
-  wire   [ 127:0] ram$705;
-  wire   [ 127:0] ram$706;
-  wire   [ 127:0] ram$707;
-  wire   [ 127:0] ram$708;
-  wire   [ 127:0] ram$709;
-  wire   [ 127:0] ram$710;
-  wire   [ 127:0] ram$711;
-  wire   [ 127:0] ram$712;
-  wire   [ 127:0] ram$713;
-  wire   [ 127:0] ram$714;
-  wire   [ 127:0] ram$715;
-  wire   [ 127:0] ram$716;
-  wire   [ 127:0] ram$717;
-  wire   [ 127:0] ram$718;
-  wire   [ 127:0] ram$719;
-  wire   [ 127:0] ram$720;
-  wire   [ 127:0] ram$721;
-  wire   [ 127:0] ram$722;
-  wire   [ 127:0] ram$723;
-  wire   [ 127:0] ram$724;
-  wire   [ 127:0] ram$725;
-  wire   [ 127:0] ram$726;
-  wire   [ 127:0] ram$727;
-  wire   [ 127:0] ram$728;
-  wire   [ 127:0] ram$729;
-  wire   [ 127:0] ram$730;
-  wire   [ 127:0] ram$731;
-  wire   [ 127:0] ram$732;
-  wire   [ 127:0] ram$733;
-  wire   [ 127:0] ram$734;
-  wire   [ 127:0] ram$735;
-  wire   [ 127:0] ram$736;
-  wire   [ 127:0] ram$737;
-  wire   [ 127:0] ram$738;
-  wire   [ 127:0] ram$739;
-  wire   [ 127:0] ram$740;
-  wire   [ 127:0] ram$741;
-  wire   [ 127:0] ram$742;
-  wire   [ 127:0] ram$743;
-  wire   [ 127:0] ram$744;
-  wire   [ 127:0] ram$745;
-  wire   [ 127:0] ram$746;
-  wire   [ 127:0] ram$747;
-  wire   [ 127:0] ram$748;
-  wire   [ 127:0] ram$749;
-  wire   [ 127:0] ram$750;
-  wire   [ 127:0] ram$751;
-  wire   [ 127:0] ram$752;
-  wire   [ 127:0] ram$753;
-  wire   [ 127:0] ram$754;
-  wire   [ 127:0] ram$755;
-  wire   [ 127:0] ram$756;
-  wire   [ 127:0] ram$757;
-  wire   [ 127:0] ram$758;
-  wire   [ 127:0] ram$759;
-  wire   [ 127:0] ram$760;
-  wire   [ 127:0] ram$761;
-  wire   [ 127:0] ram$762;
-  wire   [ 127:0] ram$763;
-  wire   [ 127:0] ram$764;
-  wire   [ 127:0] ram$765;
-  wire   [ 127:0] ram$766;
-  wire   [ 127:0] ram$767;
-  wire   [ 127:0] ram$768;
-  wire   [ 127:0] ram$769;
-  wire   [ 127:0] ram$770;
-  wire   [ 127:0] ram$771;
-  wire   [ 127:0] ram$772;
-  wire   [ 127:0] ram$773;
-  wire   [ 127:0] ram$774;
-  wire   [ 127:0] ram$775;
-  wire   [ 127:0] ram$776;
-  wire   [ 127:0] ram$777;
-  wire   [ 127:0] ram$778;
-  wire   [ 127:0] ram$779;
-  wire   [ 127:0] ram$780;
-  wire   [ 127:0] ram$781;
-  wire   [ 127:0] ram$782;
-  wire   [ 127:0] ram$783;
-  wire   [ 127:0] ram$784;
-  wire   [ 127:0] ram$785;
-  wire   [ 127:0] ram$786;
-  wire   [ 127:0] ram$787;
-  wire   [ 127:0] ram$788;
-  wire   [ 127:0] ram$789;
-  wire   [ 127:0] ram$790;
-  wire   [ 127:0] ram$791;
-  wire   [ 127:0] ram$792;
-  wire   [ 127:0] ram$793;
-  wire   [ 127:0] ram$794;
-  wire   [ 127:0] ram$795;
-  wire   [ 127:0] ram$796;
-  wire   [ 127:0] ram$797;
-  wire   [ 127:0] ram$798;
-  wire   [ 127:0] ram$799;
-  wire   [ 127:0] ram$800;
-  wire   [ 127:0] ram$801;
-  wire   [ 127:0] ram$802;
-  wire   [ 127:0] ram$803;
-  wire   [ 127:0] ram$804;
-  wire   [ 127:0] ram$805;
-  wire   [ 127:0] ram$806;
-  wire   [ 127:0] ram$807;
-  wire   [ 127:0] ram$808;
-  wire   [ 127:0] ram$809;
-  wire   [ 127:0] ram$810;
-  wire   [ 127:0] ram$811;
-  wire   [ 127:0] ram$812;
-  wire   [ 127:0] ram$813;
-  wire   [ 127:0] ram$814;
-  wire   [ 127:0] ram$815;
-  wire   [ 127:0] ram$816;
-  wire   [ 127:0] ram$817;
-  wire   [ 127:0] ram$818;
-  wire   [ 127:0] ram$819;
-  wire   [ 127:0] ram$820;
-  wire   [ 127:0] ram$821;
-  wire   [ 127:0] ram$822;
-  wire   [ 127:0] ram$823;
-  wire   [ 127:0] ram$824;
-  wire   [ 127:0] ram$825;
-  wire   [ 127:0] ram$826;
-  wire   [ 127:0] ram$827;
-  wire   [ 127:0] ram$828;
-  wire   [ 127:0] ram$829;
-  wire   [ 127:0] ram$830;
-  wire   [ 127:0] ram$831;
-  wire   [ 127:0] ram$832;
-  wire   [ 127:0] ram$833;
-  wire   [ 127:0] ram$834;
-  wire   [ 127:0] ram$835;
-  wire   [ 127:0] ram$836;
-  wire   [ 127:0] ram$837;
-  wire   [ 127:0] ram$838;
-  wire   [ 127:0] ram$839;
-  wire   [ 127:0] ram$840;
-  wire   [ 127:0] ram$841;
-  wire   [ 127:0] ram$842;
-  wire   [ 127:0] ram$843;
-  wire   [ 127:0] ram$844;
-  wire   [ 127:0] ram$845;
-  wire   [ 127:0] ram$846;
-  wire   [ 127:0] ram$847;
-  wire   [ 127:0] ram$848;
-  wire   [ 127:0] ram$849;
-  wire   [ 127:0] ram$850;
-  wire   [ 127:0] ram$851;
-  wire   [ 127:0] ram$852;
-  wire   [ 127:0] ram$853;
-  wire   [ 127:0] ram$854;
-  wire   [ 127:0] ram$855;
-  wire   [ 127:0] ram$856;
-  wire   [ 127:0] ram$857;
-  wire   [ 127:0] ram$858;
-  wire   [ 127:0] ram$859;
-  wire   [ 127:0] ram$860;
-  wire   [ 127:0] ram$861;
-  wire   [ 127:0] ram$862;
-  wire   [ 127:0] ram$863;
-  wire   [ 127:0] ram$864;
-  wire   [ 127:0] ram$865;
-  wire   [ 127:0] ram$866;
-  wire   [ 127:0] ram$867;
-  wire   [ 127:0] ram$868;
-  wire   [ 127:0] ram$869;
-  wire   [ 127:0] ram$870;
-  wire   [ 127:0] ram$871;
-  wire   [ 127:0] ram$872;
-  wire   [ 127:0] ram$873;
-  wire   [ 127:0] ram$874;
-  wire   [ 127:0] ram$875;
-  wire   [ 127:0] ram$876;
-  wire   [ 127:0] ram$877;
-  wire   [ 127:0] ram$878;
-  wire   [ 127:0] ram$879;
-  wire   [ 127:0] ram$880;
-  wire   [ 127:0] ram$881;
-  wire   [ 127:0] ram$882;
-  wire   [ 127:0] ram$883;
-  wire   [ 127:0] ram$884;
-  wire   [ 127:0] ram$885;
-  wire   [ 127:0] ram$886;
-  wire   [ 127:0] ram$887;
-  wire   [ 127:0] ram$888;
-  wire   [ 127:0] ram$889;
-  wire   [ 127:0] ram$890;
-  wire   [ 127:0] ram$891;
-  wire   [ 127:0] ram$892;
-  wire   [ 127:0] ram$893;
-  wire   [ 127:0] ram$894;
-  wire   [ 127:0] ram$895;
-  wire   [ 127:0] ram$896;
-  wire   [ 127:0] ram$897;
-  wire   [ 127:0] ram$898;
-  wire   [ 127:0] ram$899;
-  wire   [ 127:0] ram$900;
-  wire   [ 127:0] ram$901;
-  wire   [ 127:0] ram$902;
-  wire   [ 127:0] ram$903;
-  wire   [ 127:0] ram$904;
-  wire   [ 127:0] ram$905;
-  wire   [ 127:0] ram$906;
-  wire   [ 127:0] ram$907;
-  wire   [ 127:0] ram$908;
-  wire   [ 127:0] ram$909;
-  wire   [ 127:0] ram$910;
-  wire   [ 127:0] ram$911;
-  wire   [ 127:0] ram$912;
-  wire   [ 127:0] ram$913;
-  wire   [ 127:0] ram$914;
-  wire   [ 127:0] ram$915;
-  wire   [ 127:0] ram$916;
-  wire   [ 127:0] ram$917;
-  wire   [ 127:0] ram$918;
-  wire   [ 127:0] ram$919;
-  wire   [ 127:0] ram$920;
-  wire   [ 127:0] ram$921;
-  wire   [ 127:0] ram$922;
-  wire   [ 127:0] ram$923;
-  wire   [ 127:0] ram$924;
-  wire   [ 127:0] ram$925;
-  wire   [ 127:0] ram$926;
-  wire   [ 127:0] ram$927;
-  wire   [ 127:0] ram$928;
-  wire   [ 127:0] ram$929;
-  wire   [ 127:0] ram$930;
-  wire   [ 127:0] ram$931;
-  wire   [ 127:0] ram$932;
-  wire   [ 127:0] ram$933;
-  wire   [ 127:0] ram$934;
-  wire   [ 127:0] ram$935;
-  wire   [ 127:0] ram$936;
-  wire   [ 127:0] ram$937;
-  wire   [ 127:0] ram$938;
-  wire   [ 127:0] ram$939;
-  wire   [ 127:0] ram$940;
-  wire   [ 127:0] ram$941;
-  wire   [ 127:0] ram$942;
-  wire   [ 127:0] ram$943;
-  wire   [ 127:0] ram$944;
-  wire   [ 127:0] ram$945;
-  wire   [ 127:0] ram$946;
-  wire   [ 127:0] ram$947;
-  wire   [ 127:0] ram$948;
-  wire   [ 127:0] ram$949;
-  wire   [ 127:0] ram$950;
-  wire   [ 127:0] ram$951;
-  wire   [ 127:0] ram$952;
-  wire   [ 127:0] ram$953;
-  wire   [ 127:0] ram$954;
-  wire   [ 127:0] ram$955;
-  wire   [ 127:0] ram$956;
-  wire   [ 127:0] ram$957;
-  wire   [ 127:0] ram$958;
-  wire   [ 127:0] ram$959;
-  wire   [ 127:0] ram$960;
-  wire   [ 127:0] ram$961;
-  wire   [ 127:0] ram$962;
-  wire   [ 127:0] ram$963;
-  wire   [ 127:0] ram$964;
-  wire   [ 127:0] ram$965;
-  wire   [ 127:0] ram$966;
-  wire   [ 127:0] ram$967;
-  wire   [ 127:0] ram$968;
-  wire   [ 127:0] ram$969;
-  wire   [ 127:0] ram$970;
-  wire   [ 127:0] ram$971;
-  wire   [ 127:0] ram$972;
-  wire   [ 127:0] ram$973;
-  wire   [ 127:0] ram$974;
-  wire   [ 127:0] ram$975;
-  wire   [ 127:0] ram$976;
-  wire   [ 127:0] ram$977;
-  wire   [ 127:0] ram$978;
-  wire   [ 127:0] ram$979;
-  wire   [ 127:0] ram$980;
-  wire   [ 127:0] ram$981;
-  wire   [ 127:0] ram$982;
-  wire   [ 127:0] ram$983;
-  wire   [ 127:0] ram$984;
-  wire   [ 127:0] ram$985;
-  wire   [ 127:0] ram$986;
-  wire   [ 127:0] ram$987;
-  wire   [ 127:0] ram$988;
-  wire   [ 127:0] ram$989;
-  wire   [ 127:0] ram$990;
-  wire   [ 127:0] ram$991;
-  wire   [ 127:0] ram$992;
-  wire   [ 127:0] ram$993;
-  wire   [ 127:0] ram$994;
-  wire   [ 127:0] ram$995;
-  wire   [ 127:0] ram$996;
-  wire   [ 127:0] ram$997;
-  wire   [ 127:0] ram$998;
-  wire   [ 127:0] ram$999;
-  wire   [ 127:0] ram$1000;
-  wire   [ 127:0] ram$1001;
-  wire   [ 127:0] ram$1002;
-  wire   [ 127:0] ram$1003;
-  wire   [ 127:0] ram$1004;
-  wire   [ 127:0] ram$1005;
-  wire   [ 127:0] ram$1006;
-  wire   [ 127:0] ram$1007;
-  wire   [ 127:0] ram$1008;
-  wire   [ 127:0] ram$1009;
-  wire   [ 127:0] ram$1010;
-  wire   [ 127:0] ram$1011;
-  wire   [ 127:0] ram$1012;
-  wire   [ 127:0] ram$1013;
-  wire   [ 127:0] ram$1014;
-  wire   [ 127:0] ram$1015;
-  wire   [ 127:0] ram$1016;
-  wire   [ 127:0] ram$1017;
-  wire   [ 127:0] ram$1018;
-  wire   [ 127:0] ram$1019;
-  wire   [ 127:0] ram$1020;
-  wire   [ 127:0] ram$1021;
-  wire   [ 127:0] ram$1022;
-  wire   [ 127:0] ram$1023;
-
-
-  // register declarations
-  reg    [ 127:0] dout;
-
-
-  // array declarations
-  reg    [ 127:0] ram[0:1023];
-  assign ram$000 = ram[  0];
-  assign ram$001 = ram[  1];
-  assign ram$002 = ram[  2];
-  assign ram$003 = ram[  3];
-  assign ram$004 = ram[  4];
-  assign ram$005 = ram[  5];
-  assign ram$006 = ram[  6];
-  assign ram$007 = ram[  7];
-  assign ram$008 = ram[  8];
-  assign ram$009 = ram[  9];
-  assign ram$010 = ram[ 10];
-  assign ram$011 = ram[ 11];
-  assign ram$012 = ram[ 12];
-  assign ram$013 = ram[ 13];
-  assign ram$014 = ram[ 14];
-  assign ram$015 = ram[ 15];
-  assign ram$016 = ram[ 16];
-  assign ram$017 = ram[ 17];
-  assign ram$018 = ram[ 18];
-  assign ram$019 = ram[ 19];
-  assign ram$020 = ram[ 20];
-  assign ram$021 = ram[ 21];
-  assign ram$022 = ram[ 22];
-  assign ram$023 = ram[ 23];
-  assign ram$024 = ram[ 24];
-  assign ram$025 = ram[ 25];
-  assign ram$026 = ram[ 26];
-  assign ram$027 = ram[ 27];
-  assign ram$028 = ram[ 28];
-  assign ram$029 = ram[ 29];
-  assign ram$030 = ram[ 30];
-  assign ram$031 = ram[ 31];
-  assign ram$032 = ram[ 32];
-  assign ram$033 = ram[ 33];
-  assign ram$034 = ram[ 34];
-  assign ram$035 = ram[ 35];
-  assign ram$036 = ram[ 36];
-  assign ram$037 = ram[ 37];
-  assign ram$038 = ram[ 38];
-  assign ram$039 = ram[ 39];
-  assign ram$040 = ram[ 40];
-  assign ram$041 = ram[ 41];
-  assign ram$042 = ram[ 42];
-  assign ram$043 = ram[ 43];
-  assign ram$044 = ram[ 44];
-  assign ram$045 = ram[ 45];
-  assign ram$046 = ram[ 46];
-  assign ram$047 = ram[ 47];
-  assign ram$048 = ram[ 48];
-  assign ram$049 = ram[ 49];
-  assign ram$050 = ram[ 50];
-  assign ram$051 = ram[ 51];
-  assign ram$052 = ram[ 52];
-  assign ram$053 = ram[ 53];
-  assign ram$054 = ram[ 54];
-  assign ram$055 = ram[ 55];
-  assign ram$056 = ram[ 56];
-  assign ram$057 = ram[ 57];
-  assign ram$058 = ram[ 58];
-  assign ram$059 = ram[ 59];
-  assign ram$060 = ram[ 60];
-  assign ram$061 = ram[ 61];
-  assign ram$062 = ram[ 62];
-  assign ram$063 = ram[ 63];
-  assign ram$064 = ram[ 64];
-  assign ram$065 = ram[ 65];
-  assign ram$066 = ram[ 66];
-  assign ram$067 = ram[ 67];
-  assign ram$068 = ram[ 68];
-  assign ram$069 = ram[ 69];
-  assign ram$070 = ram[ 70];
-  assign ram$071 = ram[ 71];
-  assign ram$072 = ram[ 72];
-  assign ram$073 = ram[ 73];
-  assign ram$074 = ram[ 74];
-  assign ram$075 = ram[ 75];
-  assign ram$076 = ram[ 76];
-  assign ram$077 = ram[ 77];
-  assign ram$078 = ram[ 78];
-  assign ram$079 = ram[ 79];
-  assign ram$080 = ram[ 80];
-  assign ram$081 = ram[ 81];
-  assign ram$082 = ram[ 82];
-  assign ram$083 = ram[ 83];
-  assign ram$084 = ram[ 84];
-  assign ram$085 = ram[ 85];
-  assign ram$086 = ram[ 86];
-  assign ram$087 = ram[ 87];
-  assign ram$088 = ram[ 88];
-  assign ram$089 = ram[ 89];
-  assign ram$090 = ram[ 90];
-  assign ram$091 = ram[ 91];
-  assign ram$092 = ram[ 92];
-  assign ram$093 = ram[ 93];
-  assign ram$094 = ram[ 94];
-  assign ram$095 = ram[ 95];
-  assign ram$096 = ram[ 96];
-  assign ram$097 = ram[ 97];
-  assign ram$098 = ram[ 98];
-  assign ram$099 = ram[ 99];
-  assign ram$100 = ram[100];
-  assign ram$101 = ram[101];
-  assign ram$102 = ram[102];
-  assign ram$103 = ram[103];
-  assign ram$104 = ram[104];
-  assign ram$105 = ram[105];
-  assign ram$106 = ram[106];
-  assign ram$107 = ram[107];
-  assign ram$108 = ram[108];
-  assign ram$109 = ram[109];
-  assign ram$110 = ram[110];
-  assign ram$111 = ram[111];
-  assign ram$112 = ram[112];
-  assign ram$113 = ram[113];
-  assign ram$114 = ram[114];
-  assign ram$115 = ram[115];
-  assign ram$116 = ram[116];
-  assign ram$117 = ram[117];
-  assign ram$118 = ram[118];
-  assign ram$119 = ram[119];
-  assign ram$120 = ram[120];
-  assign ram$121 = ram[121];
-  assign ram$122 = ram[122];
-  assign ram$123 = ram[123];
-  assign ram$124 = ram[124];
-  assign ram$125 = ram[125];
-  assign ram$126 = ram[126];
-  assign ram$127 = ram[127];
-  assign ram$128 = ram[128];
-  assign ram$129 = ram[129];
-  assign ram$130 = ram[130];
-  assign ram$131 = ram[131];
-  assign ram$132 = ram[132];
-  assign ram$133 = ram[133];
-  assign ram$134 = ram[134];
-  assign ram$135 = ram[135];
-  assign ram$136 = ram[136];
-  assign ram$137 = ram[137];
-  assign ram$138 = ram[138];
-  assign ram$139 = ram[139];
-  assign ram$140 = ram[140];
-  assign ram$141 = ram[141];
-  assign ram$142 = ram[142];
-  assign ram$143 = ram[143];
-  assign ram$144 = ram[144];
-  assign ram$145 = ram[145];
-  assign ram$146 = ram[146];
-  assign ram$147 = ram[147];
-  assign ram$148 = ram[148];
-  assign ram$149 = ram[149];
-  assign ram$150 = ram[150];
-  assign ram$151 = ram[151];
-  assign ram$152 = ram[152];
-  assign ram$153 = ram[153];
-  assign ram$154 = ram[154];
-  assign ram$155 = ram[155];
-  assign ram$156 = ram[156];
-  assign ram$157 = ram[157];
-  assign ram$158 = ram[158];
-  assign ram$159 = ram[159];
-  assign ram$160 = ram[160];
-  assign ram$161 = ram[161];
-  assign ram$162 = ram[162];
-  assign ram$163 = ram[163];
-  assign ram$164 = ram[164];
-  assign ram$165 = ram[165];
-  assign ram$166 = ram[166];
-  assign ram$167 = ram[167];
-  assign ram$168 = ram[168];
-  assign ram$169 = ram[169];
-  assign ram$170 = ram[170];
-  assign ram$171 = ram[171];
-  assign ram$172 = ram[172];
-  assign ram$173 = ram[173];
-  assign ram$174 = ram[174];
-  assign ram$175 = ram[175];
-  assign ram$176 = ram[176];
-  assign ram$177 = ram[177];
-  assign ram$178 = ram[178];
-  assign ram$179 = ram[179];
-  assign ram$180 = ram[180];
-  assign ram$181 = ram[181];
-  assign ram$182 = ram[182];
-  assign ram$183 = ram[183];
-  assign ram$184 = ram[184];
-  assign ram$185 = ram[185];
-  assign ram$186 = ram[186];
-  assign ram$187 = ram[187];
-  assign ram$188 = ram[188];
-  assign ram$189 = ram[189];
-  assign ram$190 = ram[190];
-  assign ram$191 = ram[191];
-  assign ram$192 = ram[192];
-  assign ram$193 = ram[193];
-  assign ram$194 = ram[194];
-  assign ram$195 = ram[195];
-  assign ram$196 = ram[196];
-  assign ram$197 = ram[197];
-  assign ram$198 = ram[198];
-  assign ram$199 = ram[199];
-  assign ram$200 = ram[200];
-  assign ram$201 = ram[201];
-  assign ram$202 = ram[202];
-  assign ram$203 = ram[203];
-  assign ram$204 = ram[204];
-  assign ram$205 = ram[205];
-  assign ram$206 = ram[206];
-  assign ram$207 = ram[207];
-  assign ram$208 = ram[208];
-  assign ram$209 = ram[209];
-  assign ram$210 = ram[210];
-  assign ram$211 = ram[211];
-  assign ram$212 = ram[212];
-  assign ram$213 = ram[213];
-  assign ram$214 = ram[214];
-  assign ram$215 = ram[215];
-  assign ram$216 = ram[216];
-  assign ram$217 = ram[217];
-  assign ram$218 = ram[218];
-  assign ram$219 = ram[219];
-  assign ram$220 = ram[220];
-  assign ram$221 = ram[221];
-  assign ram$222 = ram[222];
-  assign ram$223 = ram[223];
-  assign ram$224 = ram[224];
-  assign ram$225 = ram[225];
-  assign ram$226 = ram[226];
-  assign ram$227 = ram[227];
-  assign ram$228 = ram[228];
-  assign ram$229 = ram[229];
-  assign ram$230 = ram[230];
-  assign ram$231 = ram[231];
-  assign ram$232 = ram[232];
-  assign ram$233 = ram[233];
-  assign ram$234 = ram[234];
-  assign ram$235 = ram[235];
-  assign ram$236 = ram[236];
-  assign ram$237 = ram[237];
-  assign ram$238 = ram[238];
-  assign ram$239 = ram[239];
-  assign ram$240 = ram[240];
-  assign ram$241 = ram[241];
-  assign ram$242 = ram[242];
-  assign ram$243 = ram[243];
-  assign ram$244 = ram[244];
-  assign ram$245 = ram[245];
-  assign ram$246 = ram[246];
-  assign ram$247 = ram[247];
-  assign ram$248 = ram[248];
-  assign ram$249 = ram[249];
-  assign ram$250 = ram[250];
-  assign ram$251 = ram[251];
-  assign ram$252 = ram[252];
-  assign ram$253 = ram[253];
-  assign ram$254 = ram[254];
-  assign ram$255 = ram[255];
-  assign ram$256 = ram[256];
-  assign ram$257 = ram[257];
-  assign ram$258 = ram[258];
-  assign ram$259 = ram[259];
-  assign ram$260 = ram[260];
-  assign ram$261 = ram[261];
-  assign ram$262 = ram[262];
-  assign ram$263 = ram[263];
-  assign ram$264 = ram[264];
-  assign ram$265 = ram[265];
-  assign ram$266 = ram[266];
-  assign ram$267 = ram[267];
-  assign ram$268 = ram[268];
-  assign ram$269 = ram[269];
-  assign ram$270 = ram[270];
-  assign ram$271 = ram[271];
-  assign ram$272 = ram[272];
-  assign ram$273 = ram[273];
-  assign ram$274 = ram[274];
-  assign ram$275 = ram[275];
-  assign ram$276 = ram[276];
-  assign ram$277 = ram[277];
-  assign ram$278 = ram[278];
-  assign ram$279 = ram[279];
-  assign ram$280 = ram[280];
-  assign ram$281 = ram[281];
-  assign ram$282 = ram[282];
-  assign ram$283 = ram[283];
-  assign ram$284 = ram[284];
-  assign ram$285 = ram[285];
-  assign ram$286 = ram[286];
-  assign ram$287 = ram[287];
-  assign ram$288 = ram[288];
-  assign ram$289 = ram[289];
-  assign ram$290 = ram[290];
-  assign ram$291 = ram[291];
-  assign ram$292 = ram[292];
-  assign ram$293 = ram[293];
-  assign ram$294 = ram[294];
-  assign ram$295 = ram[295];
-  assign ram$296 = ram[296];
-  assign ram$297 = ram[297];
-  assign ram$298 = ram[298];
-  assign ram$299 = ram[299];
-  assign ram$300 = ram[300];
-  assign ram$301 = ram[301];
-  assign ram$302 = ram[302];
-  assign ram$303 = ram[303];
-  assign ram$304 = ram[304];
-  assign ram$305 = ram[305];
-  assign ram$306 = ram[306];
-  assign ram$307 = ram[307];
-  assign ram$308 = ram[308];
-  assign ram$309 = ram[309];
-  assign ram$310 = ram[310];
-  assign ram$311 = ram[311];
-  assign ram$312 = ram[312];
-  assign ram$313 = ram[313];
-  assign ram$314 = ram[314];
-  assign ram$315 = ram[315];
-  assign ram$316 = ram[316];
-  assign ram$317 = ram[317];
-  assign ram$318 = ram[318];
-  assign ram$319 = ram[319];
-  assign ram$320 = ram[320];
-  assign ram$321 = ram[321];
-  assign ram$322 = ram[322];
-  assign ram$323 = ram[323];
-  assign ram$324 = ram[324];
-  assign ram$325 = ram[325];
-  assign ram$326 = ram[326];
-  assign ram$327 = ram[327];
-  assign ram$328 = ram[328];
-  assign ram$329 = ram[329];
-  assign ram$330 = ram[330];
-  assign ram$331 = ram[331];
-  assign ram$332 = ram[332];
-  assign ram$333 = ram[333];
-  assign ram$334 = ram[334];
-  assign ram$335 = ram[335];
-  assign ram$336 = ram[336];
-  assign ram$337 = ram[337];
-  assign ram$338 = ram[338];
-  assign ram$339 = ram[339];
-  assign ram$340 = ram[340];
-  assign ram$341 = ram[341];
-  assign ram$342 = ram[342];
-  assign ram$343 = ram[343];
-  assign ram$344 = ram[344];
-  assign ram$345 = ram[345];
-  assign ram$346 = ram[346];
-  assign ram$347 = ram[347];
-  assign ram$348 = ram[348];
-  assign ram$349 = ram[349];
-  assign ram$350 = ram[350];
-  assign ram$351 = ram[351];
-  assign ram$352 = ram[352];
-  assign ram$353 = ram[353];
-  assign ram$354 = ram[354];
-  assign ram$355 = ram[355];
-  assign ram$356 = ram[356];
-  assign ram$357 = ram[357];
-  assign ram$358 = ram[358];
-  assign ram$359 = ram[359];
-  assign ram$360 = ram[360];
-  assign ram$361 = ram[361];
-  assign ram$362 = ram[362];
-  assign ram$363 = ram[363];
-  assign ram$364 = ram[364];
-  assign ram$365 = ram[365];
-  assign ram$366 = ram[366];
-  assign ram$367 = ram[367];
-  assign ram$368 = ram[368];
-  assign ram$369 = ram[369];
-  assign ram$370 = ram[370];
-  assign ram$371 = ram[371];
-  assign ram$372 = ram[372];
-  assign ram$373 = ram[373];
-  assign ram$374 = ram[374];
-  assign ram$375 = ram[375];
-  assign ram$376 = ram[376];
-  assign ram$377 = ram[377];
-  assign ram$378 = ram[378];
-  assign ram$379 = ram[379];
-  assign ram$380 = ram[380];
-  assign ram$381 = ram[381];
-  assign ram$382 = ram[382];
-  assign ram$383 = ram[383];
-  assign ram$384 = ram[384];
-  assign ram$385 = ram[385];
-  assign ram$386 = ram[386];
-  assign ram$387 = ram[387];
-  assign ram$388 = ram[388];
-  assign ram$389 = ram[389];
-  assign ram$390 = ram[390];
-  assign ram$391 = ram[391];
-  assign ram$392 = ram[392];
-  assign ram$393 = ram[393];
-  assign ram$394 = ram[394];
-  assign ram$395 = ram[395];
-  assign ram$396 = ram[396];
-  assign ram$397 = ram[397];
-  assign ram$398 = ram[398];
-  assign ram$399 = ram[399];
-  assign ram$400 = ram[400];
-  assign ram$401 = ram[401];
-  assign ram$402 = ram[402];
-  assign ram$403 = ram[403];
-  assign ram$404 = ram[404];
-  assign ram$405 = ram[405];
-  assign ram$406 = ram[406];
-  assign ram$407 = ram[407];
-  assign ram$408 = ram[408];
-  assign ram$409 = ram[409];
-  assign ram$410 = ram[410];
-  assign ram$411 = ram[411];
-  assign ram$412 = ram[412];
-  assign ram$413 = ram[413];
-  assign ram$414 = ram[414];
-  assign ram$415 = ram[415];
-  assign ram$416 = ram[416];
-  assign ram$417 = ram[417];
-  assign ram$418 = ram[418];
-  assign ram$419 = ram[419];
-  assign ram$420 = ram[420];
-  assign ram$421 = ram[421];
-  assign ram$422 = ram[422];
-  assign ram$423 = ram[423];
-  assign ram$424 = ram[424];
-  assign ram$425 = ram[425];
-  assign ram$426 = ram[426];
-  assign ram$427 = ram[427];
-  assign ram$428 = ram[428];
-  assign ram$429 = ram[429];
-  assign ram$430 = ram[430];
-  assign ram$431 = ram[431];
-  assign ram$432 = ram[432];
-  assign ram$433 = ram[433];
-  assign ram$434 = ram[434];
-  assign ram$435 = ram[435];
-  assign ram$436 = ram[436];
-  assign ram$437 = ram[437];
-  assign ram$438 = ram[438];
-  assign ram$439 = ram[439];
-  assign ram$440 = ram[440];
-  assign ram$441 = ram[441];
-  assign ram$442 = ram[442];
-  assign ram$443 = ram[443];
-  assign ram$444 = ram[444];
-  assign ram$445 = ram[445];
-  assign ram$446 = ram[446];
-  assign ram$447 = ram[447];
-  assign ram$448 = ram[448];
-  assign ram$449 = ram[449];
-  assign ram$450 = ram[450];
-  assign ram$451 = ram[451];
-  assign ram$452 = ram[452];
-  assign ram$453 = ram[453];
-  assign ram$454 = ram[454];
-  assign ram$455 = ram[455];
-  assign ram$456 = ram[456];
-  assign ram$457 = ram[457];
-  assign ram$458 = ram[458];
-  assign ram$459 = ram[459];
-  assign ram$460 = ram[460];
-  assign ram$461 = ram[461];
-  assign ram$462 = ram[462];
-  assign ram$463 = ram[463];
-  assign ram$464 = ram[464];
-  assign ram$465 = ram[465];
-  assign ram$466 = ram[466];
-  assign ram$467 = ram[467];
-  assign ram$468 = ram[468];
-  assign ram$469 = ram[469];
-  assign ram$470 = ram[470];
-  assign ram$471 = ram[471];
-  assign ram$472 = ram[472];
-  assign ram$473 = ram[473];
-  assign ram$474 = ram[474];
-  assign ram$475 = ram[475];
-  assign ram$476 = ram[476];
-  assign ram$477 = ram[477];
-  assign ram$478 = ram[478];
-  assign ram$479 = ram[479];
-  assign ram$480 = ram[480];
-  assign ram$481 = ram[481];
-  assign ram$482 = ram[482];
-  assign ram$483 = ram[483];
-  assign ram$484 = ram[484];
-  assign ram$485 = ram[485];
-  assign ram$486 = ram[486];
-  assign ram$487 = ram[487];
-  assign ram$488 = ram[488];
-  assign ram$489 = ram[489];
-  assign ram$490 = ram[490];
-  assign ram$491 = ram[491];
-  assign ram$492 = ram[492];
-  assign ram$493 = ram[493];
-  assign ram$494 = ram[494];
-  assign ram$495 = ram[495];
-  assign ram$496 = ram[496];
-  assign ram$497 = ram[497];
-  assign ram$498 = ram[498];
-  assign ram$499 = ram[499];
-  assign ram$500 = ram[500];
-  assign ram$501 = ram[501];
-  assign ram$502 = ram[502];
-  assign ram$503 = ram[503];
-  assign ram$504 = ram[504];
-  assign ram$505 = ram[505];
-  assign ram$506 = ram[506];
-  assign ram$507 = ram[507];
-  assign ram$508 = ram[508];
-  assign ram$509 = ram[509];
-  assign ram$510 = ram[510];
-  assign ram$511 = ram[511];
-  assign ram$512 = ram[512];
-  assign ram$513 = ram[513];
-  assign ram$514 = ram[514];
-  assign ram$515 = ram[515];
-  assign ram$516 = ram[516];
-  assign ram$517 = ram[517];
-  assign ram$518 = ram[518];
-  assign ram$519 = ram[519];
-  assign ram$520 = ram[520];
-  assign ram$521 = ram[521];
-  assign ram$522 = ram[522];
-  assign ram$523 = ram[523];
-  assign ram$524 = ram[524];
-  assign ram$525 = ram[525];
-  assign ram$526 = ram[526];
-  assign ram$527 = ram[527];
-  assign ram$528 = ram[528];
-  assign ram$529 = ram[529];
-  assign ram$530 = ram[530];
-  assign ram$531 = ram[531];
-  assign ram$532 = ram[532];
-  assign ram$533 = ram[533];
-  assign ram$534 = ram[534];
-  assign ram$535 = ram[535];
-  assign ram$536 = ram[536];
-  assign ram$537 = ram[537];
-  assign ram$538 = ram[538];
-  assign ram$539 = ram[539];
-  assign ram$540 = ram[540];
-  assign ram$541 = ram[541];
-  assign ram$542 = ram[542];
-  assign ram$543 = ram[543];
-  assign ram$544 = ram[544];
-  assign ram$545 = ram[545];
-  assign ram$546 = ram[546];
-  assign ram$547 = ram[547];
-  assign ram$548 = ram[548];
-  assign ram$549 = ram[549];
-  assign ram$550 = ram[550];
-  assign ram$551 = ram[551];
-  assign ram$552 = ram[552];
-  assign ram$553 = ram[553];
-  assign ram$554 = ram[554];
-  assign ram$555 = ram[555];
-  assign ram$556 = ram[556];
-  assign ram$557 = ram[557];
-  assign ram$558 = ram[558];
-  assign ram$559 = ram[559];
-  assign ram$560 = ram[560];
-  assign ram$561 = ram[561];
-  assign ram$562 = ram[562];
-  assign ram$563 = ram[563];
-  assign ram$564 = ram[564];
-  assign ram$565 = ram[565];
-  assign ram$566 = ram[566];
-  assign ram$567 = ram[567];
-  assign ram$568 = ram[568];
-  assign ram$569 = ram[569];
-  assign ram$570 = ram[570];
-  assign ram$571 = ram[571];
-  assign ram$572 = ram[572];
-  assign ram$573 = ram[573];
-  assign ram$574 = ram[574];
-  assign ram$575 = ram[575];
-  assign ram$576 = ram[576];
-  assign ram$577 = ram[577];
-  assign ram$578 = ram[578];
-  assign ram$579 = ram[579];
-  assign ram$580 = ram[580];
-  assign ram$581 = ram[581];
-  assign ram$582 = ram[582];
-  assign ram$583 = ram[583];
-  assign ram$584 = ram[584];
-  assign ram$585 = ram[585];
-  assign ram$586 = ram[586];
-  assign ram$587 = ram[587];
-  assign ram$588 = ram[588];
-  assign ram$589 = ram[589];
-  assign ram$590 = ram[590];
-  assign ram$591 = ram[591];
-  assign ram$592 = ram[592];
-  assign ram$593 = ram[593];
-  assign ram$594 = ram[594];
-  assign ram$595 = ram[595];
-  assign ram$596 = ram[596];
-  assign ram$597 = ram[597];
-  assign ram$598 = ram[598];
-  assign ram$599 = ram[599];
-  assign ram$600 = ram[600];
-  assign ram$601 = ram[601];
-  assign ram$602 = ram[602];
-  assign ram$603 = ram[603];
-  assign ram$604 = ram[604];
-  assign ram$605 = ram[605];
-  assign ram$606 = ram[606];
-  assign ram$607 = ram[607];
-  assign ram$608 = ram[608];
-  assign ram$609 = ram[609];
-  assign ram$610 = ram[610];
-  assign ram$611 = ram[611];
-  assign ram$612 = ram[612];
-  assign ram$613 = ram[613];
-  assign ram$614 = ram[614];
-  assign ram$615 = ram[615];
-  assign ram$616 = ram[616];
-  assign ram$617 = ram[617];
-  assign ram$618 = ram[618];
-  assign ram$619 = ram[619];
-  assign ram$620 = ram[620];
-  assign ram$621 = ram[621];
-  assign ram$622 = ram[622];
-  assign ram$623 = ram[623];
-  assign ram$624 = ram[624];
-  assign ram$625 = ram[625];
-  assign ram$626 = ram[626];
-  assign ram$627 = ram[627];
-  assign ram$628 = ram[628];
-  assign ram$629 = ram[629];
-  assign ram$630 = ram[630];
-  assign ram$631 = ram[631];
-  assign ram$632 = ram[632];
-  assign ram$633 = ram[633];
-  assign ram$634 = ram[634];
-  assign ram$635 = ram[635];
-  assign ram$636 = ram[636];
-  assign ram$637 = ram[637];
-  assign ram$638 = ram[638];
-  assign ram$639 = ram[639];
-  assign ram$640 = ram[640];
-  assign ram$641 = ram[641];
-  assign ram$642 = ram[642];
-  assign ram$643 = ram[643];
-  assign ram$644 = ram[644];
-  assign ram$645 = ram[645];
-  assign ram$646 = ram[646];
-  assign ram$647 = ram[647];
-  assign ram$648 = ram[648];
-  assign ram$649 = ram[649];
-  assign ram$650 = ram[650];
-  assign ram$651 = ram[651];
-  assign ram$652 = ram[652];
-  assign ram$653 = ram[653];
-  assign ram$654 = ram[654];
-  assign ram$655 = ram[655];
-  assign ram$656 = ram[656];
-  assign ram$657 = ram[657];
-  assign ram$658 = ram[658];
-  assign ram$659 = ram[659];
-  assign ram$660 = ram[660];
-  assign ram$661 = ram[661];
-  assign ram$662 = ram[662];
-  assign ram$663 = ram[663];
-  assign ram$664 = ram[664];
-  assign ram$665 = ram[665];
-  assign ram$666 = ram[666];
-  assign ram$667 = ram[667];
-  assign ram$668 = ram[668];
-  assign ram$669 = ram[669];
-  assign ram$670 = ram[670];
-  assign ram$671 = ram[671];
-  assign ram$672 = ram[672];
-  assign ram$673 = ram[673];
-  assign ram$674 = ram[674];
-  assign ram$675 = ram[675];
-  assign ram$676 = ram[676];
-  assign ram$677 = ram[677];
-  assign ram$678 = ram[678];
-  assign ram$679 = ram[679];
-  assign ram$680 = ram[680];
-  assign ram$681 = ram[681];
-  assign ram$682 = ram[682];
-  assign ram$683 = ram[683];
-  assign ram$684 = ram[684];
-  assign ram$685 = ram[685];
-  assign ram$686 = ram[686];
-  assign ram$687 = ram[687];
-  assign ram$688 = ram[688];
-  assign ram$689 = ram[689];
-  assign ram$690 = ram[690];
-  assign ram$691 = ram[691];
-  assign ram$692 = ram[692];
-  assign ram$693 = ram[693];
-  assign ram$694 = ram[694];
-  assign ram$695 = ram[695];
-  assign ram$696 = ram[696];
-  assign ram$697 = ram[697];
-  assign ram$698 = ram[698];
-  assign ram$699 = ram[699];
-  assign ram$700 = ram[700];
-  assign ram$701 = ram[701];
-  assign ram$702 = ram[702];
-  assign ram$703 = ram[703];
-  assign ram$704 = ram[704];
-  assign ram$705 = ram[705];
-  assign ram$706 = ram[706];
-  assign ram$707 = ram[707];
-  assign ram$708 = ram[708];
-  assign ram$709 = ram[709];
-  assign ram$710 = ram[710];
-  assign ram$711 = ram[711];
-  assign ram$712 = ram[712];
-  assign ram$713 = ram[713];
-  assign ram$714 = ram[714];
-  assign ram$715 = ram[715];
-  assign ram$716 = ram[716];
-  assign ram$717 = ram[717];
-  assign ram$718 = ram[718];
-  assign ram$719 = ram[719];
-  assign ram$720 = ram[720];
-  assign ram$721 = ram[721];
-  assign ram$722 = ram[722];
-  assign ram$723 = ram[723];
-  assign ram$724 = ram[724];
-  assign ram$725 = ram[725];
-  assign ram$726 = ram[726];
-  assign ram$727 = ram[727];
-  assign ram$728 = ram[728];
-  assign ram$729 = ram[729];
-  assign ram$730 = ram[730];
-  assign ram$731 = ram[731];
-  assign ram$732 = ram[732];
-  assign ram$733 = ram[733];
-  assign ram$734 = ram[734];
-  assign ram$735 = ram[735];
-  assign ram$736 = ram[736];
-  assign ram$737 = ram[737];
-  assign ram$738 = ram[738];
-  assign ram$739 = ram[739];
-  assign ram$740 = ram[740];
-  assign ram$741 = ram[741];
-  assign ram$742 = ram[742];
-  assign ram$743 = ram[743];
-  assign ram$744 = ram[744];
-  assign ram$745 = ram[745];
-  assign ram$746 = ram[746];
-  assign ram$747 = ram[747];
-  assign ram$748 = ram[748];
-  assign ram$749 = ram[749];
-  assign ram$750 = ram[750];
-  assign ram$751 = ram[751];
-  assign ram$752 = ram[752];
-  assign ram$753 = ram[753];
-  assign ram$754 = ram[754];
-  assign ram$755 = ram[755];
-  assign ram$756 = ram[756];
-  assign ram$757 = ram[757];
-  assign ram$758 = ram[758];
-  assign ram$759 = ram[759];
-  assign ram$760 = ram[760];
-  assign ram$761 = ram[761];
-  assign ram$762 = ram[762];
-  assign ram$763 = ram[763];
-  assign ram$764 = ram[764];
-  assign ram$765 = ram[765];
-  assign ram$766 = ram[766];
-  assign ram$767 = ram[767];
-  assign ram$768 = ram[768];
-  assign ram$769 = ram[769];
-  assign ram$770 = ram[770];
-  assign ram$771 = ram[771];
-  assign ram$772 = ram[772];
-  assign ram$773 = ram[773];
-  assign ram$774 = ram[774];
-  assign ram$775 = ram[775];
-  assign ram$776 = ram[776];
-  assign ram$777 = ram[777];
-  assign ram$778 = ram[778];
-  assign ram$779 = ram[779];
-  assign ram$780 = ram[780];
-  assign ram$781 = ram[781];
-  assign ram$782 = ram[782];
-  assign ram$783 = ram[783];
-  assign ram$784 = ram[784];
-  assign ram$785 = ram[785];
-  assign ram$786 = ram[786];
-  assign ram$787 = ram[787];
-  assign ram$788 = ram[788];
-  assign ram$789 = ram[789];
-  assign ram$790 = ram[790];
-  assign ram$791 = ram[791];
-  assign ram$792 = ram[792];
-  assign ram$793 = ram[793];
-  assign ram$794 = ram[794];
-  assign ram$795 = ram[795];
-  assign ram$796 = ram[796];
-  assign ram$797 = ram[797];
-  assign ram$798 = ram[798];
-  assign ram$799 = ram[799];
-  assign ram$800 = ram[800];
-  assign ram$801 = ram[801];
-  assign ram$802 = ram[802];
-  assign ram$803 = ram[803];
-  assign ram$804 = ram[804];
-  assign ram$805 = ram[805];
-  assign ram$806 = ram[806];
-  assign ram$807 = ram[807];
-  assign ram$808 = ram[808];
-  assign ram$809 = ram[809];
-  assign ram$810 = ram[810];
-  assign ram$811 = ram[811];
-  assign ram$812 = ram[812];
-  assign ram$813 = ram[813];
-  assign ram$814 = ram[814];
-  assign ram$815 = ram[815];
-  assign ram$816 = ram[816];
-  assign ram$817 = ram[817];
-  assign ram$818 = ram[818];
-  assign ram$819 = ram[819];
-  assign ram$820 = ram[820];
-  assign ram$821 = ram[821];
-  assign ram$822 = ram[822];
-  assign ram$823 = ram[823];
-  assign ram$824 = ram[824];
-  assign ram$825 = ram[825];
-  assign ram$826 = ram[826];
-  assign ram$827 = ram[827];
-  assign ram$828 = ram[828];
-  assign ram$829 = ram[829];
-  assign ram$830 = ram[830];
-  assign ram$831 = ram[831];
-  assign ram$832 = ram[832];
-  assign ram$833 = ram[833];
-  assign ram$834 = ram[834];
-  assign ram$835 = ram[835];
-  assign ram$836 = ram[836];
-  assign ram$837 = ram[837];
-  assign ram$838 = ram[838];
-  assign ram$839 = ram[839];
-  assign ram$840 = ram[840];
-  assign ram$841 = ram[841];
-  assign ram$842 = ram[842];
-  assign ram$843 = ram[843];
-  assign ram$844 = ram[844];
-  assign ram$845 = ram[845];
-  assign ram$846 = ram[846];
-  assign ram$847 = ram[847];
-  assign ram$848 = ram[848];
-  assign ram$849 = ram[849];
-  assign ram$850 = ram[850];
-  assign ram$851 = ram[851];
-  assign ram$852 = ram[852];
-  assign ram$853 = ram[853];
-  assign ram$854 = ram[854];
-  assign ram$855 = ram[855];
-  assign ram$856 = ram[856];
-  assign ram$857 = ram[857];
-  assign ram$858 = ram[858];
-  assign ram$859 = ram[859];
-  assign ram$860 = ram[860];
-  assign ram$861 = ram[861];
-  assign ram$862 = ram[862];
-  assign ram$863 = ram[863];
-  assign ram$864 = ram[864];
-  assign ram$865 = ram[865];
-  assign ram$866 = ram[866];
-  assign ram$867 = ram[867];
-  assign ram$868 = ram[868];
-  assign ram$869 = ram[869];
-  assign ram$870 = ram[870];
-  assign ram$871 = ram[871];
-  assign ram$872 = ram[872];
-  assign ram$873 = ram[873];
-  assign ram$874 = ram[874];
-  assign ram$875 = ram[875];
-  assign ram$876 = ram[876];
-  assign ram$877 = ram[877];
-  assign ram$878 = ram[878];
-  assign ram$879 = ram[879];
-  assign ram$880 = ram[880];
-  assign ram$881 = ram[881];
-  assign ram$882 = ram[882];
-  assign ram$883 = ram[883];
-  assign ram$884 = ram[884];
-  assign ram$885 = ram[885];
-  assign ram$886 = ram[886];
-  assign ram$887 = ram[887];
-  assign ram$888 = ram[888];
-  assign ram$889 = ram[889];
-  assign ram$890 = ram[890];
-  assign ram$891 = ram[891];
-  assign ram$892 = ram[892];
-  assign ram$893 = ram[893];
-  assign ram$894 = ram[894];
-  assign ram$895 = ram[895];
-  assign ram$896 = ram[896];
-  assign ram$897 = ram[897];
-  assign ram$898 = ram[898];
-  assign ram$899 = ram[899];
-  assign ram$900 = ram[900];
-  assign ram$901 = ram[901];
-  assign ram$902 = ram[902];
-  assign ram$903 = ram[903];
-  assign ram$904 = ram[904];
-  assign ram$905 = ram[905];
-  assign ram$906 = ram[906];
-  assign ram$907 = ram[907];
-  assign ram$908 = ram[908];
-  assign ram$909 = ram[909];
-  assign ram$910 = ram[910];
-  assign ram$911 = ram[911];
-  assign ram$912 = ram[912];
-  assign ram$913 = ram[913];
-  assign ram$914 = ram[914];
-  assign ram$915 = ram[915];
-  assign ram$916 = ram[916];
-  assign ram$917 = ram[917];
-  assign ram$918 = ram[918];
-  assign ram$919 = ram[919];
-  assign ram$920 = ram[920];
-  assign ram$921 = ram[921];
-  assign ram$922 = ram[922];
-  assign ram$923 = ram[923];
-  assign ram$924 = ram[924];
-  assign ram$925 = ram[925];
-  assign ram$926 = ram[926];
-  assign ram$927 = ram[927];
-  assign ram$928 = ram[928];
-  assign ram$929 = ram[929];
-  assign ram$930 = ram[930];
-  assign ram$931 = ram[931];
-  assign ram$932 = ram[932];
-  assign ram$933 = ram[933];
-  assign ram$934 = ram[934];
-  assign ram$935 = ram[935];
-  assign ram$936 = ram[936];
-  assign ram$937 = ram[937];
-  assign ram$938 = ram[938];
-  assign ram$939 = ram[939];
-  assign ram$940 = ram[940];
-  assign ram$941 = ram[941];
-  assign ram$942 = ram[942];
-  assign ram$943 = ram[943];
-  assign ram$944 = ram[944];
-  assign ram$945 = ram[945];
-  assign ram$946 = ram[946];
-  assign ram$947 = ram[947];
-  assign ram$948 = ram[948];
-  assign ram$949 = ram[949];
-  assign ram$950 = ram[950];
-  assign ram$951 = ram[951];
-  assign ram$952 = ram[952];
-  assign ram$953 = ram[953];
-  assign ram$954 = ram[954];
-  assign ram$955 = ram[955];
-  assign ram$956 = ram[956];
-  assign ram$957 = ram[957];
-  assign ram$958 = ram[958];
-  assign ram$959 = ram[959];
-  assign ram$960 = ram[960];
-  assign ram$961 = ram[961];
-  assign ram$962 = ram[962];
-  assign ram$963 = ram[963];
-  assign ram$964 = ram[964];
-  assign ram$965 = ram[965];
-  assign ram$966 = ram[966];
-  assign ram$967 = ram[967];
-  assign ram$968 = ram[968];
-  assign ram$969 = ram[969];
-  assign ram$970 = ram[970];
-  assign ram$971 = ram[971];
-  assign ram$972 = ram[972];
-  assign ram$973 = ram[973];
-  assign ram$974 = ram[974];
-  assign ram$975 = ram[975];
-  assign ram$976 = ram[976];
-  assign ram$977 = ram[977];
-  assign ram$978 = ram[978];
-  assign ram$979 = ram[979];
-  assign ram$980 = ram[980];
-  assign ram$981 = ram[981];
-  assign ram$982 = ram[982];
-  assign ram$983 = ram[983];
-  assign ram$984 = ram[984];
-  assign ram$985 = ram[985];
-  assign ram$986 = ram[986];
-  assign ram$987 = ram[987];
-  assign ram$988 = ram[988];
-  assign ram$989 = ram[989];
-  assign ram$990 = ram[990];
-  assign ram$991 = ram[991];
-  assign ram$992 = ram[992];
-  assign ram$993 = ram[993];
-  assign ram$994 = ram[994];
-  assign ram$995 = ram[995];
-  assign ram$996 = ram[996];
-  assign ram$997 = ram[997];
-  assign ram$998 = ram[998];
-  assign ram$999 = ram[999];
-  assign ram$1000 = ram[1000];
-  assign ram$1001 = ram[1001];
-  assign ram$1002 = ram[1002];
-  assign ram$1003 = ram[1003];
-  assign ram$1004 = ram[1004];
-  assign ram$1005 = ram[1005];
-  assign ram$1006 = ram[1006];
-  assign ram$1007 = ram[1007];
-  assign ram$1008 = ram[1008];
-  assign ram$1009 = ram[1009];
-  assign ram$1010 = ram[1010];
-  assign ram$1011 = ram[1011];
-  assign ram$1012 = ram[1012];
-  assign ram$1013 = ram[1013];
-  assign ram$1014 = ram[1014];
-  assign ram$1015 = ram[1015];
-  assign ram$1016 = ram[1016];
-  assign ram$1017 = ram[1017];
-  assign ram$1018 = ram[1018];
-  assign ram$1019 = ram[1019];
-  assign ram$1020 = ram[1020];
-  assign ram$1021 = ram[1021];
-  assign ram$1022 = ram[1022];
-  assign ram$1023 = ram[1023];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def read_logic():
-  //       if ( not s.cen ) and s.gwen:
-  //         s.dout.next = s.ram[ s.a ]
-  //       else:
-  //         s.dout.next = 0
-
-  // logic for read_logic()
-  always @ (posedge clk) begin
-    if ((!cen&&gwen)) begin
-      dout <= ram[a];
-    end
-    else begin
-      dout <= 0;
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def write_logic():
-  //       if ( not s.cen ) and ( not s.gwen ):
-  //         s.ram[s.a].next = (s.ram[s.a] & s.wen) | (s.d & ~s.wen)
-
-  // logic for write_logic()
-  always @ (posedge clk) begin
-    if ((!cen&&!gwen)) begin
-      ram[a] <= ((ram[a]&wen)|(d&~wen));
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       s.q.value = s.dout
-
-  // logic for comb_logic()
-  always @ (*) begin
-    q = dout;
-  end
-
 
 endmodule // sram_28nm_1024x128_SP
 `default_nettype wire
@@ -15125,8 +11694,13 @@ module Router_0x6c4e178e4038f207
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   7:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -15180,2007 +11754,21 @@ module Router_0x6c4e178e4038f207
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(44)-1:36]];
+    msg_opaque = in__msg[(44)-1:36];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
 endmodule // Router_0x6c4e178e4038f207
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DesignWareFloatingPointUnit
-//-----------------------------------------------------------------------------
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module DesignWareFloatingPointUnit
-(
-  input  wire [   0:0] clk,
-  input  wire [  73:0] req_msg,
-  output wire [   0:0] req_rdy,
-  input  wire [   0:0] req_val,
-  input  wire [   0:0] reset,
-  output wire [  39:0] resp_msg,
-  input  wire [   0:0] resp_rdy,
-  output wire [   0:0] resp_val
-);
-
-  // register declarations
-  reg    [   7:0] dw_fexc;
-  reg    [   2:0] dw_frnd;
-  reg    [  31:0] fp_addsub$a;
-  reg    [  31:0] fp_addsub$b;
-  reg    [   0:0] fp_addsub$in_val;
-  reg    [   0:0] fp_addsub$op;
-  reg    [   2:0] fp_addsub$rnd;
-  reg    [  31:0] fp_cmp$a;
-  reg    [  31:0] fp_cmp$b;
-  reg    [   0:0] fp_cmp$zctr;
-  reg    [  31:0] fp_div$a;
-  reg    [  31:0] fp_div$b;
-  reg    [   0:0] fp_div$in_val;
-  reg    [   2:0] fp_div$rnd;
-  reg    [  31:0] fp_flt2i$a;
-  reg    [   2:0] fp_flt2i$rnd;
-  reg    [  31:0] fp_i2flt$a;
-  reg    [   2:0] fp_i2flt$rnd;
-  reg    [  31:0] fp_mult$a;
-  reg    [  31:0] fp_mult$b;
-  reg    [   2:0] fp_mult$rnd;
-  reg    [   0:0] req_q$deq_rdy;
-  reg    [   0:0] resp_go;
-  reg    [  39:0] resp_q$enq_msg;
-  reg    [   0:0] resp_q$enq_val;
-  reg    [   4:0] riscv_fexc;
-
-  // localparam declarations
-  localparam DW_ADDSUB_ADD = 0;
-  localparam DW_ADDSUB_SUB = 1;
-  localparam DW_FEXC_DZ = 128;
-  localparam DW_FEXC_NV = 4;
-  localparam DW_FEXC_NX = 32;
-  localparam DW_FEXC_OF = 16;
-  localparam DW_FEXC_UF = 8;
-  localparam DW_FRND_DN = 3;
-  localparam DW_FRND_MM = 4;
-  localparam DW_FRND_NE = 0;
-  localparam DW_FRND_TZ = 1;
-  localparam DW_FRND_UP = 2;
-  localparam FEXC_DZ = 8;
-  localparam FEXC_NV = 16;
-  localparam FEXC_NX = 1;
-  localparam FEXC_OF = 4;
-  localparam FEXC_UF = 2;
-  localparam FRND_DN = 2;
-  localparam FRND_MM = 4;
-  localparam FRND_NE = 0;
-  localparam FRND_TZ = 1;
-  localparam FRND_UP = 3;
-  localparam TYPE_FADD = 1;
-  localparam TYPE_FCEQ = 8;
-  localparam TYPE_FCLE = 10;
-  localparam TYPE_FCLT = 9;
-  localparam TYPE_FDIV = 3;
-  localparam TYPE_FF2I = 7;
-  localparam TYPE_FI2F = 6;
-  localparam TYPE_FMAX = 5;
-  localparam TYPE_FMIN = 4;
-  localparam TYPE_FMUL = 0;
-  localparam TYPE_FSUB = 2;
-
-  // fp_flt2i temporaries
-  wire   [   0:0] fp_flt2i$clk;
-  wire   [   0:0] fp_flt2i$reset;
-  wire   [   7:0] fp_flt2i$status;
-  wire   [  31:0] fp_flt2i$z;
-
-  DW_fp_flt2i_0x3cd77562127ffa78 fp_flt2i
-  (
-    .clk    ( fp_flt2i$clk ),
-    .a      ( fp_flt2i$a ),
-    .rnd    ( fp_flt2i$rnd ),
-    .reset  ( fp_flt2i$reset ),
-    .status ( fp_flt2i$status ),
-    .z      ( fp_flt2i$z )
-  );
-
-  // req_q temporaries
-  wire   [   0:0] req_q$clk;
-  wire   [  73:0] req_q$enq_msg;
-  wire   [   0:0] req_q$enq_val;
-  wire   [   0:0] req_q$reset;
-  wire   [   0:0] req_q$enq_rdy;
-  wire   [   1:0] req_q$num_free_entries;
-  wire   [  73:0] req_q$deq_msg;
-  wire   [   0:0] req_q$deq_val;
-
-  NormalQueue_0x5cb07886f33e4c89 req_q
-  (
-    .clk              ( req_q$clk ),
-    .enq_msg          ( req_q$enq_msg ),
-    .enq_val          ( req_q$enq_val ),
-    .reset            ( req_q$reset ),
-    .deq_rdy          ( req_q$deq_rdy ),
-    .enq_rdy          ( req_q$enq_rdy ),
-    .num_free_entries ( req_q$num_free_entries ),
-    .deq_msg          ( req_q$deq_msg ),
-    .deq_val          ( req_q$deq_val )
-  );
-
-  // fp_addsub temporaries
-  wire   [   0:0] fp_addsub$clk;
-  wire   [   0:0] fp_addsub$reset;
-  wire   [   0:0] fp_addsub$busy;
-  wire   [   7:0] fp_addsub$status;
-  wire   [   0:0] fp_addsub$out_val;
-  wire   [  31:0] fp_addsub$z;
-
-  DW_fp_addsub_pipelined fp_addsub
-  (
-    .clk     ( fp_addsub$clk ),
-    .a       ( fp_addsub$a ),
-    .in_val  ( fp_addsub$in_val ),
-    .rnd     ( fp_addsub$rnd ),
-    .reset   ( fp_addsub$reset ),
-    .b       ( fp_addsub$b ),
-    .op      ( fp_addsub$op ),
-    .busy    ( fp_addsub$busy ),
-    .status  ( fp_addsub$status ),
-    .out_val ( fp_addsub$out_val ),
-    .z       ( fp_addsub$z )
-  );
-
-  // fp_cmp temporaries
-  wire   [   0:0] fp_cmp$clk;
-  wire   [   0:0] fp_cmp$reset;
-  wire   [   0:0] fp_cmp$agtb;
-  wire   [   0:0] fp_cmp$unordered;
-  wire   [   0:0] fp_cmp$aeqb;
-  wire   [  31:0] fp_cmp$z0;
-  wire   [  31:0] fp_cmp$z1;
-  wire   [   7:0] fp_cmp$status1;
-  wire   [   7:0] fp_cmp$status0;
-  wire   [   0:0] fp_cmp$altb;
-
-  DW_fp_cmp_0x15bdbff0d8f765a1 fp_cmp
-  (
-    .clk       ( fp_cmp$clk ),
-    .zctr      ( fp_cmp$zctr ),
-    .a         ( fp_cmp$a ),
-    .reset     ( fp_cmp$reset ),
-    .b         ( fp_cmp$b ),
-    .agtb      ( fp_cmp$agtb ),
-    .unordered ( fp_cmp$unordered ),
-    .aeqb      ( fp_cmp$aeqb ),
-    .z0        ( fp_cmp$z0 ),
-    .z1        ( fp_cmp$z1 ),
-    .status1   ( fp_cmp$status1 ),
-    .status0   ( fp_cmp$status0 ),
-    .altb      ( fp_cmp$altb )
-  );
-
-  // fp_mult temporaries
-  wire   [   0:0] fp_mult$clk;
-  wire   [   0:0] fp_mult$reset;
-  wire   [   7:0] fp_mult$status;
-  wire   [  31:0] fp_mult$z;
-
-  DW_fp_mult_0x1eaed5d9d53885e0 fp_mult
-  (
-    .clk    ( fp_mult$clk ),
-    .a      ( fp_mult$a ),
-    .rnd    ( fp_mult$rnd ),
-    .reset  ( fp_mult$reset ),
-    .b      ( fp_mult$b ),
-    .status ( fp_mult$status ),
-    .z      ( fp_mult$z )
-  );
-
-  // fp_i2flt temporaries
-  wire   [   0:0] fp_i2flt$clk;
-  wire   [   0:0] fp_i2flt$reset;
-  wire   [   7:0] fp_i2flt$status;
-  wire   [  31:0] fp_i2flt$z;
-
-  DW_fp_i2flt_0x215a2bada2e33c4b fp_i2flt
-  (
-    .clk    ( fp_i2flt$clk ),
-    .a      ( fp_i2flt$a ),
-    .rnd    ( fp_i2flt$rnd ),
-    .reset  ( fp_i2flt$reset ),
-    .status ( fp_i2flt$status ),
-    .z      ( fp_i2flt$z )
-  );
-
-  // fp_div temporaries
-  wire   [   0:0] fp_div$clk;
-  wire   [   0:0] fp_div$reset;
-  wire   [   0:0] fp_div$busy;
-  wire   [   7:0] fp_div$status;
-  wire   [   0:0] fp_div$out_val;
-  wire   [  31:0] fp_div$z;
-
-  DW_fp_div_pipelined fp_div
-  (
-    .clk     ( fp_div$clk ),
-    .a       ( fp_div$a ),
-    .in_val  ( fp_div$in_val ),
-    .rnd     ( fp_div$rnd ),
-    .reset   ( fp_div$reset ),
-    .b       ( fp_div$b ),
-    .busy    ( fp_div$busy ),
-    .status  ( fp_div$status ),
-    .out_val ( fp_div$out_val ),
-    .z       ( fp_div$z )
-  );
-
-  // resp_q temporaries
-  wire   [   0:0] resp_q$clk;
-  wire   [   0:0] resp_q$reset;
-  wire   [   0:0] resp_q$deq_rdy;
-  wire   [   0:0] resp_q$enq_rdy;
-  wire   [   1:0] resp_q$num_free_entries;
-  wire   [  39:0] resp_q$deq_msg;
-  wire   [   0:0] resp_q$deq_val;
-
-  NormalQueue_0x21e242676aeb92b7 resp_q
-  (
-    .clk              ( resp_q$clk ),
-    .enq_msg          ( resp_q$enq_msg ),
-    .enq_val          ( resp_q$enq_val ),
-    .reset            ( resp_q$reset ),
-    .deq_rdy          ( resp_q$deq_rdy ),
-    .enq_rdy          ( resp_q$enq_rdy ),
-    .num_free_entries ( resp_q$num_free_entries ),
-    .deq_msg          ( resp_q$deq_msg ),
-    .deq_val          ( resp_q$deq_val )
-  );
-
-  // signal connections
-  assign fp_addsub$clk   = clk;
-  assign fp_addsub$reset = reset;
-  assign fp_cmp$clk      = clk;
-  assign fp_cmp$reset    = reset;
-  assign fp_div$clk      = clk;
-  assign fp_div$reset    = reset;
-  assign fp_flt2i$clk    = clk;
-  assign fp_flt2i$reset  = reset;
-  assign fp_i2flt$clk    = clk;
-  assign fp_i2flt$reset  = reset;
-  assign fp_mult$clk     = clk;
-  assign fp_mult$reset   = reset;
-  assign req_q$clk       = clk;
-  assign req_q$enq_msg   = req_msg;
-  assign req_q$enq_val   = req_val;
-  assign req_q$reset     = reset;
-  assign req_rdy         = req_q$enq_rdy;
-  assign resp_msg        = resp_q$deq_msg;
-  assign resp_q$clk      = clk;
-  assign resp_q$deq_rdy  = resp_rdy;
-  assign resp_q$reset    = reset;
-  assign resp_val        = resp_q$deq_val;
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb():
-  //       s.fp_mult.a.value       = 0
-  //       s.fp_mult.b.value       = 0
-  //       s.fp_mult.rnd.value     = 0
-  //
-  //       s.fp_addsub.a.value     = 0
-  //       s.fp_addsub.b.value     = 0
-  //       s.fp_addsub.op.value    = 0
-  //       s.fp_addsub.rnd.value   = 0
-  //       s.fp_addsub.in_val.value= 0
-  //
-  //       s.fp_div.a.value        = 0
-  //       s.fp_div.b.value        = 0
-  //       s.fp_div.rnd.value      = 0
-  //       s.fp_div.in_val.value   = 0
-  //
-  //       s.fp_cmp.a.value        = 0
-  //       s.fp_cmp.b.value        = 0
-  //       s.fp_cmp.zctr.value     = 0
-  //
-  //       s.fp_flt2i.a.value      = 0
-  //       s.fp_flt2i.rnd.value    = 0
-  //
-  //       s.fp_i2flt.a.value      = 0
-  //       s.fp_i2flt.rnd.value    = 0
-  //
-  //       s.resp_q.enq.msg.opaque.value = 0
-  //       s.resp_q.enq.msg.result.value = 0
-  //
-  //       s.dw_fexc.value             = 0
-  //       s.resp_q.enq.msg.fexc.value = 0
-  //       s.dw_frnd.value             = 0
-  //       s.riscv_fexc.value          = 0
-  //
-  //       s.req_q.deq.rdy.value   = 0
-  //       s.resp_q.enq.val.value  = 0
-  //       s.resp_go.value         = 0
-  //
-  //       # Because the rounding mode is encoded differently in DW and RISC-V,
-  //       # we convert between the two here.
-  //
-  //       if s.req_q.deq.msg.frnd == FpuReqMsg.FRND_NE:
-  //         s.dw_frnd.value = s.DW_FRND_NE
-  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_TZ:
-  //         s.dw_frnd.value = s.DW_FRND_TZ
-  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_DN:
-  //         s.dw_frnd.value = s.DW_FRND_DN
-  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_UP:
-  //         s.dw_frnd.value = s.DW_FRND_UP
-  //       elif s.req_q.deq.msg.frnd == FpuReqMsg.FRND_MM:
-  //         s.dw_frnd.value = s.DW_FRND_MM
-  //
-  //       if s.req_q.deq.val and s.resp_q.enq.rdy:
-  //         s.resp_go.value        = 1
-  //
-  //         if s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMUL:
-  //           s.fp_mult.a.value       = s.req_q.deq.msg.op_a
-  //           s.fp_mult.b.value       = s.req_q.deq.msg.op_b
-  //           s.fp_mult.rnd.value     = s.dw_frnd
-  //           s.resp_q.enq.msg.result.value = s.fp_mult.z
-  //           s.dw_fexc.value         = s.fp_mult.status
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FADD:
-  //           s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
-  //           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
-  //           s.fp_addsub.op.value    = s.DW_ADDSUB_ADD
-  //           s.fp_addsub.rnd.value   = s.dw_frnd
-  //           s.fp_addsub.in_val.value= not s.fp_addsub.busy
-  //           s.resp_q.enq.msg.result.value = s.fp_addsub.z
-  //           s.dw_fexc.value         = s.fp_addsub.status
-  //           s.resp_go.value        = s.fp_addsub.out_val
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FSUB:
-  //           s.fp_addsub.a.value     = s.req_q.deq.msg.op_a
-  //           s.fp_addsub.b.value     = s.req_q.deq.msg.op_b
-  //           s.fp_addsub.op.value    = s.DW_ADDSUB_SUB
-  //           s.fp_addsub.rnd.value   = s.dw_frnd
-  //           s.fp_addsub.in_val.value= not s.fp_addsub.busy
-  //           s.resp_q.enq.msg.result.value = s.fp_addsub.z
-  //           s.dw_fexc.value         = s.fp_addsub.status
-  //           s.resp_go.value         = s.fp_addsub.out_val
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FDIV:
-  //           s.fp_div.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_div.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_div.rnd.value      = s.dw_frnd
-  //           s.fp_div.in_val.value   = not s.fp_div.busy
-  //           s.resp_q.enq.msg.result.value = s.fp_div.z
-  //           s.dw_fexc.value         = s.fp_div.status
-  //           s.resp_go.value         = s.fp_div.out_val
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMIN:
-  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_cmp.zctr.value     = 0
-  //           s.resp_q.enq.msg.result.value = s.fp_cmp.z0
-  //           if s.fp_cmp.unordered:
-  //             s.dw_fexc.value       = s.DW_FEXC_NV
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FMAX:
-  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_cmp.zctr.value     = 1
-  //           s.resp_q.enq.msg.result.value = s.fp_cmp.z0
-  //           if s.fp_cmp.unordered:
-  //             s.dw_fexc.value       = s.DW_FEXC_NV
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCEQ:
-  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_cmp.zctr.value     = 0
-  //           s.resp_q.enq.msg.result.value = s.fp_cmp.aeqb
-  //           if s.fp_cmp.unordered:
-  //             s.dw_fexc.value       = s.DW_FEXC_NV
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLT:
-  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_cmp.zctr.value     = 0
-  //           s.resp_q.enq.msg.result.value = s.fp_cmp.altb
-  //           if s.fp_cmp.unordered:
-  //             s.dw_fexc.value       = s.DW_FEXC_NV
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FCLE:
-  //           s.fp_cmp.a.value        = s.req_q.deq.msg.op_a
-  //           s.fp_cmp.b.value        = s.req_q.deq.msg.op_b
-  //           s.fp_cmp.zctr.value     = 0
-  //           s.resp_q.enq.msg.result.value = s.fp_cmp.altb | s.fp_cmp.aeqb
-  //           if s.fp_cmp.unordered:
-  //             s.dw_fexc.value       = s.DW_FEXC_NV
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FF2I:
-  //           s.fp_flt2i.a.value      = s.req_q.deq.msg.op_a
-  //           s.fp_flt2i.rnd.value    = s.dw_frnd
-  //           s.resp_q.enq.msg.result.value = s.fp_flt2i.z
-  //           s.dw_fexc.value         = s.fp_flt2i.status
-  //
-  //         elif s.req_q.deq.msg.type_ == FpuReqMsg.TYPE_FI2F:
-  //           s.fp_i2flt.a.value      = s.req_q.deq.msg.op_a
-  //           s.fp_i2flt.rnd.value    = s.dw_frnd
-  //           s.resp_q.enq.msg.result.value = s.fp_i2flt.z
-  //           s.dw_fexc.value         = s.fp_i2flt.status
-  //
-  //
-  //         s.resp_q.enq.msg.opaque.value = s.req_q.deq.msg.opaque
-  //         s.req_q.deq.rdy.value = s.resp_go
-  //         s.resp_q.enq.val.value = s.resp_go
-  //
-  //       # Because the exceptions are encoded differently in DW and RISC-V,
-  //       # we convert between the two here.
-  //
-  //       if s.dw_fexc & s.DW_FEXC_NX:
-  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_NX
-  //       if s.dw_fexc & s.DW_FEXC_UF:
-  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_UF
-  //       if s.dw_fexc & s.DW_FEXC_OF:
-  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_OF
-  //       if s.dw_fexc & s.DW_FEXC_DZ:
-  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_DZ
-  //       if s.dw_fexc & s.DW_FEXC_NV:
-  //         s.riscv_fexc.value = s.riscv_fexc | FpuRespMsg.FEXC_NV
-  //
-  //       s.resp_q.enq.msg.fexc.value   = s.riscv_fexc
-
-  // logic for comb()
-  always @ (*) begin
-    fp_mult$a = 0;
-    fp_mult$b = 0;
-    fp_mult$rnd = 0;
-    fp_addsub$a = 0;
-    fp_addsub$b = 0;
-    fp_addsub$op = 0;
-    fp_addsub$rnd = 0;
-    fp_addsub$in_val = 0;
-    fp_div$a = 0;
-    fp_div$b = 0;
-    fp_div$rnd = 0;
-    fp_div$in_val = 0;
-    fp_cmp$a = 0;
-    fp_cmp$b = 0;
-    fp_cmp$zctr = 0;
-    fp_flt2i$a = 0;
-    fp_flt2i$rnd = 0;
-    fp_i2flt$a = 0;
-    fp_i2flt$rnd = 0;
-    resp_q$enq_msg[(40)-1:37] = 0;
-    resp_q$enq_msg[(37)-1:5] = 0;
-    dw_fexc = 0;
-    resp_q$enq_msg[(5)-1:0] = 0;
-    dw_frnd = 0;
-    riscv_fexc = 0;
-    req_q$deq_rdy = 0;
-    resp_q$enq_val = 0;
-    resp_go = 0;
-    if ((req_q$deq_msg[(3)-1:0] == FRND_NE)) begin
-      dw_frnd = DW_FRND_NE;
-    end
-    else begin
-      if ((req_q$deq_msg[(3)-1:0] == FRND_TZ)) begin
-        dw_frnd = DW_FRND_TZ;
-      end
-      else begin
-        if ((req_q$deq_msg[(3)-1:0] == FRND_DN)) begin
-          dw_frnd = DW_FRND_DN;
-        end
-        else begin
-          if ((req_q$deq_msg[(3)-1:0] == FRND_UP)) begin
-            dw_frnd = DW_FRND_UP;
-          end
-          else begin
-            if ((req_q$deq_msg[(3)-1:0] == FRND_MM)) begin
-              dw_frnd = DW_FRND_MM;
-            end
-            else begin
-            end
-          end
-        end
-      end
-    end
-    if ((req_q$deq_val&&resp_q$enq_rdy)) begin
-      resp_go = 1;
-      if ((req_q$deq_msg[(74)-1:70] == TYPE_FMUL)) begin
-        fp_mult$a = req_q$deq_msg[(67)-1:35];
-        fp_mult$b = req_q$deq_msg[(35)-1:3];
-        fp_mult$rnd = dw_frnd;
-        resp_q$enq_msg[(37)-1:5] = fp_mult$z;
-        dw_fexc = fp_mult$status;
-      end
-      else begin
-        if ((req_q$deq_msg[(74)-1:70] == TYPE_FADD)) begin
-          fp_addsub$a = req_q$deq_msg[(67)-1:35];
-          fp_addsub$b = req_q$deq_msg[(35)-1:3];
-          fp_addsub$op = DW_ADDSUB_ADD;
-          fp_addsub$rnd = dw_frnd;
-          fp_addsub$in_val = !fp_addsub$busy;
-          resp_q$enq_msg[(37)-1:5] = fp_addsub$z;
-          dw_fexc = fp_addsub$status;
-          resp_go = fp_addsub$out_val;
-        end
-        else begin
-          if ((req_q$deq_msg[(74)-1:70] == TYPE_FSUB)) begin
-            fp_addsub$a = req_q$deq_msg[(67)-1:35];
-            fp_addsub$b = req_q$deq_msg[(35)-1:3];
-            fp_addsub$op = DW_ADDSUB_SUB;
-            fp_addsub$rnd = dw_frnd;
-            fp_addsub$in_val = !fp_addsub$busy;
-            resp_q$enq_msg[(37)-1:5] = fp_addsub$z;
-            dw_fexc = fp_addsub$status;
-            resp_go = fp_addsub$out_val;
-          end
-          else begin
-            if ((req_q$deq_msg[(74)-1:70] == TYPE_FDIV)) begin
-              fp_div$a = req_q$deq_msg[(67)-1:35];
-              fp_div$b = req_q$deq_msg[(35)-1:3];
-              fp_div$rnd = dw_frnd;
-              fp_div$in_val = !fp_div$busy;
-              resp_q$enq_msg[(37)-1:5] = fp_div$z;
-              dw_fexc = fp_div$status;
-              resp_go = fp_div$out_val;
-            end
-            else begin
-              if ((req_q$deq_msg[(74)-1:70] == TYPE_FMIN)) begin
-                fp_cmp$a = req_q$deq_msg[(67)-1:35];
-                fp_cmp$b = req_q$deq_msg[(35)-1:3];
-                fp_cmp$zctr = 0;
-                resp_q$enq_msg[(37)-1:5] = fp_cmp$z0;
-                if (fp_cmp$unordered) begin
-                  dw_fexc = DW_FEXC_NV;
-                end
-                else begin
-                end
-              end
-              else begin
-                if ((req_q$deq_msg[(74)-1:70] == TYPE_FMAX)) begin
-                  fp_cmp$a = req_q$deq_msg[(67)-1:35];
-                  fp_cmp$b = req_q$deq_msg[(35)-1:3];
-                  fp_cmp$zctr = 1;
-                  resp_q$enq_msg[(37)-1:5] = fp_cmp$z0;
-                  if (fp_cmp$unordered) begin
-                    dw_fexc = DW_FEXC_NV;
-                  end
-                  else begin
-                  end
-                end
-                else begin
-                  if ((req_q$deq_msg[(74)-1:70] == TYPE_FCEQ)) begin
-                    fp_cmp$a = req_q$deq_msg[(67)-1:35];
-                    fp_cmp$b = req_q$deq_msg[(35)-1:3];
-                    fp_cmp$zctr = 0;
-                    resp_q$enq_msg[(37)-1:5] = fp_cmp$aeqb;
-                    if (fp_cmp$unordered) begin
-                      dw_fexc = DW_FEXC_NV;
-                    end
-                    else begin
-                    end
-                  end
-                  else begin
-                    if ((req_q$deq_msg[(74)-1:70] == TYPE_FCLT)) begin
-                      fp_cmp$a = req_q$deq_msg[(67)-1:35];
-                      fp_cmp$b = req_q$deq_msg[(35)-1:3];
-                      fp_cmp$zctr = 0;
-                      resp_q$enq_msg[(37)-1:5] = fp_cmp$altb;
-                      if (fp_cmp$unordered) begin
-                        dw_fexc = DW_FEXC_NV;
-                      end
-                      else begin
-                      end
-                    end
-                    else begin
-                      if ((req_q$deq_msg[(74)-1:70] == TYPE_FCLE)) begin
-                        fp_cmp$a = req_q$deq_msg[(67)-1:35];
-                        fp_cmp$b = req_q$deq_msg[(35)-1:3];
-                        fp_cmp$zctr = 0;
-                        resp_q$enq_msg[(37)-1:5] = (fp_cmp$altb|fp_cmp$aeqb);
-                        if (fp_cmp$unordered) begin
-                          dw_fexc = DW_FEXC_NV;
-                        end
-                        else begin
-                        end
-                      end
-                      else begin
-                        if ((req_q$deq_msg[(74)-1:70] == TYPE_FF2I)) begin
-                          fp_flt2i$a = req_q$deq_msg[(67)-1:35];
-                          fp_flt2i$rnd = dw_frnd;
-                          resp_q$enq_msg[(37)-1:5] = fp_flt2i$z;
-                          dw_fexc = fp_flt2i$status;
-                        end
-                        else begin
-                          if ((req_q$deq_msg[(74)-1:70] == TYPE_FI2F)) begin
-                            fp_i2flt$a = req_q$deq_msg[(67)-1:35];
-                            fp_i2flt$rnd = dw_frnd;
-                            resp_q$enq_msg[(37)-1:5] = fp_i2flt$z;
-                            dw_fexc = fp_i2flt$status;
-                          end
-                          else begin
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-      resp_q$enq_msg[(40)-1:37] = req_q$deq_msg[(70)-1:67];
-      req_q$deq_rdy = resp_go;
-      resp_q$enq_val = resp_go;
-    end
-    else begin
-    end
-    if ((dw_fexc&DW_FEXC_NX)) begin
-      riscv_fexc = (riscv_fexc|FEXC_NX);
-    end
-    else begin
-    end
-    if ((dw_fexc&DW_FEXC_UF)) begin
-      riscv_fexc = (riscv_fexc|FEXC_UF);
-    end
-    else begin
-    end
-    if ((dw_fexc&DW_FEXC_OF)) begin
-      riscv_fexc = (riscv_fexc|FEXC_OF);
-    end
-    else begin
-    end
-    if ((dw_fexc&DW_FEXC_DZ)) begin
-      riscv_fexc = (riscv_fexc|FEXC_DZ);
-    end
-    else begin
-    end
-    if ((dw_fexc&DW_FEXC_NV)) begin
-      riscv_fexc = (riscv_fexc|FEXC_NV);
-    end
-    else begin
-    end
-    resp_q$enq_msg[(5)-1:0] = riscv_fexc;
-  end
-
-
-endmodule // DesignWareFloatingPointUnit
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_flt2i_0x3cd77562127ffa78
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_flt2i_0x3cd77562127ffa78
-(
-  input  wire [  31:0] a,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
-
-  DW_fp_flt2i#(
-    .ieee_compliance ( 1 )
-  )  verilog_module
-  (
-    .a      ( a ),
-    .rnd    ( rnd ),
-    .status ( status ),
-    .z      ( z )
-  );
-
-endmodule // DW_fp_flt2i_0x3cd77562127ffa78
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueue_0x5cb07886f33e4c89
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dtype: 74
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueue_0x5cb07886f33e4c89
-(
-  input  wire [   0:0] clk,
-  output wire [  73:0] deq_msg,
-  input  wire [   0:0] deq_rdy,
-  output wire [   0:0] deq_val,
-  input  wire [  73:0] enq_msg,
-  output wire [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  output wire [   1:0] num_free_entries,
-  input  wire [   0:0] reset
-);
-
-  // ctrl temporaries
-  wire   [   0:0] ctrl$clk;
-  wire   [   0:0] ctrl$enq_val;
-  wire   [   0:0] ctrl$reset;
-  wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$waddr;
-  wire   [   0:0] ctrl$wen;
-  wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$raddr;
-  wire   [   1:0] ctrl$num_free_entries;
-  wire   [   0:0] ctrl$enq_rdy;
-
-  NormalQueueCtrl_0x7a42a348c9205b5 ctrl
-  (
-    .clk              ( ctrl$clk ),
-    .enq_val          ( ctrl$enq_val ),
-    .reset            ( ctrl$reset ),
-    .deq_rdy          ( ctrl$deq_rdy ),
-    .waddr            ( ctrl$waddr ),
-    .wen              ( ctrl$wen ),
-    .deq_val          ( ctrl$deq_val ),
-    .raddr            ( ctrl$raddr ),
-    .num_free_entries ( ctrl$num_free_entries ),
-    .enq_rdy          ( ctrl$enq_rdy )
-  );
-
-  // dpath temporaries
-  wire   [   0:0] dpath$waddr;
-  wire   [   0:0] dpath$clk;
-  wire   [   0:0] dpath$wen;
-  wire   [   0:0] dpath$raddr;
-  wire   [   0:0] dpath$reset;
-  wire   [  73:0] dpath$enq_bits;
-  wire   [  73:0] dpath$deq_bits;
-
-  NormalQueueDpath_0x5cb07886f33e4c89 dpath
-  (
-    .waddr    ( dpath$waddr ),
-    .clk      ( dpath$clk ),
-    .wen      ( dpath$wen ),
-    .raddr    ( dpath$raddr ),
-    .reset    ( dpath$reset ),
-    .enq_bits ( dpath$enq_bits ),
-    .deq_bits ( dpath$deq_bits )
-  );
-
-  // signal connections
-  assign ctrl$clk         = clk;
-  assign ctrl$deq_rdy     = deq_rdy;
-  assign ctrl$enq_val     = enq_val;
-  assign ctrl$reset       = reset;
-  assign deq_msg          = dpath$deq_bits;
-  assign deq_val          = ctrl$deq_val;
-  assign dpath$clk        = clk;
-  assign dpath$enq_bits   = enq_msg;
-  assign dpath$raddr      = ctrl$raddr;
-  assign dpath$reset      = reset;
-  assign dpath$waddr      = ctrl$waddr;
-  assign dpath$wen        = ctrl$wen;
-  assign enq_rdy          = ctrl$enq_rdy;
-  assign num_free_entries = ctrl$num_free_entries;
-
-
-
-endmodule // NormalQueue_0x5cb07886f33e4c89
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueueCtrl_0x7a42a348c9205b5
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueueCtrl_0x7a42a348c9205b5
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] deq_rdy,
-  output reg  [   0:0] deq_val,
-  output reg  [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  output reg  [   1:0] num_free_entries,
-  output reg  [   0:0] raddr,
-  input  wire [   0:0] reset,
-  output reg  [   0:0] waddr,
-  output reg  [   0:0] wen
-);
-
-  // register declarations
-  reg    [   0:0] deq_ptr;
-  reg    [   0:0] deq_ptr_inc;
-  reg    [   0:0] deq_ptr_next;
-  reg    [   0:0] do_deq;
-  reg    [   0:0] do_enq;
-  reg    [   0:0] empty;
-  reg    [   0:0] enq_ptr;
-  reg    [   0:0] enq_ptr_inc;
-  reg    [   0:0] enq_ptr_next;
-  reg    [   0:0] full;
-  reg    [   0:0] full_next_cycle;
-
-  // localparam declarations
-  localparam last_idx = 1;
-  localparam num_entries = 2;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq():
-  //
-  //       if s.reset: s.deq_ptr.next = 0
-  //       else:       s.deq_ptr.next = s.deq_ptr_next
-  //
-  //       if s.reset: s.enq_ptr.next = 0
-  //       else:       s.enq_ptr.next = s.enq_ptr_next
-  //
-  //       if   s.reset:               s.full.next = 0
-  //       elif s.full_next_cycle:     s.full.next = 1
-  //       elif (s.do_deq and s.full): s.full.next = 0
-  //       else:                       s.full.next = s.full
-
-  // logic for seq()
-  always @ (posedge clk) begin
-    if (reset) begin
-      deq_ptr <= 0;
-    end
-    else begin
-      deq_ptr <= deq_ptr_next;
-    end
-    if (reset) begin
-      enq_ptr <= 0;
-    end
-    else begin
-      enq_ptr <= enq_ptr_next;
-    end
-    if (reset) begin
-      full <= 0;
-    end
-    else begin
-      if (full_next_cycle) begin
-        full <= 1;
-      end
-      else begin
-        if ((do_deq&&full)) begin
-          full <= 0;
-        end
-        else begin
-          full <= full;
-        end
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb():
-  //
-  //       # set output signals
-  //
-  //       s.empty.value   = not s.full and (s.enq_ptr == s.deq_ptr)
-  //
-  //       s.enq_rdy.value = not s.full
-  //       s.deq_val.value = not s.empty
-  //
-  //       # only enqueue/dequeue if valid and ready
-  //
-  //       s.do_enq.value = s.enq_rdy and s.enq_val
-  //       s.do_deq.value = s.deq_rdy and s.deq_val
-  //
-  //       # set control signals
-  //
-  //       s.wen.value     = s.do_enq
-  //       s.waddr.value   = s.enq_ptr
-  //       s.raddr.value   = s.deq_ptr
-  //
-  //       # enq ptr incrementer
-  //
-  //       if s.enq_ptr == s.last_idx: s.enq_ptr_inc.value = 0
-  //       else:                       s.enq_ptr_inc.value = s.enq_ptr + 1
-  //
-  //       # deq ptr incrementer
-  //
-  //       if s.deq_ptr == s.last_idx: s.deq_ptr_inc.value = 0
-  //       else:                       s.deq_ptr_inc.value = s.deq_ptr + 1
-  //
-  //       # set the next ptr value
-  //
-  //       if s.do_enq: s.enq_ptr_next.value = s.enq_ptr_inc
-  //       else:        s.enq_ptr_next.value = s.enq_ptr
-  //
-  //       if s.do_deq: s.deq_ptr_next.value = s.deq_ptr_inc
-  //       else:        s.deq_ptr_next.value = s.deq_ptr
-  //
-  //       # number of free entries calculation
-  //
-  //       if   s.reset:
-  //         s.num_free_entries.value = s.num_entries
-  //       elif s.full:
-  //         s.num_free_entries.value = 0
-  //       elif s.empty:
-  //         s.num_free_entries.value = s.num_entries
-  //       elif s.enq_ptr > s.deq_ptr:
-  //         s.num_free_entries.value = s.num_entries - ( s.enq_ptr - s.deq_ptr )
-  //       elif s.deq_ptr > s.enq_ptr:
-  //         s.num_free_entries.value = s.deq_ptr - s.enq_ptr
-  //
-  //       s.full_next_cycle.value = (s.do_enq and not s.do_deq and
-  //                                 (s.enq_ptr_next == s.deq_ptr))
-
-  // logic for comb()
-  always @ (*) begin
-    empty = (!full&&(enq_ptr == deq_ptr));
-    enq_rdy = !full;
-    deq_val = !empty;
-    do_enq = (enq_rdy&&enq_val);
-    do_deq = (deq_rdy&&deq_val);
-    wen = do_enq;
-    waddr = enq_ptr;
-    raddr = deq_ptr;
-    if ((enq_ptr == last_idx)) begin
-      enq_ptr_inc = 0;
-    end
-    else begin
-      enq_ptr_inc = (enq_ptr+1);
-    end
-    if ((deq_ptr == last_idx)) begin
-      deq_ptr_inc = 0;
-    end
-    else begin
-      deq_ptr_inc = (deq_ptr+1);
-    end
-    if (do_enq) begin
-      enq_ptr_next = enq_ptr_inc;
-    end
-    else begin
-      enq_ptr_next = enq_ptr;
-    end
-    if (do_deq) begin
-      deq_ptr_next = deq_ptr_inc;
-    end
-    else begin
-      deq_ptr_next = deq_ptr;
-    end
-    if (reset) begin
-      num_free_entries = num_entries;
-    end
-    else begin
-      if (full) begin
-        num_free_entries = 0;
-      end
-      else begin
-        if (empty) begin
-          num_free_entries = num_entries;
-        end
-        else begin
-          if ((enq_ptr > deq_ptr)) begin
-            num_free_entries = (num_entries-(enq_ptr-deq_ptr));
-          end
-          else begin
-            if ((deq_ptr > enq_ptr)) begin
-              num_free_entries = (deq_ptr-enq_ptr);
-            end
-            else begin
-            end
-          end
-        end
-      end
-    end
-    full_next_cycle = (do_enq&&!do_deq&&(enq_ptr_next == deq_ptr));
-  end
-
-
-endmodule // NormalQueueCtrl_0x7a42a348c9205b5
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueueDpath_0x5cb07886f33e4c89
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dtype: 74
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueueDpath_0x5cb07886f33e4c89
-(
-  input  wire [   0:0] clk,
-  output wire [  73:0] deq_bits,
-  input  wire [  73:0] enq_bits,
-  input  wire [   0:0] raddr,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] waddr,
-  input  wire [   0:0] wen
-);
-
-  // queue temporaries
-  wire   [   0:0] queue$rd_addr$000;
-  wire   [  73:0] queue$wr_data;
-  wire   [   0:0] queue$clk;
-  wire   [   0:0] queue$wr_addr;
-  wire   [   0:0] queue$wr_en;
-  wire   [   0:0] queue$reset;
-  wire   [  73:0] queue$rd_data$000;
-
-  RegisterFile_0x3dc677e7a194fe32 queue
-  (
-    .rd_addr$000 ( queue$rd_addr$000 ),
-    .wr_data     ( queue$wr_data ),
-    .clk         ( queue$clk ),
-    .wr_addr     ( queue$wr_addr ),
-    .wr_en       ( queue$wr_en ),
-    .reset       ( queue$reset ),
-    .rd_data$000 ( queue$rd_data$000 )
-  );
-
-  // signal connections
-  assign deq_bits          = queue$rd_data$000;
-  assign queue$clk         = clk;
-  assign queue$rd_addr$000 = raddr;
-  assign queue$reset       = reset;
-  assign queue$wr_addr     = waddr;
-  assign queue$wr_data     = enq_bits;
-  assign queue$wr_en       = wen;
-
-
-
-endmodule // NormalQueueDpath_0x5cb07886f33e4c89
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegisterFile_0x3dc677e7a194fe32
-//-----------------------------------------------------------------------------
-// dtype: 74
-// nregs: 2
-// const_zero: False
-// wr_ports: 1
-// rd_ports: 1
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegisterFile_0x3dc677e7a194fe32
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] rd_addr$000,
-  output wire [  73:0] rd_data$000,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] wr_addr,
-  input  wire [  73:0] wr_data,
-  input  wire [   0:0] wr_en
-);
-
-  // wire declarations
-  wire   [  73:0] regs$000;
-  wire   [  73:0] regs$001;
-
-
-  // localparam declarations
-  localparam nregs = 2;
-  localparam rd_ports = 1;
-
-  // loop variable declarations
-  integer i;
-
-
-  // array declarations
-  wire   [   0:0] rd_addr[0:0];
-  assign rd_addr[  0] = rd_addr$000;
-  reg    [  73:0] rd_data[0:0];
-  assign rd_data$000 = rd_data[  0];
-  reg    [  73:0] regs[0:1];
-  assign regs$000 = regs[  0];
-  assign regs$001 = regs[  1];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //         if s.wr_en:
-  //           s.regs[ s.wr_addr ].next = s.wr_data
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (wr_en) begin
-      regs[wr_addr] <= wr_data;
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //         for i in range( rd_ports ):
-  //           assert s.rd_addr[i] < nregs
-  //           s.rd_data[i].value = s.regs[ s.rd_addr[i] ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    for (i=0; i < rd_ports; i=i+1)
-    begin
-      rd_data[i] = regs[rd_addr[i]];
-    end
-  end
-
-
-endmodule // RegisterFile_0x3dc677e7a194fe32
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_addsub_pipelined
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// num_stages: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_addsub_pipelined
-(
-  input  wire [  31:0] a,
-  input  wire [  31:0] b,
-  output reg  [   0:0] busy,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] in_val,
-  input  wire [   0:0] op,
-  output wire [   0:0] out_val,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // wire declarations
-  wire   [   0:0] pipe_val$000;
-  wire   [   0:0] pipe_val$001;
-  wire   [  31:0] pipe_z$000;
-  wire   [  31:0] pipe_z$001;
-  wire   [   7:0] pipe_status$000;
-  wire   [   7:0] pipe_status$001;
-
-
-  // register declarations
-  reg    [  31:0] a_reg;
-  reg    [  31:0] b_reg;
-  reg    [   0:0] in_val_reg;
-  reg    [   0:0] op_reg;
-  reg    [   2:0] rnd_reg;
-
-  // localparam declarations
-  localparam num_stages = 2;
-
-  // loop variable declarations
-  integer i;
-
-  // dw_fp_addsub temporaries
-  wire   [   0:0] dw_fp_addsub$clk;
-  wire   [  31:0] dw_fp_addsub$a;
-  wire   [   2:0] dw_fp_addsub$rnd;
-  wire   [   0:0] dw_fp_addsub$reset;
-  wire   [  31:0] dw_fp_addsub$b;
-  wire   [   0:0] dw_fp_addsub$op;
-  wire   [   7:0] dw_fp_addsub$status;
-  wire   [  31:0] dw_fp_addsub$z;
-
-  DW_fp_addsub_0x3cb0331b99cfb5df dw_fp_addsub
-  (
-    .clk    ( dw_fp_addsub$clk ),
-    .a      ( dw_fp_addsub$a ),
-    .rnd    ( dw_fp_addsub$rnd ),
-    .reset  ( dw_fp_addsub$reset ),
-    .b      ( dw_fp_addsub$b ),
-    .op     ( dw_fp_addsub$op ),
-    .status ( dw_fp_addsub$status ),
-    .z      ( dw_fp_addsub$z )
-  );
-
-  // signal connections
-  assign dw_fp_addsub$a     = a_reg;
-  assign dw_fp_addsub$b     = b_reg;
-  assign dw_fp_addsub$clk   = clk;
-  assign dw_fp_addsub$op    = op_reg;
-  assign dw_fp_addsub$reset = reset;
-  assign dw_fp_addsub$rnd   = rnd_reg;
-  assign out_val            = pipe_val$001;
-  assign status             = pipe_status$001;
-  assign z                  = pipe_z$001;
-
-  // array declarations
-  reg    [   7:0] pipe_status[0:1];
-  assign pipe_status$000 = pipe_status[  0];
-  assign pipe_status$001 = pipe_status[  1];
-  reg    [   0:0] pipe_val[0:1];
-  assign pipe_val$000 = pipe_val[  0];
-  assign pipe_val$001 = pipe_val[  1];
-  reg    [  31:0] pipe_z[0:1];
-  assign pipe_z$000 = pipe_z[  0];
-  assign pipe_z$001 = pipe_z[  1];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def posedge():
-  //       if s.reset:
-  //         # Only need to reset the valid registers.
-  //         s.in_val_reg.next = 0
-  //
-  //         for i in xrange( num_stages ):
-  //           s.pipe_val[i].next = 0
-  //
-  //       else:
-  //         s.a_reg.next = s.a
-  //         s.b_reg.next = s.b
-  //         s.op_reg.next = s.op
-  //         s.rnd_reg.next = s.rnd
-  //         s.in_val_reg.next = s.in_val
-  //
-  //         s.pipe_val[0].next     = s.in_val_reg
-  //         s.pipe_z[0].next       = s.dw_fp_addsub.z
-  //         s.pipe_status[0].next  = s.dw_fp_addsub.status
-  //
-  //         for i in xrange( 1, num_stages ):
-  //           s.pipe_val[i].next    = s.pipe_val[i-1]
-  //           s.pipe_z[i].next      = s.pipe_z[i-1]
-  //           s.pipe_status[i].next = s.pipe_status[i-1]
-
-  // logic for posedge()
-  always @ (posedge clk) begin
-    if (reset) begin
-      in_val_reg <= 0;
-      for (i=0; i < num_stages; i=i+1)
-      begin
-        pipe_val[i] <= 0;
-      end
-    end
-    else begin
-      a_reg <= a;
-      b_reg <= b;
-      op_reg <= op;
-      rnd_reg <= rnd;
-      in_val_reg <= in_val;
-      pipe_val[0] <= in_val_reg;
-      pipe_z[0] <= dw_fp_addsub$z;
-      pipe_status[0] <= dw_fp_addsub$status;
-      for (i=1; i < num_stages; i=i+1)
-      begin
-        pipe_val[i] <= pipe_val[(i-1)];
-        pipe_z[i] <= pipe_z[(i-1)];
-        pipe_status[i] <= pipe_status[(i-1)];
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_busy():
-  //       s.busy.value = s.in_val_reg
-  //       for i in xrange( num_stages ):
-  //         s.busy.value = s.busy | s.pipe_val[i]
-
-  // logic for comb_busy()
-  always @ (*) begin
-    busy = in_val_reg;
-    for (i=0; i < num_stages; i=i+1)
-    begin
-      busy = (busy|pipe_val[i]);
-    end
-  end
-
-
-endmodule // DW_fp_addsub_pipelined
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_addsub_0x3cb0331b99cfb5df
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_addsub_0x3cb0331b99cfb5df
-(
-  input  wire [  31:0] a,
-  input  wire [  31:0] b,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] op,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
-
-  DW_fp_addsub#(
-    .ieee_compliance ( 1 )
-  )  verilog_module
-  (
-    .a      ( a ),
-    .b      ( b ),
-    .op     ( op ),
-    .rnd    ( rnd ),
-    .status ( status ),
-    .z      ( z )
-  );
-
-endmodule // DW_fp_addsub_0x3cb0331b99cfb5df
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_cmp_0x15bdbff0d8f765a1
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_cmp_0x15bdbff0d8f765a1
-(
-  input  wire [  31:0] a,
-  output wire [   0:0] aeqb,
-  output wire [   0:0] agtb,
-  output wire [   0:0] altb,
-  input  wire [  31:0] b,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] reset,
-  output wire [   7:0] status0,
-  output wire [   7:0] status1,
-  output wire [   0:0] unordered,
-  output wire [  31:0] z0,
-  output wire [  31:0] z1,
-  input  wire [   0:0] zctr
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
-
-  DW_fp_cmp#(
-    .ieee_compliance ( 1 )
-  )  verilog_module
-  (
-    .a         ( a ),
-    .aeqb      ( aeqb ),
-    .agtb      ( agtb ),
-    .altb      ( altb ),
-    .b         ( b ),
-    .status0   ( status0 ),
-    .status1   ( status1 ),
-    .unordered ( unordered ),
-    .z0        ( z0 ),
-    .z1        ( z1 ),
-    .zctr      ( zctr )
-  );
-
-endmodule // DW_fp_cmp_0x15bdbff0d8f765a1
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_mult_0x1eaed5d9d53885e0
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_mult_0x1eaed5d9d53885e0
-(
-  input  wire [  31:0] a,
-  input  wire [  31:0] b,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
-
-  DW_fp_mult#(
-    .ieee_compliance ( 1 )
-  )  verilog_module
-  (
-    .a      ( a ),
-    .b      ( b ),
-    .rnd    ( rnd ),
-    .status ( status ),
-    .z      ( z )
-  );
-
-endmodule // DW_fp_mult_0x1eaed5d9d53885e0
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_i2flt_0x215a2bada2e33c4b
-//-----------------------------------------------------------------------------
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_i2flt_0x215a2bada2e33c4b
-(
-  input  wire [  31:0] a,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
-
-  DW_fp_i2flt#(
-
-  )  verilog_module
-  (
-    .a      ( a ),
-    .rnd    ( rnd ),
-    .status ( status ),
-    .z      ( z )
-  );
-
-endmodule // DW_fp_i2flt_0x215a2bada2e33c4b
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_div_pipelined
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// num_stages: 3
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_div_pipelined
-(
-  input  wire [  31:0] a,
-  input  wire [  31:0] b,
-  output reg  [   0:0] busy,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] in_val,
-  output wire [   0:0] out_val,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // wire declarations
-  wire   [   0:0] pipe_val$000;
-  wire   [   0:0] pipe_val$001;
-  wire   [   0:0] pipe_val$002;
-  wire   [  31:0] pipe_z$000;
-  wire   [  31:0] pipe_z$001;
-  wire   [  31:0] pipe_z$002;
-  wire   [   7:0] pipe_status$000;
-  wire   [   7:0] pipe_status$001;
-  wire   [   7:0] pipe_status$002;
-
-
-  // register declarations
-  reg    [  31:0] a_reg;
-  reg    [  31:0] b_reg;
-  reg    [   0:0] in_val_reg;
-  reg    [   2:0] rnd_reg;
-
-  // localparam declarations
-  localparam num_stages = 3;
-
-  // loop variable declarations
-  integer i;
-
-  // dw_fp_div temporaries
-  wire   [   0:0] dw_fp_div$clk;
-  wire   [  31:0] dw_fp_div$a;
-  wire   [   2:0] dw_fp_div$rnd;
-  wire   [   0:0] dw_fp_div$reset;
-  wire   [  31:0] dw_fp_div$b;
-  wire   [   7:0] dw_fp_div$status;
-  wire   [  31:0] dw_fp_div$z;
-
-  DW_fp_div_0x124edb2c88d843aa dw_fp_div
-  (
-    .clk    ( dw_fp_div$clk ),
-    .a      ( dw_fp_div$a ),
-    .rnd    ( dw_fp_div$rnd ),
-    .reset  ( dw_fp_div$reset ),
-    .b      ( dw_fp_div$b ),
-    .status ( dw_fp_div$status ),
-    .z      ( dw_fp_div$z )
-  );
-
-  // signal connections
-  assign dw_fp_div$a     = a_reg;
-  assign dw_fp_div$b     = b_reg;
-  assign dw_fp_div$clk   = clk;
-  assign dw_fp_div$reset = reset;
-  assign dw_fp_div$rnd   = rnd_reg;
-  assign out_val         = pipe_val$002;
-  assign status          = pipe_status$002;
-  assign z               = pipe_z$002;
-
-  // array declarations
-  reg    [   7:0] pipe_status[0:2];
-  assign pipe_status$000 = pipe_status[  0];
-  assign pipe_status$001 = pipe_status[  1];
-  assign pipe_status$002 = pipe_status[  2];
-  reg    [   0:0] pipe_val[0:2];
-  assign pipe_val$000 = pipe_val[  0];
-  assign pipe_val$001 = pipe_val[  1];
-  assign pipe_val$002 = pipe_val[  2];
-  reg    [  31:0] pipe_z[0:2];
-  assign pipe_z$000 = pipe_z[  0];
-  assign pipe_z$001 = pipe_z[  1];
-  assign pipe_z$002 = pipe_z[  2];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def posedge():
-  //       if s.reset:
-  //         # Only need to reset the valid registers.
-  //         s.in_val_reg.next = 0
-  //
-  //         for i in xrange( num_stages ):
-  //           s.pipe_val[i].next = 0
-  //
-  //       else:
-  //         s.a_reg.next = s.a
-  //         s.b_reg.next = s.b
-  //         s.rnd_reg.next = s.rnd
-  //         s.in_val_reg.next = s.in_val
-  //
-  //         s.pipe_val[0].next     = s.in_val_reg
-  //         s.pipe_z[0].next       = s.dw_fp_div.z
-  //         s.pipe_status[0].next  = s.dw_fp_div.status
-  //
-  //         for i in xrange( 1, num_stages ):
-  //           s.pipe_val[i].next    = s.pipe_val[i-1]
-  //           s.pipe_z[i].next      = s.pipe_z[i-1]
-  //           s.pipe_status[i].next = s.pipe_status[i-1]
-
-  // logic for posedge()
-  always @ (posedge clk) begin
-    if (reset) begin
-      in_val_reg <= 0;
-      for (i=0; i < num_stages; i=i+1)
-      begin
-        pipe_val[i] <= 0;
-      end
-    end
-    else begin
-      a_reg <= a;
-      b_reg <= b;
-      rnd_reg <= rnd;
-      in_val_reg <= in_val;
-      pipe_val[0] <= in_val_reg;
-      pipe_z[0] <= dw_fp_div$z;
-      pipe_status[0] <= dw_fp_div$status;
-      for (i=1; i < num_stages; i=i+1)
-      begin
-        pipe_val[i] <= pipe_val[(i-1)];
-        pipe_z[i] <= pipe_z[(i-1)];
-        pipe_status[i] <= pipe_status[(i-1)];
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_busy():
-  //       s.busy.value = s.in_val_reg
-  //       for i in xrange( num_stages ):
-  //         s.busy.value = s.busy | s.pipe_val[i]
-
-  // logic for comb_busy()
-  always @ (*) begin
-    busy = in_val_reg;
-    for (i=0; i < num_stages; i=i+1)
-    begin
-      busy = (busy|pipe_val[i]);
-    end
-  end
-
-
-endmodule // DW_fp_div_pipelined
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// DW_fp_div_0x124edb2c88d843aa
-//-----------------------------------------------------------------------------
-// ieee_compliance: 1
-// dump-vcd: True
-// verilator-xinit: zeros
-`default_nettype none
-module DW_fp_div_0x124edb2c88d843aa
-(
-  input  wire [  31:0] a,
-  input  wire [  31:0] b,
-  input  wire [   0:0] clk,
-  input  wire [   0:0] reset,
-  input  wire [   2:0] rnd,
-  output wire [   7:0] status,
-  output wire [  31:0] z
-);
-
-  // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
-
-  DW_fp_div#(
-    .faithful_round ( 0 ),
-    .ieee_compliance ( 1 )
-  )  verilog_module
-  (
-    .a      ( a ),
-    .b      ( b ),
-    .rnd    ( rnd ),
-    .status ( status ),
-    .z      ( z )
-  );
-
-endmodule // DW_fp_div_0x124edb2c88d843aa
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueue_0x21e242676aeb92b7
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dtype: 40
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueue_0x21e242676aeb92b7
-(
-  input  wire [   0:0] clk,
-  output wire [  39:0] deq_msg,
-  input  wire [   0:0] deq_rdy,
-  output wire [   0:0] deq_val,
-  input  wire [  39:0] enq_msg,
-  output wire [   0:0] enq_rdy,
-  input  wire [   0:0] enq_val,
-  output wire [   1:0] num_free_entries,
-  input  wire [   0:0] reset
-);
-
-  // ctrl temporaries
-  wire   [   0:0] ctrl$clk;
-  wire   [   0:0] ctrl$enq_val;
-  wire   [   0:0] ctrl$reset;
-  wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$waddr;
-  wire   [   0:0] ctrl$wen;
-  wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$raddr;
-  wire   [   1:0] ctrl$num_free_entries;
-  wire   [   0:0] ctrl$enq_rdy;
-
-  NormalQueueCtrl_0x7a42a348c9205b5 ctrl
-  (
-    .clk              ( ctrl$clk ),
-    .enq_val          ( ctrl$enq_val ),
-    .reset            ( ctrl$reset ),
-    .deq_rdy          ( ctrl$deq_rdy ),
-    .waddr            ( ctrl$waddr ),
-    .wen              ( ctrl$wen ),
-    .deq_val          ( ctrl$deq_val ),
-    .raddr            ( ctrl$raddr ),
-    .num_free_entries ( ctrl$num_free_entries ),
-    .enq_rdy          ( ctrl$enq_rdy )
-  );
-
-  // dpath temporaries
-  wire   [   0:0] dpath$waddr;
-  wire   [   0:0] dpath$clk;
-  wire   [   0:0] dpath$wen;
-  wire   [   0:0] dpath$raddr;
-  wire   [   0:0] dpath$reset;
-  wire   [  39:0] dpath$enq_bits;
-  wire   [  39:0] dpath$deq_bits;
-
-  NormalQueueDpath_0x21e242676aeb92b7 dpath
-  (
-    .waddr    ( dpath$waddr ),
-    .clk      ( dpath$clk ),
-    .wen      ( dpath$wen ),
-    .raddr    ( dpath$raddr ),
-    .reset    ( dpath$reset ),
-    .enq_bits ( dpath$enq_bits ),
-    .deq_bits ( dpath$deq_bits )
-  );
-
-  // signal connections
-  assign ctrl$clk         = clk;
-  assign ctrl$deq_rdy     = deq_rdy;
-  assign ctrl$enq_val     = enq_val;
-  assign ctrl$reset       = reset;
-  assign deq_msg          = dpath$deq_bits;
-  assign deq_val          = ctrl$deq_val;
-  assign dpath$clk        = clk;
-  assign dpath$enq_bits   = enq_msg;
-  assign dpath$raddr      = ctrl$raddr;
-  assign dpath$reset      = reset;
-  assign dpath$waddr      = ctrl$waddr;
-  assign dpath$wen        = ctrl$wen;
-  assign enq_rdy          = ctrl$enq_rdy;
-  assign num_free_entries = ctrl$num_free_entries;
-
-
-
-endmodule // NormalQueue_0x21e242676aeb92b7
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// NormalQueueDpath_0x21e242676aeb92b7
-//-----------------------------------------------------------------------------
-// num_entries: 2
-// dtype: 40
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module NormalQueueDpath_0x21e242676aeb92b7
-(
-  input  wire [   0:0] clk,
-  output wire [  39:0] deq_bits,
-  input  wire [  39:0] enq_bits,
-  input  wire [   0:0] raddr,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] waddr,
-  input  wire [   0:0] wen
-);
-
-  // queue temporaries
-  wire   [   0:0] queue$rd_addr$000;
-  wire   [  39:0] queue$wr_data;
-  wire   [   0:0] queue$clk;
-  wire   [   0:0] queue$wr_addr;
-  wire   [   0:0] queue$wr_en;
-  wire   [   0:0] queue$reset;
-  wire   [  39:0] queue$rd_data$000;
-
-  RegisterFile_0x7a892ffeceeb3534 queue
-  (
-    .rd_addr$000 ( queue$rd_addr$000 ),
-    .wr_data     ( queue$wr_data ),
-    .clk         ( queue$clk ),
-    .wr_addr     ( queue$wr_addr ),
-    .wr_en       ( queue$wr_en ),
-    .reset       ( queue$reset ),
-    .rd_data$000 ( queue$rd_data$000 )
-  );
-
-  // signal connections
-  assign deq_bits          = queue$rd_data$000;
-  assign queue$clk         = clk;
-  assign queue$rd_addr$000 = raddr;
-  assign queue$reset       = reset;
-  assign queue$wr_addr     = waddr;
-  assign queue$wr_data     = enq_bits;
-  assign queue$wr_en       = wen;
-
-
-
-endmodule // NormalQueueDpath_0x21e242676aeb92b7
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegisterFile_0x7a892ffeceeb3534
-//-----------------------------------------------------------------------------
-// dtype: 40
-// nregs: 2
-// const_zero: False
-// wr_ports: 1
-// rd_ports: 1
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegisterFile_0x7a892ffeceeb3534
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] rd_addr$000,
-  output wire [  39:0] rd_data$000,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] wr_addr,
-  input  wire [  39:0] wr_data,
-  input  wire [   0:0] wr_en
-);
-
-  // wire declarations
-  wire   [  39:0] regs$000;
-  wire   [  39:0] regs$001;
-
-
-  // localparam declarations
-  localparam nregs = 2;
-  localparam rd_ports = 1;
-
-  // loop variable declarations
-  integer i;
-
-
-  // array declarations
-  wire   [   0:0] rd_addr[0:0];
-  assign rd_addr[  0] = rd_addr$000;
-  reg    [  39:0] rd_data[0:0];
-  assign rd_data$000 = rd_data[  0];
-  reg    [  39:0] regs[0:1];
-  assign regs$000 = regs[  0];
-  assign regs$001 = regs[  1];
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //         if s.wr_en:
-  //           s.regs[ s.wr_addr ].next = s.wr_data
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (wr_en) begin
-      regs[wr_addr] <= wr_data;
-    end
-    else begin
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //         for i in range( rd_ports ):
-  //           assert s.rd_addr[i] < nregs
-  //           s.rd_data[i].value = s.regs[ s.rd_addr[i] ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    for (i=0; i < rd_ports; i=i+1)
-    begin
-      rd_data[i] = regs[rd_addr[i]];
-    end
-  end
-
-
-endmodule // RegisterFile_0x7a892ffeceeb3534
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Funnel_0x58a91bbf80713154
-//-----------------------------------------------------------------------------
-// nports: 4
-// MsgType: 74
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Funnel_0x58a91bbf80713154
-(
-  input  wire [   0:0] clk,
-  input  wire [  73:0] in_$000_msg,
-  output wire [   0:0] in_$000_rdy,
-  input  wire [   0:0] in_$000_val,
-  input  wire [  73:0] in_$001_msg,
-  output wire [   0:0] in_$001_rdy,
-  input  wire [   0:0] in_$001_val,
-  input  wire [  73:0] in_$002_msg,
-  output wire [   0:0] in_$002_rdy,
-  input  wire [   0:0] in_$002_val,
-  input  wire [  73:0] in_$003_msg,
-  output wire [   0:0] in_$003_rdy,
-  input  wire [   0:0] in_$003_val,
-  output reg  [  73:0] out_msg,
-  input  wire [   0:0] out_rdy,
-  output reg  [   0:0] out_val,
-  input  wire [   0:0] reset
-);
-
-  // register declarations
-  reg    [   0:0] arbiter$en;
-
-  // localparam declarations
-  localparam nports = 4;
-
-  // loop variable declarations
-  integer i;
-
-  // arbiter temporaries
-  wire   [   3:0] arbiter$reqs;
-  wire   [   0:0] arbiter$clk;
-  wire   [   0:0] arbiter$reset;
-  wire   [   3:0] arbiter$grants;
-
-  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
-  (
-    .en     ( arbiter$en ),
-    .reqs   ( arbiter$reqs ),
-    .clk    ( arbiter$clk ),
-    .reset  ( arbiter$reset ),
-    .grants ( arbiter$grants )
-  );
-
-  // signal connections
-  assign arbiter$clk     = clk;
-  assign arbiter$reqs[0] = in_$000_val;
-  assign arbiter$reqs[1] = in_$001_val;
-  assign arbiter$reqs[2] = in_$002_val;
-  assign arbiter$reqs[3] = in_$003_val;
-  assign arbiter$reset   = reset;
-
-  // array declarations
-  wire   [  73:0] in__msg[0:3];
-  assign in__msg[  0] = in_$000_msg;
-  assign in__msg[  1] = in_$001_msg;
-  assign in__msg[  2] = in_$002_msg;
-  assign in__msg[  3] = in_$003_msg;
-  reg    [   0:0] in__rdy[0:3];
-  assign in_$000_rdy = in__rdy[  0];
-  assign in_$001_rdy = in__rdy[  1];
-  assign in_$002_rdy = in__rdy[  2];
-  assign in_$003_rdy = in__rdy[  3];
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_in_rdy():
-  //       for i in xrange( nports ):
-  //         s.in_[i].rdy.value = s.arbiter.grants[i] & s.out.rdy
-
-  // logic for comb_in_rdy()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      in__rdy[i] = (arbiter$grants[i]&out_rdy);
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_arbiter_en():
-  //       s.arbiter.en.value = s.out.val & s.out.rdy
-
-  // logic for comb_arbiter_en()
-  always @ (*) begin
-    arbiter$en = (out_val&out_rdy);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_output():
-  //       s.out.val.value = ( s.arbiter.grants != 0 )
-  //
-  //       s.out.msg.value = 0
-  //       for i in xrange( nports ):
-  //         if s.arbiter.grants[i]:
-  //           s.out.msg.value        = s.in_[i].msg
-  //           s.out.msg.opaque.value = i
-
-  // logic for comb_output()
-  always @ (*) begin
-    out_val = (arbiter$grants != 0);
-    out_msg = 0;
-    for (i=0; i < nports; i=i+1)
-    begin
-      if (arbiter$grants[i]) begin
-        out_msg = in__msg[i];
-        out_msg[(70)-1:67] = i;
-      end
-      else begin
-      end
-    end
-  end
-
-
-endmodule // Funnel_0x58a91bbf80713154
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -17212,8 +11800,13 @@ module Router_0x4c184f1ee5bd8508
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   2:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -17267,12 +11860,17 @@ module Router_0x4c184f1ee5bd8508
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(35)-1:32]];
+    msg_opaque = in__msg[(35)-1:32];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -30141,8 +24739,8 @@ endmodule // EqComparator_0x20454677a5a72bab
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f538bcc5310>
-// req: <pymtl.model.signals.InPort object at 0x7f538bcbdd10>
+// resp: <pymtl.model.signals.OutPort object at 0x7fcee690a3d0>
+// req: <pymtl.model.signals.InPort object at 0x7fcee697aa50>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -31242,16 +25840,16 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x29c0cb3fc5b013ad
+// BloomFilterXcel_0x24e6e081f2b85343
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f538c7ea690>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fcee7421990>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x29c0cb3fc5b013ad
+module BloomFilterXcel_0x24e6e081f2b85343
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -31694,7 +26292,7 @@ module BloomFilterXcel_0x29c0cb3fc5b013ad
   end
 
 
-endmodule // BloomFilterXcel_0x29c0cb3fc5b013ad
+endmodule // BloomFilterXcel_0x24e6e081f2b85343
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -32261,6 +26859,217 @@ module NormalQueue_0x7aacac805eb4ec3f
 
 
 endmodule // NormalQueue_0x7aacac805eb4ec3f
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// NormalQueueCtrl_0x7a42a348c9205b5
+//-----------------------------------------------------------------------------
+// num_entries: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module NormalQueueCtrl_0x7a42a348c9205b5
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] deq_rdy,
+  output reg  [   0:0] deq_val,
+  output reg  [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output reg  [   1:0] num_free_entries,
+  output reg  [   0:0] raddr,
+  input  wire [   0:0] reset,
+  output reg  [   0:0] waddr,
+  output reg  [   0:0] wen
+);
+
+  // register declarations
+  reg    [   0:0] deq_ptr;
+  reg    [   0:0] deq_ptr_inc;
+  reg    [   0:0] deq_ptr_next;
+  reg    [   0:0] do_deq;
+  reg    [   0:0] do_enq;
+  reg    [   0:0] empty;
+  reg    [   0:0] enq_ptr;
+  reg    [   0:0] enq_ptr_inc;
+  reg    [   0:0] enq_ptr_next;
+  reg    [   0:0] full;
+  reg    [   0:0] full_next_cycle;
+
+  // localparam declarations
+  localparam last_idx = 1;
+  localparam num_entries = 2;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq():
+  //
+  //       if s.reset: s.deq_ptr.next = 0
+  //       else:       s.deq_ptr.next = s.deq_ptr_next
+  //
+  //       if s.reset: s.enq_ptr.next = 0
+  //       else:       s.enq_ptr.next = s.enq_ptr_next
+  //
+  //       if   s.reset:               s.full.next = 0
+  //       elif s.full_next_cycle:     s.full.next = 1
+  //       elif (s.do_deq and s.full): s.full.next = 0
+  //       else:                       s.full.next = s.full
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    if (reset) begin
+      deq_ptr <= 0;
+    end
+    else begin
+      deq_ptr <= deq_ptr_next;
+    end
+    if (reset) begin
+      enq_ptr <= 0;
+    end
+    else begin
+      enq_ptr <= enq_ptr_next;
+    end
+    if (reset) begin
+      full <= 0;
+    end
+    else begin
+      if (full_next_cycle) begin
+        full <= 1;
+      end
+      else begin
+        if ((do_deq&&full)) begin
+          full <= 0;
+        end
+        else begin
+          full <= full;
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //
+  //       # set output signals
+  //
+  //       s.empty.value   = not s.full and (s.enq_ptr == s.deq_ptr)
+  //
+  //       s.enq_rdy.value = not s.full
+  //       s.deq_val.value = not s.empty
+  //
+  //       # only enqueue/dequeue if valid and ready
+  //
+  //       s.do_enq.value = s.enq_rdy and s.enq_val
+  //       s.do_deq.value = s.deq_rdy and s.deq_val
+  //
+  //       # set control signals
+  //
+  //       s.wen.value     = s.do_enq
+  //       s.waddr.value   = s.enq_ptr
+  //       s.raddr.value   = s.deq_ptr
+  //
+  //       # enq ptr incrementer
+  //
+  //       if s.enq_ptr == s.last_idx: s.enq_ptr_inc.value = 0
+  //       else:                       s.enq_ptr_inc.value = s.enq_ptr + 1
+  //
+  //       # deq ptr incrementer
+  //
+  //       if s.deq_ptr == s.last_idx: s.deq_ptr_inc.value = 0
+  //       else:                       s.deq_ptr_inc.value = s.deq_ptr + 1
+  //
+  //       # set the next ptr value
+  //
+  //       if s.do_enq: s.enq_ptr_next.value = s.enq_ptr_inc
+  //       else:        s.enq_ptr_next.value = s.enq_ptr
+  //
+  //       if s.do_deq: s.deq_ptr_next.value = s.deq_ptr_inc
+  //       else:        s.deq_ptr_next.value = s.deq_ptr
+  //
+  //       # number of free entries calculation
+  //
+  //       if   s.reset:
+  //         s.num_free_entries.value = s.num_entries
+  //       elif s.full:
+  //         s.num_free_entries.value = 0
+  //       elif s.empty:
+  //         s.num_free_entries.value = s.num_entries
+  //       elif s.enq_ptr > s.deq_ptr:
+  //         s.num_free_entries.value = s.num_entries - ( s.enq_ptr - s.deq_ptr )
+  //       elif s.deq_ptr > s.enq_ptr:
+  //         s.num_free_entries.value = s.deq_ptr - s.enq_ptr
+  //
+  //       s.full_next_cycle.value = (s.do_enq and not s.do_deq and
+  //                                 (s.enq_ptr_next == s.deq_ptr))
+
+  // logic for comb()
+  always @ (*) begin
+    empty = (!full&&(enq_ptr == deq_ptr));
+    enq_rdy = !full;
+    deq_val = !empty;
+    do_enq = (enq_rdy&&enq_val);
+    do_deq = (deq_rdy&&deq_val);
+    wen = do_enq;
+    waddr = enq_ptr;
+    raddr = deq_ptr;
+    if ((enq_ptr == last_idx)) begin
+      enq_ptr_inc = 0;
+    end
+    else begin
+      enq_ptr_inc = (enq_ptr+1);
+    end
+    if ((deq_ptr == last_idx)) begin
+      deq_ptr_inc = 0;
+    end
+    else begin
+      deq_ptr_inc = (deq_ptr+1);
+    end
+    if (do_enq) begin
+      enq_ptr_next = enq_ptr_inc;
+    end
+    else begin
+      enq_ptr_next = enq_ptr;
+    end
+    if (do_deq) begin
+      deq_ptr_next = deq_ptr_inc;
+    end
+    else begin
+      deq_ptr_next = deq_ptr;
+    end
+    if (reset) begin
+      num_free_entries = num_entries;
+    end
+    else begin
+      if (full) begin
+        num_free_entries = 0;
+      end
+      else begin
+        if (empty) begin
+          num_free_entries = num_entries;
+        end
+        else begin
+          if ((enq_ptr > deq_ptr)) begin
+            num_free_entries = (num_entries-(enq_ptr-deq_ptr));
+          end
+          else begin
+            if ((deq_ptr > enq_ptr)) begin
+              num_free_entries = (deq_ptr-enq_ptr);
+            end
+            else begin
+            end
+          end
+        end
+      end
+    end
+    full_next_cycle = (do_enq&&!do_deq&&(enq_ptr_next == deq_ptr));
+  end
+
+
+endmodule // NormalQueueCtrl_0x7a42a348c9205b5
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -33112,8 +27921,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f538c788390>
-// req: <pymtl.model.signals.InPort object at 0x7f538c788050>
+// resp: <pymtl.model.signals.OutPort object at 0x7fcee743dbd0>
+// req: <pymtl.model.signals.InPort object at 0x7fcee743d890>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -33424,6 +28233,391 @@ endmodule // Demux_0x5c38b318cac8f45c
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// FlowControlOut_0x3b27d8429613db76
+//-----------------------------------------------------------------------------
+// num_ports: 10
+// max_credit: 16
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module FlowControlOut_0x3b27d8429613db76
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] req_rdy$000,
+  input  wire [   0:0] req_rdy$001,
+  input  wire [   0:0] req_rdy$002,
+  input  wire [   0:0] req_rdy$003,
+  input  wire [   0:0] req_rdy$004,
+  input  wire [   0:0] req_rdy$005,
+  input  wire [   0:0] req_rdy$006,
+  input  wire [   0:0] req_rdy$007,
+  input  wire [   0:0] req_rdy$008,
+  input  wire [   0:0] req_rdy$009,
+  input  wire [   0:0] req_val$000,
+  input  wire [   0:0] req_val$001,
+  input  wire [   0:0] req_val$002,
+  input  wire [   0:0] req_val$003,
+  input  wire [   0:0] req_val$004,
+  input  wire [   0:0] req_val$005,
+  input  wire [   0:0] req_val$006,
+  input  wire [   0:0] req_val$007,
+  input  wire [   0:0] req_val$008,
+  input  wire [   0:0] req_val$009,
+  input  wire [   0:0] reset,
+  output reg  [  49:0] update_msg,
+  input  wire [   0:0] update_rdy,
+  output reg  [   0:0] update_val
+);
+
+  // wire declarations
+  wire   [   4:0] n_credits$000;
+  wire   [   4:0] n_credits$001;
+  wire   [   4:0] n_credits$002;
+  wire   [   4:0] n_credits$003;
+  wire   [   4:0] n_credits$004;
+  wire   [   4:0] n_credits$005;
+  wire   [   4:0] n_credits$006;
+  wire   [   4:0] n_credits$007;
+  wire   [   4:0] n_credits$008;
+  wire   [   4:0] n_credits$009;
+  wire   [  49:0] vec_credits;
+  wire   [   4:0] credits$000;
+  wire   [   4:0] credits$001;
+  wire   [   4:0] credits$002;
+  wire   [   4:0] credits$003;
+  wire   [   4:0] credits$004;
+  wire   [   4:0] credits$005;
+  wire   [   4:0] credits$006;
+  wire   [   4:0] credits$007;
+  wire   [   4:0] credits$008;
+  wire   [   4:0] credits$009;
+  wire   [   0:0] send_update;
+  wire   [   4:0] c_credits$000;
+  wire   [   4:0] c_credits$001;
+  wire   [   4:0] c_credits$002;
+  wire   [   4:0] c_credits$003;
+  wire   [   4:0] c_credits$004;
+  wire   [   4:0] c_credits$005;
+  wire   [   4:0] c_credits$006;
+  wire   [   4:0] c_credits$007;
+  wire   [   4:0] c_credits$008;
+  wire   [   4:0] c_credits$009;
+
+
+  // register declarations
+  reg    [   3:0] c_trigger_cnt;
+  reg    [   8:0] n_trigger_cnt;
+  reg    [   9:0] tokens;
+  reg    [   0:0] trigger;
+  reg    [   8:0] trigger_cnt;
+
+  // localparam declarations
+  localparam num_ports = 10;
+  localparam trigger_threshold = 5'd8;
+
+  // loop variable declarations
+  integer i;
+
+  // signal connections
+  assign vec_credits[14:10] = credits$002;
+  assign vec_credits[19:15] = credits$003;
+  assign vec_credits[24:20] = credits$004;
+  assign vec_credits[29:25] = credits$005;
+  assign vec_credits[34:30] = credits$006;
+  assign vec_credits[39:35] = credits$007;
+  assign vec_credits[44:40] = credits$008;
+  assign vec_credits[49:45] = credits$009;
+  assign vec_credits[4:0]   = credits$000;
+  assign vec_credits[9:5]   = credits$001;
+
+  // array declarations
+  reg    [   4:0] c_credits[0:9];
+  assign c_credits$000 = c_credits[  0];
+  assign c_credits$001 = c_credits[  1];
+  assign c_credits$002 = c_credits[  2];
+  assign c_credits$003 = c_credits[  3];
+  assign c_credits$004 = c_credits[  4];
+  assign c_credits$005 = c_credits[  5];
+  assign c_credits$006 = c_credits[  6];
+  assign c_credits$007 = c_credits[  7];
+  assign c_credits$008 = c_credits[  8];
+  assign c_credits$009 = c_credits[  9];
+  reg    [   4:0] credits[0:9];
+  assign credits$000 = credits[  0];
+  assign credits$001 = credits[  1];
+  assign credits$002 = credits[  2];
+  assign credits$003 = credits[  3];
+  assign credits$004 = credits[  4];
+  assign credits$005 = credits[  5];
+  assign credits$006 = credits[  6];
+  assign credits$007 = credits[  7];
+  assign credits$008 = credits[  8];
+  assign credits$009 = credits[  9];
+  reg    [   4:0] n_credits[0:9];
+  assign n_credits$000 = n_credits[  0];
+  assign n_credits$001 = n_credits[  1];
+  assign n_credits$002 = n_credits[  2];
+  assign n_credits$003 = n_credits[  3];
+  assign n_credits$004 = n_credits[  4];
+  assign n_credits$005 = n_credits[  5];
+  assign n_credits$006 = n_credits[  6];
+  assign n_credits$007 = n_credits[  7];
+  assign n_credits$008 = n_credits[  8];
+  assign n_credits$009 = n_credits[  9];
+  wire   [   0:0] req_rdy[0:9];
+  assign req_rdy[  0] = req_rdy$000;
+  assign req_rdy[  1] = req_rdy$001;
+  assign req_rdy[  2] = req_rdy$002;
+  assign req_rdy[  3] = req_rdy$003;
+  assign req_rdy[  4] = req_rdy$004;
+  assign req_rdy[  5] = req_rdy$005;
+  assign req_rdy[  6] = req_rdy$006;
+  assign req_rdy[  7] = req_rdy$007;
+  assign req_rdy[  8] = req_rdy$008;
+  assign req_rdy[  9] = req_rdy$009;
+  wire   [   0:0] req_val[0:9];
+  assign req_val[  0] = req_val$000;
+  assign req_val[  1] = req_val$001;
+  assign req_val[  2] = req_val$002;
+  assign req_val[  3] = req_val$003;
+  assign req_val[  4] = req_val$004;
+  assign req_val[  5] = req_val$005;
+  assign req_val[  6] = req_val$006;
+  assign req_val[  7] = req_val$007;
+  assign req_val[  8] = req_val$008;
+  assign req_val[  9] = req_val$009;
+
+  // PYMTL SOURCE:
+  //
+  // @s.tick_rtl
+  // def seq():
+  //
+  //       # Credit counters
+  //
+  //       for i in xrange( num_ports ):
+  //         s.credits[i].next = s.n_credits[i]
+  //
+  //       # Trigger counter
+  //
+  //       s.trigger_cnt.next = s.n_trigger_cnt
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      credits[i] <= n_credits[i];
+    end
+    trigger_cnt <= n_trigger_cnt;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_trigger():
+  //
+  //       s.trigger.value = 0
+  //
+  //       if s.trigger_cnt >= s.trigger_threshold:
+  //         s.trigger.value = 1
+
+  // logic for gen_trigger()
+  always @ (*) begin
+    trigger = 0;
+    if ((trigger_cnt >= trigger_threshold)) begin
+      trigger = 1;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_tokens():
+  //
+  //       s.tokens.value = 0
+  //
+  //       for i in xrange( num_ports ):
+  //         s.tokens[i].value = s.req_val[i] & s.req_rdy[i]
+
+  // logic for gen_tokens()
+  always @ (*) begin
+    tokens = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      tokens[i] = (req_val[i]&req_rdy[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_trigger_counter():
+  //
+  //       # Initialization
+  //
+  //       s.n_trigger_cnt.value = s.trigger_cnt
+  //
+  //       # Iterate through all tokens and count them
+  //
+  //       s.c_trigger_cnt.value = 0
+  //
+  //       for i in xrange( num_ports ):
+  //         s.c_trigger_cnt.value = s.c_trigger_cnt + s.tokens[i]
+  //
+  //       # Update the trigger counter
+  //
+  //       if s.trigger and s.update.rdy:
+  //         s.n_trigger_cnt.value = 0
+  //       else:
+  //         s.n_trigger_cnt.value = s.n_trigger_cnt + s.c_trigger_cnt
+  //
+  //       # Reset :)
+  //
+  //       if s.reset:
+  //         s.n_trigger_cnt.value = 0
+
+  // logic for update_trigger_counter()
+  always @ (*) begin
+    n_trigger_cnt = trigger_cnt;
+    c_trigger_cnt = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      c_trigger_cnt = (c_trigger_cnt+tokens[i]);
+    end
+    if ((trigger&&update_rdy)) begin
+      n_trigger_cnt = 0;
+    end
+    else begin
+      n_trigger_cnt = (n_trigger_cnt+c_trigger_cnt);
+    end
+    if (reset) begin
+      n_trigger_cnt = 0;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_update_msg():
+  //
+  //       # Depending on the trigger
+  //
+  //       if   s.trigger: s.update.msg.value = s.vec_credits
+  //       else          : s.update.msg.value = 0
+
+  // logic for gen_update_msg()
+  always @ (*) begin
+    if (trigger) begin
+      update_msg = vec_credits;
+    end
+    else begin
+      update_msg = 0;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_logic():
+  //
+  //       # Gather all the different signal views
+  //
+  //       for i in xrange( num_ports ):
+  //         s.c_credits[i].value = s.credits[i]
+  //
+  //       # Combinational signals initialization
+  //
+  //       s.update.val.value = 0
+  //
+  //       # Two states, really: Triggered or not triggered
+  //
+  //       if s.trigger:
+  //         s.update.val.value = 1
+  //
+  //       if s.trigger and s.update.rdy:
+  //         # All credits are redeemed, reset c_credits
+  //         for i in xrange( num_ports ):
+  //           s.c_credits[i].value = 0
+  //
+  //       # Reset :)
+  //       if s.reset:
+  //         s.update.val.value = 0
+
+  // logic for update_logic()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      c_credits[i] = credits[i];
+    end
+    update_val = 0;
+    if (trigger) begin
+      update_val = 1;
+    end
+    else begin
+    end
+    if ((trigger&&update_rdy)) begin
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        c_credits[i] = 0;
+      end
+    end
+    else begin
+    end
+    if (reset) begin
+      update_val = 0;
+    end
+    else begin
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_credit():
+  //
+  //       for i in xrange( num_ports ):
+  //         s.n_credits[i].value = s.c_credits[i]
+  //
+  //       for i in xrange( num_ports ):
+  //         if s.tokens[i]:
+  //           s.n_credits[i].value = s.n_credits[i] + s.tokens[i]
+  //
+  //       if s.reset:
+  //         for i in xrange( num_ports ):
+  //           s.n_credits[i].value = 0
+
+  // logic for update_credit()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      n_credits[i] = c_credits[i];
+    end
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      if (tokens[i]) begin
+        n_credits[i] = (n_credits[i]+tokens[i]);
+      end
+      else begin
+      end
+    end
+    if (reset) begin
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        n_credits[i] = 0;
+      end
+    end
+    else begin
+    end
+  end
+
+
+endmodule // FlowControlOut_0x3b27d8429613db76
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // ReqAckToValRdy_0x1b4e41cb91c5205
 //-----------------------------------------------------------------------------
 // dtype: 8
@@ -33610,2639 +28804,642 @@ module ReqAckToValRdy_0x1b4e41cb91c5205
 endmodule // ReqAckToValRdy_0x1b4e41cb91c5205
 `default_nettype wire
 
-`line 1 "fpu/DW_fp_flt2i.v" 0
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2005 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Kyung-Nam Han, Oct. 31, 2005
-//
-// VERSION:   Verilog Simulation Model for DW_fp_flt2i
-//
-// DesignWare_version: 3b5d9457
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
-
-//
-// ABSTRACT:  Floating-point Number Format to Integer Number Format
-//            Converter
-//
-//              This converts a floating-point number to a signed
-//              integer number.
-//              Conversion to a unsigned integer number is not supported.
-//
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              isize           integer size,      3 to 512 bits
-//              ieee_compliance support the IEEE Compliance 
-//                              including NaN and denormal expressions.
-//                              0 - IEEE 754 compatible without denormal support
-//                                  (NaN becomes Infinity, Denormal becomes Zero)
-//                              1 - IEEE 754 standard compatible
-//                                  (NaN and denormal numbers are supported)
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              rnd             3 bits
-//                              Rounding Mode Input
-//              z               (isize)-bits
-//                              Converted Integer Output
-//              status          8 bits
-//                              Status Flags Output
-//
-// Modified:
-//  Mar. 13. 2008 Kyung-Nam Han (from 0712-SP3)
-//    Removed VCS Warning Message (STAR 9000232556) 
-//  Sep. 09. 2009 Kyung-Nam Han (0903-SP3)
-//    Added ieee_compliance parameter
 //-----------------------------------------------------------------------------
+// ValRdySplit_0x46e437479843b32e
+//-----------------------------------------------------------------------------
+// p_nports: 11
+// p_nbits: 176
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdySplit_0x46e437479843b32e
+(
+  input  wire [   0:0] clk,
+  input  wire [ 186:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  output wire [ 175:0] out$000_msg,
+  input  wire [   0:0] out$000_rdy,
+  output wire [   0:0] out$000_val,
+  output wire [ 175:0] out$010_msg,
+  input  wire [   0:0] out$010_rdy,
+  output wire [   0:0] out$010_val,
+  output wire [ 175:0] out$001_msg,
+  input  wire [   0:0] out$001_rdy,
+  output wire [   0:0] out$001_val,
+  output wire [ 175:0] out$002_msg,
+  input  wire [   0:0] out$002_rdy,
+  output wire [   0:0] out$002_val,
+  output wire [ 175:0] out$003_msg,
+  input  wire [   0:0] out$003_rdy,
+  output wire [   0:0] out$003_val,
+  output wire [ 175:0] out$004_msg,
+  input  wire [   0:0] out$004_rdy,
+  output wire [   0:0] out$004_val,
+  output wire [ 175:0] out$005_msg,
+  input  wire [   0:0] out$005_rdy,
+  output wire [   0:0] out$005_val,
+  output wire [ 175:0] out$006_msg,
+  input  wire [   0:0] out$006_rdy,
+  output wire [   0:0] out$006_val,
+  output wire [ 175:0] out$007_msg,
+  input  wire [   0:0] out$007_rdy,
+  output wire [   0:0] out$007_val,
+  output wire [ 175:0] out$008_msg,
+  input  wire [   0:0] out$008_rdy,
+  output wire [   0:0] out$008_val,
+  output wire [ 175:0] out$009_msg,
+  input  wire [   0:0] out$009_rdy,
+  output wire [   0:0] out$009_val,
+  input  wire [   0:0] reset
+);
 
-module DW_fp_flt2i (a, rnd, z, status);
-
-  parameter sig_width=23;        // RANGE 2 TO 253
-  parameter exp_width=8;         // RANGE 3 TO 31
-  parameter isize=32;            // RANGE 3 TO 512
-  parameter ieee_compliance = 0; // RANGE 0 to 1
-  
-  input  [exp_width + sig_width:0] a;
-  input  [2:0] rnd;
-  output [isize - 1:0] z;
-  output [7:0] status;
-  
-  // synopsys translate_off
-
-
-  `define isign               0  // 0 : signed, 1 : unsigned 
-  `define rnd_Width           4
-  `define rnd_Inc             0
-  `define rnd_Inexact         1
-  `define rnd_HugeInfinity    2
-  `define rnd_TinyminNorm     3
-  `define Mwidth              (2 * isize + 2)
-  `define Movf                (`Mwidth - 1)
-  `define MM                  (`Movf - 1)
-  `define ML                  (`Movf - isize)
-  `define MR                  (`ML - 1)
-  `define MS                  (`ML - 2)
-  `define af_lsb              ((sig_width <= isize) ? 0 : (sig_width - 1) - isize + 1)
-  `define DW_MI_LSB           ((sig_width <= isize) ? `MR - sig_width + 1 : 0)
-  
-  //-------------------------------------------------------------------------
-  // Parameter legality check
-  //-------------------------------------------------------------------------
-    
-
-  // XXX: berkin
-  /* verilator lint_off WIDTH */
- 
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-    
-        
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-        
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-        
-    if ( (isize < 3) || (isize > 512) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter isize (legal range: 3 to 512)",
-	isize );
-    end
-        
-    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
-	ieee_compliance );
-    end
-     
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check 
-
-  //-----------------------------------------------------  
-  
-  
-  function [`rnd_Width-1:0] rnd_eval;
-  
-    input [2:0] rnd;
-    input [0:0] Sign;
-    input [0:0] L,R,stk;
-    
-    
-    begin
-      rnd_eval[`rnd_Inc] = 0;
-      rnd_eval[`rnd_Inexact] = R|stk;
-      rnd_eval[`rnd_HugeInfinity] = 0;
-      rnd_eval[`rnd_TinyminNorm] = 0;
-      
-      if ($time > 0) begin
-        case (rnd)
-          3'b000:
-          begin
-            rnd_eval[`rnd_Inc] = R&(L|stk);
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b001:
-          begin
-            rnd_eval[`rnd_Inc] = 0;
-            rnd_eval[`rnd_HugeInfinity] = 0;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b010:
-          begin
-            rnd_eval[`rnd_Inc] = ~Sign & (R|stk);
-            rnd_eval[`rnd_HugeInfinity] = ~Sign;
-            rnd_eval[`rnd_TinyminNorm] = ~Sign;
-          end
-          3'b011:
-          begin
-            rnd_eval[`rnd_Inc] = Sign & (R|stk);
-            rnd_eval[`rnd_HugeInfinity] = Sign;
-            rnd_eval[`rnd_TinyminNorm] = Sign;
-          end
-          3'b100:
-          begin
-            rnd_eval[`rnd_Inc] = R;
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b101:
-          begin
-            rnd_eval[`rnd_Inc] = R|stk;
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 1;
-          end
-          default:
-          begin
-            $display("Error! illegal rounding mode.\n");
-            $display("a : %b", a);
-            $display("rnd : %b", rnd);
-          end
-        endcase
-      end
-
-    end
-  endfunction
-  
-  reg [(exp_width + sig_width):0] af;
-  reg [8    -1:0] status_reg;
-  reg [isize-1:0] z_reg;
-  reg [exp_width-1:0] eaf;
-  reg [`Mwidth-1:0] mi;
-  reg [exp_width-1:0] exp;
-  reg [0:0] stk;
-  reg [`rnd_Width-1:0] rnd_val;  
-  reg [isize-1:0] maxneg;
-  reg [isize-1:0] maxpos;
-  reg [(sig_width - 1):0] sig;
-  reg inf_input;
-  reg denorm_input;
-  reg nan_input;
-  reg zero_input;
-
-  integer num;
-  
-  assign status = status_reg;
-  assign z = z_reg;
-  
-  always @(a or rnd) begin : a1000_PROC
-    
-    af = a;
-    status_reg = 0;
-    mi = 0;
-    exp = 0;
-    stk = 0;
-    eaf = af[((exp_width + sig_width) - 1):sig_width];
-    num = 0;
-    sig  = af[(sig_width - 1):0];
-
-    if (ieee_compliance) begin
-      inf_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (sig == 0);
-      nan_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (sig != 0);
-      denorm_input = (eaf == 0) & (sig != 0);
-      zero_input = (eaf == 0) & (sig == 0);
-    end
-    else begin
-      inf_input = (eaf == ((((1 << (exp_width-1)) - 1) * 2) + 1));
-      nan_input = 0;
-      denorm_input = 0;
-      zero_input = (eaf == 0 );
-    end
-    
-    if (inf_input) begin
-      
-      if (ieee_compliance) begin
-        status_reg[2] = 1;
-      end
-      else begin
-        status_reg[6] = 1;
-        status_reg[5] = 1;
-      end
-      
-    end
-    else if (nan_input) begin
-      
-      status_reg[2] = 1;
-
-    end
-    else if (zero_input) begin
-      
-      status_reg[0] = 1;
-      
-    end
-    else begin
-      
-      mi[`ML] = 1;
-      
-      if (sig_width <= isize) begin
-        
-        mi[`MR:`DW_MI_LSB] = af[(sig_width - 1):0];
-        
-      end
-      else begin
-        
-
-        mi[`MR:`MR-isize+1] = af[(sig_width - 1):`af_lsb];
-        num = (sig_width - 1) - isize;  // >= 0
-        stk = 0;
-        
-        while (num != 0) begin
-          stk = stk | af[num];
-          num = num - 1;
-        end
-        
-        stk = stk | af[num];
-        mi[0] = stk;
-      end
-
-      if (eaf >= ((1 << (exp_width-1)) - 1)) begin
-        exp = eaf - ((1 << (exp_width-1)) - 1);
-        
-        while (exp !== 0) begin
-          if (mi[`Movf] !== 1) begin
-            mi = mi << 1;
-          end
-          
-          exp = exp - 1;
-        end
-      end
-      else begin
-        
-        exp = ((1 << (exp_width-1)) - 1) - eaf;
-        
-        while (exp != 0) begin
-          
-          stk = mi[0];
-          mi = mi >> 1;
-          mi[0] = stk | mi[0];
-          exp = exp - 1;
-          
-        end
-      end
-      
-      
-      if (mi[`Movf] === 1) begin
-      
-        status_reg[6] = 1;
-        status_reg[5] = 1;
-        
-      end
-      else begin
-      
-        stk = 0;
-        num = `MS;
-        
-        while (num != 0) begin
-          stk = stk | mi[num];
-          num = num - 1;
-        end
-        
-        stk = stk | mi[num];
-        mi[`MS] = stk;
-        
-        rnd_val = rnd_eval(rnd, af[(exp_width + sig_width)], mi[`ML], mi[`MR], mi[`MS]);
-
-        if (rnd_val[`rnd_Inc] === 1) begin
-          mi = mi + (1<<`ML);
-        end
-        
-        status_reg[5] =
-        status_reg[5] | rnd_val[`rnd_Inexact];
-        
-        if (mi[`Movf] === 1) begin
-          
-          status_reg[6] = 1;
-          status_reg[5] = 1;
-          
-        end
-        else if (mi[`MM:`ML] === 0) begin
-          
-          status_reg[0] = 1;
-
-          if (denorm_input) begin
-            status_reg[3] = 1;
-          end
-          
-        end
-      end
-      
-    end
-
-    
-    
-    if (`isign === 0) begin
-
-      maxneg = 0;
-      maxneg[isize-1] = 1;
-      maxpos = -1;
-      maxpos[isize-1] = 0;
-      
-      if ( (af[(exp_width + sig_width)] === 1 && mi[`MM:`ML] > maxneg) ||
-        (af[(exp_width + sig_width)] === 0 && mi[`MM:`ML] > maxpos) ) begin
-        
-        status_reg[6] = 1;
-        status_reg[5] = 1;
-        
-      end
-      
-      if (af[(exp_width + sig_width)] === 1) begin
-        
-        if (status_reg[6] === 1 || 
-            status_reg[2] === 1) begin
-          z_reg = -maxneg;
-        end
-        else if (status_reg[0] === 1) begin
-          z_reg = 0;
-        end
-        else begin
-          z_reg = -mi[`MM:`ML];
-        end
-        
-      end
-      else begin
-        
-        if (status_reg[6] === 1 ||
-            status_reg[2] === 1) begin
-          z_reg = maxpos;
-        end
-        else if (status_reg[0] === 1) begin
-          z_reg = 0;
-        end
-        else begin
-          z_reg = mi[`MM:`ML];
-        end
-        
-      end
-      
-    end
-    else begin
-      
-      $display("Error! Unsigned integer for DW_fp_flt2i is not supported.");
-      
-    end
-  end
-
-  `undef isign
-  `undef rnd_Width
-  `undef rnd_Inc
-  `undef rnd_Inexact
-  `undef rnd_HugeInfinity
-  `undef rnd_TinyminNorm
-  `undef Mwidth
-  `undef Movf
-  `undef MM
-  `undef ML
-  `undef MR
-  `undef MS
-  `undef af_lsb
-  `undef DW_MI_LSB
-
-  // synopsys translate_on
-
-endmodule
-`line 1 "fpu/DW_fp_addsub.v" 0
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2005 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Alexandre Tenca (Jan 2006)
-//
-// VERSION:   Verilog Simulation Model for FP adder/subtractor
-//
-// DesignWare_version: db3a591c
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
-//-------------------------------------------------------------------------------
-//
-// ABSTRACT: Floating-point two-operand Adder/Subtractor
-//           Computes the addition/subtraction of two FP numbers. 
-//           The format of the FP numbers is defined by the number of bits 
-//           in the significand (sig_width) and the number of bits in the 
-//           exponent (exp_width).
-//           The total number of bits in the FP number is sig_width+exp_width+1
-//           since the sign bit takes the place of the MS bits in the significand
-//           which is always 1 (unless the number is a denormal; a condition 
-//           that can be detected testing the exponent value).
-//           The output is a FP number and status flags with information about
-//           special number representations and exceptions. 
-//           Subtraction is forced when op=1.
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              ieee_compliance 0 or 1 (default 0)
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              b               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              rnd             3 bits
-//                              rounding mode
-//              op              1 bit
-//                              add/sub control: 0 for add - 1 for sub
-//
-//              Output ports    Size & Description
-//              ===========     ==================
-//              z               (sig_width + exp_width + 1) bits
-//                              Floating-point Number result
-//              status          byte
-//                              info about FP results
-//
-// MODIFIED:
-//        7/21/2006: 
-//           - includes manipulation of inexact bit
-//           - fixes value assigned to HugeInfinity when rnd=4 (up) RND_eval
-//           - fixes some special cases when rounding close to inf and zero
-//        12/14/06: modifications based on code review by Kyung-Nam Han
-//
-//-------------------------------------------------------------------------------
-
-module DW_fp_addsub (a, b, rnd, op, z, status);
-parameter sig_width=23;
-parameter exp_width=8;  
-parameter ieee_compliance=0;                    
-
-// declaration of inputs and outputs
-input  [sig_width+exp_width:0] a,b;
-input  [2:0] rnd;
-input  op;
-output [7:0] status;
-output [sig_width+exp_width:0] z;
-
-    // synopsys translate_off
-
-  //-------------------------------------------------------------------------
-  // Parameter legality check
-  //-------------------------------------------------------------------------
-  
- 
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-    
-  
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-  
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-  
-    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
-	ieee_compliance );
-    end
-  
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check 
+  // wire declarations
+  wire   [  10:0] channel;
+  wire   [  10:0] out_rdy;
 
 
+  // register declarations
+  reg    [  10:0] out_val;
+
+  // localparam declarations
+  localparam p_nports = 11;
+
+  // demux temporaries
+  wire   [   0:0] demux$reset;
+  wire   [ 175:0] demux$in_;
+  wire   [   0:0] demux$clk;
+  wire   [  10:0] demux$sel;
+  wire   [ 175:0] demux$out$000;
+  wire   [ 175:0] demux$out$001;
+  wire   [ 175:0] demux$out$002;
+  wire   [ 175:0] demux$out$003;
+  wire   [ 175:0] demux$out$004;
+  wire   [ 175:0] demux$out$005;
+  wire   [ 175:0] demux$out$006;
+  wire   [ 175:0] demux$out$007;
+  wire   [ 175:0] demux$out$008;
+  wire   [ 175:0] demux$out$009;
+  wire   [ 175:0] demux$out$010;
+
+  Demux_0x1230df8e8eb75643 demux
+  (
+    .reset   ( demux$reset ),
+    .in_     ( demux$in_ ),
+    .clk     ( demux$clk ),
+    .sel     ( demux$sel ),
+    .out$000 ( demux$out$000 ),
+    .out$001 ( demux$out$001 ),
+    .out$002 ( demux$out$002 ),
+    .out$003 ( demux$out$003 ),
+    .out$004 ( demux$out$004 ),
+    .out$005 ( demux$out$005 ),
+    .out$006 ( demux$out$006 ),
+    .out$007 ( demux$out$007 ),
+    .out$008 ( demux$out$008 ),
+    .out$009 ( demux$out$009 ),
+    .out$010 ( demux$out$010 )
+  );
+
+  // signal connections
+  assign channel     = in__msg[186:176];
+  assign demux$clk   = clk;
+  assign demux$in_   = in__msg[175:0];
+  assign demux$reset = reset;
+  assign demux$sel   = channel;
+  assign out$000_msg = demux$out$000;
+  assign out$000_val = out_val[0];
+  assign out$001_msg = demux$out$001;
+  assign out$001_val = out_val[1];
+  assign out$002_msg = demux$out$002;
+  assign out$002_val = out_val[2];
+  assign out$003_msg = demux$out$003;
+  assign out$003_val = out_val[3];
+  assign out$004_msg = demux$out$004;
+  assign out$004_val = out_val[4];
+  assign out$005_msg = demux$out$005;
+  assign out$005_val = out_val[5];
+  assign out$006_msg = demux$out$006;
+  assign out$006_val = out_val[6];
+  assign out$007_msg = demux$out$007;
+  assign out$007_val = out_val[7];
+  assign out$008_msg = demux$out$008;
+  assign out$008_val = out_val[8];
+  assign out$009_msg = demux$out$009;
+  assign out$009_val = out_val[9];
+  assign out$010_msg = demux$out$010;
+  assign out$010_val = out_val[10];
+  assign out_rdy[0]  = out$000_rdy;
+  assign out_rdy[10] = out$010_rdy;
+  assign out_rdy[1]  = out$001_rdy;
+  assign out_rdy[2]  = out$002_rdy;
+  assign out_rdy[3]  = out$003_rdy;
+  assign out_rdy[4]  = out$004_rdy;
+  assign out_rdy[5]  = out$005_rdy;
+  assign out_rdy[6]  = out$006_rdy;
+  assign out_rdy[7]  = out$007_rdy;
+  assign out_rdy[8]  = out$008_rdy;
+  assign out_rdy[9]  = out$009_rdy;
 
 
-function [4-1:0] RND_eval;
-
-  input [2:0] RND;
-  input [0:0] Sign;
-  input [0:0] L,R,STK;
-
-
-  begin
-  RND_eval[0] = 0;
-  RND_eval[1] = R|STK;
-  RND_eval[2] = 0;
-  RND_eval[3] = 0;
-  if ($time > 0)
-  case (RND)
-    3'b000:
-    begin
-      RND_eval[0] = R&(L|STK);
-      RND_eval[2] = 1;
-      RND_eval[3] = 0;
-    end
-    3'b001:
-    begin
-      RND_eval[0] = 0;
-      RND_eval[2] = 0;
-      RND_eval[3] = 0;
-    end
-    3'b010:
-    begin
-      RND_eval[0] = ~Sign & (R|STK);
-      RND_eval[2] = ~Sign;
-      RND_eval[3] = ~Sign;
-    end
-    3'b011:
-    begin
-      RND_eval[0] = Sign & (R|STK);
-      RND_eval[2] = Sign;
-      RND_eval[3] = Sign;
-    end
-    3'b100:
-    begin
-      RND_eval[0] = R;
-      RND_eval[2] = 1;
-      RND_eval[3] = 0;
-    end
-    3'b101:
-    begin
-      RND_eval[0] = R|STK;
-      RND_eval[2] = 1;
-      RND_eval[3] = 1;
-    end
-    default:
-      $display("Error! illegal rounding mode.\n");
-  endcase
-  end
-
-endfunction
-
-
-// definitions used in the code
-
-reg [8    -1:0] status_int;
-reg [(exp_width + sig_width):0] z_temp,Large,Small;
-reg [0:0] swap,subtract,STK;
-reg [exp_width-1:0] E_Large,E_Small,E_Diff; // Exponents.
-reg [sig_width-1:0] F_Large,F_Small;        // Fractions.
-reg [exp_width+1:0] E_Comp;                 // The biggest possible exponent
-reg [((sig_width + 3 + 3        ) - 2):0] M_Large,M_Small;       // The Mantissa numbers.
-reg [((sig_width + 3 + 3        ) - 2):0] M_Z;                   // The Mantissa numbers.
-reg [4-1:0] RND_val;         // Values returned by RND_eval function.
-reg [(exp_width + sig_width):0] NaNFp;          // NaN FP number
-reg [(exp_width + sig_width):0] b_int;          // internal value of b
-reg Denormal_Large;                  // signals a denormal as a large operand
-reg Denormal_Small;                  // signals a denormal as a small operand
-
-// main process of information
-always @(a or b or rnd or op)
-begin
-  NaNFp = {1'b0,{exp_width{1'b1}},{sig_width-1{1'b0}},1'b1};
-  status_int = 0;
-  b_int = b;
-  b_int[(exp_width + sig_width)] = (op == 1)?~b[(exp_width + sig_width)]:b[(exp_width + sig_width)];
-  subtract = a[(exp_width + sig_width)] ^ b_int[(exp_width + sig_width)];
-
-  swap = a[((exp_width + sig_width) - 1):0] < b[((exp_width + sig_width) - 1):0];
-  Large = swap ? b_int : a;
-  Small = swap ? a : b_int;
-  E_Large = Large[((exp_width + sig_width) - 1):sig_width];
-  E_Small = Small[((exp_width + sig_width) - 1):sig_width];
-  F_Large = Large[(sig_width - 1):0];
-  F_Small = Small[(sig_width - 1):0];
-
-  // 
-  // NaN Input
-  // 
-  if ((((E_Large === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large !== 0)) ||
-      ((E_Small === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large !== 0))) && ieee_compliance === 1)
-    begin
-      z_temp = NaNFp;
-      status_int[2] = 1;
-    end
+  // PYMTL SOURCE:
   //
-  // Infinity Input
-  //
-  else 
-    if (E_Large === ((((1 << (exp_width-1)) - 1) * 2) + 1) && (F_Large === 0 || ieee_compliance === 0)) 
-      begin
-   	status_int[1] = 1;
-        z_temp = Large;
-        // zero out the fractional part
-        z_temp[(sig_width - 1):0] = 0;
-   	// Watch out for Inf-Inf !
-   	if ( (E_Small === ((((1 << (exp_width-1)) - 1) * 2) + 1)) && (F_Large === 0 || ieee_compliance === 0) && (subtract === 1) )
-    	  begin
-            status_int[2] = 1;
-            if (ieee_compliance)   
-              begin
-                status_int[1] = 0;
-                z_temp = NaNFp;
-              end
-            else
-              z_temp[(exp_width + sig_width)] = 0;  // use positive inf. to represent NaN
-   	  end
-      end
-    //
-    // Zero Input (or denormal input when ieee_compliance == 0)
-    //
-    else 
-      if (E_Small == 0 && ((ieee_compliance == 0) || (F_Small == 0)))
-        begin
-           z_temp = Large;
-           // watch out for 0-0 !
-           if (E_Large === 0 && ((ieee_compliance == 0) || (F_Large == 0)))
-      	     begin
-      	       status_int[0] = 1;
-               // Set the fraction to 000...
-               z_temp = 0;
-               if (subtract) 
-                 if (rnd === 3'b011) z_temp[(exp_width + sig_width)] = 1;
-                 else                z_temp[(exp_width + sig_width)] = 0;
-               else                  z_temp[(exp_width + sig_width)] = a[(exp_width + sig_width)];
-             end
-        end
-      //
-      // Normal Inputs
-      //
-      else
-        begin
-          // Detect the denormal input case
-          if ((E_Large == 0) && (F_Large != 0)) 
-            begin
-              // M_Large contains the Mantissa of denormal value
-              M_Large = {2'b00,F_Large,3'b000};
-              Denormal_Large = 1'b1;
-            end
-          else
-            begin
-              // M_Large is the Mantissa for Large number
-              M_Large = {2'b01,F_Large,3'b000};
-              Denormal_Large = 1'b0;
-            end
-   
-          if ((E_Small == 0) && (F_Small != 0)) 
-            begin
-              // M_Small contains the Mantissa of denormal value
-              M_Small = {2'b00,F_Small,3'b000};
-              Denormal_Small = 1'b1;
-            end
-          else
-            begin
-              // M_Small is the Mantissa for Small number
-              M_Small = {2'b01,F_Small,3'b000};
-              Denormal_Small = 1'b0;
-            end
+  // @s.combinational
+  // def combinational_logic():
+  //         s.out_val.value = sext( s.in_.val, p_nports ) & s.channel
+  //         s.in_.rdy.value = reduce_or( s.channel & s.out_rdy )
 
-          // When one of the inputs is a denormal, we need to
-          // compensate because the exponent for a denormal is
-          // actually 1, and not 0.
-          if ((Denormal_Large ^ Denormal_Small) == 1'b1) 
-            E_Diff = E_Large - E_Small - 1;
-	  else
-            E_Diff = E_Large - E_Small;
-
-          // Shift right by E_Diff for Small number: M_Small.
-          STK = 0;
-          while ( (M_Small != 0) && (E_Diff != 0) )
-            begin
-              STK = M_Small[0] | STK;
-              M_Small = M_Small >> 1;
-              E_Diff = E_Diff - 1;
-            end
-          M_Small[0] = M_Small[0] | STK;
-
-          // Compute M_Z result: a +/- b
-          if (subtract === 0) M_Z = M_Large + M_Small;
-          else M_Z = M_Large - M_Small;
-
-          // ----------------------------------------------------------
-          //  Post Process
-          // -----------------------------------------------------------
-          E_Comp = {2'b00, E_Large};
-
-          //
-          // Exact 0 special case after the computation.
-          //
-            if (M_Z === 0)
-              begin
-                status_int[0] = 1;
-                z_temp = 0;
-                // If rounding mode is -Infinity, the sign bit is 1; 
-                // otherwise the sign bit is 0.
-                if (rnd === 3'b011) z_temp[(exp_width + sig_width)] = 1;
-              end
-            //
-            // Normal case after the computation.
-            //
-            else
-              begin
-                // Normalize the Mantissa for computation overflow case.
-                if (M_Z[((sig_width + 3 + 3        ) - 2)] === 1)
-                  begin
-                    E_Comp = E_Comp + 1;
-                    STK = M_Z[0];
-                    M_Z = M_Z >> 1;
-                    M_Z[0] = M_Z[0] | STK;
-                  end
-
-                // Normalize the Mantissa for leading zero case.
-                while ( (M_Z[((sig_width + 3 + 3        ) - 2)-1] === 0) && (E_Comp > 1) )
-                  begin
-                    E_Comp = E_Comp - 1;
-                    M_Z = M_Z << 1;
-                  end
-
-                // test if the output of the normalization unit is still not normalized
-                if (M_Z[((sig_width + 3 + 3        ) - 2):((sig_width + 3 + 3        ) - 2)-1] === 0)
-	          if (ieee_compliance == 1) 
-                    begin
-                      z_temp = {Large[(exp_width + sig_width)],{exp_width{1'b0}}, M_Z[((sig_width + 3 + 3        ) - 2)-2:3]};
-                      status_int[3] = 0;
-                      if ((STK == 1) || (M_Z[(3 - 1):0] != 0))
-                        status_int[5] = 1;
-                      if (M_Z[((sig_width + 3 + 3        ) - 2)-2:3] == 0) 
-                        status_int[0] = 1; 
-                    end
-                  else // when denormal is not used --> becomes zero or minFP
-                    begin
-                      if ((rnd == 2 & ~Large[(exp_width + sig_width)]) | 
-                          (rnd == 3 & Large[(exp_width + sig_width)]) | 
-                          (rnd == 5)) 
-                        begin
-                          z_temp = {Large[(exp_width + sig_width)],{exp_width-1{1'b0}},{1'b1},{sig_width{1'b0}}};
-                          status_int[0] = 0;
-                        end
-                      else
-                        begin
-                          z_temp = {Large[(exp_width + sig_width)],{exp_width{1'b0}}, {sig_width{1'b0}}};
-                          status_int[0] = 1;
-                        end
-                      status_int[3] = 1;
-                      status_int[5] = 1;
-                    end
-                else
-                  begin
-                    // Round M_Z according to the rounding mode (rnd).
-                    RND_val = RND_eval(rnd, Large[(exp_width + sig_width)], M_Z[3], M_Z[(3 - 1)], (|{M_Z[1:0]}));
-
-                    if (RND_val[0] === 1) M_Z = M_Z + (1<<3);
- 
-                    // Normalize the Mantissa for overflow case after rounding.
-                    if ( (M_Z[((sig_width + 3 + 3        ) - 2)] === 1) )
-                      begin
-                        E_Comp = E_Comp + 1;
-                        M_Z = M_Z >> 1;
-                      end
-
-                    //
-                    // Huge
-                    //
-                    if (E_Comp >= ((((1 << (exp_width-1)) - 1) * 2) + 1))
-                      begin
-                        status_int[4] = 1;
-                        status_int[5] = 1;
-                        if(RND_val[2] === 1)
-                          begin
-                            // Infinity
-                            M_Z[((sig_width + 3 + 3        ) - 2)-2:3] = 0;
-                            E_Comp = ((((1 << (exp_width-1)) - 1) * 2) + 1);
-                            status_int[1] = 1;
-                          end
-                        else
-                          begin
-                            // MaxNorm
-                            E_Comp = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
-                            M_Z[((sig_width + 3 + 3        ) - 2)-2:3] = -1;
-                          end
-                      end
-                    //
-                    // Tiny or Denormal
-                    //
-                    else 
-                      if (E_Comp <= 0) E_Comp = 0 + 1;
-    
-                    //
-                    // Normal  (continues)
-                    //
-                    status_int[5] = status_int[5] | RND_val[1];
-                    // Reconstruct the floating point format.
-                    z_temp = {Large[(exp_width + sig_width)],E_Comp[exp_width-1:0],M_Z[((sig_width + 3 + 3        ) - 2)-2:3]};
-                  end //  result is normal value 
-              end  // Normal computation case
-        end    // non-special inputs
-end
-
-assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0) || (^(op ^ op) !== 1'b0)) ? {8'bx} : status_int;
-assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0) || (^(op ^ op) !== 1'b0)) ? {sig_width+exp_width+1{1'bx}} : z_temp;
-
-    // synopsys translate_on
-
-endmodule
-
-`line 1 "fpu/DW_fp_cmp.v" 0
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Alexandre Tenca, March 2006
-//
-// VERSION:   Verilog Simulation Model for FP Comparator
-//
-// DesignWare_version: 58e94b19
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
-//-------------------------------------------------------------------------------
-//
-// ABSTRACT: Floating-point Comparator
-//           Compares two FP numbers and generates outputs that indicate when 
-//           A>B, A<B and A=B. The component also provides outputs for MAX and 
-//           MIN values, with corresponding status flags.
-//
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              ieee_compliance 0 or 1
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              b               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              zctr            1 bit
-//                              defines the min/max operation of z0 and z1
-//
-//              Output ports    Size & Description
-//              ===========     ==================
-//              aeqb            1 bit
-//                              has value 1 when a=b
-//              altb            1 bit
-//                              has value 1 when a<b
-//              agtb            1 bit
-//                              has value 1 when a>b
-//              unordered       1 bit
-//                              one of the inputs is NaN
-//              z0              (sig_width + exp_width + 1) bits
-//                              Floating-point Number that has max(a,b) when
-//                              zctr=1, and min(a,b) otherwise
-//              z1              (sig_width + exp_width + 1) bits
-//                              Floating-point Number that has max(a,b) when
-//                              zctr=0, and min(a,b) otherwise
-//              status0         byte
-//                              info about FP value in z0
-//              status1         byte
-//                              info about FP value in z1
-//
-// MODIFIED: 
-//    4/18 - the ieee_compliance parameter is also controlling the use of nans
-//           When 0, the component behaves as the MC component (no denormals
-//           and no NaNs).
-//
-//-------------------------------------------------------------------------------
-
-module DW_fp_cmp (a, b, zctr, aeqb, altb, agtb, unordered, z0, z1, status0, status1);
-parameter sig_width=23;
-parameter exp_width=8;
-parameter ieee_compliance=0;
-
-// declaration of inputs and outputs
-input  [sig_width + exp_width:0] a,b;
-input  zctr;
-output aeqb, altb, agtb, unordered;
-output [sig_width + exp_width:0] z0, z1;
-output [7:0] status0, status1;
-
-// synopsys translate_off
-  //-------------------------------------------------------------------------
-  // Parameter legality check
-  //-------------------------------------------------------------------------
-  
- 
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-    
-  
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-  
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-  
-    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
-	ieee_compliance );
-    end
-  
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check 
-
-
-// definitions used in the code
- 
-reg [0:0] sign;
-reg [exp_width-1:0] Ea,Eb;
-reg [sig_width:0] Ma,Mb;
-reg [sig_width-1:0] Fa,Fb;
-reg [(exp_width + sig_width):0] z0_int,z1_int;
-reg [8    -1:0] status0_int,status1_int;
-reg [0:0] agtb_int,aeqb_int,altb_int, unordered_int;
-reg [1:0] chk;
-reg zer_a, zer_b;
-
-always @(a or b or zctr) 
-begin
-
-  Ea = a[((exp_width + sig_width) - 1):sig_width];
-  Eb = b[((exp_width + sig_width) - 1):sig_width];
-  Fa = a[(sig_width - 1):0];
-  Fb = b[(sig_width - 1):0];
-  zer_a = 0;
-  zer_b = 0;
-
-  if (ieee_compliance === 1 && Ea === 0)
-    begin
-      zer_a = Fa === 0;
-      Ma = {1'b0,a[(sig_width - 1):0]};
-    end
-  else if (ieee_compliance === 0 && Ea === 0)
-    begin
-      Ma = 0;
-      zer_a = 1;
-    end
-  else
-    Ma = {1'b1,a[(sig_width - 1):0]};
-  if (ieee_compliance === 1 && Eb === 0)
-    begin
-      zer_b = Fb === 0;
-      Mb = {1'b0,b[(sig_width - 1):0]};
-    end
-  else if (ieee_compliance === 0 && Eb === 0)
-    begin
-      Mb = 0;
-      zer_b = 1;
-    end
-  else
-    Mb = {1'b1,b[(sig_width - 1):0]};
-  
-  sign = (a[(exp_width + sig_width)] && !zer_a) ^ (b[(exp_width + sig_width)] && !zer_b);
-
-  status0_int = 0;
-  status1_int = 0;
-  z0_int = 0;
-  z1_int = 0;
-  agtb_int = 0;
-  aeqb_int = 0;
-  altb_int = 0;
-  unordered_int = 0;
-
-  //
-  // NaN input
-  //
-  if (((Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0)||		// a or b are NaN.
-       (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0)) && (ieee_compliance === 1))
-  begin
-    // nothing to do
-    // z0 and z1 get the values of a and b
-    unordered_int = 1;
-  end
-  //
-  // Infinity Input
-  //
-  else if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1))	// a and b are Infinity.
-  begin
-    if (sign === 0) aeqb_int = 1;
-    else if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
-    else altb_int = 1;
-  end
-  else if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Only a is Infinity.
-  begin
-    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
-    else altb_int = 1;
-  end
-  else if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Only b is Infinity.
-  begin
-    if (b[(exp_width + sig_width)] === 0) altb_int = 1;
-    else agtb_int = 1;
-  end
-  //
-  // Zero Input
-  //
-  else if (zer_a && zer_b)			// a and b are Zero.
-    aeqb_int = 1;	// +0 == -0
-  else if (zer_a) 				// Only a is Zero.
-  begin
-    if (b[(exp_width + sig_width)] === 0) altb_int = 1;
-    else agtb_int = 1;
-  end
-  else if (zer_b)				// Only b is Zero.
-  begin
-    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
-    else altb_int = 1;
-  end
-  //
-  // Normal/Denormal Inputs
-  //
-  else if (sign === 1)		// a and b have different sign bit.
-  begin
-    if (a[(exp_width + sig_width)] === 0) agtb_int = 1;
-    else altb_int = 1;
-  end
-  else if (Ea !== Eb)		// a and b have the same sign, but different exponents
-  begin
-    if ( (!a[(exp_width + sig_width)] && Ea>Eb) || (a[(exp_width + sig_width)] && Ea<Eb) ) agtb_int = 1;
-    else altb_int = 1;
-  end
-  else 
-  begin
-    if ( (!a[(exp_width + sig_width)] && Fa>Fb) || (a[(exp_width + sig_width)] && Fa<Fb) ) 
-       agtb_int = 1;   // a and b have the same exponent and sign but different fractions
-    else if (Fa === Fb) 
-       aeqb_int = 1;
-    else
-       altb_int = 1;
+  // logic for combinational_logic()
+  always @ (*) begin
+    out_val = ({ { p_nports-1 { in__val[0] } }, in__val[0:0] }&channel);
+    in__rdy = (|(channel&out_rdy));
   end
 
-  // Check if agtb_int, aeqb_int, and altb_int are mutually exclusive.
-  chk = agtb_int + aeqb_int + altb_int + unordered_int;
-  if (chk !== 1) $display ("Error! agtb, aeqb, altb, and unordered are NOT mutually exclusive.");
 
-  // assign a or b to zx outputs according to zctr flag.
-  if ( (agtb_int && zctr) || (altb_int && !zctr) || (aeqb_int && !zctr) || (unordered_int) ) 
-  begin
-    z0_int = a;
-    z1_int = b;
-    status0_int[7] = 1;
-    if (ieee_compliance === 1)
-      begin
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0) status0_int[2] = 1;
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa === 0) status0_int[1] = 1;
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0) status1_int[2] = 1;
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb === 0) status1_int[1] = 1;
-      end
-    else
-      begin
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status0_int[1] = 1;
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status1_int[1] = 1;
-      end
-    status0_int[0] = zer_a;
-    status1_int[0] = zer_b;
-  end
-  else
-  begin
-    z0_int = b;
-    z1_int = a;
-    if (ieee_compliance === 1)
-      begin
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb !== 0) status0_int[2] = 1;
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fb === 0) status0_int[1] = 1;
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa !== 0) status1_int[2] = 1;
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1) && Fa === 0) status1_int[1] = 1;
-      end
-    else
-      begin
-        if (Eb === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status0_int[1] = 1;
-        if (Ea === ((((1 << (exp_width-1)) - 1) * 2) + 1)) status1_int[1] = 1;
-      end
-    status0_int[0] = zer_b;
-    status1_int[0] = zer_a;
-    status1_int[7] = 1;
-  end
-
-end
-
-assign z0 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {exp_width+sig_width+1{1'bx}} : z0_int;
-assign z1 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {exp_width+sig_width+1{1'bx}} : z1_int;
-assign status0 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {8'bx} : status0_int;
-assign status1 = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? {8'bx} : status1_int;
-assign agtb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : agtb_int;
-assign aeqb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : aeqb_int;
-assign altb = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : altb_int;
-assign unordered = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0)) ? 1'bx : unordered_int;
-
-// synopsys translate_on
-
-endmodule
-
-`line 1 "fpu/DW_fp_mult.v" 0
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Kyung-Nam Han, Feb. 22, 2006
-//
-// VERSION:   Verilog Simulation Model for DW_fp_mult
-//
-// DesignWare_version: 89edc232
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
+endmodule // ValRdySplit_0x46e437479843b32e
+`default_nettype wire
 
 //-----------------------------------------------------------------------------
-//
-// ABSTRACT: Floating-Point Multiplier
-//
-//              DW_fp_mult calculates the floating-point multiplication
-//              while supporting six rounding modes, including four IEEE
-//              standard rounding modes.
-//
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              ieee_compliance support the IEEE Compliance
-//                              including NaN and denormal expressions.
-//                              0 - IEEE 754 compatible without denormal support
-//                                  (NaN becomes Infinity, Denormal becomes Zero)
-//                              1 - IEEE 754 standard compatible
-//                                  (NaN and denormal numbers are supported)
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              b               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              rnd             3 bits
-//                              Rounding Mode Input
-//              z               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Output
-//              status          8 bits
-//                              Status Flags Output
-//
-// Modified:
-//     2009.11.12 Kyung-Nam Han
-//       Bug fix for STAR9000352662, available from 2009.06-SP4
-//     2015.12.10 Kyung-Nam Han
-//       Bug fix for STAR9000983334, available from 2015.06-SP5
+// Demux_0x1230df8e8eb75643
 //-----------------------------------------------------------------------------
+// nports: 11
+// dtype: 176
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Demux_0x1230df8e8eb75643
+(
+  input  wire [   0:0] clk,
+  input  wire [ 175:0] in_,
+  output wire [ 175:0] out$000,
+  output wire [ 175:0] out$010,
+  output wire [ 175:0] out$001,
+  output wire [ 175:0] out$002,
+  output wire [ 175:0] out$003,
+  output wire [ 175:0] out$004,
+  output wire [ 175:0] out$005,
+  output wire [ 175:0] out$006,
+  output wire [ 175:0] out$007,
+  output wire [ 175:0] out$008,
+  output wire [ 175:0] out$009,
+  input  wire [   0:0] reset,
+  input  wire [  10:0] sel
+);
 
-// verilator lint_off WIDTH
+  // localparam declarations
+  localparam nports = 11;
 
-module DW_fp_mult (a, b, rnd, z, status);
-
-  parameter sig_width = 23;      // RANGE 2 TO 253
-  parameter exp_width = 8;       // RANGE 3 TO 31
-  parameter ieee_compliance = 0; // RANGE 0 TO 1
-
-  input  [exp_width + sig_width:0] a;
-  input  [exp_width + sig_width:0] b;
-  input  [2:0] rnd;
-  output [exp_width + sig_width:0] z;
-  output [7:0] status;
-
-  // synopsys translate_off
-
-
-  `define Mwidth (2 * sig_width + 3)
-  `define Movf   (`Mwidth - 1)
-  `define L      (`Movf - 1 - sig_width)
-  `define R      (`L - 1)
-  `define RND_Width  4
-  `define RND_Inc  0
-  `define RND_Inexact  1
-  `define RND_HugeInfinity  2
-  `define RND_TinyminNorm  3
-  `define log_awidth ((sig_width + 1>65536)?((sig_width + 1>16777216)?((sig_width + 1>268435456)?((sig_width + 1>536870912)?30:29):((sig_width + 1>67108864)?((sig_width + 1>134217728)?28:27):((sig_width + 1>33554432)?26:25))):((sig_width + 1>1048576)?((sig_width + 1>4194304)?((sig_width + 1>8388608)?24:23):((sig_width + 1>2097152)?22:21)):((sig_width + 1>262144)?((sig_width + 1>524288)?20:19):((sig_width + 1>131072)?18:17)))):((sig_width + 1>256)?((sig_width + 1>4096)?((sig_width + 1>16384)?((sig_width + 1>32768)?16:15):((sig_width + 1>8192)?14:13)):((sig_width + 1>1024)?((sig_width + 1>2048)?12:11):((sig_width + 1>512)?10:9))):((sig_width + 1>16)?((sig_width + 1>64)?((sig_width + 1>128)?8:7):((sig_width + 1>32)?6:5)):((sig_width + 1>4)?((sig_width + 1>8)?4:3):((sig_width + 1>2)?2:1)))))
-  `define ez_msb ((exp_width >= `log_awidth) ? exp_width + 1 : `log_awidth + 1)
-
-  //-------------------------------------------------------------------------
-  // Parameter legality check
-  //-------------------------------------------------------------------------
-
-
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-
-
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-
-    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
-	ieee_compliance );
-    end
-
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check
-
-  //-------------------------------------------------------------------------
-
-  //-----------------------------------------------------
-  // Usage: rnd_val = rnd_eval(rnd,Sign,L,R,stk);
-  // rnd_val has 4 bits:
-  // rnd_val[rnd_Inc]
-  // rnd_val[rnd_Inexact]
-  // rnd_val[rnd_HugeInfinity]
-  // rnd_val[rnd_TinyminNorm]
-  //----------------------------------------------------
-  // Rounding increment equations
-  // MODE | Equation   | Description
-  // ------------------------------------------------
-  // even | R&(L|stk)  | IEEE round to nearest (even)
-  // zero | 0          | IEEE round to zero
-  // +inf | S'&(R|stk) | IEEE round to positive infinity
-  // -inf | S&(R|stk)  | IEEE round to negative infinity
-  // up   | R          | round to nearest (up)
-  // away | (R|stk)    | round away from zero
-  //----------------------------------------------------
-
-  function [`RND_Width-1:0] rnd_eval;
-
-    input [2:0] rnd;
-    input [0:0] Sign;
-    input [0:0] L,R,stk;
-
-    begin
-      rnd_eval[`RND_Inc] = 0;
-      rnd_eval[`RND_Inexact] = R|stk;
-      rnd_eval[`RND_HugeInfinity] = 0;
-      rnd_eval[`RND_TinyminNorm] = 0;
-
-      if ($time > 0)
-      begin
-        case (rnd)
-          3'b000:
-          begin
-            // round to nearest (even)
-            rnd_eval[`RND_Inc] = R&(L|stk);
-            rnd_eval[`RND_HugeInfinity] = 1;
-            rnd_eval[`RND_TinyminNorm] = 0;
-          end
-          3'b001:
-          begin
-            // round to zero
-            rnd_eval[`RND_Inc] = 0;
-            rnd_eval[`RND_HugeInfinity] = 0;
-            rnd_eval[`RND_TinyminNorm] = 0;
-          end
-          3'b010:
-          begin
-            // round to positive infinity
-            rnd_eval[`RND_Inc] = ~Sign & (R|stk);
-            rnd_eval[`RND_HugeInfinity] = ~Sign;
-            rnd_eval[`RND_TinyminNorm] = ~Sign;
-          end
-          3'b011:
-          begin
-            // round to negative infinity
-            rnd_eval[`RND_Inc] = Sign & (R|stk);
-            rnd_eval[`RND_HugeInfinity] = Sign;
-            rnd_eval[`RND_TinyminNorm] = Sign;
-          end
-          3'b100:
-          begin
-            // round to nearest (up)
-            rnd_eval[`RND_Inc] = R;
-            rnd_eval[`RND_HugeInfinity] = 1;
-            rnd_eval[`RND_TinyminNorm] = 0;
-          end
-          3'b101:
-          begin
-            // round away form 0
-            rnd_eval[`RND_Inc] = R|stk;
-            rnd_eval[`RND_HugeInfinity] = 1;
-            rnd_eval[`RND_TinyminNorm] = 1;
-          end
-          default:
-          begin
-            $display("Error! illegal rounding mode.\n");
-            $display("a : %b", a);
-            $display("rnd : %b", rnd);
-          end
-        endcase
-      end
-    end
-  endfunction
-
-
-
-  reg [(exp_width + sig_width):0] z_reg;
-  reg [exp_width-1:0] EA;
-  reg [exp_width-1:0] EB;
-  reg signed [`ez_msb:0] EZ;
-  reg signed [`ez_msb:0] Range_Check;
-  reg signed [`ez_msb:0] SH_Shift;
-  reg signed [`ez_msb:0] EZ_Shift;
-  reg [sig_width:0] MA;
-  reg [sig_width:0] MB;
-  reg [sig_width:0] TMP_MA;
-  reg [sig_width:0] TMP_MB;
-  reg [`Mwidth-1:0] MZ;
-  reg STK;
-  reg SIGN;
-  reg [`RND_Width-1:0] RND_val;
-  reg [8    -1:0] status_reg;
-  reg MaxEXP_A;
-  reg MaxEXP_B;
-  reg InfSIG_A;
-  reg InfSIG_B;
-  reg Zero_A;
-  reg Zero_B;
-  reg Denorm_A;
-  reg Denorm_B;
-  reg [9:0] LZ_INA;
-  reg [9:0] LZ_INB;
-  reg [9:0] LZ_IN;
-  reg [sig_width - 1:0] SIGA;
-  reg [sig_width - 1:0] SIGB;
-  reg [(exp_width + sig_width):0] NaN_Reg;
-  reg [(exp_width + sig_width):0] Inf_Reg;
-  reg MZ_Movf1;
-  reg EZ_Zero;
-  reg STK_PRE;
-  reg [sig_width:0] STK_EXT;
-  reg [sig_width - 1:0] NaN_Sig;
-  reg [sig_width - 1:0] Inf_Sig;
-  reg STK_CHECK;
-  reg minnorm_case;
-
+  // loop variable declarations
   integer i;
 
-  always @(a or b or rnd) begin : a1000_PROC
-    SIGN = a[(exp_width + sig_width)] ^ b[(exp_width + sig_width)];
-    EA = a[((exp_width + sig_width) - 1):sig_width];
-    EB = b[((exp_width + sig_width) - 1):sig_width];
-    SIGA = a[(sig_width - 1):0];
-    SIGB = b[(sig_width - 1):0];
-    status_reg = 0;
-    LZ_INA = 0;
-    LZ_INB = 0;
-    LZ_IN = 0;
-    STK_EXT = 0;
 
-    MaxEXP_A = (EA == ((((1 << (exp_width-1)) - 1) * 2) + 1));
-    MaxEXP_B = (EB == ((((1 << (exp_width-1)) - 1) * 2) + 1));
-    InfSIG_A = (SIGA == 0);
-    InfSIG_B = (SIGB == 0);
+  // array declarations
+  reg    [ 175:0] out[0:10];
+  assign out$000 = out[  0];
+  assign out$001 = out[  1];
+  assign out$002 = out[  2];
+  assign out$003 = out[  3];
+  assign out$004 = out[  4];
+  assign out$005 = out[  5];
+  assign out$006 = out[  6];
+  assign out$007 = out[  7];
+  assign out$008 = out[  8];
+  assign out$009 = out[  9];
+  assign out$010 = out[ 10];
 
-    // Zero and Denormal
-    if (ieee_compliance) begin
-      Zero_A = (EA == 0 ) & (SIGA == 0);
-      Zero_B = (EB == 0 ) & (SIGB == 0);
-      Denorm_A = (EA == 0 ) & (SIGA != 0);
-      Denorm_B = (EB == 0 ) & (SIGB != 0);
-      // IEEE Standard
-      NaN_Sig = 1;
-      Inf_Sig = 0;
-      NaN_Reg = {1'b0, {(exp_width){1'b1}}, NaN_Sig};
-      Inf_Reg = {SIGN, {(exp_width){1'b1}}, Inf_Sig};
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def logic():
+  //       for i in range( nports ):
+  //         s.out[i].value = s.in_ if s.sel[i] else 0
 
-      if (Denorm_A) begin
-        MA = {1'b0, a[(sig_width - 1):0]};
+  // logic for logic()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      out[i] = sel[i] ? in_ : 0;
+    end
+  end
+
+
+endmodule // Demux_0x1230df8e8eb75643
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// FlowControlIn_0x67f060f464276bb4
+//-----------------------------------------------------------------------------
+// num_ports: 10
+// max_credit: 16
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module FlowControlIn_0x67f060f464276bb4
+(
+  input  wire [   0:0] a_rdy$000,
+  input  wire [   0:0] a_rdy$001,
+  input  wire [   0:0] a_rdy$002,
+  input  wire [   0:0] a_rdy$003,
+  input  wire [   0:0] a_rdy$004,
+  input  wire [   0:0] a_rdy$005,
+  input  wire [   0:0] a_rdy$006,
+  input  wire [   0:0] a_rdy$007,
+  input  wire [   0:0] a_rdy$008,
+  input  wire [   0:0] a_rdy$009,
+  output wire [   0:0] a_val$000,
+  output wire [   0:0] a_val$001,
+  output wire [   0:0] a_val$002,
+  output wire [   0:0] a_val$003,
+  output wire [   0:0] a_val$004,
+  output wire [   0:0] a_val$005,
+  output wire [   0:0] a_val$006,
+  output wire [   0:0] a_val$007,
+  output wire [   0:0] a_val$008,
+  output wire [   0:0] a_val$009,
+  input  wire [   0:0] clk,
+  output wire [   0:0] p_rdy$000,
+  output wire [   0:0] p_rdy$001,
+  output wire [   0:0] p_rdy$002,
+  output wire [   0:0] p_rdy$003,
+  output wire [   0:0] p_rdy$004,
+  output wire [   0:0] p_rdy$005,
+  output wire [   0:0] p_rdy$006,
+  output wire [   0:0] p_rdy$007,
+  output wire [   0:0] p_rdy$008,
+  output wire [   0:0] p_rdy$009,
+  input  wire [   0:0] p_val$000,
+  input  wire [   0:0] p_val$001,
+  input  wire [   0:0] p_val$002,
+  input  wire [   0:0] p_val$003,
+  input  wire [   0:0] p_val$004,
+  input  wire [   0:0] p_val$005,
+  input  wire [   0:0] p_val$006,
+  input  wire [   0:0] p_val$007,
+  input  wire [   0:0] p_val$008,
+  input  wire [   0:0] p_val$009,
+  input  wire [   0:0] reset,
+  input  wire [  49:0] update_msg,
+  output reg  [   0:0] update_rdy,
+  input  wire [   0:0] update_val
+);
+
+  // wire declarations
+  wire   [   4:0] n_credits$000;
+  wire   [   4:0] n_credits$001;
+  wire   [   4:0] n_credits$002;
+  wire   [   4:0] n_credits$003;
+  wire   [   4:0] n_credits$004;
+  wire   [   4:0] n_credits$005;
+  wire   [   4:0] n_credits$006;
+  wire   [   4:0] n_credits$007;
+  wire   [   4:0] n_credits$008;
+  wire   [   4:0] n_credits$009;
+  wire   [   4:0] c_updates$000;
+  wire   [   4:0] c_updates$001;
+  wire   [   4:0] c_updates$002;
+  wire   [   4:0] c_updates$003;
+  wire   [   4:0] c_updates$004;
+  wire   [   4:0] c_updates$005;
+  wire   [   4:0] c_updates$006;
+  wire   [   4:0] c_updates$007;
+  wire   [   4:0] c_updates$008;
+  wire   [   4:0] c_updates$009;
+  wire   [   4:0] r_credits$000;
+  wire   [   4:0] r_credits$001;
+  wire   [   4:0] r_credits$002;
+  wire   [   4:0] r_credits$003;
+  wire   [   4:0] r_credits$004;
+  wire   [   4:0] r_credits$005;
+  wire   [   4:0] r_credits$006;
+  wire   [   4:0] r_credits$007;
+  wire   [   4:0] r_credits$008;
+  wire   [   4:0] r_credits$009;
+  wire   [   4:0] credits$000;
+  wire   [   4:0] credits$001;
+  wire   [   4:0] credits$002;
+  wire   [   4:0] credits$003;
+  wire   [   4:0] credits$004;
+  wire   [   4:0] credits$005;
+  wire   [   4:0] credits$006;
+  wire   [   4:0] credits$007;
+  wire   [   4:0] credits$008;
+  wire   [   4:0] credits$009;
+  wire   [   4:0] s_updates$000;
+  wire   [   4:0] s_updates$001;
+  wire   [   4:0] s_updates$002;
+  wire   [   4:0] s_updates$003;
+  wire   [   4:0] s_updates$004;
+  wire   [   4:0] s_updates$005;
+  wire   [   4:0] s_updates$006;
+  wire   [   4:0] s_updates$007;
+  wire   [   4:0] s_updates$008;
+  wire   [   4:0] s_updates$009;
+
+
+  // register declarations
+  reg    [   9:0] throttles;
+  reg    [   9:0] tokens;
+
+  // localparam declarations
+  localparam max_credit = 16;
+  localparam num_ports = 10;
+
+  // loop variable declarations
+  integer i;
+
+  // signal connections
+  assign s_updates$000 = update_msg[4:0];
+  assign s_updates$001 = update_msg[9:5];
+  assign s_updates$002 = update_msg[14:10];
+  assign s_updates$003 = update_msg[19:15];
+  assign s_updates$004 = update_msg[24:20];
+  assign s_updates$005 = update_msg[29:25];
+  assign s_updates$006 = update_msg[34:30];
+  assign s_updates$007 = update_msg[39:35];
+  assign s_updates$008 = update_msg[44:40];
+  assign s_updates$009 = update_msg[49:45];
+
+  // array declarations
+  wire   [   0:0] a_rdy[0:9];
+  assign a_rdy[  0] = a_rdy$000;
+  assign a_rdy[  1] = a_rdy$001;
+  assign a_rdy[  2] = a_rdy$002;
+  assign a_rdy[  3] = a_rdy$003;
+  assign a_rdy[  4] = a_rdy$004;
+  assign a_rdy[  5] = a_rdy$005;
+  assign a_rdy[  6] = a_rdy$006;
+  assign a_rdy[  7] = a_rdy$007;
+  assign a_rdy[  8] = a_rdy$008;
+  assign a_rdy[  9] = a_rdy$009;
+  reg    [   0:0] a_val[0:9];
+  assign a_val$000 = a_val[  0];
+  assign a_val$001 = a_val[  1];
+  assign a_val$002 = a_val[  2];
+  assign a_val$003 = a_val[  3];
+  assign a_val$004 = a_val[  4];
+  assign a_val$005 = a_val[  5];
+  assign a_val$006 = a_val[  6];
+  assign a_val$007 = a_val[  7];
+  assign a_val$008 = a_val[  8];
+  assign a_val$009 = a_val[  9];
+  reg    [   4:0] c_updates[0:9];
+  assign c_updates$000 = c_updates[  0];
+  assign c_updates$001 = c_updates[  1];
+  assign c_updates$002 = c_updates[  2];
+  assign c_updates$003 = c_updates[  3];
+  assign c_updates$004 = c_updates[  4];
+  assign c_updates$005 = c_updates[  5];
+  assign c_updates$006 = c_updates[  6];
+  assign c_updates$007 = c_updates[  7];
+  assign c_updates$008 = c_updates[  8];
+  assign c_updates$009 = c_updates[  9];
+  reg    [   4:0] credits[0:9];
+  assign credits$000 = credits[  0];
+  assign credits$001 = credits[  1];
+  assign credits$002 = credits[  2];
+  assign credits$003 = credits[  3];
+  assign credits$004 = credits[  4];
+  assign credits$005 = credits[  5];
+  assign credits$006 = credits[  6];
+  assign credits$007 = credits[  7];
+  assign credits$008 = credits[  8];
+  assign credits$009 = credits[  9];
+  reg    [   4:0] n_credits[0:9];
+  assign n_credits$000 = n_credits[  0];
+  assign n_credits$001 = n_credits[  1];
+  assign n_credits$002 = n_credits[  2];
+  assign n_credits$003 = n_credits[  3];
+  assign n_credits$004 = n_credits[  4];
+  assign n_credits$005 = n_credits[  5];
+  assign n_credits$006 = n_credits[  6];
+  assign n_credits$007 = n_credits[  7];
+  assign n_credits$008 = n_credits[  8];
+  assign n_credits$009 = n_credits[  9];
+  reg    [   0:0] p_rdy[0:9];
+  assign p_rdy$000 = p_rdy[  0];
+  assign p_rdy$001 = p_rdy[  1];
+  assign p_rdy$002 = p_rdy[  2];
+  assign p_rdy$003 = p_rdy[  3];
+  assign p_rdy$004 = p_rdy[  4];
+  assign p_rdy$005 = p_rdy[  5];
+  assign p_rdy$006 = p_rdy[  6];
+  assign p_rdy$007 = p_rdy[  7];
+  assign p_rdy$008 = p_rdy[  8];
+  assign p_rdy$009 = p_rdy[  9];
+  wire   [   0:0] p_val[0:9];
+  assign p_val[  0] = p_val$000;
+  assign p_val[  1] = p_val$001;
+  assign p_val[  2] = p_val$002;
+  assign p_val[  3] = p_val$003;
+  assign p_val[  4] = p_val$004;
+  assign p_val[  5] = p_val$005;
+  assign p_val[  6] = p_val$006;
+  assign p_val[  7] = p_val$007;
+  assign p_val[  8] = p_val$008;
+  assign p_val[  9] = p_val$009;
+  reg    [   4:0] r_credits[0:9];
+  assign r_credits$000 = r_credits[  0];
+  assign r_credits$001 = r_credits[  1];
+  assign r_credits$002 = r_credits[  2];
+  assign r_credits$003 = r_credits[  3];
+  assign r_credits$004 = r_credits[  4];
+  assign r_credits$005 = r_credits[  5];
+  assign r_credits$006 = r_credits[  6];
+  assign r_credits$007 = r_credits[  7];
+  assign r_credits$008 = r_credits[  8];
+  assign r_credits$009 = r_credits[  9];
+  wire   [   4:0] s_updates[0:9];
+  assign s_updates[  0] = s_updates$000;
+  assign s_updates[  1] = s_updates$001;
+  assign s_updates[  2] = s_updates$002;
+  assign s_updates[  3] = s_updates$003;
+  assign s_updates[  4] = s_updates$004;
+  assign s_updates[  5] = s_updates$005;
+  assign s_updates[  6] = s_updates$006;
+  assign s_updates[  7] = s_updates$007;
+  assign s_updates[  8] = s_updates$008;
+  assign s_updates[  9] = s_updates$009;
+
+  // PYMTL SOURCE:
+  //
+  // @s.tick_rtl
+  // def seq():
+  //
+  //       # Update the credit
+  //       for i in xrange( num_ports ):
+  //         s.credits[i].next = s.n_credits[i]
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      credits[i] <= n_credits[i];
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_throttle():
+  //
+  //       # Fail-safe
+  //
+  //       s.throttles.value = 0
+  //
+  //       # Reset Throttle for any stream that has credit
+  //
+  //       for i in xrange( num_ports ):
+  //         if   s.credits[i] > 0: s.throttles[i].value = 0
+  //         else                 : s.throttles[i].value = 1
+  //
+  //       # If reset, throttle
+  //
+  //       if s.reset:
+  //         s.throttles.value = 0
+
+  // logic for gen_throttle()
+  always @ (*) begin
+    throttles = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      if ((credits[i] > 0)) begin
+        throttles[i] = 0;
       end
       else begin
-        MA = {1'b1, a[(sig_width - 1):0]};
+        throttles[i] = 1;
       end
-
-      if (Denorm_B) begin
-        MB = {1'b0, b[(sig_width - 1):0]};
-      end
-      else begin
-        MB = {1'b1, b[(sig_width - 1):0]};
-      end
-
     end
-    else begin // ieee_compliance = 0
-      Zero_A = (EA == 0 );
-      Zero_B = (EB == 0 );
-      Denorm_A = 0;
-      Denorm_B = 0;
-      MA = {1'b1,a[(sig_width - 1):0]};
-      MB = {1'b1,b[(sig_width - 1):0]};
-      NaN_Sig = 0;
-      Inf_Sig = 0;
-      // from 0703-SP2, NaN has always + sign.
-      NaN_Reg = {1'b0, {(exp_width){1'b1}}, NaN_Sig};
-      Inf_Reg = {SIGN, {(exp_width){1'b1}}, Inf_Sig};
+    if (reset) begin
+      throttles = 0;
     end
-
-    //
-    // Infinity & NaN Input
-    //
-    if (ieee_compliance && ((MaxEXP_A && ~InfSIG_A) || (MaxEXP_B && ~InfSIG_B))) begin
-      status_reg[2] = 1;
-      z_reg = NaN_Reg;
-    end
-    else if ( (MaxEXP_A) || (MaxEXP_B) )	begin
-
-      if (ieee_compliance == 0) begin
-        status_reg[1] = 1;
-      end
-
-      // 0*Inf = NaN
-      if ( Zero_A || Zero_B ) begin
-        status_reg[2] = 1;
-        z_reg = NaN_Reg;
-      end
-      else begin  // Infinity Case
-        status_reg[1] = 1;
-        z_reg = Inf_Reg;
-      end
-
-    end
-    //
-    // Zero Input
-    //
-    else if (Zero_A || Zero_B) begin
-      status_reg[0] = 1;
-      z_reg = 0;
-      z_reg[(exp_width + sig_width)] = SIGN;
-    end
-    //
-    // Normal & Denormal Inputs
-    //
     else begin
-
-      // Denormal Check
-      TMP_MA = MA;
-      if (Denorm_A)
-      begin
-        while(TMP_MA[sig_width] != 1)
-        begin
-          TMP_MA = TMP_MA << 1;
-          LZ_INA = LZ_INA + 1;
-        end
-      end
-
-      TMP_MB = MB;
-      if (Denorm_B)
-      begin
-        while(TMP_MB[sig_width] != 1)
-        begin
-          TMP_MB = TMP_MB << 1;
-          LZ_INB = LZ_INB + 1;
-        end
-      end
-
-      LZ_IN = LZ_INA + LZ_INB;
-
-      EZ = EA + EB - LZ_IN + Denorm_A + Denorm_B;
-      MZ = MA * MB;	// Compute with infinite precision.
-
-      // Left shift MZ in case of denormal multiplication
-      if (ieee_compliance) begin
-        MZ = MZ << LZ_IN;
-      end
-
-      // After the computation, left justify the Mantissa to `Movf-1 bit.
-      // Note that the normalized Mantissa after computation is in `Movf-2 bit,
-      // and now we normalize it to `Movf-1 bit.
-      MZ_Movf1 = MZ[`Movf-1];
-
-      if (MZ[`Movf-1] === 1) begin
-        EZ = EZ + 1;
-        minnorm_case = 0;
-      end
-      else begin
-        MZ = MZ << 1;
-        minnorm_case = (EZ - ((1 << (exp_width-1)) - 1) == 0) ? 1 : 0;
-      end
-
-      // Denormal Support
-      if (ieee_compliance) begin
-        Range_Check = EA + EB + Denorm_A + Denorm_B + MZ_Movf1 - ((1 << (exp_width-1)) - 1) - LZ_IN - 1;
-
-        EZ_Shift = -Range_Check;
-
-        if (EZ_Shift >= 0) begin
-          for (i = 0; i < EZ_Shift; i = i + 1) begin
-            {MZ, STK_CHECK} = {MZ, 1'b0} >> 1;
-            STK_EXT = STK_EXT | STK_CHECK;
-          end
-        end
-
-      end
-
-      if (minnorm_case & ~ieee_compliance) begin
-        if ({MZ[`R:0], STK_EXT} === 0) STK = 0;
-        else STK = 1;
-        RND_val = rnd_eval(rnd, SIGN, MZ[`L+1], MZ[`R+1], STK);
-      end
-      else begin
-        if ({MZ[`R-1:0], STK_EXT} === 0) STK = 0;
-        else STK = 1;
-        RND_val = rnd_eval(rnd, SIGN, MZ[`L], MZ[`R], STK);
-      end
-
-      // Round Addition
-      if (RND_val[`RND_Inc] === 1) MZ = MZ + (1<<`L);
-
-      // Normalize the Mantissa for overflow case after rounding.
-      if ( (MZ[`Movf] === 1) ) begin
-        EZ = EZ + 1;
-        MZ = MZ >> 1;
-      end
-
-      // Correction of denomal output.
-      if (ieee_compliance & (EZ <= ((1 << (exp_width-1)) - 1)) & MZ[`Movf - 1]) EZ = EZ + 1;
-
-      EZ_Zero = (EZ == ((1 << (exp_width-1)) - 1));
-
-      // Adjust Exponent ((1 << (exp_width-1)) - 1).
-      // Force EZ = 0 if underflow occurs becuase of subtracting ((1 << (exp_width-1)) - 1),
-      if((EZ[`ez_msb] == 0) & (EZ >= ((1 << (exp_width-1)) - 1))) EZ = EZ - ((1 << (exp_width-1)) - 1);
-      else EZ = 0;
-
-      //
-      // Huge
-      //
-      if (EZ >= ((((1 << (exp_width-1)) - 1) * 2) + 1)) begin
-        status_reg[4] = 1;
-        status_reg[5] = 1;
-
-        if(RND_val[`RND_HugeInfinity] === 1) begin
-          // Infinity
-          MZ[`Movf-2:`L] = Inf_Sig;
-          EZ = ((((1 << (exp_width-1)) - 1) * 2) + 1);
-          status_reg[1] = 1;
-        end
-        else begin
-          // MaxNorm
-          EZ = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
-          MZ[`Movf-2:`L] = -1;
-        end
-      end
-      //
-      // Tiny
-      //
-      else if (EZ == 0 ) begin
-        status_reg[3] = 1;
-
-        if (ieee_compliance == 0) begin
-          status_reg[5] = 1;
-
-          if(RND_val[`RND_TinyminNorm] === 1) begin
-            // MinNorm
-            MZ[`Movf-2:`L] = 0;
-            EZ = 0  + 1;
-          end
-          else begin
-            // 0
-            MZ[`Movf-2:`L] = 0;
-            EZ = 0 ;
-            status_reg[0] = 1;
-          end
-        end
-
-        if ((MZ[`Movf-2:`L] == 0) & (EZ[exp_width - 1:0] == 0)) begin
-          status_reg[0] = 1;
-        end
-
-      end
-
-      status_reg[5] = status_reg[5] | RND_val[`RND_Inexact] | (~(Zero_A | Zero_B) & (EZ[exp_width - 1:0] == 0) & (MZ[`Movf - 2:`L] == 0));
-
-      // Reconstruct the floating point format.
-      z_reg = {SIGN,EZ[exp_width-1:0],MZ[`Movf-2:`L]};
-      end
-  end
-
-  assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bX} : status_reg;
-  assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {sig_width+exp_width+1{1'bX}} : z_reg;
-
-  `undef Mwidth
-  `undef Movf
-  `undef L
-  `undef R
-  `undef RND_Width
-  `undef RND_Inc
-  `undef RND_Inexact
-  `undef RND_HugeInfinity
-  `undef RND_TinyminNorm
-  `undef log_awidth
-  `undef ez_msb
-
-  // synopsys translate_on
-
-endmodule
-
-// verilator lint_on WIDTH
-
-`line 1 "fpu/DW_fp_i2flt.v" 0
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Kyung-Nam Han, Jan. 17, 2006
-//
-// VERSION:   Verilog Simulation Model for DW_fp_i2flt
-//
-// DesignWare_version: 53eb9285
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
-
-//-----------------------------------------------------------------------------
-//
-// ABSTRACT:  Integer Number Format to Floatin-point Number Format
-// Converter
-//
-//              This converts an integer number to a floating-point
-//              number. Both 2's complement signed integer and unsigned
-//              integer are supported.
-//
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              isize           integer size,      3 to 512 bits
-//              isign           signed/unsigned number flag
-//                              0 - unsigned, 1 - signed integer (2's complement)
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (isize)-bits
-//                              Integer Input
-//              rnd             3 bits
-//                              Rounding Mode Input
-//              z               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Output
-//              status          8 bits
-//                              Status Flags Output
-//
-// MODIFIED:
-//
-//	8/1/2012    RJK - Tightened isize restriction as per STAR 9000557637
-//-----------------------------------------------------------------------------
-
-module DW_fp_i2flt (a, rnd, z, status);
-
-  parameter sig_width = 23;  // RANGE 2 TO 253
-  parameter exp_width = 8;   // RANGE 3 TO 31
-  parameter isize = 32;      // RANGE 3 TO 512
-  parameter isign = 1;	     // RANGE 0 TO 1
-                             // 0 : unsigned, 1 : signed
-  input  [isize-1:0] a;
-  input  [2:0] rnd; 
-  output [exp_width + sig_width:0] z;
-  output [7:0] status; 
-
-  // synopsys translate_off
-
-
-  `define Mwidth  (sig_width + 4)
-  `define Movf    (`Mwidth - 1)
-  `define ML      2
-  `define MR      1
-  `define MS      0
-  `define rnd_Width  4
-  `define rnd_Inc  0
-  `define rnd_Inexact  1
-  `define rnd_HugeInfinity  2
-  `define rnd_TinyminNorm  3
-  `define ai_lsb ((isize - sig_width - 2 >= 0) ? isize - sig_width - 2 : 0)
-	    
-  // --------------------------------------------------------------------
-  
-
-  //-------------------------------------------------------------------------
-  // Parameter legality check
-  //-------------------------------------------------------------------------
-
-  // XXX: berkin
-  /* verilator lint_off WIDTH */
-    
- 
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-    
-      
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-      
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-     
-    if ( (isize < 3+isign) || (isize > 512) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m : Parameter isize must be at least 3+isign and no greater than 512" );
-    end 
-      
-    if ( (isign < 0) || (isign > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter isign (legal range: 0 to 1)",
-	isign );
-    end
-    
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check 
-
-  //---------------------------------------------------------------------
-
-
-  
-  function [`rnd_Width-1:0] rnd_eval;
-  
-    input [2:0] rnd;
-    input [0:0] Sign;
-    input [0:0] L,R,stk;
-    
-    
-    begin
-      rnd_eval[`rnd_Inc] = 0;
-      rnd_eval[`rnd_Inexact] = R|stk;
-      rnd_eval[`rnd_HugeInfinity] = 0;
-      rnd_eval[`rnd_TinyminNorm] = 0;
-      
-      if ($time > 0) 
-      begin
-        case (rnd)
-          3'b000:
-          begin
-            // round to nearest (even)
-            rnd_eval[`rnd_Inc] = R&(L|stk);
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b001:
-          begin
-            // round to zero
-            rnd_eval[`rnd_Inc] = 0;
-            rnd_eval[`rnd_HugeInfinity] = 0;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b010:
-          begin
-            // round to positive infinity
-            rnd_eval[`rnd_Inc] = ~Sign & (R|stk);
-            rnd_eval[`rnd_HugeInfinity] = ~Sign;
-            rnd_eval[`rnd_TinyminNorm] = ~Sign;
-          end
-          3'b011:
-          begin
-            // round to negative infinity
-            rnd_eval[`rnd_Inc] = Sign & (R|stk);
-            rnd_eval[`rnd_HugeInfinity] = Sign;
-            rnd_eval[`rnd_TinyminNorm] = Sign;
-          end
-          3'b100:
-          begin
-            // round to nearest (up)
-            rnd_eval[`rnd_Inc] = R;
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 0;
-          end
-          3'b101:
-          begin
-            // round away form 0
-            rnd_eval[`rnd_Inc] = R|stk;
-            rnd_eval[`rnd_HugeInfinity] = 1;
-            rnd_eval[`rnd_TinyminNorm] = 1;
-          end
-          default:
-          begin
-            $display("Error! illegal rounding mode.\n");
-            $display("a : %b", a);
-            $display("rnd : %b", rnd);
-          end
-        endcase
-      end
-    end
-  endfunction
-
-  // --------------------------------------------------------------------
-  
-  reg [isize-1:0] Ai;
-  reg [8    -1:0] status_reg; 
-  reg [(exp_width + sig_width):0] z_reg;
-  reg [isize-1:0] LZ;
-  reg [isize-1:0] num;
-  reg [`Mwidth-1:0] Mf;			// Mantissa for floating points.
-  reg [exp_width:0] EXP;
-  reg [0:0] STK;
-  reg [`rnd_Width-1:0] rnd_val;
-  
-  // --------------------------------------------------------------------
-  
-  always @(a or rnd)
-  begin
-    Ai = a;
-    status_reg = 0;
-    LZ = 0;
-    Mf = 0;
-    EXP = 0;
-    STK = 0;
-  
-    if (Ai === 0)				// Exact Zero
-      begin
-      status_reg[0] = 1; z_reg = 0; 
-      end 
-    else					// Nonzero Integer
-      begin
-      // Convert signed integer (two's complement) to unsigned magnitude representation.
-      // Set the sign bit of Floating Point Number.
-      if (isign === 1)		// Signed
-        begin
-        if(Ai[isize-1] === 1)
-          begin
-          Ai = ~Ai + 1;
-          z_reg[(exp_width + sig_width)] = 1;
-          end
-        else
-          begin
-          z_reg[(exp_width + sig_width)] = 0;
-          end
-        end
-      else				// Unsigned
-        begin
-        z_reg[(exp_width + sig_width)] = 0;
-        end
-  
-      // Convert the unsigned magnitude representation to floating point format.
-      // Left shift to normalize Ai.
-      while(Ai[isize-1] != 1)
-        begin
-        Ai = Ai << 1;
-        LZ = LZ + 1;
-        end
-  
-      // Calculate the Biased Exponent.
-      if(isize - 1 - LZ + ((1 << (exp_width-1)) - 1) >= ((((1 << (exp_width-1)) - 1) * 2) + 1))
-        EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1);
-      else
-        EXP = isize - 1 - LZ + ((1 << (exp_width-1)) - 1);
-  
-      // Converts integer to fraction.
-      if(isize <= sig_width+2)
-        // If the Mantissa fraction (sig_width+2) is big enough to hold Ai,
-        // Left adjustment at `Movf-1: `Movf-1-(isize-1) = `Movf-isize >= 1
-        begin
-        Mf[`Movf-1:0] = Ai << (`Movf-isize);
-        end
-      else
-        // If the Mantissa fraction (sig_width+2) is NOT big enough to hold Ai,
-        // calculate the STK.
-        begin
-        Mf[`Movf-1:`MR] = Ai[isize-1:`ai_lsb];
-        STK = 0;
-        num = isize-sig_width-3;	// the mininum is 0.
-        while(num !== 0)
-          begin
-          STK = STK | Ai[num];
-          num = num - 1;
-          end
-        STK = STK | Ai[num];
-        Mf[`MS] = STK;
-        end
-  
-      // Round the Mantissa according to the rounding modes.
-      rnd_val = rnd_eval(rnd, z_reg[(exp_width + sig_width)], Mf[`ML], Mf[`MR], Mf[`MS]);
-      if (rnd_val[`rnd_Inc] === 1) Mf = Mf + (1<<`ML);
-      status_reg[5] = rnd_val[`rnd_Inexact];
-  
-      // Normalize the Mantissa for overflow case after rounding.
-      if ( (Mf[`Movf] === 1) )
-        begin
-        EXP = EXP + 1;
-        Mf = Mf >> 1;
-        end
-  
-      // Note: "Tiny" situation doesn't exist.
-      if(EXP >= ((((1 << (exp_width-1)) - 1) * 2) + 1))			// Huge
-        begin
-        status_reg[4] = 1;
-        status_reg[5] = 1;
-        if(rnd_val[`rnd_HugeInfinity] === 1)
-          begin
-          // Infinity
-          EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1);
-          //Mf[`Movf-2:`ML] = -1;
-          Mf[`Movf-2:`ML] = 0;
-          status_reg[1] = 1;
-          end
-        else
-          begin
-          // MaxNorm
-          EXP = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
-          Mf[`Movf-2:`ML] = -1;
-          end
-        end
-  
-      z_reg = {z_reg[(exp_width + sig_width)],EXP[exp_width-1:0],Mf[`Movf-2:`ML]};
-      end
-  end
-  
-  assign status = status_reg;
-  assign z = z_reg;
-
-  `undef Mwidth
-  `undef Movf
-  `undef ML
-  `undef MR
-  `undef MS
-  `undef rnd_Width
-  `undef rnd_Inc
-  `undef rnd_Inexact
-  `undef rnd_HugeInfinity
-  `undef rnd_TinyminNorm
-  `undef ai_lsb
-
-  // synopsys translate_on
-  
- endmodule
-`line 1 "fpu/DW_fp_div.v" 0
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//       This confidential and proprietary software may be used only
-//     as authorized by a licensing agreement from Synopsys Inc.
-//     In the event of publication, the following notice is applicable:
-//
-//                    (C) COPYRIGHT 2006 - 2016 SYNOPSYS INC.
-//                           ALL RIGHTS RESERVED
-//
-//       The entire notice above must be reproduced on all authorized
-//     copies.
-//
-// AUTHOR:    Kyung-Nam Han, Mar. 22, 2006
-//
-// VERSION:   Verilog Simulation Model for DW_fp_div
-//
-// DesignWare_version: f5eace03
-// DesignWare_release: M-2016.12-DWBB_201612.0
-//
-////////////////////////////////////////////////////////////////////////////////
-
-//-------------------------------------------------------------------------------
-//
-// ABSTRACT: Floating-Point Divider
-//
-//              DW_fp_div calculates the floating-point division
-//              while supporting six rounding modes, including four IEEE
-//              standard rounding modes.
-//
-//              parameters      valid values (defined in the DW manual)
-//              ==========      ============
-//              sig_width       significand size,  2 to 253 bits
-//              exp_width       exponent size,     3 to 31 bits
-//              ieee_compliance support the IEEE Compliance 
-//                              0 - IEEE 754 compatible without denormal support
-//                                  (NaN becomes Infinity, Denormal becomes Zero)
-//                              1 - IEEE 754 compatible with denormal support
-//                                  (NaN and denormal numbers are supported)
-//              faithful_round  select the faithful_rounding that admits 1 ulp error
-//                              0 - default value. it keeps all rounding modes
-//                              1 - z has 1 ulp error. RND input does not affect
-//                                  the output
-//
-//              Input ports     Size & Description
-//              ===========     ==================
-//              a               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              b               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Input
-//              rnd             3 bits
-//                              Rounding Mode Input
-//
-//              Output ports    Size & Description
-//              ============    ==================
-//              z               (sig_width + exp_width + 1)-bits
-//                              Floating-point Number Output
-//              status          8 bits
-//                              Status Flags Output
-//
-// MODIFIED: May   7. 2007 Kyung-Nam Han (from 0703-SP2)
-//             Fixed the rounding error of denormal numbers 
-//             when ieee_compliance = 1
-//           Oct. 18. 2007 Kyung-Nam Han from 0712
-//             Fixed the 'divide by zero' flag when 0/0 
-//           Jan.  2. 2008 Kyung-Nam Han from 0712-SP1
-//             New parameter, faithful_round, is introduced
-//           Jun.  4. 2010 Kyung-Nam Han (from D-2010.03-SP3)
-//             Removed VCS error [IRIPS] when sig_width = 2 and 3.
-//
-//-----------------------------------------------------------------------------
-
-module DW_fp_div (a, b, rnd, z, status);
-
-  parameter sig_width = 23;      // range 2 to 253
-  parameter exp_width = 8;       // range 3 to 31
-  parameter ieee_compliance = 0; // range 0 to 1
-  parameter faithful_round = 0;  // range 0 to 1
-
-  input  [sig_width + exp_width:0] a;
-  input  [sig_width + exp_width:0] b;
-  input  [2:0] rnd;
-  output [sig_width + exp_width:0] z;
-  output [7:0] status;
-
-  // synopsys translate_off
-
-
-
-  //-------------------------------------------------------------------------
-  // parameter legality check
-  //-------------------------------------------------------------------------
-    
- 
-  initial begin : parameter_check
-    integer param_err_flg;
-
-    param_err_flg = 0;
-    
-      
-    if ( (sig_width < 2) || (sig_width > 253) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter sig_width (legal range: 2 to 253)",
-	sig_width );
-    end
-      
-    if ( (exp_width < 3) || (exp_width > 31) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter exp_width (legal range: 3 to 31)",
-	exp_width );
-    end
-      
-    if ( (ieee_compliance < 0) || (ieee_compliance > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter ieee_compliance (legal range: 0 to 1)",
-	ieee_compliance );
-    end
-      
-    if ( (faithful_round < 0) || (faithful_round > 1) ) begin
-      param_err_flg = 1;
-      $display(
-	"ERROR: %m :\n  Invalid value (%d) for parameter faithful_round (legal range: 0 to 1)",
-	faithful_round );
-    end
-    
-    if ( param_err_flg == 1) begin
-      $display(
-        "%m :\n  Simulation aborted due to invalid parameter value(s)");
-      $finish;
-    end
-
-  end // parameter_check 
-
-  //-------------------------------------------------------------------------
-
-
-  function [4-1:0] OIIlOlO1;
-  
-    input [2:0] rnd;
-    input [0:0] I101O11O;
-    input [0:0] I11110O0,O10110O1,O011IOO0;
-
-    begin
-      OIIlOlO1[0] = 0;
-      OIIlOlO1[1] = O10110O1|O011IOO0;
-      OIIlOlO1[2] = 0;
-      OIIlOlO1[3] = 0;
-      
-      if ($time > 0)
-      begin
-        case (rnd)
-          3'b000:
-          begin
-            // round to nearest (even)
-            OIIlOlO1[0] = O10110O1&(I11110O0|O011IOO0);
-            OIIlOlO1[2] = 1;
-            OIIlOlO1[3] = 0;
-          end
-          3'b001:
-          begin
-            // round to zero
-            OIIlOlO1[0] = 0;
-            OIIlOlO1[2] = 0;
-            OIIlOlO1[3] = 0;
-          end
-          3'b010:
-          begin
-            // round to positive infinity
-            OIIlOlO1[0] = ~I101O11O & (O10110O1|O011IOO0);
-            OIIlOlO1[2] = ~I101O11O;
-            OIIlOlO1[3] = ~I101O11O;
-          end
-          3'b011:
-          begin
-            // round to negative infinity
-            OIIlOlO1[0] = I101O11O & (O10110O1|O011IOO0);
-            OIIlOlO1[2] = I101O11O;
-            OIIlOlO1[3] = I101O11O;
-          end
-          3'b100:
-          begin
-            // round to nearest (up)
-            OIIlOlO1[0] = O10110O1;
-            OIIlOlO1[2] = 1;
-            OIIlOlO1[3] = 0;
-          end
-          3'b101:
-          begin
-            // round away form 0
-            OIIlOlO1[0] = O10110O1|O011IOO0;
-            OIIlOlO1[2] = 1;
-            OIIlOlO1[3] = 1;
-          end
-          default:
-          begin
-            $display("error! illegal rounding mode.\n");
-            $display("a : %b", a);
-            $display("rnd : %b", rnd);
-          end
-        endcase
-      end
-    end
-  endfunction
-
-  reg [(exp_width + sig_width):0] IOOIlI0I;
-  reg [exp_width-1:0] l1l1O100,lO101111;
-  reg [exp_width+1:0] lI00O00I;
-  reg IOO1O01O;
-  reg [exp_width+1:0] O10101O1;
-  reg I1O1O11O;
-  reg [exp_width+1:0] lO1O0OI1;
-  reg signed [exp_width+1:0] IO10IOO1;
-  reg l10OO10O;
-  reg [sig_width:0] OlOO00lO,OOIl0010,IOOl0lII,l11Illl0,lO001Ol0;
-  reg [sig_width:0] I0OI1lO0;
-  reg [(2 * sig_width + 2)  :0] IOIlII10;
-  reg [sig_width:0] O10110O1;
-  reg O011IOO0,I101O11O;
-  reg [1:0] lO011100;
-  reg [4-1:0] I11IO1I1;
-  reg [8    -1:0] OO000O0O;
-  reg [(exp_width + sig_width):0] O00OO1I0;
-  reg [(exp_width + sig_width):0] IIl1O10O;
-  reg I00lIO1l;
-  reg lOI111I1;
-  reg O100O11l;
-  reg l10OO1I0;
-  reg l1O1Ol0O;
-  reg I000lO00;
-  reg l1OllI0I;
-  reg lO00I10I;
-  reg IIIl11O1;
-  reg [sig_width - 1:0] OOO111OO;
-  reg [sig_width - 1:0] l000I1O0;
-  reg [7:0] O00O1Ol1;
-  reg [7:0] II01O1O0;
-  reg [exp_width + 1:0] OIIO0OOl;
-  reg [sig_width:0] l0III011;
-  reg [sig_width:0] OO0lIO1O;
-  reg [sig_width:0] II0IIO1O;
-  reg [8:0] O1lO00O0;
-  reg [8:0] I0I0Il0O;
-  reg [9:0] l110l11I;
-  reg [sig_width + 9:0] IO00O1O1;
-  reg IOOlIOOO;
-  reg [8:0] OOI10OIO;
-  reg [sig_width + 9:0] l0IO1lOO;
-  reg [sig_width + 1:0] OO0OO1I0;
-  reg [2 * sig_width - 7:0] O00OI010;
-  reg [sig_width + 3:0] IOIlOO00;
-  reg [sig_width + 3:0] O0O0IIII;
-  reg [sig_width + 3:0] II11llO0;
-  reg l0101100;
-  reg [sig_width + 3:0] l0I1OOll;
-  reg [((sig_width >= 11) ? 2 * sig_width - 21 : 0):0] OIlI10I1;
-  reg [((sig_width >= 11) ? sig_width - 11 : 0):0] Ol1O10O0;
-  reg [((sig_width >= 11) ? 2 * sig_width - 21 : 0):0] O1l11OIO;
-  reg [sig_width + 3:0] Il101Il1;
-  reg IOll10OO;
-  reg [sig_width + 3:0] O0l0O011;
-  reg [((sig_width >= 25) ? sig_width - 25 : 0):0] OOO01OO1;
-  reg [((sig_width >= 24) ? 2 * sig_width - 47 : 0):0] O0O1011O;
-  reg [((sig_width >= 24) ? 2 * sig_width - 47 : 0):0] llOO0II1;
-  reg [((sig_width >= 25) ? sig_width - 25 : 0):0] O010I0IO;
-  reg [sig_width + 3:0] OOOl110I;
-  reg O00O00O1;
-  reg [sig_width + 3:0] lI100I0I;
-  reg [8:0] I10l01Il;
-  reg [sig_width + 3:0] O1O0011O;
-  reg [sig_width + 3:0] O1O1O01l;
-  reg [sig_width + 3:0] l0I1OI0l;
-  reg [8:8 - sig_width] IIOI0lOO;
-  reg [sig_width:0] O11OOOOl;
-  reg [sig_width:0] OO1110O0;
-  reg [sig_width:0] I01II0I0;
-  reg [sig_width:0] IOIOI010;
-  reg IOO101lO;
-  reg OlIlOOIO;
-  reg I010IlI0;
-  reg I11OIl0O;
-  reg Ol01O010;
-
-
-  always @(a or b or rnd) begin : a1000_PROC
-    I101O11O = a[(exp_width + sig_width)] ^ b[(exp_width + sig_width)];
-    l1l1O100 = a[((exp_width + sig_width) - 1):sig_width];
-    lO101111 = b[((exp_width + sig_width) - 1):sig_width];
-    OOO111OO = a[(sig_width - 1):0];
-    l000I1O0 = b[(sig_width - 1):0];
-    O00O1Ol1 = 0;
-    II01O1O0 = 0;
-    I0OI1lO0 = 0;
-
-    OO000O0O = 0;
-
-    // division table for special inputs
-    //
-    //  -------------------------------------------------
-    //         a      /       b      |       result
-    //  -------------------------------------------------
-    //        nan     |      any     |        nan
-    //        any     |      nan     |        nan
-    //        inf     |      inf     |        nan
-    //         0      |       0      |        nan
-    //        inf     |      any     |        inf
-    //        any     |       0      |        inf
-    //         0      |      any     |         0
-    //        any     |      inf     |         0
-    //  -------------------------------------------------
-    // when ieee_compliance = 0, 
-    // denormal numbers are considered as zero and 
-    // nans are considered as infinity
-
-    if (ieee_compliance)
-    begin
-      I00lIO1l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (OOO111OO == 0);
-      lOI111I1 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (l000I1O0 == 0);
-      O100O11l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (OOO111OO != 0);
-      l10OO1I0 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (l000I1O0 != 0);
-      l1O1Ol0O = (l1l1O100 == 0) & (OOO111OO == 0);
-      I000lO00 = (lO101111 == 0) & (l000I1O0 == 0);
-      l1OllI0I = (l1l1O100 == 0) & (OOO111OO != 0);
-      lO00I10I = (lO101111 == 0) & (l000I1O0 != 0);
-
-      O00OO1I0 = {I101O11O, {(exp_width){1'b1}}, {(sig_width){1'b0}}}; 
-      IIl1O10O = {1'b0, {(exp_width){1'b1}}, {(sig_width - 1){1'b0}}, 1'b1};
-    end
-    else
-    begin
-      I00lIO1l = (l1l1O100 == ((((1 << (exp_width-1)) - 1) * 2) + 1));
-      lOI111I1 = (lO101111 == ((((1 << (exp_width-1)) - 1) * 2) + 1));
-      O100O11l = 0;
-      l10OO1I0 = 0;
-      l1O1Ol0O = (l1l1O100 == 0);
-      I000lO00 = (lO101111 == 0);
-      l1OllI0I = 0;
-      lO00I10I = 0;
-
-      O00OO1I0 = {I101O11O, {(exp_width){1'b1}}, {(sig_width){1'b0}}};
-      IIl1O10O = {1'b0, {(exp_width){1'b1}}, {(sig_width){1'b0}}};
-    end
-
-    //OO000O0O[7] = I000lO00 & ~l1O1Ol0O; 
-    OO000O0O[7] = (ieee_compliance) ?
-            I000lO00 & ~(l1O1Ol0O | O100O11l | I00lIO1l) :
-            I000lO00 & ~(l1O1Ol0O | O100O11l); 
-
-    if (O100O11l || l10OO1I0 || (I00lIO1l && lOI111I1) || (l1O1Ol0O && I000lO00))
-    begin
-      IOOIlI0I = IIl1O10O;
-      OO000O0O[2] = 1;
-    end
-    else if (I00lIO1l || I000lO00)
-    begin
-      IOOIlI0I = O00OO1I0;
-      OO000O0O[1] = 1;
-    end
-    else if (l1O1Ol0O || lOI111I1)
-    begin
-      OO000O0O[0] = 1;
-      IOOIlI0I = 0;
-      IOOIlI0I[(exp_width + sig_width)] = I101O11O;
-    end
-  
-    else
-    begin
-      if (ieee_compliance) 
-      begin
-
-        if (l1OllI0I) 
-        begin
-          OlOO00lO = {1'b0, a[(sig_width - 1):0]};
-
-          while(OlOO00lO[sig_width] != 1)
-          begin
-            OlOO00lO = OlOO00lO << 1;
-            O00O1Ol1 = O00O1Ol1 + 1;
-          end
-        end 
-        else
-        begin
-          OlOO00lO = {1'b1, a[(sig_width - 1):0]};
-        end
-
-        if (lO00I10I) 
-        begin
-          OOIl0010 = {1'b0, b[(sig_width - 1):0]};
-          while(OOIl0010[sig_width] != 1)
-          begin
-            OOIl0010 = OOIl0010 << 1;
-            II01O1O0 = II01O1O0 + 1;
-          end
-        end 
-        else
-        begin
-          OOIl0010 = {1'b1, b[(sig_width - 1):0]};
-        end
-      end
-      else
-      begin
-        OlOO00lO = {1'b1, a[(sig_width - 1):0]};
-        OOIl0010 = {1'b1, b[(sig_width - 1):0]};
-      end
-
-      // XXX: berkin
-      /* verilator lint_off WIDTH */
-
-      I010IlI0 = (OlOO00lO == OOIl0010);
-      Ol01O010 = (OOIl0010[sig_width - 1:0] == 0);
-      l0III011 = OlOO00lO;
-      OO0lIO1O = (ieee_compliance) ? OOIl0010 : {1'b1, l000I1O0};
-      II0IIO1O = (faithful_round) ? OO0lIO1O : {OO0lIO1O, 1'b0};
-      O1lO00O0 = (sig_width >= 9) ? II0IIO1O[sig_width - 1:((sig_width >= 9) ? sig_width - 9 : 0)] : {II0IIO1O[sig_width - 1:0], {(((sig_width >= 9) ? 1 : 9 - sig_width)){1'b0}}};
-      l110l11I = {1'b1, O1lO00O0[8:0]};
-      I0I0Il0O = {1'b1, 18'b0} / (l110l11I + 1);
-      IO00O1O1 = I0I0Il0O * l0III011;
-      IOOlIOOO = IO00O1O1[sig_width + 9];
-      OOI10OIO = (IOOlIOOO) ? IO00O1O1[sig_width + 9:sig_width + 1] : IO00O1O1[sig_width + 8:sig_width];
-      l0IO1lOO = II0IIO1O * I0I0Il0O;
-      OO0OO1I0 = ~l0IO1lOO[sig_width + 1:0];
-      O00OI010 = IO00O1O1[((sig_width <= 3) ? 0 : sig_width + 9):((sig_width <= 3) ? 0 : 13)] * OO0OO1I0[((sig_width <= 3) ? 0 : sig_width + 1):((sig_width <= 3) ? 0 : 5)];
-      IOIlOO00 = IO00O1O1[sig_width + 9:6];
-      O0O0IIII = {6'b0, O00OI010[2 * (sig_width - 3) - 1:2 * (sig_width - 3) - 1 - sig_width + 5 - 1]};
-      II11llO0 = IOIlOO00 + O0O0IIII;
-      l0101100 = II11llO0[sig_width + 3];
-      l0I1OOll = (sig_width <= 14) ? ((l0101100) ? II11llO0 : {II11llO0[sig_width + 2:0], 1'b0}) : II11llO0;
-      OIlI10I1 = (sig_width >= 11) ? OO0OO1I0[((sig_width >= 11) ? sig_width + 1 : 0):((sig_width >= 11) ? 12 : 0)] * OO0OO1I0[((sig_width >= 11) ? sig_width + 1 : 0):((sig_width >= 11) ? 12 : 0)] : 0;
-      Ol1O10O0 = (sig_width >= 11) ? OIlI10I1[((sig_width >= 11) ? 2 * sig_width - 21 : 0):((sig_width >= 11) ? sig_width - 10 : 0)] : 0;
-      O1l11OIO = (sig_width >= 11) ? l0I1OOll[((sig_width >= 11) ? sig_width + 3 : 0):((sig_width >= 11) ? 14 : 0)] * Ol1O10O0 : 0;
-      Il101Il1 = l0I1OOll + O1l11OIO[((sig_width >= 11) ? 2 * sig_width - 21 : 0):((sig_width >= 11) ? sig_width - 10 : 0)];
-      IOll10OO = Il101Il1[sig_width + 3];
-      O0l0O011 = (sig_width <= 30) ? ((IOll10OO) ? Il101Il1 : {Il101Il1[sig_width + 2:0], 1'b0}) : Il101Il1;
-      OOO01OO1 = (sig_width >= 25) ? Ol1O10O0[((sig_width >= 25) ? sig_width - 11 : 0):((sig_width >= 25) ? 13 : 0)] : 0;
-      O0O1011O = OOO01OO1 * OOO01OO1;
-      llOO0II1 = (sig_width >= 25) ? O0l0O011[((sig_width >= 25) ? sig_width + 3 : 0):((sig_width >= 25) ? 27 : 0)] * O0O1011O[((sig_width >= 25) ? 2 * sig_width - 47 : 0):((sig_width >= 25) ? sig_width - 23 : 0)] : 0;
-      O010I0IO = (sig_width >= 25) ? llOO0II1[((sig_width >= 25) ? 2 * sig_width - 47 : 0):((sig_width >= 25) ? sig_width - 22 : 0)] : 0;
-      OOOl110I = O0l0O011 + O010I0IO;
-      O00O00O1 = OOOl110I[sig_width + 3];
-      lI100I0I = ((O00O00O1) ? OOOl110I : {OOOl110I[sig_width + 2:0], 1'b0});
-      I10l01Il = (sig_width == 8) ? OOI10OIO + 1 : 
-               (sig_width < 8)  ? OOI10OIO + {1'b1, {(((sig_width >= 8) ? 1 : ((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1)){1'b0}}} : 
-                                  0;
-      O1O0011O = l0I1OOll + 4'b1000;
-      O1O1O01l = O0l0O011 + 4'b1000;
-      l0I1OI0l = lI100I0I + 4'b1000;
-      IIOI0lOO = (sig_width == 8)  ? OOI10OIO[8:0] : 
-                   (OOI10OIO[((sig_width >= 8) ? 0 : 8 - sig_width - 1)]) ? I10l01Il[8:((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1] : 
-                                       OOI10OIO[8:((sig_width >= 8) ? 0 : 8 - sig_width - 1) + 1];
-      O11OOOOl = (l0I1OOll[2]) ? O1O0011O[sig_width + 3:3] : l0I1OOll[sig_width + 3:3];
-      OO1110O0 = (O0l0O011[2]) ? O1O1O01l[sig_width + 3:3] : O0l0O011[sig_width + 3:3];
-      I01II0I0 = (lI100I0I[2]) ? l0I1OI0l[sig_width + 3:3] : lI100I0I[sig_width + 3:3];
-      IOIOI010 = (sig_width <= 8) ? IIOI0lOO : (sig_width <= 14) ? O11OOOOl : (sig_width <= 30) ? OO1110O0 : I01II0I0;
-      I11OIl0O = (faithful_round) ? (IOIOI010 == 0) : 0;
-      IOO101lO = (sig_width <= 8) ? IOOlIOOO: (sig_width <= 14) ? l0101100 : (sig_width <= 30) ? IOll10OO : O00O00O1;
-      OlIlOOIO = ~I010IlI0 & (l000I1O0 != 0);
-
-      IOIlII10 = {OlOO00lO,{(sig_width + 2){1'b0}}} / OOIl0010;
-      O10110O1 = (faithful_round) ? OlIlOOIO : {OlOO00lO,{(sig_width + 2){1'b0}}} % OOIl0010;
-
-      lI00O00I = (l1l1O100 - O00O1Ol1 + l1OllI0I) - (lO101111 - II01O1O0 + lO00I10I) + ((1 << (exp_width-1)) - 1);
-      O10101O1 = lI00O00I-1;
-
-      l11Illl0 = (faithful_round) ?
-                   ((Ol01O010 & ~ieee_compliance) ? l0III011 : IOIOI010) :
-                   ((~IOIlII10[(sig_width + 2)]) ? IOIlII10[(sig_width + 2) - 1:1] : IOIlII10[(sig_width + 2):2]);
-      lO011100 = ~IOIlII10[(sig_width + 2)] ? IOIlII10[1:0] : IOIlII10[2:1];
-      IO10IOO1 = ~IOIlII10[(sig_width + 2)] ? O10101O1 : lI00O00I;
-      IIIl11O1 = ((IO10IOO1 <= 0) | (IO10IOO1[exp_width + 1] == 1));
-      O011IOO0 = (faithful_round) ? 
-              ((Ol01O010 | I010IlI0) & ~IIIl11O1 ? 0 : 1) :
-              ((O10110O1===0)?1'b0:1'b1); 
-
-
-      if (ieee_compliance) begin
-        if ((IO10IOO1 <= 0) | (IO10IOO1[exp_width + 1] == 1)) begin
-
-          OIIO0OOl = 1 - IO10IOO1;
-        
-          {l11Illl0, I0OI1lO0} = {l11Illl0, {(sig_width + 1){1'b0}}} >> OIIO0OOl;
-
-          if (OIIO0OOl > sig_width + 1) begin
-            O011IOO0 = 1;
-          end
-
-          lO011100[1] = l11Illl0[0];
-          lO011100[0] = I0OI1lO0[sig_width];
-
-          if (I0OI1lO0[sig_width - 1:0] != 0) begin
-            O011IOO0 = 1;
-          end
-        end
-      end
-
-      I11IO1I1 = OIIlOlO1(rnd, I101O11O, lO011100[1], lO011100[0], O011IOO0);
-   
-      lO001Ol0 = (faithful_round) ? l11Illl0 :
-                    (I11IO1I1[0] === 1)? (l11Illl0+1):l11Illl0;
-
-      if ((IO10IOO1 >= ((((1 << (exp_width-1)) - 1) * 2) + 1)) & (IO10IOO1[exp_width+1] === 1'b0))
-      begin
-        OO000O0O[4] = 1;
-        OO000O0O[5] = 1;
-        if(I11IO1I1[2] === 1)
-        begin
-          IOOl0lII = O00OO1I0[sig_width:0];
-          lO1O0OI1 = ((((1 << (exp_width-1)) - 1) * 2) + 1);
-          OO000O0O[1] = 1;
-        end
-        else
-        begin
-          IOOl0lII = -1;
-          lO1O0OI1 = ((((1 << (exp_width-1)) - 1) * 2) + 1) - 1;
-        end
-      end
-  
-      else if ((IO10IOO1 <= 0) | (IO10IOO1[exp_width+1] === 1'b1)) begin
-        OO000O0O[3] = 1;
-
-        if (ieee_compliance == 0) begin
-          OO000O0O[5] = 1;
-
-          if(I11IO1I1[3] === 1) begin
-            IOOl0lII = 0;
-            lO1O0OI1 = 0 + 1;
-          end
-          else begin
-            IOOl0lII = 0;
-            lO1O0OI1 = 0;
-            OO000O0O[0] = 1;
-          end
-        end
-        else begin
-          IOOl0lII = lO001Ol0;
-
-          lO1O0OI1 = lO001Ol0[sig_width];
-
-        end
-      end
-      else begin
-        IOOl0lII = (I010IlI0 & faithful_round) ? 0 : lO001Ol0;
-        lO1O0OI1 = IO10IOO1;
-      end
-
-      if ((IOOl0lII[sig_width - 1:0] == 0) & (lO1O0OI1[exp_width - 1:0] == 0)) begin
-        OO000O0O[0] = 1;
-      end
-  
-      OO000O0O[5] = OO000O0O[5] | I11IO1I1[1];
-   
-      IOOIlI0I = {I101O11O,lO1O0OI1[exp_width-1:0],IOOl0lII[sig_width-1:0]};
     end
   end
-   
-  assign status = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bx} : OO000O0O;
-  assign z = ((^(a ^ a) !== 1'b0) || (^(b ^ b) !== 1'b0) || (^(rnd ^ rnd) !== 1'b0)) ? {8'bx} : IOOIlI0I;
 
-  // synopsys translate_on
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def throttle_streams():
+  //
+  //       for i in xrange( num_ports ):
+  //         s.a_val[i].value = s.p_val[i] & ~s.throttles[i]
+  //         s.p_rdy[i].value = s.a_rdy[i] & ~s.throttles[i]
 
-endmodule
-  
-  
-  
+  // logic for throttle_streams()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      a_val[i] = (p_val[i]&~throttles[i]);
+      p_rdy[i] = (a_rdy[i]&~throttles[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def gen_tokens():
+  //
+  //       s.tokens.value = 0
+  //       for i in xrange( num_ports ):
+  //         s.tokens[i].value = s.p_val[i] & s.a_rdy[i] & ~s.throttles[i]
+
+  // logic for gen_tokens()
+  always @ (*) begin
+    tokens = 0;
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      tokens[i] = ((p_val[i]&a_rdy[i])&~throttles[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def update_credit():
+  //
+  //       # Gather combinational and registered signals
+  //
+  //       for i in xrange( num_ports ):
+  //         s.r_credits[i].value = s.credits[i]
+  //         s.n_credits[i].value = s.credits[i]
+  //
+  //       # Initialize updates to zero
+  //
+  //       for i in xrange( num_ports ):
+  //         s.c_updates[i].value = 0
+  //
+  //       s.update.rdy.value = 1
+  //
+  //       # If we have an update, count the update in!
+  //
+  //       if s.update.val:
+  //
+  //         # Get all updates
+  //         for i in xrange( num_ports ):
+  //           s.c_updates[i].value = s.s_updates[i]
+  //
+  //       # Update the credits
+  //
+  //       for i in xrange( num_ports ):
+  //         # Consider the update
+  //         s.n_credits[i].value = s.r_credits[i] + s.c_updates[i]
+  //
+  //         # Deduct any consumed tokens
+  //         if s.tokens[i]:
+  //           s.n_credits[i].value = s.n_credits[i] - s.tokens[i]
+  //
+  //       # If reset, ignore all previous work
+  //
+  //       if s.reset:
+  //
+  //         # Avoid dropping update messages
+  //         s.update.rdy.value = 0
+  //
+  //         # Reset credits
+  //         for i in xrange( num_ports ):
+  //           s.n_credits[i].value = max_credit
+
+  // logic for update_credit()
+  always @ (*) begin
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      r_credits[i] = credits[i];
+      n_credits[i] = credits[i];
+    end
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      c_updates[i] = 0;
+    end
+    update_rdy = 1;
+    if (update_val) begin
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        c_updates[i] = s_updates[i];
+      end
+    end
+    else begin
+    end
+    for (i=0; i < num_ports; i=i+1)
+    begin
+      n_credits[i] = (r_credits[i]+c_updates[i]);
+      if (tokens[i]) begin
+        n_credits[i] = (n_credits[i]-tokens[i]);
+      end
+      else begin
+      end
+    end
+    if (reset) begin
+      update_rdy = 0;
+      for (i=0; i < num_ports; i=i+1)
+      begin
+        n_credits[i] = max_credit;
+      end
+    end
+    else begin
+    end
+  end
+
+
+endmodule // FlowControlIn_0x67f060f464276bb4
+`default_nettype wire
+
