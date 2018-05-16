@@ -2139,7 +2139,6 @@ module NormalQueueCtrl_0x7e615dc0798cc6a5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -5266,7 +5265,7 @@ module Chansey
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$000
+  BloomFilterXcel_0x38354dc9b9f8ec7d xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -5294,7 +5293,7 @@ module Chansey
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$001
+  BloomFilterXcel_0x38354dc9b9f8ec7d xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -5322,7 +5321,7 @@ module Chansey
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$002
+  BloomFilterXcel_0x38354dc9b9f8ec7d xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -5350,7 +5349,7 @@ module Chansey
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x6330a5c196d8525f xcel$003
+  BloomFilterXcel_0x38354dc9b9f8ec7d xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5775,8 +5774,8 @@ endmodule // Chansey
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f07452db9d0>
-// req: <pymtl.model.signals.InPort object at 0x7f07452db690>
+// resp: <pymtl.model.signals.OutPort object at 0x7fa33d9c59d0>
+// req: <pymtl.model.signals.InPort object at 0x7fa33d9c5690>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -5903,8 +5902,13 @@ module Router_0x52846acbae83db71
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   2:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -5958,12 +5962,17 @@ module Router_0x52846acbae83db71
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(40)-1:37]];
+    msg_opaque = in__msg[(40)-1:37];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -7037,7 +7046,6 @@ module BlockingCacheCtrlPRTL_0x6ca49c37af2f92fc
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
@@ -11297,8 +11305,13 @@ module Router_0x6c4e178e4038f207
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   7:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -11352,12 +11365,17 @@ module Router_0x6c4e178e4038f207
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(44)-1:36]];
+    msg_opaque = in__msg[(44)-1:36];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -12043,7 +12061,7 @@ module DW_fp_flt2i_0x3cd77562127ffa78
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_flt2i.v
 
   DW_fp_flt2i#(
     .ieee_compliance ( 1 )
@@ -12203,7 +12221,6 @@ module NormalQueueCtrl_0x7a42a348c9205b5
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -12675,7 +12692,7 @@ module DW_fp_addsub_0x3cb0331b99cfb5df
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_addsub.v
 
   DW_fp_addsub#(
     .ieee_compliance ( 1 )
@@ -12717,7 +12734,7 @@ module DW_fp_cmp_0x15bdbff0d8f765a1
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_cmp.v
 
   DW_fp_cmp#(
     .ieee_compliance ( 1 )
@@ -12758,7 +12775,7 @@ module DW_fp_mult_0x1eaed5d9d53885e0
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_mult.v
 
   DW_fp_mult#(
     .ieee_compliance ( 1 )
@@ -12791,7 +12808,7 @@ module DW_fp_i2flt_0x215a2bada2e33c4b
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_i2flt.v
 
   DW_fp_i2flt#(
 
@@ -12988,7 +13005,7 @@ module DW_fp_div_0x124edb2c88d843aa
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_div.v
 
   DW_fp_div#(
     .faithful_round ( 0 ),
@@ -13385,8 +13402,13 @@ module Router_0x4c184f1ee5bd8508
   input  wire [   0:0] reset
 );
 
+  // register declarations
+  reg    [   1:0] msg_dest;
+  reg    [   2:0] msg_opaque;
+
   // localparam declarations
   localparam nports = 4;
+  localparam nports_lg = 2;
 
   // loop variable declarations
   integer i;
@@ -13440,12 +13462,17 @@ module Router_0x4c184f1ee5bd8508
   //
   // @s.combinational
   // def comb_in_rdy():
+  //       s.msg_opaque.value = s.in_.msg.opaque
+  //       s.msg_dest  .value = s.msg_opaque[0:nports_lg]
+  //
   //       # in_rdy is the rdy status of the opaque-th output
-  //       s.in_.rdy.value = s.out[ s.in_.msg.opaque ].rdy
+  //       s.in_.rdy.value = s.out[ s.msg_dest ].rdy  & s.in_.val
 
   // logic for comb_in_rdy()
   always @ (*) begin
-    in__rdy = out_rdy[in__msg[(35)-1:32]];
+    msg_opaque = in__msg[(35)-1:32];
+    msg_dest = msg_opaque[(nports_lg)-1:0];
+    in__rdy = (out_rdy[msg_dest]&in__val);
   end
 
 
@@ -23312,7 +23339,6 @@ module BlockingCacheCtrlPRTL_0x2673bbb0e0f7d38
   //         s.state_reg.next = s.state_next
 
   // logic for reg_state()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       state_reg <= STATE_IDLE;
@@ -26315,8 +26341,8 @@ endmodule // EqComparator_0x20454677a5a72bab
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f0744d37310>
-// req: <pymtl.model.signals.InPort object at 0x7f0744dafd10>
+// resp: <pymtl.model.signals.OutPort object at 0x7fa33d4214d0>
+// req: <pymtl.model.signals.InPort object at 0x7fa33d418f10>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -27416,16 +27442,16 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x6330a5c196d8525f
+// BloomFilterXcel_0x38354dc9b9f8ec7d
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f074585c750>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fa33df37590>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x6330a5c196d8525f
+module BloomFilterXcel_0x38354dc9b9f8ec7d
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -27868,7 +27894,7 @@ module BloomFilterXcel_0x6330a5c196d8525f
   end
 
 
-endmodule // BloomFilterXcel_0x6330a5c196d8525f
+endmodule // BloomFilterXcel_0x38354dc9b9f8ec7d
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -28060,7 +28086,6 @@ module NormalQueueCtrl_0x4c319dcf628a6cd4
   //       else:                       s.full.next = s.full
 
   // logic for seq()
-  // synopsys sync_set_reset "reset"
   always @ (posedge clk) begin
     if (reset) begin
       deq_ptr <= 0;
@@ -29287,8 +29312,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f07457f8450>
-// req: <pymtl.model.signals.InPort object at 0x7f07457f8110>
+// resp: <pymtl.model.signals.OutPort object at 0x7fa33ded5590>
+// req: <pymtl.model.signals.InPort object at 0x7fa33ded5250>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
