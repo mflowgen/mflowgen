@@ -124,3 +124,102 @@ def gen_random_test():
   asm_code.append( gen_word_data( original_data ) )
   return asm_code
 
+#-------------------------------------------------------------------------
+# gen_basic_mcore_test
+#-------------------------------------------------------------------------
+
+def gen_basic_mcore_test():
+  return """
+    csrr    x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr    x2, mngr2proc < {0x0fff0f00,0xff00f0ff,0x00f0f0f0,0xffffffff}
+
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    amoxor  x3, x1, x2
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    lw      x4, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+
+    csrw    proc2mngr, x3 > {0xff00ff00,0x00ff00ff,0xfff00fff,0x00fff00f}
+    csrw    proc2mngr, x4 > {0xf0fff000,0xfffff000,0xff00ff0f,0xff000ff0}
+
+    .data
+    .word 0xff00ff00
+    .word 0x00ff00ff
+    .word 0xfff00fff
+    .word 0x00fff00f
+  """
+
+#-------------------------------------------------------------------------
+# gen_random_mcore_test
+#-------------------------------------------------------------------------
+
+def gen_random_mcore_test():
+
+  # Generate some random data
+
+  data = []
+  for i in xrange(128):
+    data.append( random.randint(0,0xffffffff) )
+
+  # AMOs modify the data, so keep a copy of the original data to dump later
+
+  original_data = list(data)
+
+  # Generate random accesses to this data
+
+  asm_code = []
+
+  # randomly shuffled list of indices
+  # core i: index_list [ i*32 .. (i+1) * 32 - 1 ]
+
+  index_list = [ i for i in range(128) ]
+  random.shuffle( index_list )
+
+  for i in xrange(50):
+
+    addr        = [0] * 4
+    b           = [0] * 4
+    result_pre  = [0] * 4
+    result_post = [0] * 4
+
+    for j in xrange(4):
+      a               = index_list[ random.randint( j*32, (j+1)*32-1 ) ]
+      addr[j]         = 0x2000 + 4*a
+      b[j]            = random.randint(0,127)
+      result_pre[j]   = data[a]
+      result_post[j]  = b[j] ^ data[a]
+      data[a]         = result_post[j]
+
+    asm_code.append( \
+        gen_amo_value_test( "amoxor",
+                            "{" + ','.join(str(e) for e in addr)        + "}",    # addr
+                            "{" + ','.join(str(e) for e in b)           + "}",    # b
+                            "{" + ','.join(str(e) for e in result_pre)  + "}",    # result_pre
+                            "{" + ','.join(str(e) for e in result_post) + "}",    # result_post
+                          ) )
+
+  # Add the data to the end of the assembly code
+
+  asm_code.append( gen_word_data( original_data ) )
+  return asm_code

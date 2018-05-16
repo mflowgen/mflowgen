@@ -205,18 +205,37 @@ def test_sw( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amoadd
 
+#@pytest.mark.parametrize(
+#      "name, test,                              src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amoadd.gen_basic_test    , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoadd.gen_value_test    , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoadd.gen_random_test   , 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amoadd( name, test, src_delay, sink_delay, mem_stall_prob,
+#                 mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amoadd.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoadd.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoadd.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoadd.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoadd.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amoadd( name, test, src_delay, sink_delay, mem_stall_prob,
-                 mem_latency, dump_vcd, test_verilog ):
+def test_amoadd_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                       mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -231,18 +250,37 @@ def test_amoadd( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amoand
 
+#@pytest.mark.parametrize(
+#      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amoand.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoand.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoand.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amoand( name, test, src_delay, sink_delay, mem_stall_prob,
+#                 mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amoand.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoand.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoand.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoand.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoand.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amoand( name, test, src_delay, sink_delay, mem_stall_prob,
-                 mem_latency, dump_vcd, test_verilog ):
+def test_amoand_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                       mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -257,18 +295,37 @@ def test_amoand( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amoor
 
+#@pytest.mark.parametrize(
+#      "name, test,                          src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amoor.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoor.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoor.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amoor( name, test, src_delay, sink_delay, mem_stall_prob,
+#                mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                          src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amoor.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoor.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoor.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoor.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoor.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amoor( name, test, src_delay, sink_delay, mem_stall_prob,
-                mem_latency, dump_vcd, test_verilog ):
+def test_amoor_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                      mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -283,18 +340,37 @@ def test_amoor( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amoswap
 
+#@pytest.mark.parametrize(
+#      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amoswap.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoswap.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoswap.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amoswap( name, test, src_delay, sink_delay, mem_stall_prob,
+#                  mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amoswap.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoswap.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoswap.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoswap.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoswap.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amoswap( name, test, src_delay, sink_delay, mem_stall_prob,
-                  mem_latency, dump_vcd, test_verilog ):
+def test_amoswap_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                      mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -309,18 +385,37 @@ def test_amoswap( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amomin
 
+#@pytest.mark.parametrize(
+#      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amomin.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomin.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomin.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amomin( name, test, src_delay, sink_delay, mem_stall_prob,
+#                 mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amomin.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomin.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomin.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomin.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomin.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amomin( name, test, src_delay, sink_delay, mem_stall_prob,
-                 mem_latency, dump_vcd, test_verilog ):
+def test_amomin_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                      mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -328,25 +423,43 @@ def test_amomin( name, test, src_delay, sink_delay, mem_stall_prob,
   run_test( test_vector, dump_vcd, test_verilog,
             src_delay      = src_delay     , sink_delay  = sink_delay ,
             mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
-
 #-------------------------------------------------------------------------
 # amominu
 #-------------------------------------------------------------------------
 
 from proc.test import inst_amominu
 
+#@pytest.mark.parametrize(
+#      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amominu.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amominu.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amominu.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amominu( name, test, src_delay, sink_delay, mem_stall_prob,
+#                  mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amominu.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amominu.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amominu.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amominu.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amominu.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amominu( name, test, src_delay, sink_delay, mem_stall_prob,
-                  mem_latency, dump_vcd, test_verilog ):
+def test_amominu_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                      mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -361,18 +474,37 @@ def test_amominu( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amomax
 
+#@pytest.mark.parametrize(
+#      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amomax.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomax.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomax.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amomax( name, test, src_delay, sink_delay, mem_stall_prob,
+#                 mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amomax.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomax.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomax.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomax.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomax.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amomax( name, test, src_delay, sink_delay, mem_stall_prob,
-                 mem_latency, dump_vcd, test_verilog ):
+def test_amomax_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                       mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -387,18 +519,37 @@ def test_amomax( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amomaxu
 
+#@pytest.mark.parametrize(
+#      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amomaxu.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomaxu.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amomaxu.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amomaxu( name, test, src_delay, sink_delay, mem_stall_prob,
+#                  mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                            src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amomaxu.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomaxu.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amomaxu.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomaxu.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amomaxu.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amomaxu( name, test, src_delay, sink_delay, mem_stall_prob,
-                  mem_latency, dump_vcd, test_verilog ):
+def test_amomaxu_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                        mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]
@@ -413,18 +564,37 @@ def test_amomaxu( name, test, src_delay, sink_delay, mem_stall_prob,
 
 from proc.test import inst_amoxor
 
+#@pytest.mark.parametrize(
+#      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+#  **synthesize_testtable(
+#    [
+#      asm_test( inst_amoxor.gen_basic_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoxor.gen_value_test , 0        , 0         , 0             , 0           ) ,
+#      asm_test( inst_amoxor.gen_random_test, 0        , 0         , 0             , 0           ) ,
+#    ]
+#  )
+#)
+#def test_amoxor( name, test, src_delay, sink_delay, mem_stall_prob,
+#                 mem_latency, dump_vcd, test_verilog ):
+#
+#  #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
+#  test_vector = [ "asm",         test,          [],      [],          [] ]
+#
+#  run_test( test_vector, dump_vcd, test_verilog,
+#            src_delay      = src_delay     , sink_delay  = sink_delay ,
+#            mem_stall_prob = mem_stall_prob, mem_latency =mem_latency )
+
 @pytest.mark.parametrize(
-      "name, test,                           src_delay, sink_delay, mem_stall_prob, mem_latency",
+      "name, test,                                  src_delay, sink_delay, mem_stall_prob, mem_latency",
   **synthesize_testtable(
     [
-      asm_test( inst_amoxor.gen_basic_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoxor.gen_value_test , 0        , 0         , 0             , 0           ) ,
-      asm_test( inst_amoxor.gen_random_test, 0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoxor.gen_basic_mcore_test ,  0        , 0         , 0             , 0           ) ,
+      asm_test( inst_amoxor.gen_random_mcore_test , 0        , 0         , 0             , 0           ) ,
     ]
   )
 )
-def test_amoxor( name, test, src_delay, sink_delay, mem_stall_prob,
-                 mem_latency, dump_vcd, test_verilog ):
+def test_amoxor_mcore( name, test, src_delay, sink_delay, mem_stall_prob,
+                        mem_latency, dump_vcd, test_verilog ):
 
   #               ctrlreg_msg    asm_testcase   mdu_msgs icache_msgs  dcache
   test_vector = [ "asm",         test,          [],      [],          [] ]

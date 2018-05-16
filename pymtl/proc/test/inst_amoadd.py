@@ -47,6 +47,7 @@ def gen_basic_test():
     .data
     .word 0x00000002
   """
+
 #-------------------------------------------------------------------------
 # gen_value_test
 #-------------------------------------------------------------------------
@@ -56,7 +57,6 @@ def gen_value_test():
 
     # Test with adding 1 repeatedly
 
-    gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbeef, 0xdeadbef0 ),
     gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef0, 0xdeadbef1 ),
     gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef1, 0xdeadbef2 ),
     gen_amo_value_test( "amoadd", 0x00002000, 0x00000001, 0xdeadbef2, 0xdeadbef3 ),
@@ -158,6 +158,106 @@ def gen_random_test():
 
     asm_code.append( \
         gen_amo_value_test( "amoadd", addr, b, result_pre, result_post ) )
+
+  # Add the data to the end of the assembly code
+
+  asm_code.append( gen_word_data( original_data ) )
+  return asm_code
+
+#-------------------------------------------------------------------------
+# gen_basic_mcore_test
+#-------------------------------------------------------------------------
+
+def gen_basic_mcore_test():
+  return """
+    csrr    x1, mngr2proc < {0x00002000,0x00002004,0x00002008,0x0000200c}
+    csrr    x2, mngr2proc < {0x00000001,0x00000002,0x00000003,0x00000004}
+
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    amoadd  x3, x1, x2
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    lw      x4, 0(x1)
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+
+    csrw    proc2mngr, x3 > {0x01020304,0x02030405,0x03040506,0x04050607}
+    csrw    proc2mngr, x4 > {0x01020305,0x02030407,0x03040509,0x0405060b}
+
+    .data
+    .word 0x01020304
+    .word 0x02030405
+    .word 0x03040506
+    .word 0x04050607
+  """
+
+#-------------------------------------------------------------------------
+# gen_random_mcore_test
+#-------------------------------------------------------------------------
+
+def gen_random_mcore_test():
+
+  # Generate some random data
+
+  data = []
+  for i in xrange(128):
+    data.append( random.randint(0,0xffffffff) )
+
+  # AMOs modify the data, so keep a copy of the original data to dump later
+
+  original_data = list(data)
+
+  # Generate random accesses to this data
+
+  asm_code = []
+
+  # randomly shuffled list of indices
+  # core i: index_list [ i*32 .. (i+1) * 32 - 1 ]
+
+  index_list = [ i for i in range(128) ]
+  random.shuffle( index_list )
+
+  for i in xrange(50):
+
+    addr        = [0] * 4
+    b           = [0] * 4
+    result_pre  = [0] * 4
+    result_post = [0] * 4
+
+    for j in xrange(4):
+      a               = index_list[ random.randint( j*32, (j+1)*32-1 ) ]
+      addr[j]         = 0x2000 + 4*a
+      b[j]            = random.randint(0,127)
+      result_pre[j]   = data[a]
+      result_post[j]  = data[a] + b[j] # add
+      data[a]         = result_post[j]
+
+    asm_code.append( \
+        gen_amo_value_test( "amoadd",
+                            "{" + ','.join(str(e) for e in addr)        + "}",    # addr
+                            "{" + ','.join(str(e) for e in b)           + "}",    # b
+                            "{" + ','.join(str(e) for e in result_pre)  + "}",    # result_pre
+                            "{" + ','.join(str(e) for e in result_post) + "}",    # result_post
+                          ) )
 
   # Add the data to the end of the assembly code
 
