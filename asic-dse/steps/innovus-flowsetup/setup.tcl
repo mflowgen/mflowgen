@@ -438,6 +438,11 @@ set vars(place,time_design,skip)       true
 set vars(cts,time_design,skip)         true
 set vars(route,time_design,skip)       true
 
+# More time_design options
+
+set vars(time_design_options,setup)    -expandedViews
+set vars(time_design_options,hold)     -expandedViews
+
 # Flow efforts
 
 set vars(flow_effort)                  standard
