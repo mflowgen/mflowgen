@@ -86,8 +86,16 @@ def run_test( test, dump_vcd, test_verilog,
 
         else:
           base_addr = section.addr
-          for j in xrange(len(section.data)):
-            f.write( "  load_mem( %d, 8'h%s );\n" % (j + base_addr, Bits(8,section.data[j])) );
+          length    = len( section.data )
+          for j in xrange( length ):
+            addr = base_addr + j
+            f.write( "  load_mem( %d, 8'h%s );\n" % (addr , Bits(8,section.data[j])) );
+
+          # Assuming all sections come in order, we dump 16 bytes of
+          # zeros to protect against x-prop
+          base_addr = section.addr + len( section.data )
+          for j in xrange( base_addr, base_addr + 64 ):
+            f.write( "  load_mem( %d, 8'h%s );\n" % (j , Bits(8, 0)) );
 
     if test[2]:
       # dump mdumsg
