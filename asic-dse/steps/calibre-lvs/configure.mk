@@ -130,6 +130,9 @@ extra_dependencies.calibre-lvs += $(calibre_lvs_logsfile)
 skipvpath.calibre-lvs = yes
 
 define commands.calibre-lvs
+	@echo "Layout    : $(calibre_lvs_gds)"
+	@echo "Schematic : $(calibre_lvs_v)"
+	@echo
 	@echo '================================================================================'
 	@echo 'Chip LVS (unsealed and unfilled)'
 	@echo '================================================================================'

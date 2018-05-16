@@ -130,6 +130,9 @@ extra_dependencies.calibre-lvs-sealed += $(calibre_lvs_sealed_logsfile)
 skipvpath.calibre-lvs-sealed = yes
 
 define commands.calibre-lvs-sealed
+	@echo "Layout    : $(calibre_lvs_sealed_gds)"
+	@echo "Schematic : $(calibre_lvs_sealed_v)"
+	@echo
 	@echo '================================================================================'
 	@echo 'Chip LVS (sealed and unfilled)'
 	@echo '================================================================================'
