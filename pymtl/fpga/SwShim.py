@@ -99,10 +99,6 @@ class SwShim( Model ):
     # Sim->DUT Asynch Output
 
     s.dut = dut_asynch
-    s.dut.vblackbox      = True
-    s.dut.vbb_modulename = s.dut.__class__.__name__
-    s.dut.vbb_no_reset   = True
-
 
     # VCD
 
@@ -111,8 +107,8 @@ class SwShim( Model ):
 
     # Translate Verilog if needed
 
-    #if translate:
-    #  s.dut = TranslationTool( s.dut, enable_blackbox = True, verilator_xinit=translate )
+    if translate:
+      s.dut = TranslationTool( s.dut, enable_blackbox = True, verilator_xinit=translate )
 
     s.connect( s.dut.in_.msg, s.in_valRdyToReqAck.out.msg )
     s.connect( s.dut.in_.req, s.in_valRdyToReqAck.out.req )
