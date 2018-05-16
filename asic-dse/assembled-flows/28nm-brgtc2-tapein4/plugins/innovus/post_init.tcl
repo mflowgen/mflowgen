@@ -41,8 +41,8 @@ group_path -name In2Reg  -from $inputs  -to $allregs
 group_path -name Reg2Out -from $allregs -to $outputs
 group_path -name In2Out  -from $inputs  -to $outputs
 
-group_path -name Reg2Reg     -from $regs    -to $regs
-group_path -name Reg2ClkGate -from $allregs -to $icgs
+group_path -name Reg2Reg -from $regs    -to $regs
+group_path -name Reg2CG  -from $allregs -to $icgs
 
 # Group paths to/from memories
 
