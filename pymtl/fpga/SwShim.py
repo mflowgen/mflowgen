@@ -4,12 +4,14 @@
 # Author: Taylor Pritchard (tjp79)
 #-------------------------------------------------------------------------------
 
-from pymtl      import *
-from pclib.ifcs import InValRdyBundle, OutValRdyBundle
-from pclib.rtl  import RegEn
+from pymtl       import *
+from pclib.ifcs  import InValRdyBundle, OutValRdyBundle
+from pclib.rtl   import RegEn
 
-from ifcs       import InReqAckBundle, OutReqAckBundle
-from adapters   import *
+from ifcs        import InReqAckBundle, OutReqAckBundle
+from adapters    import *
+
+from FlowControl import FlowControlIn, FlowControlOut
 
 class SwShim( Model ):
 
@@ -40,19 +42,45 @@ class SwShim( Model ):
       nbits = s.replicate_dut_port( name, obj, OutValRdyBundle )
       if( nbits > p_out_width ) : p_out_width = nbits
 
-    p_in_nports  = len( s.dut_in_msg )
-    p_out_nports = len( s.dut_out_msg )
+    # hawajkm: Adding one output port for credit flow control
+    p_in_nports  = len( s.dut_in_msg  )
+    p_out_nports = len( s.dut_out_msg ) + 1
 
     #-Structural Composition---------------------------------------------
+
+    # Flow Control
+
+    # hawajkm
+    # We include a simple flow control scheme where knowing how much entries each
+    # queue can store, we allow each input port to send only that amount. We wait
+    # for the flow control unit to acknowledge how many entries are there before
+    # we allow further messages to be sent. This is ultra conservative approach.
+    # However, it is a much needed enhancement.
+
+    s.tokens   = Wire( p_in_nports )
+    s.throttle = Wire( p_in_nports )
+    s.in_val   = Wire( p_in_nports )
+    s.in_rdy   = Wire( p_in_nports )
+
+    s.flow_control = m = FlowControlIn( p_in_nports, 16 )
 
     # Sim->DUT ValRdy Merge
 
     s.in_merge = m = ValRdyMerge( p_in_nports, p_in_width )
+
     for _ in range( p_in_nports ):
-      width = s.dut_in_msg[ _ ].nbits
-      s.connect( m.in_[ _ ].msg[ 0:width ], s.dut_in_msg[ _ ] )
-      s.connect( m.in_[ _ ].val, s.dut_in_val[ _ ] )
-      s.connect( m.in_[ _ ].rdy, s.dut_in_rdy[ _ ] )
+      bw = s.dut_in_msg[ _ ].nbits
+      s.connect( m.in_[ _ ].msg[0:bw], s.dut_in_msg[ _ ] )
+
+      # Connect ValRdy control signals to the control flow unit
+
+      s.connect( s.dut_in_val        [ _ ], s.flow_control.p_val[ _ ] )
+      s.connect( s.flow_control.a_rdy[ _ ], m.in_[ _ ].rdy             )
+
+      # Connect throttled ValRdy control signals to streams
+
+      s.connect( s.flow_control.a_val[ _ ], m.in_[ _ ].val            )
+      s.connect( s.dut_in_rdy        [ _ ], s.flow_control.p_rdy[ _ ] )
 
     # Sim->DUT ValRdy Serialize
 
@@ -110,10 +138,18 @@ class SwShim( Model ):
     # DUT output
 
     for _ in range( p_out_nports ):
-      width = s.dut_out_msg[ _ ].nbits
-      s.connect( m.out[ _ ].msg[ 0:width ], s.dut_out_msg[ _ ] )
-      s.connect( m.out[ _ ].val, s.dut_out_val[ _ ] )
-      s.connect( m.out[ _ ].rdy, s.dut_out_rdy[ _ ] )
+      if _ < p_out_nports - 1:
+        # Normal output
+        bw = s.dut_out_msg[ _ ].nbits
+        s.connect( m.out[ _ ].msg[0:bw], s.dut_out_msg[ _ ] )
+        s.connect( m.out[ _ ].val      , s.dut_out_val[ _ ] )
+        s.connect( m.out[ _ ].rdy      , s.dut_out_rdy[ _ ] )
+      else:
+        # Flow control
+        bw = s.flow_control.update.msg.nbits
+        s.connect( m.out[ _ ].msg[0:bw], s.flow_control.update.msg )
+        s.connect( m.out[ _ ].val      , s.flow_control.update.val )
+        s.connect( m.out[ _ ].rdy      , s.flow_control.update.rdy )
 
 
   #-DUT Replication------------------------------------------------------
