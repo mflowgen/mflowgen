@@ -22,6 +22,7 @@ steps = \
   innovus-route \
   innovus-postroute \
   innovus-signoff \
+  pt-signoff \
   calibre-seal \
   calibre-drc-sealed \
   calibre-fill \
@@ -61,6 +62,10 @@ dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
 dependencies.innovus-postroute   = innovus-flowsetup innovus-route
 dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
 dependencies.all                 = innovus-signoff
+
+# Signoff tools
+
+dependencies.pt-signoff          = innovus-signoff
 
 # Simulation targets are purposely kept independent so that we don't
 # accidentally re-trigger dc/innovus rebuilds when running simulation

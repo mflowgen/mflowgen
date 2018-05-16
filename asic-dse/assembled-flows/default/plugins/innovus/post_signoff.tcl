@@ -7,6 +7,15 @@
 
 write_sdf $vars(results_dir)/$vars(design).sdf
 
+# Write out updated SDC for timing signoff
+
+writeTimingCon $vars(results_dir)/$vars(design).pt.sdc
+
+# Remove Synopsys-incompatible SDC commands
+
+sed -i "s/^current_design/\#current_design/" $vars(results_dir)/$vars(design).pt.sdc
+sed -i "s/get_design.*$/current_design\]/" $vars(results_dir)/$vars(design).pt.sdc
+
 # Write netlist for LVS
 #
 # Exclude physical cells that have no devices in them (or else LVS will
