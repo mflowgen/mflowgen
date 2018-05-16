@@ -407,8 +407,8 @@ set vars(litho_driven_routing)         true
 
 # OCV (on-chip variation)
 
-set vars(enable_ocv)  pre_place
-set vars(enable_cppr) both
+set vars(enable_ocv)    pre_place
+set vars(enable_cppr)   both
 
 # Metal fill is performed using the Calibre fill utility
 # Disabling metal density check at signoff
@@ -428,8 +428,15 @@ set vars(local_cpus) 16
 #   and then fixing setup again, creating additional (unfixed) hold
 #   violations
 
-set vars(fix_hold)                       postcts
+set vars(fix_hold)                       true
 set vars(fix_hold_allow_tns_degradation) true
+set vars(fix_fanout_load)                true
+
+# Variables for skipping time_design
+
+set vars(place,time_design,skip)       true
+set vars(cts,time_design,skip)         true
+set vars(route,time_design,skip)       true
 
 # Flow efforts
 
@@ -449,7 +456,8 @@ set vars(signoff_extraction_effort)    high
 
 # Verbosity
 
-#set vars(verbose) false
+set vars(tags,verbose)                 true
+set vars(tags,verbosity_level)         high
 
 #-------------------------------------------------------------------------
 # Design-specific overrides
