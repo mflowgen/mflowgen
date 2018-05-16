@@ -27,7 +27,7 @@ class FlowControlOut( Model ):
     num_ports_lg  = clog2( num_ports      )
     update_msg_bw = max_credit_lg * num_ports
 
-    s.max_credit = max_credit
+    s.max_credit  = max_credit
 
     #------------------------------------------------
     # Keeping track of a dequeue
@@ -60,7 +60,7 @@ class FlowControlOut( Model ):
     #------------------------------------------------
 
     s.tokens      = Wire(   num_ports   )
-    s.all_credits = Wire( update_msg_bw )
+    s.vec_credits = Wire( update_msg_bw )
     s.send_update = Wire(       1       )
     s.trigger     = Wire(       1       )
 
@@ -79,6 +79,15 @@ class FlowControlOut( Model ):
     s.  trigger_cnt = Wire( num_ports_lg + max_credit_lg )
     s.c_trigger_cnt = Wire( num_ports_lg                 )
     s.n_trigger_cnt = Wire( num_ports_lg + max_credit_lg )
+
+    #------------------------------------------------
+    # Generate Bit-vector for concatenated credits
+    #------------------------------------------------
+
+    for i in xrange( num_ports ):
+      l = (i + 0) * max_credit_lg
+      h = (i + 1) * max_credit_lg
+      s.connect_wire( s.vec_credits[l:h], s.credits[i] )
 
     #------------------------------------------------
     # Generate Trigger
@@ -141,14 +150,9 @@ class FlowControlOut( Model ):
     @s.combinational
     def gen_update_msg():
 
-      # Iterate over all ports and gather all credits
-
-      for i in xrange( num_ports ):
-        s.all_credits[(i * max_credit_lg):((i + 1) * max_credit_lg)].value = s.credits[i]
-
       # Depending on the trigger
 
-      if   s.trigger: s.update.msg.value = s.all_credits
+      if   s.trigger: s.update.msg.value = s.vec_credits
       else          : s.update.msg.value = 0
 
     #------------------------------------------------
