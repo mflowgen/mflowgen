@@ -88,7 +88,11 @@ class Chansey( Model ):
 
     # These ports are for the ctrl register
 
-    s.debug = OutPort( 1 )
+    s.debug = OutPort(  1 )
+
+    # Misc. ports
+
+    s.misc  = OutPort( 16 )
 
     #---------------------------------------------------------------------
     # Components
@@ -157,8 +161,11 @@ class Chansey( Model ):
 
     # ctrlreg
 
-    s.connect( s.ctrlreg.req,  s.ctrlregreq )
-    s.connect( s.ctrlreg.resp, s.ctrlregresp )
+    s.connect( s.debug,        s.ctrlreg.debug )
+    s.connect( s.misc,         s.ctrlreg.misc  )
+
+    s.connect( s.ctrlreg.req,  s.ctrlregreq    )
+    s.connect( s.ctrlreg.resp, s.ctrlregresp   )
 
     # core id & mngr
 

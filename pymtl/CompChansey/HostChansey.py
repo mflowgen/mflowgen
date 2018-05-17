@@ -25,7 +25,8 @@ class HostChansey( Model ):
     s.in_ = InReqAckBundle ( asynch_bitwidth )
     s.out = OutReqAckBundle( asynch_bitwidth )
 
-#    s.debug = OutPort( 1 )
+    s.debug = OutPort(  1 )
+    s.misc  = OutPort( 16 )
 
     #-DUT Set Up---------------------------------------------------------
 
@@ -45,7 +46,8 @@ class HostChansey( Model ):
 
     # Additional port
 
-#    s.connect( s.dut.debug, s.debug )
+    s.connect( s.misc , s.dut.misc  )
+    s.connect( s.debug, s.dut.debug )
 
     # Connect DUT inputs
 
