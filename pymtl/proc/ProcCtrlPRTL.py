@@ -856,23 +856,24 @@ class ProcCtrlPRTL( Model ):
         s.stats_en_wen_X.next   = 0
       elif s.reg_en_X:
         s.val_X.next            = s.next_val_D
-        s.rf_wen_pending_X.next = s.rf_wen_pending_D
-        s.inst_type_X.next      = s.inst_type_decoder_D.out
-        s.alu_fn_X.next         = s.alu_fn_D
-        s.rf_waddr_X.next       = s.rf_waddr_D
-        s.proc2mngr_val_X.next  = s.proc2mngr_val_D
-        s.dmemreq_type_X.next   = s.dmemreq_type_D
-        s.dmemreq_len_X.next    = s.dmemreq_len_D
-        s.dm_resp_sel_X.next    = s.dm_resp_sel_D
-        s.wb_result_sel_X.next  = s.wb_result_sel_D
-        s.stats_en_wen_X.next   = s.stats_en_wen_D
-        s.br_type_X.next        = s.br_type_D
-        s.mdu_X.next            = s.mdu_D
-        s.fpu_X.next            = s.fpu_D
-        s.rd_fprf_X.next        = s.rd_fprf_D
-        s.ex_result_sel_X.next  = s.ex_result_sel_D
-        s.xcelreq_X.next        = s.xcelreq_D
-        s.xcelreq_type_X.next   = s.xcelreq_type_D
+        if s.next_val_D:
+          s.rf_wen_pending_X.next = s.rf_wen_pending_D
+          s.inst_type_X.next      = s.inst_type_decoder_D.out
+          s.alu_fn_X.next         = s.alu_fn_D
+          s.rf_waddr_X.next       = s.rf_waddr_D
+          s.proc2mngr_val_X.next  = s.proc2mngr_val_D
+          s.dmemreq_type_X.next   = s.dmemreq_type_D
+          s.dmemreq_len_X.next    = s.dmemreq_len_D
+          s.dm_resp_sel_X.next    = s.dm_resp_sel_D
+          s.wb_result_sel_X.next  = s.wb_result_sel_D
+          s.stats_en_wen_X.next   = s.stats_en_wen_D
+          s.br_type_X.next        = s.br_type_D
+          s.mdu_X.next            = s.mdu_D
+          s.fpu_X.next            = s.fpu_D
+          s.rd_fprf_X.next        = s.rd_fprf_D
+          s.ex_result_sel_X.next  = s.ex_result_sel_D
+          s.xcelreq_X.next        = s.xcelreq_D
+          s.xcelreq_type_X.next   = s.xcelreq_type_D
 
     # Branch logic
 
@@ -985,18 +986,19 @@ class ProcCtrlPRTL( Model ):
         s.stats_en_wen_M.next   = 0
       elif s.reg_en_M:
         s.val_M.next            = s.next_val_X
-        s.rf_wen_pending_M.next = s.rf_wen_pending_X
-        s.inst_type_M.next      = s.inst_type_X
-        s.rf_waddr_M.next       = s.rf_waddr_X
-        s.proc2mngr_val_M.next  = s.proc2mngr_val_X
-        s.dmemreq_type_M.next   = s.dmemreq_type_X
-        s.dmemreq_len_M.next    = s.dmemreq_len_X
-        s.dm_resp_sel_M.next    = s.dm_resp_sel_X
-        s.wb_result_sel_M.next  = s.wb_result_sel_X
-        s.rd_fprf_M.next        = s.rd_fprf_X
-        s.stats_en_wen_M.next   = s.stats_en_wen_X
-        # xcel
-        s.xcelreq_M.next        = s.xcelreq_X
+        if s.next_val_X:
+          s.rf_wen_pending_M.next = s.rf_wen_pending_X
+          s.inst_type_M.next      = s.inst_type_X
+          s.rf_waddr_M.next       = s.rf_waddr_X
+          s.proc2mngr_val_M.next  = s.proc2mngr_val_X
+          s.dmemreq_type_M.next   = s.dmemreq_type_X
+          s.dmemreq_len_M.next    = s.dmemreq_len_X
+          s.dm_resp_sel_M.next    = s.dm_resp_sel_X
+          s.wb_result_sel_M.next  = s.wb_result_sel_X
+          s.rd_fprf_M.next        = s.rd_fprf_X
+          s.stats_en_wen_M.next   = s.stats_en_wen_X
+          # xcel
+          s.xcelreq_M.next        = s.xcelreq_X
 
     s.ostall_dmem_M = Wire( 1 )
     s.next_val_M    = Wire( 1 )
@@ -1049,12 +1051,13 @@ class ProcCtrlPRTL( Model ):
         s.stats_en_wen_pending_W.next   = 0
       elif s.reg_en_W:
         s.val_W.next                  = s.next_val_M
-        s.rf_wen_pending_W.next       = s.rf_wen_pending_M
-        s.inst_type_W.next            = s.inst_type_M
-        s.rf_waddr_W.next             = s.rf_waddr_M
-        s.proc2mngr_val_W.next        = s.proc2mngr_val_M
-        s.rd_fprf_W.next              = s.rd_fprf_M
-        s.stats_en_wen_pending_W.next = s.stats_en_wen_M
+        if s.next_val_M:
+          s.rf_wen_pending_W.next       = s.rf_wen_pending_M
+          s.inst_type_W.next            = s.inst_type_M
+          s.rf_waddr_W.next             = s.rf_waddr_M
+          s.proc2mngr_val_W.next        = s.proc2mngr_val_M
+          s.rd_fprf_W.next              = s.rd_fprf_M
+          s.stats_en_wen_pending_W.next = s.stats_en_wen_M
 
     s.ostall_proc2mngr_W = Wire( 1 )
 
