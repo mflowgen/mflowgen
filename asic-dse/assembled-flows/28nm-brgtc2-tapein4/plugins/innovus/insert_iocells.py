@@ -86,7 +86,7 @@ mappings = {
     'east_iocell_5'   :  'vss_core_east_0_iocell', # ------- Ground (core)
     'east_iocell_4'   :            'reset_iocell', # Input
     'east_iocell_3'   :   'vdd_poc_east_0_iocell', # ------- Power (IO) (POC)
-    'east_iocell_2'   :    'vss_dummy_h_8_iocell', # Dummy
+    'east_iocell_2'   :          'observe_iocell', # Output
     'east_iocell_1'   :          'clk_out_iocell', # Output
     'east_iocell_0'   :    'vss_io_east_0_iocell', # ------- Ground (IO)
 

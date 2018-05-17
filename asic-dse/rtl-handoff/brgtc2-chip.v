@@ -54,7 +54,7 @@ module brgtc2_chip
   output wire [ 0:0] out_req_io,
   input  wire [ 0:0] out_ack_io,
   output wire [ 7:0] out_msg_io,
-//  output wire [ 0:0] observe_io,
+  output wire [ 0:0] observe_io,
   input  wire [ 0:0] pll_clk_ref_io,
   input  wire [ 0:0] pll_scn_clk_io,
   input  wire [ 0:0] pll_sdi_io,
@@ -151,7 +151,7 @@ module brgtc2_chip
   wire [   0:0] out_ack;   // input
   wire [   7:0] out_msg;   // output
 
-//  wire [   0:0] observe;   // output
+  wire [   0:0] observe;   // output
 
   wire [   0:0] pll_clk_ref;     // input
   wire [   0:0] pll_scn_clk;     // input
@@ -168,7 +168,7 @@ module brgtc2_chip
 
    `INPUT_PAD_H(      reset_iocell,    reset_io[0],  reset_ext[0] ) // East
   `OUTPUT_PAD_H(    clk_out_iocell,  clk_out_io[0],    clk_out[0] ) // East
-//  `OUTPUT_PAD_H(    observe_iocell,  observe_io[0],    observe[0] ) // East
+  `OUTPUT_PAD_H(    observe_iocell,  observe_io[0],    observe[0] ) // East
 
    `INPUT_PAD_V(    in__req_iocell,  in__req_io[0],    in__req[0] ) // South
    `INPUT_PAD_V(  in__msg_0_iocell,  in__msg_io[0],    in__msg[0] ) // South
@@ -197,8 +197,6 @@ module brgtc2_chip
 
   // PLL pads
 
-  wire pll_clk_buf;
-
   //                          Inst Name                       PAD                   data
 
    `INPUT_PAD_H(     pll_clk_ref_iocell,        pll_clk_ref_io[0],        pll_clk_ref[0] ) // West
@@ -208,7 +206,43 @@ module brgtc2_chip
    `INPUT_PAD_H( pll_chip_select_iocell,    pll_chip_select_io[0],    pll_chip_select[0] ) // West
 
   `OUTPUT_PAD_H(     pll_out_sdo_iocell,        pll_out_sdo_io[0],        pll_out_sdo[0] ) // West
-  `OUTPUT_PAD_H(     pll_out_clk_iocell,        pll_out_clk_io[0],        pll_clk_buf    ) // West
+
+  // pll_out_clk_iocell
+  //
+  // Instantiate pll_out_clk_iocell by hand to connect misc bits. The misc
+  // bits will be used to silence the output pad during normal operation.
+  // The misc bits also control the output drive strength bits.
+
+  //`OUTPUT_PAD_H(     pll_out_clk_iocell,        pll_out_clk_io[0],        pll_clk_buf    ) // West
+
+  wire [15:0] misc;
+
+  wire   pll_clk_buf;
+
+  wire   pll_out_clk_oen;
+  wire   pll_out_clk_ds0;
+  wire   pll_out_clk_ds1;
+
+  assign pll_out_clk_oen =  misc[0]; // resets to 0 -- output enabled
+  assign pll_out_clk_ds0 = ~misc[1]; // resets to 1 -- highest drive strength
+  assign pll_out_clk_ds1 = ~misc[2]; // resets to 1 -- highest drive strength
+
+  PRWDWUWHWSWDGE_H_G pll_out_clk_iocell
+  (
+    .PAD ( pll_out_clk_io[0] ),
+    .C   (                   ),
+    .I   ( pll_clk_buf       ),
+    .OEN ( pll_out_clk_oen   ),
+    .IE  ( 1'b0              ),
+    .SL  ( 1'b1              ),
+    .DS0 ( pll_out_clk_ds0   ),
+    .DS1 ( pll_out_clk_ds1   ),
+    .PE  ( 1'b0              ),
+    .PS  ( 1'b0              ),
+    .HE  ( 1'b0              ),
+    .ST0 ( 1'b0              ),
+    .ST1 ( 1'b0              )
+  );
 
   //----------------------------------------------------------------------
   // PLL
@@ -281,14 +315,16 @@ module brgtc2_chip
 
   HostChansey brgtc2
   (
-    .clk     ( clk     ),
-    .reset   ( reset   ),
-    .in__req ( in__req ),
-    .in__ack ( in__ack ),
-    .in__msg ( in__msg ),
-    .out_req ( out_req ),
-    .out_ack ( out_ack ),
-    .out_msg ( out_msg )
+    .clk     ( clk        ),
+    .reset   ( reset      ),
+    .in__req ( in__req    ),
+    .in__ack ( in__ack    ),
+    .in__msg ( in__msg    ),
+    .out_req ( out_req    ),
+    .out_ack ( out_ack    ),
+    .out_msg ( out_msg    ),
+    .debug   ( observe[0] ),
+    .misc    ( misc       )
   );
 
 endmodule
@@ -303,9 +339,11 @@ endmodule
 module HostChansey
 (
   input  wire [   0:0] clk,
+  output wire [   0:0] debug,
   output wire [   0:0] in__ack,
   input  wire [   7:0] in__msg,
   input  wire [   0:0] in__req,
+  output wire [  15:0] misc,
   input  wire [   0:0] out_ack,
   output wire [   7:0] out_msg,
   output wire [   0:0] out_req,
@@ -417,28 +455,6 @@ module HostChansey
     .out_msg ( in_deserialize$out_msg ),
     .out_val ( in_deserialize$out_val ),
     .in__rdy ( in_deserialize$in__rdy )
-  );
-
-  // out_valRdyToReqAck temporaries
-  wire   [   0:0] out_valRdyToReqAck$out_ack;
-  wire   [   7:0] out_valRdyToReqAck$in__msg;
-  wire   [   0:0] out_valRdyToReqAck$in__val;
-  wire   [   0:0] out_valRdyToReqAck$clk;
-  wire   [   0:0] out_valRdyToReqAck$reset;
-  wire   [   7:0] out_valRdyToReqAck$out_msg;
-  wire   [   0:0] out_valRdyToReqAck$out_req;
-  wire   [   0:0] out_valRdyToReqAck$in__rdy;
-
-  ValRdyToReqAck_0x3871167c1fef1233 out_valRdyToReqAck
-  (
-    .out_ack ( out_valRdyToReqAck$out_ack ),
-    .in__msg ( out_valRdyToReqAck$in__msg ),
-    .in__val ( out_valRdyToReqAck$in__val ),
-    .clk     ( out_valRdyToReqAck$clk ),
-    .reset   ( out_valRdyToReqAck$reset ),
-    .out_msg ( out_valRdyToReqAck$out_msg ),
-    .out_req ( out_valRdyToReqAck$out_req ),
-    .in__rdy ( out_valRdyToReqAck$in__rdy )
   );
 
   // in_q$000 temporaries
@@ -796,6 +812,7 @@ module HostChansey
   wire   [   0:0] dut$proc2mngr_1_rdy;
   wire   [   0:0] dut$host_mduresp_rdy;
   wire   [   0:0] dut$ctrlregresp_rdy;
+  wire   [  15:0] dut$misc;
   wire   [ 175:0] dut$dmemreq_msg;
   wire   [   0:0] dut$dmemreq_val;
   wire   [ 175:0] dut$imemreq_msg;
@@ -862,6 +879,7 @@ module HostChansey
     .proc2mngr_1_rdy     ( dut$proc2mngr_1_rdy ),
     .host_mduresp_rdy    ( dut$host_mduresp_rdy ),
     .ctrlregresp_rdy     ( dut$ctrlregresp_rdy ),
+    .misc                ( dut$misc ),
     .dmemreq_msg         ( dut$dmemreq_msg ),
     .dmemreq_val         ( dut$dmemreq_val ),
     .imemreq_msg         ( dut$imemreq_msg ),
@@ -971,6 +989,28 @@ module HostChansey
     .in__rdy     ( in_split$in__rdy )
   );
 
+  // out_valRdyToReqAck temporaries
+  wire   [   0:0] out_valRdyToReqAck$out_ack;
+  wire   [   7:0] out_valRdyToReqAck$in__msg;
+  wire   [   0:0] out_valRdyToReqAck$in__val;
+  wire   [   0:0] out_valRdyToReqAck$clk;
+  wire   [   0:0] out_valRdyToReqAck$reset;
+  wire   [   7:0] out_valRdyToReqAck$out_msg;
+  wire   [   0:0] out_valRdyToReqAck$out_req;
+  wire   [   0:0] out_valRdyToReqAck$in__rdy;
+
+  ValRdyToReqAck_0x3871167c1fef1233 out_valRdyToReqAck
+  (
+    .out_ack ( out_valRdyToReqAck$out_ack ),
+    .in__msg ( out_valRdyToReqAck$in__msg ),
+    .in__val ( out_valRdyToReqAck$in__val ),
+    .clk     ( out_valRdyToReqAck$clk ),
+    .reset   ( out_valRdyToReqAck$reset ),
+    .out_msg ( out_valRdyToReqAck$out_msg ),
+    .out_req ( out_valRdyToReqAck$out_req ),
+    .in__rdy ( out_valRdyToReqAck$in__rdy )
+  );
+
   // flow_control temporaries
   wire   [   0:0] flow_control$clk;
   wire   [   0:0] flow_control$update_rdy;
@@ -1050,6 +1090,7 @@ module HostChansey
   );
 
   // signal connections
+  assign debug                          = dut$debug;
   assign dut$clk                        = clk;
   assign dut$ctrlregreq_msg             = dut_in_msg$002;
   assign dut$ctrlregreq_val             = dut_in_val$002;
@@ -1240,6 +1281,7 @@ module HostChansey
   assign in_split$out$008_rdy           = in_q$008$enq_rdy;
   assign in_split$out$009_rdy           = in_q$009$enq_rdy;
   assign in_split$reset                 = reset;
+  assign misc                           = dut$misc;
   assign out_merge$clk                  = clk;
   assign out_merge$in_$000_msg[175:0]   = dut_out_msg$000;
   assign out_merge$in_$000_val          = dut_out_val$000;
@@ -1990,275 +2032,6 @@ module RegRst_0x7595e02357c57db5
 
 
 endmodule // RegRst_0x7595e02357c57db5
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// ValRdyToReqAck_0x3871167c1fef1233
-//-----------------------------------------------------------------------------
-// dtype: 8
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module ValRdyToReqAck_0x3871167c1fef1233
-(
-  input  wire [   0:0] clk,
-  input  wire [   7:0] in__msg,
-  output reg  [   0:0] in__rdy,
-  input  wire [   0:0] in__val,
-  input  wire [   0:0] out_ack,
-  output reg  [   7:0] out_msg,
-  output reg  [   0:0] out_req,
-  input  wire [   0:0] reset
-);
-
-  // wire declarations
-  wire   [   0:0] synch_ack;
-  wire   [   7:0] reg_out;
-
-
-  // register declarations
-  reg    [   0:0] reg_en;
-  reg    [   1:0] state$in_;
-
-  // localparam declarations
-  localparam STATE_HOLD = 1;
-  localparam STATE_RECV = 0;
-  localparam STATE_SEND = 2;
-  localparam STATE_WAIT = 3;
-
-  // synch_1 temporaries
-  wire   [   0:0] synch_1$reset;
-  wire   [   0:0] synch_1$in_;
-  wire   [   0:0] synch_1$clk;
-  wire   [   0:0] synch_1$out;
-
-  RegRst_0x2ce052f8c32c5c39 synch_1
-  (
-    .reset ( synch_1$reset ),
-    .in_   ( synch_1$in_ ),
-    .clk   ( synch_1$clk ),
-    .out   ( synch_1$out )
-  );
-
-  // state temporaries
-  wire   [   0:0] state$reset;
-  wire   [   0:0] state$clk;
-  wire   [   1:0] state$out;
-
-  RegRst_0x9f365fdf6c8998a state
-  (
-    .reset ( state$reset ),
-    .in_   ( state$in_ ),
-    .clk   ( state$clk ),
-    .out   ( state$out )
-  );
-
-  // synch_2 temporaries
-  wire   [   0:0] synch_2$reset;
-  wire   [   0:0] synch_2$in_;
-  wire   [   0:0] synch_2$clk;
-  wire   [   0:0] synch_2$out;
-
-  RegRst_0x2ce052f8c32c5c39 synch_2
-  (
-    .reset ( synch_2$reset ),
-    .in_   ( synch_2$in_ ),
-    .clk   ( synch_2$clk ),
-    .out   ( synch_2$out )
-  );
-
-  // reg_in temporaries
-  wire   [   0:0] reg_in$reset;
-  wire   [   7:0] reg_in$in_;
-  wire   [   0:0] reg_in$clk;
-  wire   [   0:0] reg_in$en;
-  wire   [   7:0] reg_in$out;
-
-  RegEn_0x45f1552f10c5f05d reg_in
-  (
-    .reset ( reg_in$reset ),
-    .in_   ( reg_in$in_ ),
-    .clk   ( reg_in$clk ),
-    .en    ( reg_in$en ),
-    .out   ( reg_in$out )
-  );
-
-  // signal connections
-  assign reg_in$clk    = clk;
-  assign reg_in$en     = reg_en;
-  assign reg_in$in_    = in__msg;
-  assign reg_in$reset  = reset;
-  assign reg_out       = reg_in$out;
-  assign state$clk     = clk;
-  assign state$reset   = reset;
-  assign synch_1$clk   = clk;
-  assign synch_1$in_   = out_ack;
-  assign synch_1$reset = reset;
-  assign synch_2$clk   = clk;
-  assign synch_2$in_   = synch_1$out;
-  assign synch_2$reset = reset;
-  assign synch_ack     = synch_2$out;
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def state_transition():
-  //       s.state.in_.value = s.state.out
-  //
-  //       if   s.state.out == s.STATE_RECV:
-  //         if s.in_.val:
-  //           s.state.in_.value = s.STATE_HOLD
-  //
-  //       elif s.state.out == s.STATE_HOLD:
-  //         s.state.in_.value = s.STATE_SEND
-  //
-  //       elif s.state.out == s.STATE_SEND:
-  //         if s.synch_ack:
-  //           s.state.in_.value = s.STATE_WAIT
-  //
-  //       elif s.state.out == s.STATE_WAIT:
-  //         if ~s.synch_ack:
-  //           s.state.in_.value = s.STATE_RECV
-
-  // logic for state_transition()
-  always @ (*) begin
-    state$in_ = state$out;
-    if ((state$out == STATE_RECV)) begin
-      if (in__val) begin
-        state$in_ = STATE_HOLD;
-      end
-      else begin
-      end
-    end
-    else begin
-      if ((state$out == STATE_HOLD)) begin
-        state$in_ = STATE_SEND;
-      end
-      else begin
-        if ((state$out == STATE_SEND)) begin
-          if (synch_ack) begin
-            state$in_ = STATE_WAIT;
-          end
-          else begin
-          end
-        end
-        else begin
-          if ((state$out == STATE_WAIT)) begin
-            if (~synch_ack) begin
-              state$in_ = STATE_RECV;
-            end
-            else begin
-            end
-          end
-          else begin
-          end
-        end
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def state_output():
-  //       s.in_.rdy.value = ( s.state.out == s.STATE_RECV )
-  //       s.reg_en.value  = s.in_.val & s.in_.rdy
-  //       s.out.msg.value = s.reg_out
-  //       s.out.req.value = ( s.state.out == s.STATE_SEND )
-
-  // logic for state_output()
-  always @ (*) begin
-    in__rdy = (state$out == STATE_RECV);
-    reg_en = (in__val&in__rdy);
-    out_msg = reg_out;
-    out_req = (state$out == STATE_SEND);
-  end
-
-
-endmodule // ValRdyToReqAck_0x3871167c1fef1233
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegRst_0x9f365fdf6c8998a
-//-----------------------------------------------------------------------------
-// dtype: 2
-// reset_value: 0
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegRst_0x9f365fdf6c8998a
-(
-  input  wire [   0:0] clk,
-  input  wire [   1:0] in_,
-  output reg  [   1:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       else:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      out <= in_;
-    end
-  end
-
-
-endmodule // RegRst_0x9f365fdf6c8998a
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEn_0x45f1552f10c5f05d
-//-----------------------------------------------------------------------------
-// dtype: 8
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEn_0x45f1552f10c5f05d
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [   7:0] in_,
-  output reg  [   7:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (en) begin
-      out <= in_;
-    end
-    else begin
-    end
-  end
-
-
-endmodule // RegEn_0x45f1552f10c5f05d
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -4444,6 +4217,7 @@ module Chansey
   input  wire [ 145:0] imemresp_msg,
   output wire [   0:0] imemresp_rdy,
   input  wire [   0:0] imemresp_val,
+  output wire [  15:0] misc,
   input  wire [  31:0] mngr2proc_0_msg,
   output wire [   0:0] mngr2proc_0_rdy,
   input  wire [   0:0] mngr2proc_0_val,
@@ -5509,6 +5283,7 @@ module Chansey
   wire   [   0:0] ctrlreg$stats_en;
   wire   [  32:0] ctrlreg$resp_msg;
   wire   [   0:0] ctrlreg$resp_val;
+  wire   [  15:0] ctrlreg$misc;
   wire   [   3:0] ctrlreg$go;
   wire   [   0:0] ctrlreg$req_rdy;
   wire   [   0:0] ctrlreg$debug;
@@ -5525,6 +5300,7 @@ module Chansey
     .stats_en    ( ctrlreg$stats_en ),
     .resp_msg    ( ctrlreg$resp_msg ),
     .resp_val    ( ctrlreg$resp_val ),
+    .misc        ( ctrlreg$misc ),
     .go          ( ctrlreg$go ),
     .req_rdy     ( ctrlreg$req_rdy ),
     .debug       ( ctrlreg$debug ),
@@ -5544,7 +5320,7 @@ module Chansey
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x3d686cffb3385e79 xcel$000
+  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -5572,7 +5348,7 @@ module Chansey
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x3d686cffb3385e79 xcel$001
+  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -5600,7 +5376,7 @@ module Chansey
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x3d686cffb3385e79 xcel$002
+  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -5628,7 +5404,7 @@ module Chansey
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x3d686cffb3385e79 xcel$003
+  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5725,6 +5501,7 @@ module Chansey
   assign dcache_adapter$reset           = reset;
   assign dcache_adapter$resp_msg        = dcache$cacheresp_msg;
   assign dcache_adapter$resp_val        = dcache$cacheresp_val;
+  assign debug                          = ctrlreg$debug;
   assign dmemreq_msg                    = dcache$memreq_msg;
   assign dmemreq_val                    = dcache$memreq_val;
   assign dmemresp_rdy                   = dcache$memresp_rdy;
@@ -5836,6 +5613,7 @@ module Chansey
   assign mdu_adapter$reset              = reset;
   assign mdu_adapter$resp_msg           = mdu$resp_msg;
   assign mdu_adapter$resp_val           = mdu$resp_val;
+  assign misc                           = ctrlreg$misc;
   assign mngr2proc_0_rdy                = proc$000$mngr2proc_rdy;
   assign mngr2proc_1_rdy                = proc$001$mngr2proc_rdy;
   assign mngr2proc_2_rdy                = proc$002$mngr2proc_rdy;
@@ -6053,8 +5831,8 @@ endmodule // Chansey
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7fedc93577d0>
-// req: <pymtl.model.signals.InPort object at 0x7fedc9357490>
+// resp: <pymtl.model.signals.OutPort object at 0x7f293d8c0890>
+// req: <pymtl.model.signals.InPort object at 0x7f293d8c0550>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -12340,7 +12118,7 @@ module DW_fp_flt2i_0x3cd77562127ffa78
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_flt2i.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
 
   DW_fp_flt2i#(
     .ieee_compliance ( 1 )
@@ -12971,7 +12749,7 @@ module DW_fp_addsub_0x3cb0331b99cfb5df
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_addsub.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
 
   DW_fp_addsub#(
     .ieee_compliance ( 1 )
@@ -13013,7 +12791,7 @@ module DW_fp_cmp_0x15bdbff0d8f765a1
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_cmp.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
 
   DW_fp_cmp#(
     .ieee_compliance ( 1 )
@@ -13054,7 +12832,7 @@ module DW_fp_mult_0x1eaed5d9d53885e0
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_mult.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
 
   DW_fp_mult#(
     .ieee_compliance ( 1 )
@@ -13087,7 +12865,7 @@ module DW_fp_i2flt_0x215a2bada2e33c4b
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_i2flt.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
 
   DW_fp_i2flt#(
 
@@ -13284,7 +13062,7 @@ module DW_fp_div_0x124edb2c88d843aa
 );
 
   // Imported Verilog source from:
-  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_div.v
+  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
 
   DW_fp_div#(
     .faithful_round ( 0 ),
@@ -13800,26 +13578,24 @@ module InstBuffer_2_16B
   localparam zero_nbits = 96;
 
   // memresp_queue temporaries
+  wire   [   0:0] memresp_queue$reset;
   wire   [   0:0] memresp_queue$clk;
   wire   [ 145:0] memresp_queue$enq_msg;
   wire   [   0:0] memresp_queue$enq_val;
-  wire   [   0:0] memresp_queue$reset;
-  wire   [   0:0] memresp_queue$enq_rdy;
-  wire   [   0:0] memresp_queue$full;
   wire   [ 145:0] memresp_queue$deq_msg;
   wire   [   0:0] memresp_queue$deq_val;
+  wire   [   0:0] memresp_queue$enq_rdy;
 
-  SingleElementBypassQueue_0x5a7f0a6588025dd8 memresp_queue
+  SingleElementPipelinedQueue_0x5a7f0a6588025dd8 memresp_queue
   (
+    .reset   ( memresp_queue$reset ),
     .clk     ( memresp_queue$clk ),
+    .deq_rdy ( memresp_queue$deq_rdy ),
     .enq_msg ( memresp_queue$enq_msg ),
     .enq_val ( memresp_queue$enq_val ),
-    .reset   ( memresp_queue$reset ),
-    .deq_rdy ( memresp_queue$deq_rdy ),
-    .enq_rdy ( memresp_queue$enq_rdy ),
-    .full    ( memresp_queue$full ),
     .deq_msg ( memresp_queue$deq_msg ),
-    .deq_val ( memresp_queue$deq_val )
+    .deq_val ( memresp_queue$deq_val ),
+    .enq_rdy ( memresp_queue$enq_rdy )
   );
 
   // inner temporaries
@@ -13970,13 +13746,13 @@ endmodule // InstBuffer_2_16B
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SingleElementBypassQueue_0x5a7f0a6588025dd8
+// SingleElementPipelinedQueue_0x5a7f0a6588025dd8
 //-----------------------------------------------------------------------------
 // dtype: 146
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SingleElementBypassQueue_0x5a7f0a6588025dd8
+module SingleElementPipelinedQueue_0x5a7f0a6588025dd8
 (
   input  wire [   0:0] clk,
   output wire [ 145:0] deq_msg,
@@ -13985,7 +13761,6 @@ module SingleElementBypassQueue_0x5a7f0a6588025dd8
   input  wire [ 145:0] enq_msg,
   output wire [   0:0] enq_rdy,
   input  wire [   0:0] enq_val,
-  output wire [   0:0] full,
   input  wire [   0:0] reset
 );
 
@@ -13994,97 +13769,169 @@ module SingleElementBypassQueue_0x5a7f0a6588025dd8
   wire   [   0:0] ctrl$enq_val;
   wire   [   0:0] ctrl$reset;
   wire   [   0:0] ctrl$deq_rdy;
-  wire   [   0:0] ctrl$bypass_mux_sel;
   wire   [   0:0] ctrl$wen;
   wire   [   0:0] ctrl$deq_val;
-  wire   [   0:0] ctrl$full;
   wire   [   0:0] ctrl$enq_rdy;
 
-  SingleElementBypassQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  SingleElementPipelinedQueueCtrl_0x2a979dc5ff91cb88 ctrl
   (
-    .clk            ( ctrl$clk ),
-    .enq_val        ( ctrl$enq_val ),
-    .reset          ( ctrl$reset ),
-    .deq_rdy        ( ctrl$deq_rdy ),
-    .bypass_mux_sel ( ctrl$bypass_mux_sel ),
-    .wen            ( ctrl$wen ),
-    .deq_val        ( ctrl$deq_val ),
-    .full           ( ctrl$full ),
-    .enq_rdy        ( ctrl$enq_rdy )
+    .clk     ( ctrl$clk ),
+    .enq_val ( ctrl$enq_val ),
+    .reset   ( ctrl$reset ),
+    .deq_rdy ( ctrl$deq_rdy ),
+    .wen     ( ctrl$wen ),
+    .deq_val ( ctrl$deq_val ),
+    .enq_rdy ( ctrl$enq_rdy )
   );
 
   // dpath temporaries
-  wire   [   0:0] dpath$wen;
-  wire   [   0:0] dpath$bypass_mux_sel;
-  wire   [   0:0] dpath$clk;
   wire   [   0:0] dpath$reset;
+  wire   [   0:0] dpath$clk;
   wire   [ 145:0] dpath$enq_bits;
+  wire   [   0:0] dpath$wen;
   wire   [ 145:0] dpath$deq_bits;
 
-  SingleElementBypassQueueDpath_0x5a7f0a6588025dd8 dpath
+  SingleElementPipelinedQueueDpath_0x5a7f0a6588025dd8 dpath
   (
-    .wen            ( dpath$wen ),
-    .bypass_mux_sel ( dpath$bypass_mux_sel ),
-    .clk            ( dpath$clk ),
-    .reset          ( dpath$reset ),
-    .enq_bits       ( dpath$enq_bits ),
-    .deq_bits       ( dpath$deq_bits )
+    .reset    ( dpath$reset ),
+    .clk      ( dpath$clk ),
+    .enq_bits ( dpath$enq_bits ),
+    .wen      ( dpath$wen ),
+    .deq_bits ( dpath$deq_bits )
   );
 
   // signal connections
-  assign ctrl$clk             = clk;
-  assign ctrl$deq_rdy         = deq_rdy;
-  assign ctrl$enq_val         = enq_val;
-  assign ctrl$reset           = reset;
-  assign deq_msg              = dpath$deq_bits;
-  assign deq_val              = ctrl$deq_val;
-  assign dpath$bypass_mux_sel = ctrl$bypass_mux_sel;
-  assign dpath$clk            = clk;
-  assign dpath$enq_bits       = enq_msg;
-  assign dpath$reset          = reset;
-  assign dpath$wen            = ctrl$wen;
-  assign enq_rdy              = ctrl$enq_rdy;
-  assign full                 = ctrl$full;
+  assign ctrl$clk       = clk;
+  assign ctrl$deq_rdy   = deq_rdy;
+  assign ctrl$enq_val   = enq_val;
+  assign ctrl$reset     = reset;
+  assign deq_msg        = dpath$deq_bits;
+  assign deq_val        = ctrl$deq_val;
+  assign dpath$clk      = clk;
+  assign dpath$enq_bits = enq_msg;
+  assign dpath$reset    = reset;
+  assign dpath$wen      = ctrl$wen;
+  assign enq_rdy        = ctrl$enq_rdy;
 
 
 
-endmodule // SingleElementBypassQueue_0x5a7f0a6588025dd8
+endmodule // SingleElementPipelinedQueue_0x5a7f0a6588025dd8
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+// SingleElementPipelinedQueueCtrl_0x2a979dc5ff91cb88
+//-----------------------------------------------------------------------------
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementPipelinedQueueCtrl_0x2a979dc5ff91cb88
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] deq_rdy,
+  output reg  [   0:0] deq_val,
+  output reg  [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  input  wire [   0:0] reset,
+  output reg  [   0:0] wen
+);
+
+  // register declarations
+  reg    [   0:0] do_deq;
+  reg    [   0:0] do_enq;
+  reg    [   0:0] do_pipe;
+  reg    [   0:0] full;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq():
+  //
+  //       # full bit calculation: the full bit is cleared when a dequeue
+  //       # transaction occurs; the full bit is set when the queue storage is
+  //       # empty and a enqueue transaction occurs and when we are not bypassing
+  //
+  //       if   s.reset:               s.full.next = 0
+  //       elif s.do_deq & ~s.do_pipe: s.full.next = 0
+  //       elif s.do_enq:              s.full.next = 1
+  //       else:                       s.full.next = s.full
+
+  // logic for seq()
+  always @ (posedge clk) begin
+    if (reset) begin
+      full <= 0;
+    end
+    else begin
+      if ((do_deq&~do_pipe)) begin
+        full <= 0;
+      end
+      else begin
+        if (do_enq) begin
+          full <= 1;
+        end
+        else begin
+          full <= full;
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb():
+  //
+  //       # enq_rdy signal is asserted when the single element queue storage is
+  //       # empty
+  //
+  //       s.enq_rdy.value = ~s.full | ( s.full & s.deq_rdy )
+  //
+  //       # deq_val signal is asserted when the single element queue storage is
+  //       # full or when the queue is empty but we are bypassing
+  //
+  //       s.deq_val.value = s.full
+  //
+  //       # wen control signal: set the write enable signal if the storage queue
+  //       # is empty and a valid enqueue request is present
+  //
+  //       s.wen.value = ( ~s.full | ( s.full & s.deq_rdy ) ) & s.enq_val
+  //
+  //       # helper signals
+  //
+  //       s.do_deq.value  = s.deq_rdy & s.deq_val
+  //       s.do_enq.value  = s.enq_rdy & s.enq_val
+  //       s.do_pipe.value = s.full & s.do_deq & s.do_enq
+
+  // logic for comb()
+  always @ (*) begin
+    enq_rdy = (~full|(full&deq_rdy));
+    deq_val = full;
+    wen = ((~full|(full&deq_rdy))&enq_val);
+    do_deq = (deq_rdy&deq_val);
+    do_enq = (enq_rdy&enq_val);
+    do_pipe = ((full&do_deq)&do_enq);
+  end
+
+
+endmodule // SingleElementPipelinedQueueCtrl_0x2a979dc5ff91cb88
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementPipelinedQueueDpath_0x5a7f0a6588025dd8
 //-----------------------------------------------------------------------------
 // dtype: 146
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+module SingleElementPipelinedQueueDpath_0x5a7f0a6588025dd8
 (
-  input  wire [   0:0] bypass_mux_sel,
   input  wire [   0:0] clk,
   output wire [ 145:0] deq_bits,
   input  wire [ 145:0] enq_bits,
   input  wire [   0:0] reset,
   input  wire [   0:0] wen
 );
-
-  // bypass_mux temporaries
-  wire   [   0:0] bypass_mux$reset;
-  wire   [ 145:0] bypass_mux$in_$000;
-  wire   [ 145:0] bypass_mux$in_$001;
-  wire   [   0:0] bypass_mux$clk;
-  wire   [   0:0] bypass_mux$sel;
-  wire   [ 145:0] bypass_mux$out;
-
-  Mux_0x45e00ad6230c4538 bypass_mux
-  (
-    .reset   ( bypass_mux$reset ),
-    .in_$000 ( bypass_mux$in_$000 ),
-    .in_$001 ( bypass_mux$in_$001 ),
-    .clk     ( bypass_mux$clk ),
-    .sel     ( bypass_mux$sel ),
-    .out     ( bypass_mux$out )
-  );
 
   // queue temporaries
   wire   [   0:0] queue$reset;
@@ -14103,63 +13950,15 @@ module SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
   );
 
   // signal connections
-  assign bypass_mux$clk     = clk;
-  assign bypass_mux$in_$000 = queue$out;
-  assign bypass_mux$in_$001 = enq_bits;
-  assign bypass_mux$reset   = reset;
-  assign bypass_mux$sel     = bypass_mux_sel;
-  assign deq_bits           = bypass_mux$out;
-  assign queue$clk          = clk;
-  assign queue$en           = wen;
-  assign queue$in_          = enq_bits;
-  assign queue$reset        = reset;
+  assign deq_bits    = queue$out;
+  assign queue$clk   = clk;
+  assign queue$en    = wen;
+  assign queue$in_   = enq_bits;
+  assign queue$reset = reset;
 
 
 
-endmodule // SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Mux_0x45e00ad6230c4538
-//-----------------------------------------------------------------------------
-// dtype: 146
-// nports: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Mux_0x45e00ad6230c4538
-(
-  input  wire [   0:0] clk,
-  input  wire [ 145:0] in_$000,
-  input  wire [ 145:0] in_$001,
-  output reg  [ 145:0] out,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] sel
-);
-
-  // localparam declarations
-  localparam nports = 2;
-
-
-  // array declarations
-  wire   [ 145:0] in_[0:1];
-  assign in_[  0] = in_$000;
-  assign in_[  1] = in_$001;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       assert s.sel < nports
-  //       s.out.v = s.in_[ s.sel ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = in_[sel];
-  end
-
-
-endmodule // Mux_0x45e00ad6230c4538
+endmodule // SingleElementPipelinedQueueDpath_0x5a7f0a6588025dd8
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -24681,6 +24480,199 @@ endmodule // DecodeWbenPRTL_0x18c15822932d5d24
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// SingleElementBypassQueue_0x5a7f0a6588025dd8
+//-----------------------------------------------------------------------------
+// dtype: 146
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueue_0x5a7f0a6588025dd8
+(
+  input  wire [   0:0] clk,
+  output wire [ 145:0] deq_msg,
+  input  wire [   0:0] deq_rdy,
+  output wire [   0:0] deq_val,
+  input  wire [ 145:0] enq_msg,
+  output wire [   0:0] enq_rdy,
+  input  wire [   0:0] enq_val,
+  output wire [   0:0] full,
+  input  wire [   0:0] reset
+);
+
+  // ctrl temporaries
+  wire   [   0:0] ctrl$clk;
+  wire   [   0:0] ctrl$enq_val;
+  wire   [   0:0] ctrl$reset;
+  wire   [   0:0] ctrl$deq_rdy;
+  wire   [   0:0] ctrl$bypass_mux_sel;
+  wire   [   0:0] ctrl$wen;
+  wire   [   0:0] ctrl$deq_val;
+  wire   [   0:0] ctrl$full;
+  wire   [   0:0] ctrl$enq_rdy;
+
+  SingleElementBypassQueueCtrl_0x2a979dc5ff91cb88 ctrl
+  (
+    .clk            ( ctrl$clk ),
+    .enq_val        ( ctrl$enq_val ),
+    .reset          ( ctrl$reset ),
+    .deq_rdy        ( ctrl$deq_rdy ),
+    .bypass_mux_sel ( ctrl$bypass_mux_sel ),
+    .wen            ( ctrl$wen ),
+    .deq_val        ( ctrl$deq_val ),
+    .full           ( ctrl$full ),
+    .enq_rdy        ( ctrl$enq_rdy )
+  );
+
+  // dpath temporaries
+  wire   [   0:0] dpath$wen;
+  wire   [   0:0] dpath$bypass_mux_sel;
+  wire   [   0:0] dpath$clk;
+  wire   [   0:0] dpath$reset;
+  wire   [ 145:0] dpath$enq_bits;
+  wire   [ 145:0] dpath$deq_bits;
+
+  SingleElementBypassQueueDpath_0x5a7f0a6588025dd8 dpath
+  (
+    .wen            ( dpath$wen ),
+    .bypass_mux_sel ( dpath$bypass_mux_sel ),
+    .clk            ( dpath$clk ),
+    .reset          ( dpath$reset ),
+    .enq_bits       ( dpath$enq_bits ),
+    .deq_bits       ( dpath$deq_bits )
+  );
+
+  // signal connections
+  assign ctrl$clk             = clk;
+  assign ctrl$deq_rdy         = deq_rdy;
+  assign ctrl$enq_val         = enq_val;
+  assign ctrl$reset           = reset;
+  assign deq_msg              = dpath$deq_bits;
+  assign deq_val              = ctrl$deq_val;
+  assign dpath$bypass_mux_sel = ctrl$bypass_mux_sel;
+  assign dpath$clk            = clk;
+  assign dpath$enq_bits       = enq_msg;
+  assign dpath$reset          = reset;
+  assign dpath$wen            = ctrl$wen;
+  assign enq_rdy              = ctrl$enq_rdy;
+  assign full                 = ctrl$full;
+
+
+
+endmodule // SingleElementBypassQueue_0x5a7f0a6588025dd8
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+//-----------------------------------------------------------------------------
+// dtype: 146
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+(
+  input  wire [   0:0] bypass_mux_sel,
+  input  wire [   0:0] clk,
+  output wire [ 145:0] deq_bits,
+  input  wire [ 145:0] enq_bits,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] wen
+);
+
+  // bypass_mux temporaries
+  wire   [   0:0] bypass_mux$reset;
+  wire   [ 145:0] bypass_mux$in_$000;
+  wire   [ 145:0] bypass_mux$in_$001;
+  wire   [   0:0] bypass_mux$clk;
+  wire   [   0:0] bypass_mux$sel;
+  wire   [ 145:0] bypass_mux$out;
+
+  Mux_0x45e00ad6230c4538 bypass_mux
+  (
+    .reset   ( bypass_mux$reset ),
+    .in_$000 ( bypass_mux$in_$000 ),
+    .in_$001 ( bypass_mux$in_$001 ),
+    .clk     ( bypass_mux$clk ),
+    .sel     ( bypass_mux$sel ),
+    .out     ( bypass_mux$out )
+  );
+
+  // queue temporaries
+  wire   [   0:0] queue$reset;
+  wire   [ 145:0] queue$in_;
+  wire   [   0:0] queue$clk;
+  wire   [   0:0] queue$en;
+  wire   [ 145:0] queue$out;
+
+  RegEn_0x1c3ed81872982f83 queue
+  (
+    .reset ( queue$reset ),
+    .in_   ( queue$in_ ),
+    .clk   ( queue$clk ),
+    .en    ( queue$en ),
+    .out   ( queue$out )
+  );
+
+  // signal connections
+  assign bypass_mux$clk     = clk;
+  assign bypass_mux$in_$000 = queue$out;
+  assign bypass_mux$in_$001 = enq_bits;
+  assign bypass_mux$reset   = reset;
+  assign bypass_mux$sel     = bypass_mux_sel;
+  assign deq_bits           = bypass_mux$out;
+  assign queue$clk          = clk;
+  assign queue$en           = wen;
+  assign queue$in_          = enq_bits;
+  assign queue$reset        = reset;
+
+
+
+endmodule // SingleElementBypassQueueDpath_0x5a7f0a6588025dd8
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x45e00ad6230c4538
+//-----------------------------------------------------------------------------
+// dtype: 146
+// nports: 2
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x45e00ad6230c4538
+(
+  input  wire [   0:0] clk,
+  input  wire [ 145:0] in_$000,
+  input  wire [ 145:0] in_$001,
+  output reg  [ 145:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 2;
+
+
+  // array declarations
+  wire   [ 145:0] in_[0:1];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x45e00ad6230c4538
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // BlockingCacheDpathPRTL_0x6b511b3b41602acf
 //-----------------------------------------------------------------------------
 // idx_shamt: 0
@@ -26620,8 +26612,8 @@ endmodule // EqComparator_0x20454677a5a72bab
 //-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7fedc8e2ded0>
-// req: <pymtl.model.signals.InPort object at 0x7fedc8e1b990>
+// resp: <pymtl.model.signals.OutPort object at 0x7f293d3846d0>
+// req: <pymtl.model.signals.InPort object at 0x7f293d393b50>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -26734,6 +26726,7 @@ module CtrlReg_0x6aec39a1ab183c1
   output wire [   0:0] debug,
   output wire [   3:0] go,
   output wire [   4:0] host_en,
+  output wire [  15:0] misc,
   input  wire [  36:0] req_msg,
   output wire [   0:0] req_rdy,
   input  wire [   0:0] req_val,
@@ -26761,6 +26754,8 @@ module CtrlReg_0x6aec39a1ab183c1
   reg    [  31:0] cr_debug_in;
   reg    [   0:0] cr_go_en;
   reg    [  31:0] cr_go_in;
+  reg    [   0:0] cr_misc_en;
+  reg    [  31:0] cr_misc_in;
   reg    [   0:0] cyclecounters_en;
   reg    [  31:0] cyclecounters_in;
   reg    [   3:0] instcounters_en;
@@ -26777,6 +26772,7 @@ module CtrlReg_0x6aec39a1ab183c1
   localparam cr_debug = 1;
   localparam cr_go = 0;
   localparam cr_host_en = 7;
+  localparam cr_misc = 12;
   localparam num_cores = 4;
   localparam valrdy_ifcs = 5;
 
@@ -27133,6 +27129,8 @@ module CtrlReg_0x6aec39a1ab183c1
   assign ctrlregs$011$in_     = rf_wdata;
   assign ctrlregs$011$reset   = reset;
   assign ctrlregs$012$clk     = clk;
+  assign ctrlregs$012$en      = cr_misc_en;
+  assign ctrlregs$012$in_     = cr_misc_in;
   assign ctrlregs$012$reset   = reset;
   assign ctrlregs$013$clk     = clk;
   assign ctrlregs$013$reset   = reset;
@@ -27160,6 +27158,7 @@ module CtrlReg_0x6aec39a1ab183c1
   assign instcounters_out$001 = ctrlregs$004$out;
   assign instcounters_out$002 = ctrlregs$005$out;
   assign instcounters_out$003 = ctrlregs$006$out;
+  assign misc                 = ctrlregs$012$out[15:0];
   assign out_q$clk            = clk;
   assign out_q$deq_rdy        = resp_rdy;
   assign out_q$enq_val        = in_q$deq_val;
@@ -27295,6 +27294,19 @@ module CtrlReg_0x6aec39a1ab183c1
     begin
       wire_host_en[idx] = (rf_wen&(rf_waddr == (idx+cr_host_en)));
     end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_misc_logic():
+  //       s.cr_misc_en.value = s.rf_wen & ( s.rf_waddr == cr_misc )
+  //       s.cr_misc_in.value = s.rf_wdata
+
+  // logic for comb_cr_misc_logic()
+  always @ (*) begin
+    cr_misc_en = (rf_wen&(rf_waddr == cr_misc));
+    cr_misc_in = rf_wdata;
   end
 
   // PYMTL SOURCE:
@@ -27721,16 +27733,16 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x3d686cffb3385e79
+// BloomFilterXcel_0x5b4bdcc6dd97c7e3
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fedc994b1d0>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f293de42790>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x3d686cffb3385e79
+module BloomFilterXcel_0x5b4bdcc6dd97c7e3
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -28173,7 +28185,7 @@ module BloomFilterXcel_0x3d686cffb3385e79
   end
 
 
-endmodule // BloomFilterXcel_0x3d686cffb3385e79
+endmodule // BloomFilterXcel_0x5b4bdcc6dd97c7e3
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -29557,6 +29569,50 @@ endmodule // HashFunction_0x2d56ccb9a14a2de9
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// RegRst_0x9f365fdf6c8998a
+//-----------------------------------------------------------------------------
+// dtype: 2
+// reset_value: 0
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegRst_0x9f365fdf6c8998a
+(
+  input  wire [   0:0] clk,
+  input  wire [   1:0] in_,
+  output reg  [   1:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       else:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      out <= in_;
+    end
+  end
+
+
+endmodule // RegRst_0x9f365fdf6c8998a
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // dtype: 256
@@ -29591,8 +29647,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7fedc98e7410>
-// req: <pymtl.model.signals.InPort object at 0x7fedc98e70d0>
+// resp: <pymtl.model.signals.OutPort object at 0x7f293de5ca50>
+// req: <pymtl.model.signals.InPort object at 0x7f293de5c710>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -29900,6 +29956,231 @@ module Demux_0x5c38b318cac8f45c
 
 
 endmodule // Demux_0x5c38b318cac8f45c
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// ValRdyToReqAck_0x3871167c1fef1233
+//-----------------------------------------------------------------------------
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module ValRdyToReqAck_0x3871167c1fef1233
+(
+  input  wire [   0:0] clk,
+  input  wire [   7:0] in__msg,
+  output reg  [   0:0] in__rdy,
+  input  wire [   0:0] in__val,
+  input  wire [   0:0] out_ack,
+  output reg  [   7:0] out_msg,
+  output reg  [   0:0] out_req,
+  input  wire [   0:0] reset
+);
+
+  // wire declarations
+  wire   [   0:0] synch_ack;
+  wire   [   7:0] reg_out;
+
+
+  // register declarations
+  reg    [   0:0] reg_en;
+  reg    [   1:0] state$in_;
+
+  // localparam declarations
+  localparam STATE_HOLD = 1;
+  localparam STATE_RECV = 0;
+  localparam STATE_SEND = 2;
+  localparam STATE_WAIT = 3;
+
+  // synch_1 temporaries
+  wire   [   0:0] synch_1$reset;
+  wire   [   0:0] synch_1$in_;
+  wire   [   0:0] synch_1$clk;
+  wire   [   0:0] synch_1$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_1
+  (
+    .reset ( synch_1$reset ),
+    .in_   ( synch_1$in_ ),
+    .clk   ( synch_1$clk ),
+    .out   ( synch_1$out )
+  );
+
+  // state temporaries
+  wire   [   0:0] state$reset;
+  wire   [   0:0] state$clk;
+  wire   [   1:0] state$out;
+
+  RegRst_0x9f365fdf6c8998a state
+  (
+    .reset ( state$reset ),
+    .in_   ( state$in_ ),
+    .clk   ( state$clk ),
+    .out   ( state$out )
+  );
+
+  // synch_2 temporaries
+  wire   [   0:0] synch_2$reset;
+  wire   [   0:0] synch_2$in_;
+  wire   [   0:0] synch_2$clk;
+  wire   [   0:0] synch_2$out;
+
+  RegRst_0x2ce052f8c32c5c39 synch_2
+  (
+    .reset ( synch_2$reset ),
+    .in_   ( synch_2$in_ ),
+    .clk   ( synch_2$clk ),
+    .out   ( synch_2$out )
+  );
+
+  // reg_in temporaries
+  wire   [   0:0] reg_in$reset;
+  wire   [   7:0] reg_in$in_;
+  wire   [   0:0] reg_in$clk;
+  wire   [   0:0] reg_in$en;
+  wire   [   7:0] reg_in$out;
+
+  RegEn_0x45f1552f10c5f05d reg_in
+  (
+    .reset ( reg_in$reset ),
+    .in_   ( reg_in$in_ ),
+    .clk   ( reg_in$clk ),
+    .en    ( reg_in$en ),
+    .out   ( reg_in$out )
+  );
+
+  // signal connections
+  assign reg_in$clk    = clk;
+  assign reg_in$en     = reg_en;
+  assign reg_in$in_    = in__msg;
+  assign reg_in$reset  = reset;
+  assign reg_out       = reg_in$out;
+  assign state$clk     = clk;
+  assign state$reset   = reset;
+  assign synch_1$clk   = clk;
+  assign synch_1$in_   = out_ack;
+  assign synch_1$reset = reset;
+  assign synch_2$clk   = clk;
+  assign synch_2$in_   = synch_1$out;
+  assign synch_2$reset = reset;
+  assign synch_ack     = synch_2$out;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_transition():
+  //       s.state.in_.value = s.state.out
+  //
+  //       if   s.state.out == s.STATE_RECV:
+  //         if s.in_.val:
+  //           s.state.in_.value = s.STATE_HOLD
+  //
+  //       elif s.state.out == s.STATE_HOLD:
+  //         s.state.in_.value = s.STATE_SEND
+  //
+  //       elif s.state.out == s.STATE_SEND:
+  //         if s.synch_ack:
+  //           s.state.in_.value = s.STATE_WAIT
+  //
+  //       elif s.state.out == s.STATE_WAIT:
+  //         if ~s.synch_ack:
+  //           s.state.in_.value = s.STATE_RECV
+
+  // logic for state_transition()
+  always @ (*) begin
+    state$in_ = state$out;
+    if ((state$out == STATE_RECV)) begin
+      if (in__val) begin
+        state$in_ = STATE_HOLD;
+      end
+      else begin
+      end
+    end
+    else begin
+      if ((state$out == STATE_HOLD)) begin
+        state$in_ = STATE_SEND;
+      end
+      else begin
+        if ((state$out == STATE_SEND)) begin
+          if (synch_ack) begin
+            state$in_ = STATE_WAIT;
+          end
+          else begin
+          end
+        end
+        else begin
+          if ((state$out == STATE_WAIT)) begin
+            if (~synch_ack) begin
+              state$in_ = STATE_RECV;
+            end
+            else begin
+            end
+          end
+          else begin
+          end
+        end
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def state_output():
+  //       s.in_.rdy.value = ( s.state.out == s.STATE_RECV )
+  //       s.reg_en.value  = s.in_.val & s.in_.rdy
+  //       s.out.msg.value = s.reg_out
+  //       s.out.req.value = ( s.state.out == s.STATE_SEND )
+
+  // logic for state_output()
+  always @ (*) begin
+    in__rdy = (state$out == STATE_RECV);
+    reg_en = (in__val&in__rdy);
+    out_msg = reg_out;
+    out_req = (state$out == STATE_SEND);
+  end
+
+
+endmodule // ValRdyToReqAck_0x3871167c1fef1233
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEn_0x45f1552f10c5f05d
+//-----------------------------------------------------------------------------
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEn_0x45f1552f10c5f05d
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [   7:0] in_,
+  output reg  [   7:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (en) begin
+      out <= in_;
+    end
+    else begin
+    end
+  end
+
+
+endmodule // RegEn_0x45f1552f10c5f05d
 `default_nettype wire
 
 //-----------------------------------------------------------------------------

@@ -104,7 +104,7 @@
 	(inst  name="iobond_h_east_outer_0"	space=-25.0000 indent=-11.66)
 	(inst  name="clk_out_iocell"	offset=88.3400 )
 	(inst  name="iobond_h_east_inner_0"	space=-25.0000 )
-	(inst  name="vss_dummy_h_8_iocell"	offset=138.3400 )
+	(inst  name="observe_iocell"	offset=138.3400 )
 	(inst  name="iobond_h_east_outer_1"	space=-25.0000 indent=-11.66)
 	(inst  name="vdd_poc_east_0_iocell"	offset=188.3400 )
 	(inst  name="iobond_h_east_inner_1"	space=-25.0000 )

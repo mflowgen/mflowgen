@@ -90,7 +90,7 @@ addInst -physical -cell PVSS2CDE_V_G -inst vss_io_south_1_iocell; # S, vertical
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_5_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_6_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_7_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_9_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_10_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst vss_dummy_h_11_iocell; # horizontal
