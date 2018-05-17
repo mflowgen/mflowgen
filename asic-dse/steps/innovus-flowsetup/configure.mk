@@ -140,6 +140,7 @@ clean-innovus-flowsetup:
 	rm -rf ./$(innovus_reports_dir)
 	rm -rf ./$(innovus_results_dir)
 	rm -rf ./$(innovus_handoffs_dir)
+	rm -f s.flow-innovus
 
 clean-flowsetup: clean-innovus-flowsetup
 
