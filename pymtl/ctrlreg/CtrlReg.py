@@ -51,6 +51,7 @@
 #      10 ---    |/
 #      11 --- <--+
 #      12 --- Misc.
+#      13 --- Control flow trigger
 #
 # Descriptions
 #
@@ -112,6 +113,10 @@ class CtrlReg( Model ):
 
     s.misc        = OutPort( 16 )
 
+    # Trigger for control flow
+
+    s.trigger_fc  = OutPort( 32 )
+
     #---------------------------------------------------------------------
     # Params
     #---------------------------------------------------------------------
@@ -147,11 +152,13 @@ class CtrlReg( Model ):
     cr_instcounter  = 3                             # Base for instruction counter
     cr_host_en      = cr_instcounter + num_cores    # Base for Host Enable counter
     cr_misc         = cr_host_en     + valrdy_ifcs
+    cr_trigger_fc   = cr_misc        + 1
 
     # Instantiate registers (16 registers)
 
     s.ctrlregs = \
-      [ RegEnRst( dtype = 32, reset_value = 0 ) for _ in xrange(num_ctrlregs) ]
+      [ RegEnRst( dtype = 32, reset_value = 0 if _ != cr_trigger_fc else 8 ) \
+                                             for _ in xrange(num_ctrlregs) ]
 
     # Read interface
 
@@ -238,6 +245,16 @@ class CtrlReg( Model ):
       s.cr_misc_en.value = s.rf_wen & ( s.rf_waddr == cr_misc )
       s.cr_misc_in.value = s.rf_wdata
 
+    # Control Register: Control flow trigger
+
+    s.cr_trigger_fc_en = Wire(  1 )
+    s.cr_trigger_fc_in = Wire( 32 )
+
+    @s.combinational
+    def comb_cr_trigger_fc_logic():
+      s.cr_trigger_fc_en.value = s.rf_wen & ( s.rf_waddr == cr_trigger_fc )
+      s.cr_trigger_fc_in.value = s.rf_wdata
+
     # Connect write value
 
     # Instacounters
@@ -297,6 +314,13 @@ class CtrlReg( Model ):
           s.ctrlregs[ridx].in_, s.cr_misc_in              ,
           s.ctrlregs[ridx].en , s.cr_misc_en              ,
           s.misc              , s.ctrlregs[ridx].out[0:16],
+        )
+
+      elif ridx == cr_trigger_fc:
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_trigger_fc_in  ,
+          s.ctrlregs[ridx].en , s.cr_trigger_fc_en  ,
+          s.trigger_fc        , s.ctrlregs[ridx].out,
         )
 
     #---------------------------------------------------------------------

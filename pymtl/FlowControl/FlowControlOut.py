@@ -37,6 +37,13 @@ class FlowControlOut( Model ):
     s.req_rdy = InPort[num_ports]( 1 )
 
     #------------------------------------------------
+    # Update trigger
+    #------------------------------------------------
+
+    s.trigger_fc        = InPort(      32       )
+    s.trigger_threshold = Wire  ( max_credit_lg )
+
+    #------------------------------------------------
     # Credit update
     #------------------------------------------------
 
@@ -50,10 +57,11 @@ class FlowControlOut( Model ):
     # which will be the update message
 
     #------------------------------------------------
-    # Constants
+    # Generating trigger threshold
     #------------------------------------------------
 
-    s.trigger_threshold = Bits( max_credit_lg, max_credit / 2 )
+    s.connect_wire( s.trigger_threshold, \
+                      s.trigger_fc[0:max_credit_lg] )
 
     #------------------------------------------------
     # Wires

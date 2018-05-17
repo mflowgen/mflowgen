@@ -94,6 +94,10 @@ class Chansey( Model ):
 
     s.misc  = OutPort( 16 )
 
+    # Control flow trigger
+
+    s.trigger_fc = OutPort( 32 )
+
     #---------------------------------------------------------------------
     # Components
     #---------------------------------------------------------------------
@@ -161,11 +165,12 @@ class Chansey( Model ):
 
     # ctrlreg
 
-    s.connect( s.debug,        s.ctrlreg.debug )
-    s.connect( s.misc,         s.ctrlreg.misc  )
+    s.connect( s.debug,        s.ctrlreg.debug      )
+    s.connect( s.misc,         s.ctrlreg.misc       )
+    s.connect( s.trigger_fc,   s.ctrlreg.trigger_fc )
 
-    s.connect( s.ctrlreg.req,  s.ctrlregreq    )
-    s.connect( s.ctrlreg.resp, s.ctrlregresp   )
+    s.connect( s.ctrlreg.req,  s.ctrlregreq         )
+    s.connect( s.ctrlreg.resp, s.ctrlregresp        )
 
     # core id & mngr
 

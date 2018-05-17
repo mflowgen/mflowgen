@@ -93,6 +93,10 @@ class HostChansey( Model ):
 
     s.flow_control = m = FlowControlOut( p_in_nports, 16 )
 
+    # Variable trigger
+
+    s.connect( s.flow_control.trigger_fc, s.dut.trigger_fc )
+
     # DUT
 
     s.in_q = []
