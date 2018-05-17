@@ -50,6 +50,7 @@
 #      9  ---    | > host_en interface
 #      10 ---    |/
 #      11 --- <--+
+#      12 --- Misc.
 #
 # Descriptions
 #
@@ -103,9 +104,13 @@ class CtrlReg( Model ):
 
     s.host_en     = OutPort( valrdy_ifcs )
 
-    # Misc ports
+    # Debug port
 
-    s.debug       = OutPort( 1 )
+    s.debug       = OutPort(  1 )
+
+    # Misc. ports
+
+    s.misc        = OutPort( 16 )
 
     #---------------------------------------------------------------------
     # Params
@@ -136,11 +141,12 @@ class CtrlReg( Model ):
     #
     # NOTE: Make sure that the go bit is ZERO when coming out of reset!
 
-    cr_go           = 0                           # Go bit
-    cr_debug        = 1                           # Debug bit
-    cr_cyclecounter = 2                           # Cycle counter
-    cr_instcounter  = 3                           # Base for instruction counter
-    cr_host_en      = cr_instcounter + num_cores  # Base for Host Enable counter
+    cr_go           = 0                             # Go bit
+    cr_debug        = 1                             # Debug bit
+    cr_cyclecounter = 2                             # Cycle counter
+    cr_instcounter  = 3                             # Base for instruction counter
+    cr_host_en      = cr_instcounter + num_cores    # Base for Host Enable counter
+    cr_misc         = cr_host_en     + valrdy_ifcs
 
     # Instantiate registers (16 registers)
 
@@ -159,7 +165,7 @@ class CtrlReg( Model ):
 
     # Write interface
 
-    s.rf_wen   = Wire( 1 )
+    s.rf_wen   = Wire(     1      )
     s.rf_waddr = Wire( addr_width )
     s.rf_wdata = Wire( data_width )
 
@@ -172,7 +178,7 @@ class CtrlReg( Model ):
 
     # Control Register: Go
 
-    s.cr_go_en = Wire( 1 )
+    s.cr_go_en = Wire(  1 )
     s.cr_go_in = Wire( 32 )
 
     @s.combinational
@@ -182,7 +188,7 @@ class CtrlReg( Model ):
 
     # Control Register: Debug
 
-    s.cr_debug_en = Wire( 1 )
+    s.cr_debug_en = Wire(  1 )
     s.cr_debug_in = Wire( 32 )
 
     @s.combinational
@@ -204,7 +210,7 @@ class CtrlReg( Model ):
 
     # Control Register: Cycle counters
 
-    s.cyclecounters_en  = Wire( 1 )
+    s.cyclecounters_en  = Wire(  1 )
     s.cyclecounters_in  = Wire( 32 )
     s.cyclecounters_out = Wire( 32 )
 
@@ -221,6 +227,16 @@ class CtrlReg( Model ):
     def comb_cr_hosten_logic():
       for idx in xrange(valrdy_ifcs):
         s.wire_host_en[idx].value = s.rf_wen & ( s.rf_waddr == ( idx + cr_host_en ) )
+
+    # Control Register: Misc
+
+    s.cr_misc_en = Wire(  1 )
+    s.cr_misc_in = Wire( 32 )
+
+    @s.combinational
+    def comb_cr_debug_logic():
+      s.cr_misc_en.value = s.rf_wen & ( s.rf_waddr == cr_misc )
+      s.cr_misc_in.value = s.rf_wdata
 
     # Connect write value
 
@@ -274,6 +290,13 @@ class CtrlReg( Model ):
           s.ctrlregs[ridx].in_, s.rf_wdata          ,
           s.ctrlregs[ridx].en , s.wire_host_en[cidx],
           s.host_en [cidx]    , s.ctrlregs[ridx].out[0],
+        )
+
+      elif ridx == cr_misc:
+        s.connect_pairs(
+          s.ctrlregs[ridx].in_, s.cr_misc_in              ,
+          s.ctrlregs[ridx].en , s.cr_misc_en              ,
+          s.misc              , s.ctrlregs[ridx].out[0:16],
         )
 
     #---------------------------------------------------------------------

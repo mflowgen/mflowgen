@@ -151,7 +151,7 @@ def random_msgs( writable_regs=writable_regs, num_msgs = num_msgs ):
 # Test table for generic test
 #-------------------------------------------------------------------------
 
-writable_regs = [ 0, 1, 7, 8, 9, 10, 11 ] # These registers are r/w
+writable_regs = [ 0, 1, 7, 8, 9, 10, 11, 12 ] # These registers are r/w
 num_msgs = 100
 
 test_case_table = mk_test_case_table([
