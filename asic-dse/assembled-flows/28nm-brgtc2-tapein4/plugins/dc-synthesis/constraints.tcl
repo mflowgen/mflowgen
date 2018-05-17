@@ -119,6 +119,8 @@ report_clock -groups -nosplit -skew > reports/dc-synthesis/${DESIGN_NAME}.clocks
 
 set_ungroup DW_fp_addsub_0x3cb0331b99cfb5df
 set_ungroup DW_fp_div_0x124edb2c88d843aa
+set_ungroup RegEn_0x33e44399f27afd57_5
+set_ungroup RegEn_0x48bd4b6ec5ffe974_1
 
 # Retime the multiplier
 
