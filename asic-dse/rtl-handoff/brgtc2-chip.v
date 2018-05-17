@@ -271,12 +271,15 @@ module brgtc2_chip
   // Clock mux
   //----------------------------------------------------------------------
   // MXIT2 is a transmission-based mux with inverted output with nicely
-  // balanced drive strength. The INV_X16B is a balanced inverter.
+  // balanced drive strength. The INV_X4B is a balanced inverter.
+
+  // These cells can be optimized because the tools are aware that the
+  // output of the pll is a clock signal according to our create_clock and
+  // create_generated_clock constraints. There is no need to set don't
+  // touch on these cells.
 
   wire clk;
   wire clk_mux_out;
-
-  // Make sure to set don't touch on this balanced-drive cell!
 
   MXIT2_X2M_A9PP140TS_C30 clk_mux
   (
@@ -285,10 +288,6 @@ module brgtc2_chip
     .S0 (clk_sel),
     .Y  (clk_mux_out)
   );
-
-  // This cell can be optimized because the tools are aware that the
-  // output of the clk_mux is a clock signal. There is no need to set
-  // don't touch on this cell.
 
   INV_X4B_A9PP140TS_C30 clk_inv (
     .A (clk_mux_out),

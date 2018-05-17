@@ -15,16 +15,16 @@ set DC_GATE_CLOCK true
 #
 # - Effort 0: No auto-ungrouping / boundary optimizations (strict hierarchy)
 # - Effort 1: No auto-ungrouping / boundary optimizations
-#             DesignWare cells are ungrouped
+#             DesignWare cells are ungrouped (var compile_ultra_ungroup_dw)
 # - Effort 2: Enable auto-ungrouping / boundary optimizations
-#             DesignWare cells are ungrouped
+#             DesignWare cells are ungrouped (var compile_ultra_ungroup_dw)
 # - Effort 3: Everything ungrouped + level param for how deep to ungroup
 #
 # Note that even with boundary optimizations off, DC will still propagate
 # constants across the boundary, although this can be disabled with a
 # variable if we really wanted to disable it.
 
-set DC_FLATTEN_EFFORT 1
+set DC_FLATTEN_EFFORT 0
 
 # When boundary optimizations are off, set this variable to true to still
 # allow unconnected registers to be removed.
