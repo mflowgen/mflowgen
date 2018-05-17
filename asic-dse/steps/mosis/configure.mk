@@ -34,13 +34,13 @@ endef
 
 # Input GDS
 
-mosis_input_gds     = $(handoff_dir.calibre-stamp)/top_stamped.gds
+mosis_input_gds     = $(handoff_dir.calibre-stamp)/stamped.gds
 
 # Output checksum and compressed GDS
 
-mosis_cksum         = $(handoff_dir.mosis)/top_stamped.cksum
-mosis_output_gds    = $(handoff_dir.mosis)/top_stamped.gds
-mosis_output_gds_gz = $(handoff_dir.mosis)/top_stamped.gds.gz
+mosis_cksum         = $(handoff_dir.mosis)/stamped.cksum
+mosis_output_gds    = $(handoff_dir.mosis)/stamped.gds
+mosis_output_gds_gz = $(handoff_dir.mosis)/stamped.gds.gz
 
 $(mosis_output_gds_gz): $(dependencies.mosis)
 	@mkdir -p $(handoff_dir.mosis)
