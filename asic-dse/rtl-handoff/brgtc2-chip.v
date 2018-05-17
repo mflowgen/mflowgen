@@ -829,6 +829,7 @@ module HostChansey
   wire   [   0:0] dut$host_icacheresp_val;
   wire   [   0:0] dut$imemresp_rdy;
   wire   [   0:0] dut$host_mdureq_rdy;
+  wire   [  31:0] dut$trigger_fc;
   wire   [   0:0] dut$mngr2proc_2_rdy;
   wire   [   0:0] dut$mngr2proc_3_rdy;
   wire   [   0:0] dut$mngr2proc_0_rdy;
@@ -896,6 +897,7 @@ module HostChansey
     .host_icacheresp_val ( dut$host_icacheresp_val ),
     .imemresp_rdy        ( dut$imemresp_rdy ),
     .host_mdureq_rdy     ( dut$host_mdureq_rdy ),
+    .trigger_fc          ( dut$trigger_fc ),
     .mngr2proc_2_rdy     ( dut$mngr2proc_2_rdy ),
     .mngr2proc_3_rdy     ( dut$mngr2proc_3_rdy ),
     .mngr2proc_0_rdy     ( dut$mngr2proc_0_rdy ),
@@ -1025,6 +1027,7 @@ module HostChansey
   wire   [   0:0] flow_control$req_val$008;
   wire   [   0:0] flow_control$req_val$009;
   wire   [   0:0] flow_control$reset;
+  wire   [  31:0] flow_control$trigger_fc;
   wire   [   0:0] flow_control$req_rdy$000;
   wire   [   0:0] flow_control$req_rdy$001;
   wire   [   0:0] flow_control$req_rdy$002;
@@ -1053,6 +1056,7 @@ module HostChansey
     .req_val$008 ( flow_control$req_val$008 ),
     .req_val$009 ( flow_control$req_val$009 ),
     .reset       ( flow_control$reset ),
+    .trigger_fc  ( flow_control$trigger_fc ),
     .req_rdy$000 ( flow_control$req_rdy$000 ),
     .req_rdy$001 ( flow_control$req_rdy$001 ),
     .req_rdy$002 ( flow_control$req_rdy$002 ),
@@ -1205,6 +1209,7 @@ module HostChansey
   assign flow_control$req_val$008       = in_q$008$deq_val;
   assign flow_control$req_val$009       = in_q$009$deq_val;
   assign flow_control$reset             = reset;
+  assign flow_control$trigger_fc        = dut$trigger_fc;
   assign flow_control$update_rdy        = out_merge$in_$010_rdy;
   assign in__ack                        = in_reqAckToValRdy$in__ack;
   assign in_deserialize$clk             = clk;
@@ -4242,12 +4247,85 @@ module Chansey
   output wire [  31:0] proc2mngr_3_msg,
   input  wire [   0:0] proc2mngr_3_rdy,
   output wire [   0:0] proc2mngr_3_val,
-  input  wire [   0:0] reset
+  input  wire [   0:0] reset,
+  output wire [  31:0] trigger_fc
 );
 
   // register declarations
   reg    [   0:0] cachereq_go;
   reg    [   0:0] l0idisable;
+
+  // icache_coalescer temporaries
+  wire   [ 145:0] icache_coalescer$memresp_msg;
+  wire   [   0:0] icache_coalescer$memresp_val;
+  wire   [ 175:0] icache_coalescer$reqs$000_msg;
+  wire   [   0:0] icache_coalescer$reqs$000_val;
+  wire   [ 175:0] icache_coalescer$reqs$001_msg;
+  wire   [   0:0] icache_coalescer$reqs$001_val;
+  wire   [ 175:0] icache_coalescer$reqs$002_msg;
+  wire   [   0:0] icache_coalescer$reqs$002_val;
+  wire   [ 175:0] icache_coalescer$reqs$003_msg;
+  wire   [   0:0] icache_coalescer$reqs$003_val;
+  wire   [   0:0] icache_coalescer$clk;
+  wire   [   0:0] icache_coalescer$resps$000_rdy;
+  wire   [   0:0] icache_coalescer$resps$001_rdy;
+  wire   [   0:0] icache_coalescer$resps$002_rdy;
+  wire   [   0:0] icache_coalescer$resps$003_rdy;
+  wire   [   0:0] icache_coalescer$reset;
+  wire   [   0:0] icache_coalescer$memreq_rdy;
+  wire   [   0:0] icache_coalescer$coalescing_en;
+  wire   [   0:0] icache_coalescer$memresp_rdy;
+  wire   [   0:0] icache_coalescer$reqs$000_rdy;
+  wire   [   0:0] icache_coalescer$reqs$001_rdy;
+  wire   [   0:0] icache_coalescer$reqs$002_rdy;
+  wire   [   0:0] icache_coalescer$reqs$003_rdy;
+  wire   [ 145:0] icache_coalescer$resps$000_msg;
+  wire   [   0:0] icache_coalescer$resps$000_val;
+  wire   [ 145:0] icache_coalescer$resps$001_msg;
+  wire   [   0:0] icache_coalescer$resps$001_val;
+  wire   [ 145:0] icache_coalescer$resps$002_msg;
+  wire   [   0:0] icache_coalescer$resps$002_val;
+  wire   [ 145:0] icache_coalescer$resps$003_msg;
+  wire   [   0:0] icache_coalescer$resps$003_val;
+  wire   [ 175:0] icache_coalescer$memreq_msg;
+  wire   [   0:0] icache_coalescer$memreq_val;
+
+  MemCoalescer_0x64e5f16502bd9749 icache_coalescer
+  (
+    .memresp_msg   ( icache_coalescer$memresp_msg ),
+    .memresp_val   ( icache_coalescer$memresp_val ),
+    .reqs$000_msg  ( icache_coalescer$reqs$000_msg ),
+    .reqs$000_val  ( icache_coalescer$reqs$000_val ),
+    .reqs$001_msg  ( icache_coalescer$reqs$001_msg ),
+    .reqs$001_val  ( icache_coalescer$reqs$001_val ),
+    .reqs$002_msg  ( icache_coalescer$reqs$002_msg ),
+    .reqs$002_val  ( icache_coalescer$reqs$002_val ),
+    .reqs$003_msg  ( icache_coalescer$reqs$003_msg ),
+    .reqs$003_val  ( icache_coalescer$reqs$003_val ),
+    .clk           ( icache_coalescer$clk ),
+    .resps$000_rdy ( icache_coalescer$resps$000_rdy ),
+    .resps$001_rdy ( icache_coalescer$resps$001_rdy ),
+    .resps$002_rdy ( icache_coalescer$resps$002_rdy ),
+    .resps$003_rdy ( icache_coalescer$resps$003_rdy ),
+    .reset         ( icache_coalescer$reset ),
+    .memreq_rdy    ( icache_coalescer$memreq_rdy ),
+    .coalescing_en ( icache_coalescer$coalescing_en ),
+    .memresp_rdy   ( icache_coalescer$memresp_rdy ),
+    .reqs$000_rdy  ( icache_coalescer$reqs$000_rdy ),
+    .reqs$001_rdy  ( icache_coalescer$reqs$001_rdy ),
+    .reqs$002_rdy  ( icache_coalescer$reqs$002_rdy ),
+    .reqs$003_rdy  ( icache_coalescer$reqs$003_rdy ),
+    .resps$000_msg ( icache_coalescer$resps$000_msg ),
+    .resps$000_val ( icache_coalescer$resps$000_val ),
+    .resps$001_msg ( icache_coalescer$resps$001_msg ),
+    .resps$001_val ( icache_coalescer$resps$001_val ),
+    .resps$002_msg ( icache_coalescer$resps$002_msg ),
+    .resps$002_val ( icache_coalescer$resps$002_val ),
+    .resps$003_msg ( icache_coalescer$resps$003_msg ),
+    .resps$003_val ( icache_coalescer$resps$003_val ),
+    .memreq_msg    ( icache_coalescer$memreq_msg ),
+    .memreq_val    ( icache_coalescer$memreq_val )
+  );
 
   // dcache_adapter temporaries
   wire   [  77:0] dcache_adapter$realreq_msg;
@@ -5153,78 +5231,6 @@ module Chansey
     .memreq_val    ( icache$memreq_val )
   );
 
-  // icache_coalescer temporaries
-  wire   [ 145:0] icache_coalescer$memresp_msg;
-  wire   [   0:0] icache_coalescer$memresp_val;
-  wire   [ 175:0] icache_coalescer$reqs$000_msg;
-  wire   [   0:0] icache_coalescer$reqs$000_val;
-  wire   [ 175:0] icache_coalescer$reqs$001_msg;
-  wire   [   0:0] icache_coalescer$reqs$001_val;
-  wire   [ 175:0] icache_coalescer$reqs$002_msg;
-  wire   [   0:0] icache_coalescer$reqs$002_val;
-  wire   [ 175:0] icache_coalescer$reqs$003_msg;
-  wire   [   0:0] icache_coalescer$reqs$003_val;
-  wire   [   0:0] icache_coalescer$clk;
-  wire   [   0:0] icache_coalescer$resps$000_rdy;
-  wire   [   0:0] icache_coalescer$resps$001_rdy;
-  wire   [   0:0] icache_coalescer$resps$002_rdy;
-  wire   [   0:0] icache_coalescer$resps$003_rdy;
-  wire   [   0:0] icache_coalescer$reset;
-  wire   [   0:0] icache_coalescer$memreq_rdy;
-  wire   [   0:0] icache_coalescer$coalescing_en;
-  wire   [   0:0] icache_coalescer$memresp_rdy;
-  wire   [   0:0] icache_coalescer$reqs$000_rdy;
-  wire   [   0:0] icache_coalescer$reqs$001_rdy;
-  wire   [   0:0] icache_coalescer$reqs$002_rdy;
-  wire   [   0:0] icache_coalescer$reqs$003_rdy;
-  wire   [ 145:0] icache_coalescer$resps$000_msg;
-  wire   [   0:0] icache_coalescer$resps$000_val;
-  wire   [ 145:0] icache_coalescer$resps$001_msg;
-  wire   [   0:0] icache_coalescer$resps$001_val;
-  wire   [ 145:0] icache_coalescer$resps$002_msg;
-  wire   [   0:0] icache_coalescer$resps$002_val;
-  wire   [ 145:0] icache_coalescer$resps$003_msg;
-  wire   [   0:0] icache_coalescer$resps$003_val;
-  wire   [ 175:0] icache_coalescer$memreq_msg;
-  wire   [   0:0] icache_coalescer$memreq_val;
-
-  MemCoalescer_0x64e5f16502bd9749 icache_coalescer
-  (
-    .memresp_msg   ( icache_coalescer$memresp_msg ),
-    .memresp_val   ( icache_coalescer$memresp_val ),
-    .reqs$000_msg  ( icache_coalescer$reqs$000_msg ),
-    .reqs$000_val  ( icache_coalescer$reqs$000_val ),
-    .reqs$001_msg  ( icache_coalescer$reqs$001_msg ),
-    .reqs$001_val  ( icache_coalescer$reqs$001_val ),
-    .reqs$002_msg  ( icache_coalescer$reqs$002_msg ),
-    .reqs$002_val  ( icache_coalescer$reqs$002_val ),
-    .reqs$003_msg  ( icache_coalescer$reqs$003_msg ),
-    .reqs$003_val  ( icache_coalescer$reqs$003_val ),
-    .clk           ( icache_coalescer$clk ),
-    .resps$000_rdy ( icache_coalescer$resps$000_rdy ),
-    .resps$001_rdy ( icache_coalescer$resps$001_rdy ),
-    .resps$002_rdy ( icache_coalescer$resps$002_rdy ),
-    .resps$003_rdy ( icache_coalescer$resps$003_rdy ),
-    .reset         ( icache_coalescer$reset ),
-    .memreq_rdy    ( icache_coalescer$memreq_rdy ),
-    .coalescing_en ( icache_coalescer$coalescing_en ),
-    .memresp_rdy   ( icache_coalescer$memresp_rdy ),
-    .reqs$000_rdy  ( icache_coalescer$reqs$000_rdy ),
-    .reqs$001_rdy  ( icache_coalescer$reqs$001_rdy ),
-    .reqs$002_rdy  ( icache_coalescer$reqs$002_rdy ),
-    .reqs$003_rdy  ( icache_coalescer$reqs$003_rdy ),
-    .resps$000_msg ( icache_coalescer$resps$000_msg ),
-    .resps$000_val ( icache_coalescer$resps$000_val ),
-    .resps$001_msg ( icache_coalescer$resps$001_msg ),
-    .resps$001_val ( icache_coalescer$resps$001_val ),
-    .resps$002_msg ( icache_coalescer$resps$002_msg ),
-    .resps$002_val ( icache_coalescer$resps$002_val ),
-    .resps$003_msg ( icache_coalescer$resps$003_msg ),
-    .resps$003_val ( icache_coalescer$resps$003_val ),
-    .memreq_msg    ( icache_coalescer$memreq_msg ),
-    .memreq_val    ( icache_coalescer$memreq_val )
-  );
-
   // mdu_adapter temporaries
   wire   [  69:0] mdu_adapter$realreq_msg;
   wire   [   0:0] mdu_adapter$realreq_val;
@@ -5286,6 +5292,7 @@ module Chansey
   wire   [  15:0] ctrlreg$misc;
   wire   [   3:0] ctrlreg$go;
   wire   [   0:0] ctrlreg$req_rdy;
+  wire   [  31:0] ctrlreg$trigger_fc;
   wire   [   0:0] ctrlreg$debug;
   wire   [   4:0] ctrlreg$host_en;
 
@@ -5303,6 +5310,7 @@ module Chansey
     .misc        ( ctrlreg$misc ),
     .go          ( ctrlreg$go ),
     .req_rdy     ( ctrlreg$req_rdy ),
+    .trigger_fc  ( ctrlreg$trigger_fc ),
     .debug       ( ctrlreg$debug ),
     .host_en     ( ctrlreg$host_en )
   );
@@ -5320,7 +5328,7 @@ module Chansey
   wire   [   0:0] xcel$000$xcelresp_val;
   wire   [   0:0] xcel$000$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$000
+  BloomFilterXcel_0x485cf945abf3c47 xcel$000
   (
     .xcelreq_msg      ( xcel$000$xcelreq_msg ),
     .xcelreq_val      ( xcel$000$xcelreq_val ),
@@ -5348,7 +5356,7 @@ module Chansey
   wire   [   0:0] xcel$001$xcelresp_val;
   wire   [   0:0] xcel$001$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$001
+  BloomFilterXcel_0x485cf945abf3c47 xcel$001
   (
     .xcelreq_msg      ( xcel$001$xcelreq_msg ),
     .xcelreq_val      ( xcel$001$xcelreq_val ),
@@ -5376,7 +5384,7 @@ module Chansey
   wire   [   0:0] xcel$002$xcelresp_val;
   wire   [   0:0] xcel$002$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$002
+  BloomFilterXcel_0x485cf945abf3c47 xcel$002
   (
     .xcelreq_msg      ( xcel$002$xcelreq_msg ),
     .xcelreq_val      ( xcel$002$xcelreq_val ),
@@ -5404,7 +5412,7 @@ module Chansey
   wire   [   0:0] xcel$003$xcelresp_val;
   wire   [   0:0] xcel$003$memreq_snoop_rdy;
 
-  BloomFilterXcel_0x5b4bdcc6dd97c7e3 xcel$003
+  BloomFilterXcel_0x485cf945abf3c47 xcel$003
   (
     .xcelreq_msg      ( xcel$003$xcelreq_msg ),
     .xcelreq_val      ( xcel$003$xcelreq_val ),
@@ -5771,6 +5779,7 @@ module Chansey
   assign proc2mngr_2_val                = proc$002$proc2mngr_val;
   assign proc2mngr_3_msg                = proc$003$proc2mngr_msg;
   assign proc2mngr_3_val                = proc$003$proc2mngr_val;
+  assign trigger_fc                     = ctrlreg$trigger_fc;
   assign xcel$000$clk                   = clk;
   assign xcel$000$memreq_snoop_msg      = dcache_adapter$req_msg;
   assign xcel$000$memreq_snoop_val      = cachereq_go;
@@ -5829,10 +5838,1168 @@ endmodule // Chansey
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// MemCoalescer_0x64e5f16502bd9749
+//-----------------------------------------------------------------------------
+// nports: 4
+// MsgTypeReq: 176
+// MsgTypeResp: 146
+// addr_nbits: 32
+// opaque_nbits: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module MemCoalescer_0x64e5f16502bd9749
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] coalescing_en,
+  output reg  [ 175:0] memreq_msg,
+  input  wire [   0:0] memreq_rdy,
+  output reg  [   0:0] memreq_val,
+  input  wire [ 145:0] memresp_msg,
+  output reg  [   0:0] memresp_rdy,
+  input  wire [   0:0] memresp_val,
+  input  wire [ 175:0] reqs$000_msg,
+  output wire [   0:0] reqs$000_rdy,
+  input  wire [   0:0] reqs$000_val,
+  input  wire [ 175:0] reqs$001_msg,
+  output wire [   0:0] reqs$001_rdy,
+  input  wire [   0:0] reqs$001_val,
+  input  wire [ 175:0] reqs$002_msg,
+  output wire [   0:0] reqs$002_rdy,
+  input  wire [   0:0] reqs$002_val,
+  input  wire [ 175:0] reqs$003_msg,
+  output wire [   0:0] reqs$003_rdy,
+  input  wire [   0:0] reqs$003_val,
+  input  wire [   0:0] reset,
+  output wire [ 145:0] resps$000_msg,
+  input  wire [   0:0] resps$000_rdy,
+  output wire [   0:0] resps$000_val,
+  output wire [ 145:0] resps$001_msg,
+  input  wire [   0:0] resps$001_rdy,
+  output wire [   0:0] resps$001_val,
+  output wire [ 145:0] resps$002_msg,
+  input  wire [   0:0] resps$002_rdy,
+  output wire [   0:0] resps$002_val,
+  output wire [ 145:0] resps$003_msg,
+  input  wire [   0:0] resps$003_rdy,
+  output wire [   0:0] resps$003_val
+);
+
+  // wire declarations
+  wire   [   0:0] coalesced_bits$000;
+  wire   [   0:0] coalesced_bits$001;
+  wire   [   0:0] coalesced_bits$002;
+  wire   [   0:0] coalesced_bits$003;
+
+
+  // register declarations
+  reg    [   0:0] arbiter$en;
+  reg    [   0:0] cmp_addr_sel_mux$sel;
+  reg    [   3:0] coalesced;
+  reg    [   0:0] curr_addr_reg$en;
+  reg    [   0:0] curr_state__9;
+  reg    [   1:0] encoded_arb_grant;
+  reg    [   0:0] encoder_kill;
+  reg    [   0:0] go_bit;
+  reg    [   3:0] go_vector;
+  reg    [   1:0] granted_addr_sel_mux$sel;
+  reg    [   3:0] issued;
+  reg    [   0:0] memreq_kill;
+  reg    [ 175:0] memreq_tmp_req;
+  reg    [   3:0] memresp_rdy_vector;
+  reg    [   0:0] next_state__9;
+  reg    [ 175:0] opaque_tmp_req;
+  reg    [ 145:0] tmp_resp;
+  reg    [   3:0] tmp_resps_val;
+
+  // localparam declarations
+  localparam PORT_STATE_IDLE = 0;
+  localparam PORT_STATE_PENDING = 1;
+  localparam nports = 4;
+
+  // loop variable declarations
+  integer i;
+
+  // curr_addr_reg temporaries
+  wire   [   0:0] curr_addr_reg$reset;
+  wire   [   0:0] curr_addr_reg$clk;
+  wire   [  31:0] curr_addr_reg$in_;
+  wire   [  31:0] curr_addr_reg$out;
+
+  RegEnRst_0x3857337130dc0828 curr_addr_reg
+  (
+    .reset ( curr_addr_reg$reset ),
+    .en    ( curr_addr_reg$en ),
+    .clk   ( curr_addr_reg$clk ),
+    .in_   ( curr_addr_reg$in_ ),
+    .out   ( curr_addr_reg$out )
+  );
+
+  // addr_cmps$000 temporaries
+  wire   [   0:0] addr_cmps$000$reset;
+  wire   [   0:0] addr_cmps$000$clk;
+  wire   [  31:0] addr_cmps$000$in0;
+  wire   [  31:0] addr_cmps$000$in1;
+  wire   [   0:0] addr_cmps$000$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$000
+  (
+    .reset ( addr_cmps$000$reset ),
+    .clk   ( addr_cmps$000$clk ),
+    .in0   ( addr_cmps$000$in0 ),
+    .in1   ( addr_cmps$000$in1 ),
+    .out   ( addr_cmps$000$out )
+  );
+
+  // addr_cmps$001 temporaries
+  wire   [   0:0] addr_cmps$001$reset;
+  wire   [   0:0] addr_cmps$001$clk;
+  wire   [  31:0] addr_cmps$001$in0;
+  wire   [  31:0] addr_cmps$001$in1;
+  wire   [   0:0] addr_cmps$001$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$001
+  (
+    .reset ( addr_cmps$001$reset ),
+    .clk   ( addr_cmps$001$clk ),
+    .in0   ( addr_cmps$001$in0 ),
+    .in1   ( addr_cmps$001$in1 ),
+    .out   ( addr_cmps$001$out )
+  );
+
+  // addr_cmps$002 temporaries
+  wire   [   0:0] addr_cmps$002$reset;
+  wire   [   0:0] addr_cmps$002$clk;
+  wire   [  31:0] addr_cmps$002$in0;
+  wire   [  31:0] addr_cmps$002$in1;
+  wire   [   0:0] addr_cmps$002$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$002
+  (
+    .reset ( addr_cmps$002$reset ),
+    .clk   ( addr_cmps$002$clk ),
+    .in0   ( addr_cmps$002$in0 ),
+    .in1   ( addr_cmps$002$in1 ),
+    .out   ( addr_cmps$002$out )
+  );
+
+  // addr_cmps$003 temporaries
+  wire   [   0:0] addr_cmps$003$reset;
+  wire   [   0:0] addr_cmps$003$clk;
+  wire   [  31:0] addr_cmps$003$in0;
+  wire   [  31:0] addr_cmps$003$in1;
+  wire   [   0:0] addr_cmps$003$out;
+
+  EqComparator_0x20454677a5a72bab addr_cmps$003
+  (
+    .reset ( addr_cmps$003$reset ),
+    .clk   ( addr_cmps$003$clk ),
+    .in0   ( addr_cmps$003$in0 ),
+    .in1   ( addr_cmps$003$in1 ),
+    .out   ( addr_cmps$003$out )
+  );
+
+  // opaque_regs$000 temporaries
+  wire   [   0:0] opaque_regs$000$reset;
+  wire   [   0:0] opaque_regs$000$en;
+  wire   [   0:0] opaque_regs$000$clk;
+  wire   [   7:0] opaque_regs$000$in_;
+  wire   [   7:0] opaque_regs$000$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$000
+  (
+    .reset ( opaque_regs$000$reset ),
+    .en    ( opaque_regs$000$en ),
+    .clk   ( opaque_regs$000$clk ),
+    .in_   ( opaque_regs$000$in_ ),
+    .out   ( opaque_regs$000$out )
+  );
+
+  // opaque_regs$001 temporaries
+  wire   [   0:0] opaque_regs$001$reset;
+  wire   [   0:0] opaque_regs$001$en;
+  wire   [   0:0] opaque_regs$001$clk;
+  wire   [   7:0] opaque_regs$001$in_;
+  wire   [   7:0] opaque_regs$001$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$001
+  (
+    .reset ( opaque_regs$001$reset ),
+    .en    ( opaque_regs$001$en ),
+    .clk   ( opaque_regs$001$clk ),
+    .in_   ( opaque_regs$001$in_ ),
+    .out   ( opaque_regs$001$out )
+  );
+
+  // opaque_regs$002 temporaries
+  wire   [   0:0] opaque_regs$002$reset;
+  wire   [   0:0] opaque_regs$002$en;
+  wire   [   0:0] opaque_regs$002$clk;
+  wire   [   7:0] opaque_regs$002$in_;
+  wire   [   7:0] opaque_regs$002$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$002
+  (
+    .reset ( opaque_regs$002$reset ),
+    .en    ( opaque_regs$002$en ),
+    .clk   ( opaque_regs$002$clk ),
+    .in_   ( opaque_regs$002$in_ ),
+    .out   ( opaque_regs$002$out )
+  );
+
+  // opaque_regs$003 temporaries
+  wire   [   0:0] opaque_regs$003$reset;
+  wire   [   0:0] opaque_regs$003$en;
+  wire   [   0:0] opaque_regs$003$clk;
+  wire   [   7:0] opaque_regs$003$in_;
+  wire   [   7:0] opaque_regs$003$out;
+
+  RegEnRst_0x513e5624ff809260 opaque_regs$003
+  (
+    .reset ( opaque_regs$003$reset ),
+    .en    ( opaque_regs$003$en ),
+    .clk   ( opaque_regs$003$clk ),
+    .in_   ( opaque_regs$003$in_ ),
+    .out   ( opaque_regs$003$out )
+  );
+
+  // arbiter temporaries
+  wire   [   3:0] arbiter$reqs;
+  wire   [   0:0] arbiter$clk;
+  wire   [   0:0] arbiter$reset;
+  wire   [   3:0] arbiter$grants;
+
+  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
+  (
+    .en     ( arbiter$en ),
+    .reqs   ( arbiter$reqs ),
+    .clk    ( arbiter$clk ),
+    .reset  ( arbiter$reset ),
+    .grants ( arbiter$grants )
+  );
+
+  // ports_state$000 temporaries
+  wire   [   0:0] ports_state$000$reset;
+  wire   [   0:0] ports_state$000$in_;
+  wire   [   0:0] ports_state$000$clk;
+  wire   [   0:0] ports_state$000$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$000
+  (
+    .reset ( ports_state$000$reset ),
+    .in_   ( ports_state$000$in_ ),
+    .clk   ( ports_state$000$clk ),
+    .out   ( ports_state$000$out )
+  );
+
+  // ports_state$001 temporaries
+  wire   [   0:0] ports_state$001$reset;
+  wire   [   0:0] ports_state$001$in_;
+  wire   [   0:0] ports_state$001$clk;
+  wire   [   0:0] ports_state$001$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$001
+  (
+    .reset ( ports_state$001$reset ),
+    .in_   ( ports_state$001$in_ ),
+    .clk   ( ports_state$001$clk ),
+    .out   ( ports_state$001$out )
+  );
+
+  // ports_state$002 temporaries
+  wire   [   0:0] ports_state$002$reset;
+  wire   [   0:0] ports_state$002$in_;
+  wire   [   0:0] ports_state$002$clk;
+  wire   [   0:0] ports_state$002$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$002
+  (
+    .reset ( ports_state$002$reset ),
+    .in_   ( ports_state$002$in_ ),
+    .clk   ( ports_state$002$clk ),
+    .out   ( ports_state$002$out )
+  );
+
+  // ports_state$003 temporaries
+  wire   [   0:0] ports_state$003$reset;
+  wire   [   0:0] ports_state$003$in_;
+  wire   [   0:0] ports_state$003$clk;
+  wire   [   0:0] ports_state$003$out;
+
+  RegRst_0x2ce052f8c32c5c39 ports_state$003
+  (
+    .reset ( ports_state$003$reset ),
+    .in_   ( ports_state$003$in_ ),
+    .clk   ( ports_state$003$clk ),
+    .out   ( ports_state$003$out )
+  );
+
+  // granted_addr_sel_mux temporaries
+  wire   [   0:0] granted_addr_sel_mux$reset;
+  wire   [  31:0] granted_addr_sel_mux$in_$000;
+  wire   [  31:0] granted_addr_sel_mux$in_$001;
+  wire   [  31:0] granted_addr_sel_mux$in_$002;
+  wire   [  31:0] granted_addr_sel_mux$in_$003;
+  wire   [   0:0] granted_addr_sel_mux$clk;
+  wire   [  31:0] granted_addr_sel_mux$out;
+
+  Mux_0x7be03e4007003adc granted_addr_sel_mux
+  (
+    .reset   ( granted_addr_sel_mux$reset ),
+    .in_$000 ( granted_addr_sel_mux$in_$000 ),
+    .in_$001 ( granted_addr_sel_mux$in_$001 ),
+    .in_$002 ( granted_addr_sel_mux$in_$002 ),
+    .in_$003 ( granted_addr_sel_mux$in_$003 ),
+    .clk     ( granted_addr_sel_mux$clk ),
+    .sel     ( granted_addr_sel_mux$sel ),
+    .out     ( granted_addr_sel_mux$out )
+  );
+
+  // cmp_addr_sel_mux temporaries
+  wire   [   0:0] cmp_addr_sel_mux$reset;
+  wire   [  31:0] cmp_addr_sel_mux$in_$000;
+  wire   [  31:0] cmp_addr_sel_mux$in_$001;
+  wire   [   0:0] cmp_addr_sel_mux$clk;
+  wire   [  31:0] cmp_addr_sel_mux$out;
+
+  Mux_0x7e8c65f0610ab9ca cmp_addr_sel_mux
+  (
+    .reset   ( cmp_addr_sel_mux$reset ),
+    .in_$000 ( cmp_addr_sel_mux$in_$000 ),
+    .in_$001 ( cmp_addr_sel_mux$in_$001 ),
+    .clk     ( cmp_addr_sel_mux$clk ),
+    .sel     ( cmp_addr_sel_mux$sel ),
+    .out     ( cmp_addr_sel_mux$out )
+  );
+
+  // signal connections
+  assign addr_cmps$000$clk            = clk;
+  assign addr_cmps$000$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$000$in1            = reqs$000_msg[163:132];
+  assign addr_cmps$000$reset          = reset;
+  assign addr_cmps$001$clk            = clk;
+  assign addr_cmps$001$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$001$in1            = reqs$001_msg[163:132];
+  assign addr_cmps$001$reset          = reset;
+  assign addr_cmps$002$clk            = clk;
+  assign addr_cmps$002$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$002$in1            = reqs$002_msg[163:132];
+  assign addr_cmps$002$reset          = reset;
+  assign addr_cmps$003$clk            = clk;
+  assign addr_cmps$003$in0            = cmp_addr_sel_mux$out;
+  assign addr_cmps$003$in1            = reqs$003_msg[163:132];
+  assign addr_cmps$003$reset          = reset;
+  assign arbiter$clk                  = clk;
+  assign arbiter$reqs[0]              = reqs$000_val;
+  assign arbiter$reqs[1]              = reqs$001_val;
+  assign arbiter$reqs[2]              = reqs$002_val;
+  assign arbiter$reqs[3]              = reqs$003_val;
+  assign arbiter$reset                = reset;
+  assign cmp_addr_sel_mux$clk         = clk;
+  assign cmp_addr_sel_mux$in_$000     = curr_addr_reg$in_;
+  assign cmp_addr_sel_mux$in_$001     = curr_addr_reg$out;
+  assign cmp_addr_sel_mux$reset       = reset;
+  assign coalesced_bits$000           = addr_cmps$000$out;
+  assign coalesced_bits$001           = addr_cmps$001$out;
+  assign coalesced_bits$002           = addr_cmps$002$out;
+  assign coalesced_bits$003           = addr_cmps$003$out;
+  assign curr_addr_reg$clk            = clk;
+  assign curr_addr_reg$in_            = granted_addr_sel_mux$out;
+  assign curr_addr_reg$reset          = reset;
+  assign granted_addr_sel_mux$clk     = clk;
+  assign granted_addr_sel_mux$in_$000 = reqs$000_msg[163:132];
+  assign granted_addr_sel_mux$in_$001 = reqs$001_msg[163:132];
+  assign granted_addr_sel_mux$in_$002 = reqs$002_msg[163:132];
+  assign granted_addr_sel_mux$in_$003 = reqs$003_msg[163:132];
+  assign granted_addr_sel_mux$reset   = reset;
+  assign opaque_regs$000$clk          = clk;
+  assign opaque_regs$000$reset        = reset;
+  assign opaque_regs$001$clk          = clk;
+  assign opaque_regs$001$reset        = reset;
+  assign opaque_regs$002$clk          = clk;
+  assign opaque_regs$002$reset        = reset;
+  assign opaque_regs$003$clk          = clk;
+  assign opaque_regs$003$reset        = reset;
+  assign ports_state$000$clk          = clk;
+  assign ports_state$000$reset        = reset;
+  assign ports_state$001$clk          = clk;
+  assign ports_state$001$reset        = reset;
+  assign ports_state$002$clk          = clk;
+  assign ports_state$002$reset        = reset;
+  assign ports_state$003$clk          = clk;
+  assign ports_state$003$reset        = reset;
+
+  // array declarations
+  wire   [   0:0] coalesced_bits[0:3];
+  assign coalesced_bits[  0] = coalesced_bits$000;
+  assign coalesced_bits[  1] = coalesced_bits$001;
+  assign coalesced_bits[  2] = coalesced_bits$002;
+  assign coalesced_bits[  3] = coalesced_bits$003;
+  reg    [   0:0] opaque_regs$en[0:3];
+  assign opaque_regs$000$en = opaque_regs$en[  0];
+  assign opaque_regs$001$en = opaque_regs$en[  1];
+  assign opaque_regs$002$en = opaque_regs$en[  2];
+  assign opaque_regs$003$en = opaque_regs$en[  3];
+  reg    [   7:0] opaque_regs$in_[0:3];
+  assign opaque_regs$000$in_ = opaque_regs$in_[  0];
+  assign opaque_regs$001$in_ = opaque_regs$in_[  1];
+  assign opaque_regs$002$in_ = opaque_regs$in_[  2];
+  assign opaque_regs$003$in_ = opaque_regs$in_[  3];
+  wire   [   7:0] opaque_regs$out[0:3];
+  assign opaque_regs$out[  0] = opaque_regs$000$out;
+  assign opaque_regs$out[  1] = opaque_regs$001$out;
+  assign opaque_regs$out[  2] = opaque_regs$002$out;
+  assign opaque_regs$out[  3] = opaque_regs$003$out;
+  reg    [   0:0] ports_state$in_[0:3];
+  assign ports_state$000$in_ = ports_state$in_[  0];
+  assign ports_state$001$in_ = ports_state$in_[  1];
+  assign ports_state$002$in_ = ports_state$in_[  2];
+  assign ports_state$003$in_ = ports_state$in_[  3];
+  wire   [   0:0] ports_state$out[0:3];
+  assign ports_state$out[  0] = ports_state$000$out;
+  assign ports_state$out[  1] = ports_state$001$out;
+  assign ports_state$out[  2] = ports_state$002$out;
+  assign ports_state$out[  3] = ports_state$003$out;
+  wire   [ 175:0] reqs_msg[0:3];
+  assign reqs_msg[  0] = reqs$000_msg;
+  assign reqs_msg[  1] = reqs$001_msg;
+  assign reqs_msg[  2] = reqs$002_msg;
+  assign reqs_msg[  3] = reqs$003_msg;
+  reg    [   0:0] reqs_rdy[0:3];
+  assign reqs$000_rdy = reqs_rdy[  0];
+  assign reqs$001_rdy = reqs_rdy[  1];
+  assign reqs$002_rdy = reqs_rdy[  2];
+  assign reqs$003_rdy = reqs_rdy[  3];
+  wire   [   0:0] reqs_val[0:3];
+  assign reqs_val[  0] = reqs$000_val;
+  assign reqs_val[  1] = reqs$001_val;
+  assign reqs_val[  2] = reqs$002_val;
+  assign reqs_val[  3] = reqs$003_val;
+  reg    [ 145:0] resps_msg[0:3];
+  assign resps$000_msg = resps_msg[  0];
+  assign resps$001_msg = resps_msg[  1];
+  assign resps$002_msg = resps_msg[  2];
+  assign resps$003_msg = resps_msg[  3];
+  wire   [   0:0] resps_rdy[0:3];
+  assign resps_rdy[  0] = resps$000_rdy;
+  assign resps_rdy[  1] = resps$001_rdy;
+  assign resps_rdy[  2] = resps$002_rdy;
+  assign resps_rdy[  3] = resps$003_rdy;
+  reg    [   0:0] resps_val[0:3];
+  assign resps$000_val = resps_val[  0];
+  assign resps$001_val = resps_val[  1];
+  assign resps$002_val = resps_val[  2];
+  assign resps$003_val = resps_val[  3];
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_go_bit_set():
+  //
+  //       for i in range( nports ):
+  //         s.go_vector[i].value =  ( s.ports_state[i].out == PORT_STATE_IDLE ) | \
+  //                                 ( s.tmp_resps_val[i] & s.resps[i].rdy )
+  //
+  //       s.go_bit.value = reduce_and( s.go_vector )
+
+  // logic for comb_go_bit_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      go_vector[i] = ((ports_state$out[i] == PORT_STATE_IDLE)|(tmp_resps_val[i]&resps_rdy[i]));
+    end
+    go_bit = (&go_vector);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_memreq_set():
+  //
+  //       s.memreq.val.value =  s.go_bit & ( s.arbiter.grants != 0 )
+  //
+  //       s.memreq_kill.value = 0
+  //       s.memreq.msg.value  = 0
+  //
+  //       for i in range( nports ):
+  //         if s.arbiter.grants[i] and s.memreq_kill == 0:
+  //           # hawajkm: PyMTL bug
+  //           s.memreq_tmp_req.value  = s.reqs[i].msg
+  //           s.memreq.msg.value      = s.memreq_tmp_req
+  //           s.memreq_kill.value     = 1
+
+  // logic for comb_memreq_set()
+  always @ (*) begin
+    memreq_val = (go_bit&(arbiter$grants != 0));
+    memreq_kill = 0;
+    memreq_msg = 0;
+    for (i=0; i < nports; i=i+1)
+    begin
+      if ((arbiter$grants[i]&&(memreq_kill == 0))) begin
+        memreq_tmp_req = reqs_msg[i];
+        memreq_msg = memreq_tmp_req;
+        memreq_kill = 1;
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_reqs_rdy_set():
+  //
+  //       for i in range( nports ):
+  //         if s.coalescing_en:
+  //
+  //           # whether a request can be issued
+  //           s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
+  //
+  //           # whether a request can be coalesced
+  //           s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
+  //                                   ( s.ports_state[i].out == PORT_STATE_IDLE ) & ~s.memresp.val
+  //
+  //         else:
+  //           # issued only if the requesting port is granted
+  //           s.issued[i].value     = s.go_bit & s.arbiter.grants[i] & s.memreq.rdy
+  //
+  //           # no colaescing allowed
+  //           s.coalesced[i].value  = 0
+  //
+  //         # ready if a request is either issued or coalesced
+  //         s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
+
+  // logic for comb_reqs_rdy_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      if (coalescing_en) begin
+        issued[i] = ((go_bit&coalesced_bits[i])&memreq_rdy);
+        coalesced[i] = (((~go_bit&coalesced_bits[i])&(ports_state$out[i] == PORT_STATE_IDLE))&~memresp_val);
+      end
+      else begin
+        issued[i] = ((go_bit&arbiter$grants[i])&memreq_rdy);
+        coalesced[i] = 0;
+      end
+      reqs_rdy[i] = (issued[i]|coalesced[i]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_memresp_rdy_set():
+  //
+  //       for i in range( nports ):
+  //         s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
+  //                                         ( s.ports_state[i].out == PORT_STATE_IDLE )
+  //       s.memresp.rdy.value = reduce_and( s.memresp_rdy_vector )
+
+  // logic for comb_memresp_rdy_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      memresp_rdy_vector[i] = (((ports_state$out[i] == PORT_STATE_PENDING)&resps_rdy[i])|(ports_state$out[i] == PORT_STATE_IDLE));
+    end
+    memresp_rdy = (&memresp_rdy_vector);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_resps_set():
+  //
+  //       for i in range( nports ):
+  //         s.tmp_resps_val[i].value = s.memresp.val & \
+  //                                s.memresp.rdy & \
+  //                                ( s.ports_state[i].out == PORT_STATE_PENDING )
+
+  // logic for comb_resps_set()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      tmp_resps_val[i] = ((memresp_val&memresp_rdy)&(ports_state$out[i] == PORT_STATE_PENDING));
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_connect_resp_val():
+  //
+  //       for i in xrange( nports ):
+  //         s.resps[i].val.value = s.tmp_resps_val[i]
+  //
+  //         # hawajkm: PyMTL bug
+  //         s.tmp_resp.value        = s.memresp.msg
+  //         s.tmp_resp.opaque.value = s.opaque_regs[i].out
+  //         s.resps[i].msg.value    = s.tmp_resp
+
+  // logic for comb_connect_resp_val()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      resps_val[i] = tmp_resps_val[i];
+      tmp_resp = memresp_msg;
+      tmp_resp[(142)-1:134] = opaque_regs$out[i];
+      resps_msg[i] = tmp_resp;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_arbiter_en():
+  //
+  //       s.arbiter.en.value = s.memreq.val & s.memreq.rdy
+
+  // logic for comb_arbiter_en()
+  always @ (*) begin
+    arbiter$en = (memreq_val&memreq_rdy);
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_encode_arb_grants():
+  //
+  //       s.encoder_kill.value = 0
+  //       s.encoded_arb_grant.value = 0
+  //
+  //       for i in range( nports ):
+  //         if s.arbiter.grants[i] and s.encoder_kill == 0:
+  //           s.encoded_arb_grant.value = i
+  //           s.encoder_kill.value = 1
+
+  // logic for comb_encode_arb_grants()
+  always @ (*) begin
+    encoder_kill = 0;
+    encoded_arb_grant = 0;
+    for (i=0; i < nports; i=i+1)
+    begin
+      if ((arbiter$grants[i]&&(encoder_kill == 0))) begin
+        encoded_arb_grant = i;
+        encoder_kill = 1;
+      end
+      else begin
+      end
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_curr_addr_reg_en():
+  //
+  //       s.curr_addr_reg.en.value = s.go_bit
+
+  // logic for comb_curr_addr_reg_en()
+  always @ (*) begin
+    curr_addr_reg$en = go_bit;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def ports_state_transition():
+  //
+  //       for i in range( nports ):
+  //         curr_state = s.ports_state[i].out
+  //         next_state = s.ports_state[i].out
+  //
+  //         # PORT_STATE_IDLE -> PORT_STATE_PENDING
+  //         if ( curr_state == PORT_STATE_IDLE ):
+  //           if ( s.reqs[i].val and s.reqs[i].rdy ):
+  //             next_state = PORT_STATE_PENDING
+  //
+  //         # PORT_STATE_PENDING -> PORT_STATE_IDLE
+  //         elif ( curr_state == PORT_STATE_PENDING ):
+  //           if ( s.memresp.rdy and s.memresp.val and ~( s.reqs[i].val and s.reqs[i].rdy ) ):
+  //             next_state = PORT_STATE_IDLE
+  //
+  //         s.ports_state[i].in_.value = next_state
+
+  // logic for ports_state_transition()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      curr_state__9 = ports_state$out[i];
+      next_state__9 = ports_state$out[i];
+      if ((curr_state__9 == PORT_STATE_IDLE)) begin
+        if ((reqs_val[i]&&reqs_rdy[i])) begin
+          next_state__9 = PORT_STATE_PENDING;
+        end
+        else begin
+        end
+      end
+      else begin
+        if ((curr_state__9 == PORT_STATE_PENDING)) begin
+          if ((memresp_rdy&&memresp_val&&~(reqs_val[i]&&reqs_rdy[i]))) begin
+            next_state__9 = PORT_STATE_IDLE;
+          end
+          else begin
+          end
+        end
+        else begin
+        end
+      end
+      ports_state$in_[i] = next_state__9;
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_opaque_regs_en():
+  //
+  //       for i in range( nports ):
+  //         # hawajkm: PyMTL bug
+  //         s.opaque_tmp_req.value = s.reqs[i].msg
+  //         s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == PORT_STATE_IDLE )
+  //         s.opaque_regs[i].in_.value = s.opaque_tmp_req.opaque
+
+  // logic for comb_opaque_regs_en()
+  always @ (*) begin
+    for (i=0; i < nports; i=i+1)
+    begin
+      opaque_tmp_req = reqs_msg[i];
+      opaque_regs$en[i] = (go_bit|(ports_state$out[i] == PORT_STATE_IDLE));
+      opaque_regs$in_[i] = opaque_tmp_req[(172)-1:164];
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cmp_addr_sel_mux_sel():
+  //
+  //       s.cmp_addr_sel_mux.sel.value = ~s.go_bit
+
+  // logic for comb_cmp_addr_sel_mux_sel()
+  always @ (*) begin
+    cmp_addr_sel_mux$sel = ~go_bit;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_granted_addr_sel_mux_sel():
+  //
+  //       s.granted_addr_sel_mux.sel.value = s.encoded_arb_grant
+
+  // logic for comb_granted_addr_sel_mux_sel()
+  always @ (*) begin
+    granted_addr_sel_mux$sel = encoded_arb_grant;
+  end
+
+
+endmodule // MemCoalescer_0x64e5f16502bd9749
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEnRst_0x3857337130dc0828
+//-----------------------------------------------------------------------------
+// reset_value: 0
+// dtype: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEnRst_0x3857337130dc0828
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  31:0] in_,
+  output reg  [  31:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       elif s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      if (en) begin
+        out <= in_;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // RegEnRst_0x3857337130dc0828
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// EqComparator_0x20454677a5a72bab
+//-----------------------------------------------------------------------------
+// nbits: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module EqComparator_0x20454677a5a72bab
+(
+  input  wire [   0:0] clk,
+  input  wire [  31:0] in0,
+  input  wire [  31:0] in1,
+  output reg  [   0:0] out,
+  input  wire [   0:0] reset
+);
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       s.out.value = s.in0 == s.in1
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = (in0 == in1);
+  end
+
+
+endmodule // EqComparator_0x20454677a5a72bab
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEnRst_0x513e5624ff809260
+//-----------------------------------------------------------------------------
+// reset_value: 0
+// dtype: 8
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEnRst_0x513e5624ff809260
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [   7:0] in_,
+  output reg  [   7:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 0;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       elif s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      if (en) begin
+        out <= in_;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // RegEnRst_0x513e5624ff809260
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RoundRobinArbiterEn_0x77747397823e93e3
+//-----------------------------------------------------------------------------
+// nreqs: 4
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RoundRobinArbiterEn_0x77747397823e93e3
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  output reg  [   3:0] grants,
+  input  wire [   3:0] reqs,
+  input  wire [   0:0] reset
+);
+
+  // register declarations
+  reg    [   7:0] grants_int;
+  reg    [   8:0] kills;
+  reg    [   0:0] priority_en;
+  reg    [   7:0] priority_int;
+  reg    [   7:0] reqs_int;
+
+  // localparam declarations
+  localparam nreqs = 4;
+  localparam nreqsX2 = 8;
+
+  // loop variable declarations
+  integer i;
+
+  // priority_reg temporaries
+  wire   [   0:0] priority_reg$reset;
+  wire   [   0:0] priority_reg$en;
+  wire   [   0:0] priority_reg$clk;
+  wire   [   3:0] priority_reg$in_;
+  wire   [   3:0] priority_reg$out;
+
+  RegEnRst_0x2e6a8ff89958929b priority_reg
+  (
+    .reset ( priority_reg$reset ),
+    .en    ( priority_reg$en ),
+    .clk   ( priority_reg$clk ),
+    .in_   ( priority_reg$in_ ),
+    .out   ( priority_reg$out )
+  );
+
+  // signal connections
+  assign priority_reg$clk      = clk;
+  assign priority_reg$en       = priority_en;
+  assign priority_reg$in_[0]   = grants[3];
+  assign priority_reg$in_[3:1] = grants[2:0];
+  assign priority_reg$reset    = reset;
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_arbitrate():
+  //
+  //       s.kills[0].value = 1
+  //
+  //       s.priority_int[    0:nreqs  ].value = s.priority_reg.out
+  //       s.priority_int[nreqs:nreqsX2].value = 0
+  //       s.reqs_int    [    0:nreqs  ].value = s.reqs
+  //       s.reqs_int    [nreqs:nreqsX2].value = s.reqs
+  //
+  //       # Calculate the kill chain
+  //       for i in range( nreqsX2 ):
+  //
+  //         # Set internal grants
+  //         if s.priority_int[i].value:
+  //           s.grants_int[i].value = s.reqs_int[i]
+  //         else:
+  //           s.grants_int[i].value = ~s.kills[i] & s.reqs_int[i]
+  //
+  //         # Set kill signals
+  //         if s.priority_int[i].value:
+  //           s.kills[i+1].value = s.grants_int[i]
+  //         else:
+  //           s.kills[i+1].value = s.kills[i] | s.grants_int[i]
+  //
+  //       # Assign the output ports
+  //       for i in range( nreqs ):
+  //         s.grants[i].value = s.grants_int[i] | s.grants_int[nreqs+i]
+
+  // logic for comb_arbitrate()
+  always @ (*) begin
+    kills[0] = 1;
+    priority_int[(nreqs)-1:0] = priority_reg$out;
+    priority_int[(nreqsX2)-1:nreqs] = 0;
+    reqs_int[(nreqs)-1:0] = reqs;
+    reqs_int[(nreqsX2)-1:nreqs] = reqs;
+    for (i=0; i < nreqsX2; i=i+1)
+    begin
+      if (priority_int[i]) begin
+        grants_int[i] = reqs_int[i];
+      end
+      else begin
+        grants_int[i] = (~kills[i]&reqs_int[i]);
+      end
+      if (priority_int[i]) begin
+        kills[(i+1)] = grants_int[i];
+      end
+      else begin
+        kills[(i+1)] = (kills[i]|grants_int[i]);
+      end
+    end
+    for (i=0; i < nreqs; i=i+1)
+    begin
+      grants[i] = (grants_int[i]|grants_int[(nreqs+i)]);
+    end
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_feedback():
+  //       s.priority_en.value = ( s.grants != 0 ) & s.en
+
+  // logic for comb_feedback()
+  always @ (*) begin
+    priority_en = ((grants != 0)&en);
+  end
+
+
+endmodule // RoundRobinArbiterEn_0x77747397823e93e3
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// RegEnRst_0x2e6a8ff89958929b
+//-----------------------------------------------------------------------------
+// dtype: 4
+// reset_value: 1
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEnRst_0x2e6a8ff89958929b
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [   3:0] in_,
+  output reg  [   3:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 1;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       elif s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      if (en) begin
+        out <= in_;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // RegEnRst_0x2e6a8ff89958929b
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x7be03e4007003adc
+//-----------------------------------------------------------------------------
+// nports: 4
+// dtype: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x7be03e4007003adc
+(
+  input  wire [   0:0] clk,
+  input  wire [  31:0] in_$000,
+  input  wire [  31:0] in_$001,
+  input  wire [  31:0] in_$002,
+  input  wire [  31:0] in_$003,
+  output reg  [  31:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   1:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 4;
+
+
+  // array declarations
+  wire   [  31:0] in_[0:3];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+  assign in_[  2] = in_$002;
+  assign in_[  3] = in_$003;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x7be03e4007003adc
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
+// Mux_0x7e8c65f0610ab9ca
+//-----------------------------------------------------------------------------
+// nports: 2
+// dtype: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module Mux_0x7e8c65f0610ab9ca
+(
+  input  wire [   0:0] clk,
+  input  wire [  31:0] in_$000,
+  input  wire [  31:0] in_$001,
+  output reg  [  31:0] out,
+  input  wire [   0:0] reset,
+  input  wire [   0:0] sel
+);
+
+  // localparam declarations
+  localparam nports = 2;
+
+
+  // array declarations
+  wire   [  31:0] in_[0:1];
+  assign in_[  0] = in_$000;
+  assign in_[  1] = in_$001;
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_logic():
+  //       assert s.sel < nports
+  //       s.out.v = s.in_[ s.sel ]
+
+  // logic for comb_logic()
+  always @ (*) begin
+    out = in_[sel];
+  end
+
+
+endmodule // Mux_0x7e8c65f0610ab9ca
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_32_MemRespMsg_8_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f293d8c0890>
-// req: <pymtl.model.signals.InPort object at 0x7f293d8c0550>
+// resp: <pymtl.model.signals.OutPort object at 0x7fd20d863910>
+// req: <pymtl.model.signals.InPort object at 0x7fd20d8635d0>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -6164,183 +7331,6 @@ module Funnel_0x2e5b141dfdfa2078
 
 
 endmodule // Funnel_0x2e5b141dfdfa2078
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RoundRobinArbiterEn_0x77747397823e93e3
-//-----------------------------------------------------------------------------
-// nreqs: 4
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RoundRobinArbiterEn_0x77747397823e93e3
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  output reg  [   3:0] grants,
-  input  wire [   3:0] reqs,
-  input  wire [   0:0] reset
-);
-
-  // register declarations
-  reg    [   7:0] grants_int;
-  reg    [   8:0] kills;
-  reg    [   0:0] priority_en;
-  reg    [   7:0] priority_int;
-  reg    [   7:0] reqs_int;
-
-  // localparam declarations
-  localparam nreqs = 4;
-  localparam nreqsX2 = 8;
-
-  // loop variable declarations
-  integer i;
-
-  // priority_reg temporaries
-  wire   [   0:0] priority_reg$reset;
-  wire   [   0:0] priority_reg$en;
-  wire   [   0:0] priority_reg$clk;
-  wire   [   3:0] priority_reg$in_;
-  wire   [   3:0] priority_reg$out;
-
-  RegEnRst_0x2e6a8ff89958929b priority_reg
-  (
-    .reset ( priority_reg$reset ),
-    .en    ( priority_reg$en ),
-    .clk   ( priority_reg$clk ),
-    .in_   ( priority_reg$in_ ),
-    .out   ( priority_reg$out )
-  );
-
-  // signal connections
-  assign priority_reg$clk      = clk;
-  assign priority_reg$en       = priority_en;
-  assign priority_reg$in_[0]   = grants[3];
-  assign priority_reg$in_[3:1] = grants[2:0];
-  assign priority_reg$reset    = reset;
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_arbitrate():
-  //
-  //       s.kills[0].value = 1
-  //
-  //       s.priority_int[    0:nreqs  ].value = s.priority_reg.out
-  //       s.priority_int[nreqs:nreqsX2].value = 0
-  //       s.reqs_int    [    0:nreqs  ].value = s.reqs
-  //       s.reqs_int    [nreqs:nreqsX2].value = s.reqs
-  //
-  //       # Calculate the kill chain
-  //       for i in range( nreqsX2 ):
-  //
-  //         # Set internal grants
-  //         if s.priority_int[i].value:
-  //           s.grants_int[i].value = s.reqs_int[i]
-  //         else:
-  //           s.grants_int[i].value = ~s.kills[i] & s.reqs_int[i]
-  //
-  //         # Set kill signals
-  //         if s.priority_int[i].value:
-  //           s.kills[i+1].value = s.grants_int[i]
-  //         else:
-  //           s.kills[i+1].value = s.kills[i] | s.grants_int[i]
-  //
-  //       # Assign the output ports
-  //       for i in range( nreqs ):
-  //         s.grants[i].value = s.grants_int[i] | s.grants_int[nreqs+i]
-
-  // logic for comb_arbitrate()
-  always @ (*) begin
-    kills[0] = 1;
-    priority_int[(nreqs)-1:0] = priority_reg$out;
-    priority_int[(nreqsX2)-1:nreqs] = 0;
-    reqs_int[(nreqs)-1:0] = reqs;
-    reqs_int[(nreqsX2)-1:nreqs] = reqs;
-    for (i=0; i < nreqsX2; i=i+1)
-    begin
-      if (priority_int[i]) begin
-        grants_int[i] = reqs_int[i];
-      end
-      else begin
-        grants_int[i] = (~kills[i]&reqs_int[i]);
-      end
-      if (priority_int[i]) begin
-        kills[(i+1)] = grants_int[i];
-      end
-      else begin
-        kills[(i+1)] = (kills[i]|grants_int[i]);
-      end
-    end
-    for (i=0; i < nreqs; i=i+1)
-    begin
-      grants[i] = (grants_int[i]|grants_int[(nreqs+i)]);
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_feedback():
-  //       s.priority_en.value = ( s.grants != 0 ) & s.en
-
-  // logic for comb_feedback()
-  always @ (*) begin
-    priority_en = ((grants != 0)&en);
-  end
-
-
-endmodule // RoundRobinArbiterEn_0x77747397823e93e3
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEnRst_0x2e6a8ff89958929b
-//-----------------------------------------------------------------------------
-// dtype: 4
-// reset_value: 1
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEnRst_0x2e6a8ff89958929b
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [   3:0] in_,
-  output reg  [   3:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 1;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       elif s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      if (en) begin
-        out <= in_;
-      end
-      else begin
-      end
-    end
-  end
-
-
-endmodule // RegEnRst_0x2e6a8ff89958929b
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -10237,55 +11227,6 @@ endmodule // RegEnRst_0x35d76e7a8821f894
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// RegEnRst_0x3857337130dc0828
-//-----------------------------------------------------------------------------
-// reset_value: 0
-// dtype: 32
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEnRst_0x3857337130dc0828
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [  31:0] in_,
-  output reg  [  31:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       elif s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      if (en) begin
-        out <= in_;
-      end
-      else begin
-      end
-    end
-  end
-
-
-endmodule // RegEnRst_0x3857337130dc0828
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
 // RegEnRst_0x9f365fdf6c8998a
 //-----------------------------------------------------------------------------
 // reset_value: 0
@@ -10332,49 +11273,6 @@ module RegEnRst_0x9f365fdf6c8998a
 
 
 endmodule // RegEnRst_0x9f365fdf6c8998a
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Mux_0x7e8c65f0610ab9ca
-//-----------------------------------------------------------------------------
-// dtype: 32
-// nports: 2
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Mux_0x7e8c65f0610ab9ca
-(
-  input  wire [   0:0] clk,
-  input  wire [  31:0] in_$000,
-  input  wire [  31:0] in_$001,
-  output reg  [  31:0] out,
-  input  wire [   0:0] reset,
-  input  wire [   0:0] sel
-);
-
-  // localparam declarations
-  localparam nports = 2;
-
-
-  // array declarations
-  wire   [  31:0] in_[0:1];
-  assign in_[  0] = in_$000;
-  assign in_[  1] = in_$001;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       assert s.sel < nports
-  //       s.out.v = s.in_[ s.sel ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = in_[sel];
-  end
-
-
-endmodule // Mux_0x7e8c65f0610ab9ca
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -11123,55 +12021,6 @@ module SliceNDicePRTL_0x3637de7713a13a73
 
 
 endmodule // SliceNDicePRTL_0x3637de7713a13a73
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// RegEnRst_0x513e5624ff809260
-//-----------------------------------------------------------------------------
-// dtype: 8
-// reset_value: 0
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module RegEnRst_0x513e5624ff809260
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] en,
-  input  wire [   7:0] in_,
-  output reg  [   7:0] out,
-  input  wire [   0:0] reset
-);
-
-  // localparam declarations
-  localparam reset_value = 0;
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.posedge_clk
-  // def seq_logic():
-  //       if s.reset:
-  //         s.out.next = reset_value
-  //       elif s.en:
-  //         s.out.next = s.in_
-
-  // logic for seq_logic()
-  always @ (posedge clk) begin
-    if (reset) begin
-      out <= reset_value;
-    end
-    else begin
-      if (en) begin
-        out <= in_;
-      end
-      else begin
-      end
-    end
-  end
-
-
-endmodule // RegEnRst_0x513e5624ff809260
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -12118,7 +12967,7 @@ module DW_fp_flt2i_0x3cd77562127ffa78
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_flt2i.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_flt2i.v
 
   DW_fp_flt2i#(
     .ieee_compliance ( 1 )
@@ -12749,7 +13598,7 @@ module DW_fp_addsub_0x3cb0331b99cfb5df
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_addsub.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_addsub.v
 
   DW_fp_addsub#(
     .ieee_compliance ( 1 )
@@ -12791,7 +13640,7 @@ module DW_fp_cmp_0x15bdbff0d8f765a1
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_cmp.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_cmp.v
 
   DW_fp_cmp#(
     .ieee_compliance ( 1 )
@@ -12832,7 +13681,7 @@ module DW_fp_mult_0x1eaed5d9d53885e0
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_mult.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_mult.v
 
   DW_fp_mult#(
     .ieee_compliance ( 1 )
@@ -12865,7 +13714,7 @@ module DW_fp_i2flt_0x215a2bada2e33c4b
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_i2flt.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_i2flt.v
 
   DW_fp_i2flt#(
 
@@ -13062,7 +13911,7 @@ module DW_fp_div_0x124edb2c88d843aa
 );
 
   // Imported Verilog source from:
-  // /work/global/clt67/work/2018-spring/alloy-asic/pymtl/fpu/DW_fp_div.v
+  // /work/global/ka429/brgtc2/makeshaft/pymtl/fpu/DW_fp_div.v
 
   DW_fp_div#(
     .faithful_round ( 0 ),
@@ -14786,53 +15635,6 @@ module RegisterFile_0x2e2ef9fd0efc0b3d
 
 
 endmodule // RegisterFile_0x2e2ef9fd0efc0b3d
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// Mux_0x7be03e4007003adc
-//-----------------------------------------------------------------------------
-// dtype: 32
-// nports: 4
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module Mux_0x7be03e4007003adc
-(
-  input  wire [   0:0] clk,
-  input  wire [  31:0] in_$000,
-  input  wire [  31:0] in_$001,
-  input  wire [  31:0] in_$002,
-  input  wire [  31:0] in_$003,
-  output reg  [  31:0] out,
-  input  wire [   0:0] reset,
-  input  wire [   1:0] sel
-);
-
-  // localparam declarations
-  localparam nports = 4;
-
-
-  // array declarations
-  wire   [  31:0] in_[0:3];
-  assign in_[  0] = in_$000;
-  assign in_[  1] = in_$001;
-  assign in_[  2] = in_$002;
-  assign in_[  3] = in_$003;
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       assert s.sel < nports
-  //       s.out.v = s.in_[ s.sel ]
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = in_[sel];
-  end
-
-
-endmodule // Mux_0x7be03e4007003adc
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -18121,23 +18923,24 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.stats_en_wen_X.next   = 0
   //       elif s.reg_en_X:
   //         s.val_X.next            = s.next_val_D
-  //         s.rf_wen_pending_X.next = s.rf_wen_pending_D
-  //         s.inst_type_X.next      = s.inst_type_decoder_D.out
-  //         s.alu_fn_X.next         = s.alu_fn_D
-  //         s.rf_waddr_X.next       = s.rf_waddr_D
-  //         s.proc2mngr_val_X.next  = s.proc2mngr_val_D
-  //         s.dmemreq_type_X.next   = s.dmemreq_type_D
-  //         s.dmemreq_len_X.next    = s.dmemreq_len_D
-  //         s.dm_resp_sel_X.next    = s.dm_resp_sel_D
-  //         s.wb_result_sel_X.next  = s.wb_result_sel_D
-  //         s.stats_en_wen_X.next   = s.stats_en_wen_D
-  //         s.br_type_X.next        = s.br_type_D
-  //         s.mdu_X.next            = s.mdu_D
-  //         s.fpu_X.next            = s.fpu_D
-  //         s.rd_fprf_X.next        = s.rd_fprf_D
-  //         s.ex_result_sel_X.next  = s.ex_result_sel_D
-  //         s.xcelreq_X.next        = s.xcelreq_D
-  //         s.xcelreq_type_X.next   = s.xcelreq_type_D
+  //         if s.next_val_D:
+  //           s.rf_wen_pending_X.next = s.rf_wen_pending_D
+  //           s.inst_type_X.next      = s.inst_type_decoder_D.out
+  //           s.alu_fn_X.next         = s.alu_fn_D
+  //           s.rf_waddr_X.next       = s.rf_waddr_D
+  //           s.proc2mngr_val_X.next  = s.proc2mngr_val_D
+  //           s.dmemreq_type_X.next   = s.dmemreq_type_D
+  //           s.dmemreq_len_X.next    = s.dmemreq_len_D
+  //           s.dm_resp_sel_X.next    = s.dm_resp_sel_D
+  //           s.wb_result_sel_X.next  = s.wb_result_sel_D
+  //           s.stats_en_wen_X.next   = s.stats_en_wen_D
+  //           s.br_type_X.next        = s.br_type_D
+  //           s.mdu_X.next            = s.mdu_D
+  //           s.fpu_X.next            = s.fpu_D
+  //           s.rd_fprf_X.next        = s.rd_fprf_D
+  //           s.ex_result_sel_X.next  = s.ex_result_sel_D
+  //           s.xcelreq_X.next        = s.xcelreq_D
+  //           s.xcelreq_type_X.next   = s.xcelreq_type_D
 
   // logic for reg_X()
   always @ (posedge clk) begin
@@ -18148,23 +18951,27 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     else begin
       if (reg_en_X) begin
         val_X <= next_val_D;
-        rf_wen_pending_X <= rf_wen_pending_D;
-        inst_type_X <= inst_type_decoder_D$out;
-        alu_fn_X <= alu_fn_D;
-        rf_waddr_X <= rf_waddr_D;
-        proc2mngr_val_X <= proc2mngr_val_D;
-        dmemreq_type_X <= dmemreq_type_D;
-        dmemreq_len_X <= dmemreq_len_D;
-        dm_resp_sel_X <= dm_resp_sel_D;
-        wb_result_sel_X <= wb_result_sel_D;
-        stats_en_wen_X <= stats_en_wen_D;
-        br_type_X <= br_type_D;
-        mdu_X <= mdu_D;
-        fpu_X <= fpu_D;
-        rd_fprf_X <= rd_fprf_D;
-        ex_result_sel_X <= ex_result_sel_D;
-        xcelreq_X <= xcelreq_D;
-        xcelreq_type_X <= xcelreq_type_D;
+        if (next_val_D) begin
+          rf_wen_pending_X <= rf_wen_pending_D;
+          inst_type_X <= inst_type_decoder_D$out;
+          alu_fn_X <= alu_fn_D;
+          rf_waddr_X <= rf_waddr_D;
+          proc2mngr_val_X <= proc2mngr_val_D;
+          dmemreq_type_X <= dmemreq_type_D;
+          dmemreq_len_X <= dmemreq_len_D;
+          dm_resp_sel_X <= dm_resp_sel_D;
+          wb_result_sel_X <= wb_result_sel_D;
+          stats_en_wen_X <= stats_en_wen_D;
+          br_type_X <= br_type_D;
+          mdu_X <= mdu_D;
+          fpu_X <= fpu_D;
+          rd_fprf_X <= rd_fprf_D;
+          ex_result_sel_X <= ex_result_sel_D;
+          xcelreq_X <= xcelreq_D;
+          xcelreq_type_X <= xcelreq_type_D;
+        end
+        else begin
+        end
       end
       else begin
       end
@@ -18180,18 +18987,19 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.stats_en_wen_M.next   = 0
   //       elif s.reg_en_M:
   //         s.val_M.next            = s.next_val_X
-  //         s.rf_wen_pending_M.next = s.rf_wen_pending_X
-  //         s.inst_type_M.next      = s.inst_type_X
-  //         s.rf_waddr_M.next       = s.rf_waddr_X
-  //         s.proc2mngr_val_M.next  = s.proc2mngr_val_X
-  //         s.dmemreq_type_M.next   = s.dmemreq_type_X
-  //         s.dmemreq_len_M.next    = s.dmemreq_len_X
-  //         s.dm_resp_sel_M.next    = s.dm_resp_sel_X
-  //         s.wb_result_sel_M.next  = s.wb_result_sel_X
-  //         s.rd_fprf_M.next        = s.rd_fprf_X
-  //         s.stats_en_wen_M.next   = s.stats_en_wen_X
-  //         # xcel
-  //         s.xcelreq_M.next        = s.xcelreq_X
+  //         if s.next_val_X:
+  //           s.rf_wen_pending_M.next = s.rf_wen_pending_X
+  //           s.inst_type_M.next      = s.inst_type_X
+  //           s.rf_waddr_M.next       = s.rf_waddr_X
+  //           s.proc2mngr_val_M.next  = s.proc2mngr_val_X
+  //           s.dmemreq_type_M.next   = s.dmemreq_type_X
+  //           s.dmemreq_len_M.next    = s.dmemreq_len_X
+  //           s.dm_resp_sel_M.next    = s.dm_resp_sel_X
+  //           s.wb_result_sel_M.next  = s.wb_result_sel_X
+  //           s.rd_fprf_M.next        = s.rd_fprf_X
+  //           s.stats_en_wen_M.next   = s.stats_en_wen_X
+  //           # xcel
+  //           s.xcelreq_M.next        = s.xcelreq_X
 
   // logic for reg_M()
   always @ (posedge clk) begin
@@ -18202,17 +19010,21 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     else begin
       if (reg_en_M) begin
         val_M <= next_val_X;
-        rf_wen_pending_M <= rf_wen_pending_X;
-        inst_type_M <= inst_type_X;
-        rf_waddr_M <= rf_waddr_X;
-        proc2mngr_val_M <= proc2mngr_val_X;
-        dmemreq_type_M <= dmemreq_type_X;
-        dmemreq_len_M <= dmemreq_len_X;
-        dm_resp_sel_M <= dm_resp_sel_X;
-        wb_result_sel_M <= wb_result_sel_X;
-        rd_fprf_M <= rd_fprf_X;
-        stats_en_wen_M <= stats_en_wen_X;
-        xcelreq_M <= xcelreq_X;
+        if (next_val_X) begin
+          rf_wen_pending_M <= rf_wen_pending_X;
+          inst_type_M <= inst_type_X;
+          rf_waddr_M <= rf_waddr_X;
+          proc2mngr_val_M <= proc2mngr_val_X;
+          dmemreq_type_M <= dmemreq_type_X;
+          dmemreq_len_M <= dmemreq_len_X;
+          dm_resp_sel_M <= dm_resp_sel_X;
+          wb_result_sel_M <= wb_result_sel_X;
+          rd_fprf_M <= rd_fprf_X;
+          stats_en_wen_M <= stats_en_wen_X;
+          xcelreq_M <= xcelreq_X;
+        end
+        else begin
+        end
       end
       else begin
       end
@@ -18229,12 +19041,13 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
   //         s.stats_en_wen_pending_W.next   = 0
   //       elif s.reg_en_W:
   //         s.val_W.next                  = s.next_val_M
-  //         s.rf_wen_pending_W.next       = s.rf_wen_pending_M
-  //         s.inst_type_W.next            = s.inst_type_M
-  //         s.rf_waddr_W.next             = s.rf_waddr_M
-  //         s.proc2mngr_val_W.next        = s.proc2mngr_val_M
-  //         s.rd_fprf_W.next              = s.rd_fprf_M
-  //         s.stats_en_wen_pending_W.next = s.stats_en_wen_M
+  //         if s.next_val_M:
+  //           s.rf_wen_pending_W.next       = s.rf_wen_pending_M
+  //           s.inst_type_W.next            = s.inst_type_M
+  //           s.rf_waddr_W.next             = s.rf_waddr_M
+  //           s.proc2mngr_val_W.next        = s.proc2mngr_val_M
+  //           s.rd_fprf_W.next              = s.rd_fprf_M
+  //           s.stats_en_wen_pending_W.next = s.stats_en_wen_M
 
   // logic for reg_W()
   always @ (posedge clk) begin
@@ -18245,12 +19058,16 @@ module ProcCtrlPRTL_0x202e2b8309fdc725
     else begin
       if (reg_en_W) begin
         val_W <= next_val_M;
-        rf_wen_pending_W <= rf_wen_pending_M;
-        inst_type_W <= inst_type_M;
-        rf_waddr_W <= rf_waddr_M;
-        proc2mngr_val_W <= proc2mngr_val_M;
-        rd_fprf_W <= rd_fprf_M;
-        stats_en_wen_pending_W <= stats_en_wen_M;
+        if (next_val_M) begin
+          rf_wen_pending_W <= rf_wen_pending_M;
+          inst_type_W <= inst_type_M;
+          rf_waddr_W <= rf_waddr_M;
+          proc2mngr_val_W <= proc2mngr_val_M;
+          rd_fprf_W <= rd_fprf_M;
+          stats_en_wen_pending_W <= stats_en_wen_M;
+        end
+        else begin
+        end
       end
       else begin
       end
@@ -25817,803 +26634,10 @@ endmodule // GenWriteDataPRTL_0x472c29e762348c17
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// MemCoalescer_0x64e5f16502bd9749
-//-----------------------------------------------------------------------------
-// nports: 4
-// MsgTypeReq: 176
-// MsgTypeResp: 146
-// addr_nbits: 32
-// opaque_nbits: 8
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module MemCoalescer_0x64e5f16502bd9749
-(
-  input  wire [   0:0] clk,
-  input  wire [   0:0] coalescing_en,
-  output reg  [ 175:0] memreq_msg,
-  input  wire [   0:0] memreq_rdy,
-  output reg  [   0:0] memreq_val,
-  input  wire [ 145:0] memresp_msg,
-  output reg  [   0:0] memresp_rdy,
-  input  wire [   0:0] memresp_val,
-  input  wire [ 175:0] reqs$000_msg,
-  output wire [   0:0] reqs$000_rdy,
-  input  wire [   0:0] reqs$000_val,
-  input  wire [ 175:0] reqs$001_msg,
-  output wire [   0:0] reqs$001_rdy,
-  input  wire [   0:0] reqs$001_val,
-  input  wire [ 175:0] reqs$002_msg,
-  output wire [   0:0] reqs$002_rdy,
-  input  wire [   0:0] reqs$002_val,
-  input  wire [ 175:0] reqs$003_msg,
-  output wire [   0:0] reqs$003_rdy,
-  input  wire [   0:0] reqs$003_val,
-  input  wire [   0:0] reset,
-  output wire [ 145:0] resps$000_msg,
-  input  wire [   0:0] resps$000_rdy,
-  output wire [   0:0] resps$000_val,
-  output wire [ 145:0] resps$001_msg,
-  input  wire [   0:0] resps$001_rdy,
-  output wire [   0:0] resps$001_val,
-  output wire [ 145:0] resps$002_msg,
-  input  wire [   0:0] resps$002_rdy,
-  output wire [   0:0] resps$002_val,
-  output wire [ 145:0] resps$003_msg,
-  input  wire [   0:0] resps$003_rdy,
-  output wire [   0:0] resps$003_val
-);
-
-  // wire declarations
-  wire   [   0:0] coalesced_bits$000;
-  wire   [   0:0] coalesced_bits$001;
-  wire   [   0:0] coalesced_bits$002;
-  wire   [   0:0] coalesced_bits$003;
-
-
-  // register declarations
-  reg    [   0:0] arbiter$en;
-  reg    [   0:0] cmp_addr_sel_mux$sel;
-  reg    [   3:0] coalesced;
-  reg    [   0:0] curr_addr_reg$en;
-  reg    [   0:0] curr_state__9;
-  reg    [   1:0] encoded_arb_grant;
-  reg    [   0:0] encoder_kill;
-  reg    [   0:0] go_bit;
-  reg    [   3:0] go_vector;
-  reg    [   1:0] granted_addr_sel_mux$sel;
-  reg    [   3:0] issued;
-  reg    [   0:0] memreq_kill;
-  reg    [ 175:0] memreq_tmp_req;
-  reg    [   3:0] memresp_rdy_vector;
-  reg    [   0:0] next_state__9;
-  reg    [ 175:0] opaque_tmp_req;
-  reg    [ 145:0] tmp_resp;
-  reg    [   3:0] tmp_resps_val;
-
-  // localparam declarations
-  localparam PORT_STATE_IDLE = 0;
-  localparam PORT_STATE_PENDING = 1;
-  localparam nports = 4;
-
-  // loop variable declarations
-  integer i;
-
-  // curr_addr_reg temporaries
-  wire   [   0:0] curr_addr_reg$reset;
-  wire   [   0:0] curr_addr_reg$clk;
-  wire   [  31:0] curr_addr_reg$in_;
-  wire   [  31:0] curr_addr_reg$out;
-
-  RegEnRst_0x3857337130dc0828 curr_addr_reg
-  (
-    .reset ( curr_addr_reg$reset ),
-    .en    ( curr_addr_reg$en ),
-    .clk   ( curr_addr_reg$clk ),
-    .in_   ( curr_addr_reg$in_ ),
-    .out   ( curr_addr_reg$out )
-  );
-
-  // addr_cmps$000 temporaries
-  wire   [   0:0] addr_cmps$000$reset;
-  wire   [   0:0] addr_cmps$000$clk;
-  wire   [  31:0] addr_cmps$000$in0;
-  wire   [  31:0] addr_cmps$000$in1;
-  wire   [   0:0] addr_cmps$000$out;
-
-  EqComparator_0x20454677a5a72bab addr_cmps$000
-  (
-    .reset ( addr_cmps$000$reset ),
-    .clk   ( addr_cmps$000$clk ),
-    .in0   ( addr_cmps$000$in0 ),
-    .in1   ( addr_cmps$000$in1 ),
-    .out   ( addr_cmps$000$out )
-  );
-
-  // addr_cmps$001 temporaries
-  wire   [   0:0] addr_cmps$001$reset;
-  wire   [   0:0] addr_cmps$001$clk;
-  wire   [  31:0] addr_cmps$001$in0;
-  wire   [  31:0] addr_cmps$001$in1;
-  wire   [   0:0] addr_cmps$001$out;
-
-  EqComparator_0x20454677a5a72bab addr_cmps$001
-  (
-    .reset ( addr_cmps$001$reset ),
-    .clk   ( addr_cmps$001$clk ),
-    .in0   ( addr_cmps$001$in0 ),
-    .in1   ( addr_cmps$001$in1 ),
-    .out   ( addr_cmps$001$out )
-  );
-
-  // addr_cmps$002 temporaries
-  wire   [   0:0] addr_cmps$002$reset;
-  wire   [   0:0] addr_cmps$002$clk;
-  wire   [  31:0] addr_cmps$002$in0;
-  wire   [  31:0] addr_cmps$002$in1;
-  wire   [   0:0] addr_cmps$002$out;
-
-  EqComparator_0x20454677a5a72bab addr_cmps$002
-  (
-    .reset ( addr_cmps$002$reset ),
-    .clk   ( addr_cmps$002$clk ),
-    .in0   ( addr_cmps$002$in0 ),
-    .in1   ( addr_cmps$002$in1 ),
-    .out   ( addr_cmps$002$out )
-  );
-
-  // addr_cmps$003 temporaries
-  wire   [   0:0] addr_cmps$003$reset;
-  wire   [   0:0] addr_cmps$003$clk;
-  wire   [  31:0] addr_cmps$003$in0;
-  wire   [  31:0] addr_cmps$003$in1;
-  wire   [   0:0] addr_cmps$003$out;
-
-  EqComparator_0x20454677a5a72bab addr_cmps$003
-  (
-    .reset ( addr_cmps$003$reset ),
-    .clk   ( addr_cmps$003$clk ),
-    .in0   ( addr_cmps$003$in0 ),
-    .in1   ( addr_cmps$003$in1 ),
-    .out   ( addr_cmps$003$out )
-  );
-
-  // opaque_regs$000 temporaries
-  wire   [   0:0] opaque_regs$000$reset;
-  wire   [   0:0] opaque_regs$000$en;
-  wire   [   0:0] opaque_regs$000$clk;
-  wire   [   7:0] opaque_regs$000$in_;
-  wire   [   7:0] opaque_regs$000$out;
-
-  RegEnRst_0x513e5624ff809260 opaque_regs$000
-  (
-    .reset ( opaque_regs$000$reset ),
-    .en    ( opaque_regs$000$en ),
-    .clk   ( opaque_regs$000$clk ),
-    .in_   ( opaque_regs$000$in_ ),
-    .out   ( opaque_regs$000$out )
-  );
-
-  // opaque_regs$001 temporaries
-  wire   [   0:0] opaque_regs$001$reset;
-  wire   [   0:0] opaque_regs$001$en;
-  wire   [   0:0] opaque_regs$001$clk;
-  wire   [   7:0] opaque_regs$001$in_;
-  wire   [   7:0] opaque_regs$001$out;
-
-  RegEnRst_0x513e5624ff809260 opaque_regs$001
-  (
-    .reset ( opaque_regs$001$reset ),
-    .en    ( opaque_regs$001$en ),
-    .clk   ( opaque_regs$001$clk ),
-    .in_   ( opaque_regs$001$in_ ),
-    .out   ( opaque_regs$001$out )
-  );
-
-  // opaque_regs$002 temporaries
-  wire   [   0:0] opaque_regs$002$reset;
-  wire   [   0:0] opaque_regs$002$en;
-  wire   [   0:0] opaque_regs$002$clk;
-  wire   [   7:0] opaque_regs$002$in_;
-  wire   [   7:0] opaque_regs$002$out;
-
-  RegEnRst_0x513e5624ff809260 opaque_regs$002
-  (
-    .reset ( opaque_regs$002$reset ),
-    .en    ( opaque_regs$002$en ),
-    .clk   ( opaque_regs$002$clk ),
-    .in_   ( opaque_regs$002$in_ ),
-    .out   ( opaque_regs$002$out )
-  );
-
-  // opaque_regs$003 temporaries
-  wire   [   0:0] opaque_regs$003$reset;
-  wire   [   0:0] opaque_regs$003$en;
-  wire   [   0:0] opaque_regs$003$clk;
-  wire   [   7:0] opaque_regs$003$in_;
-  wire   [   7:0] opaque_regs$003$out;
-
-  RegEnRst_0x513e5624ff809260 opaque_regs$003
-  (
-    .reset ( opaque_regs$003$reset ),
-    .en    ( opaque_regs$003$en ),
-    .clk   ( opaque_regs$003$clk ),
-    .in_   ( opaque_regs$003$in_ ),
-    .out   ( opaque_regs$003$out )
-  );
-
-  // arbiter temporaries
-  wire   [   3:0] arbiter$reqs;
-  wire   [   0:0] arbiter$clk;
-  wire   [   0:0] arbiter$reset;
-  wire   [   3:0] arbiter$grants;
-
-  RoundRobinArbiterEn_0x77747397823e93e3 arbiter
-  (
-    .en     ( arbiter$en ),
-    .reqs   ( arbiter$reqs ),
-    .clk    ( arbiter$clk ),
-    .reset  ( arbiter$reset ),
-    .grants ( arbiter$grants )
-  );
-
-  // ports_state$000 temporaries
-  wire   [   0:0] ports_state$000$reset;
-  wire   [   0:0] ports_state$000$in_;
-  wire   [   0:0] ports_state$000$clk;
-  wire   [   0:0] ports_state$000$out;
-
-  RegRst_0x2ce052f8c32c5c39 ports_state$000
-  (
-    .reset ( ports_state$000$reset ),
-    .in_   ( ports_state$000$in_ ),
-    .clk   ( ports_state$000$clk ),
-    .out   ( ports_state$000$out )
-  );
-
-  // ports_state$001 temporaries
-  wire   [   0:0] ports_state$001$reset;
-  wire   [   0:0] ports_state$001$in_;
-  wire   [   0:0] ports_state$001$clk;
-  wire   [   0:0] ports_state$001$out;
-
-  RegRst_0x2ce052f8c32c5c39 ports_state$001
-  (
-    .reset ( ports_state$001$reset ),
-    .in_   ( ports_state$001$in_ ),
-    .clk   ( ports_state$001$clk ),
-    .out   ( ports_state$001$out )
-  );
-
-  // ports_state$002 temporaries
-  wire   [   0:0] ports_state$002$reset;
-  wire   [   0:0] ports_state$002$in_;
-  wire   [   0:0] ports_state$002$clk;
-  wire   [   0:0] ports_state$002$out;
-
-  RegRst_0x2ce052f8c32c5c39 ports_state$002
-  (
-    .reset ( ports_state$002$reset ),
-    .in_   ( ports_state$002$in_ ),
-    .clk   ( ports_state$002$clk ),
-    .out   ( ports_state$002$out )
-  );
-
-  // ports_state$003 temporaries
-  wire   [   0:0] ports_state$003$reset;
-  wire   [   0:0] ports_state$003$in_;
-  wire   [   0:0] ports_state$003$clk;
-  wire   [   0:0] ports_state$003$out;
-
-  RegRst_0x2ce052f8c32c5c39 ports_state$003
-  (
-    .reset ( ports_state$003$reset ),
-    .in_   ( ports_state$003$in_ ),
-    .clk   ( ports_state$003$clk ),
-    .out   ( ports_state$003$out )
-  );
-
-  // granted_addr_sel_mux temporaries
-  wire   [   0:0] granted_addr_sel_mux$reset;
-  wire   [  31:0] granted_addr_sel_mux$in_$000;
-  wire   [  31:0] granted_addr_sel_mux$in_$001;
-  wire   [  31:0] granted_addr_sel_mux$in_$002;
-  wire   [  31:0] granted_addr_sel_mux$in_$003;
-  wire   [   0:0] granted_addr_sel_mux$clk;
-  wire   [  31:0] granted_addr_sel_mux$out;
-
-  Mux_0x7be03e4007003adc granted_addr_sel_mux
-  (
-    .reset   ( granted_addr_sel_mux$reset ),
-    .in_$000 ( granted_addr_sel_mux$in_$000 ),
-    .in_$001 ( granted_addr_sel_mux$in_$001 ),
-    .in_$002 ( granted_addr_sel_mux$in_$002 ),
-    .in_$003 ( granted_addr_sel_mux$in_$003 ),
-    .clk     ( granted_addr_sel_mux$clk ),
-    .sel     ( granted_addr_sel_mux$sel ),
-    .out     ( granted_addr_sel_mux$out )
-  );
-
-  // cmp_addr_sel_mux temporaries
-  wire   [   0:0] cmp_addr_sel_mux$reset;
-  wire   [  31:0] cmp_addr_sel_mux$in_$000;
-  wire   [  31:0] cmp_addr_sel_mux$in_$001;
-  wire   [   0:0] cmp_addr_sel_mux$clk;
-  wire   [  31:0] cmp_addr_sel_mux$out;
-
-  Mux_0x7e8c65f0610ab9ca cmp_addr_sel_mux
-  (
-    .reset   ( cmp_addr_sel_mux$reset ),
-    .in_$000 ( cmp_addr_sel_mux$in_$000 ),
-    .in_$001 ( cmp_addr_sel_mux$in_$001 ),
-    .clk     ( cmp_addr_sel_mux$clk ),
-    .sel     ( cmp_addr_sel_mux$sel ),
-    .out     ( cmp_addr_sel_mux$out )
-  );
-
-  // signal connections
-  assign addr_cmps$000$clk            = clk;
-  assign addr_cmps$000$in0            = cmp_addr_sel_mux$out;
-  assign addr_cmps$000$in1            = reqs$000_msg[163:132];
-  assign addr_cmps$000$reset          = reset;
-  assign addr_cmps$001$clk            = clk;
-  assign addr_cmps$001$in0            = cmp_addr_sel_mux$out;
-  assign addr_cmps$001$in1            = reqs$001_msg[163:132];
-  assign addr_cmps$001$reset          = reset;
-  assign addr_cmps$002$clk            = clk;
-  assign addr_cmps$002$in0            = cmp_addr_sel_mux$out;
-  assign addr_cmps$002$in1            = reqs$002_msg[163:132];
-  assign addr_cmps$002$reset          = reset;
-  assign addr_cmps$003$clk            = clk;
-  assign addr_cmps$003$in0            = cmp_addr_sel_mux$out;
-  assign addr_cmps$003$in1            = reqs$003_msg[163:132];
-  assign addr_cmps$003$reset          = reset;
-  assign arbiter$clk                  = clk;
-  assign arbiter$reqs[0]              = reqs$000_val;
-  assign arbiter$reqs[1]              = reqs$001_val;
-  assign arbiter$reqs[2]              = reqs$002_val;
-  assign arbiter$reqs[3]              = reqs$003_val;
-  assign arbiter$reset                = reset;
-  assign cmp_addr_sel_mux$clk         = clk;
-  assign cmp_addr_sel_mux$in_$000     = curr_addr_reg$in_;
-  assign cmp_addr_sel_mux$in_$001     = curr_addr_reg$out;
-  assign cmp_addr_sel_mux$reset       = reset;
-  assign coalesced_bits$000           = addr_cmps$000$out;
-  assign coalesced_bits$001           = addr_cmps$001$out;
-  assign coalesced_bits$002           = addr_cmps$002$out;
-  assign coalesced_bits$003           = addr_cmps$003$out;
-  assign curr_addr_reg$clk            = clk;
-  assign curr_addr_reg$in_            = granted_addr_sel_mux$out;
-  assign curr_addr_reg$reset          = reset;
-  assign granted_addr_sel_mux$clk     = clk;
-  assign granted_addr_sel_mux$in_$000 = reqs$000_msg[163:132];
-  assign granted_addr_sel_mux$in_$001 = reqs$001_msg[163:132];
-  assign granted_addr_sel_mux$in_$002 = reqs$002_msg[163:132];
-  assign granted_addr_sel_mux$in_$003 = reqs$003_msg[163:132];
-  assign granted_addr_sel_mux$reset   = reset;
-  assign opaque_regs$000$clk          = clk;
-  assign opaque_regs$000$reset        = reset;
-  assign opaque_regs$001$clk          = clk;
-  assign opaque_regs$001$reset        = reset;
-  assign opaque_regs$002$clk          = clk;
-  assign opaque_regs$002$reset        = reset;
-  assign opaque_regs$003$clk          = clk;
-  assign opaque_regs$003$reset        = reset;
-  assign ports_state$000$clk          = clk;
-  assign ports_state$000$reset        = reset;
-  assign ports_state$001$clk          = clk;
-  assign ports_state$001$reset        = reset;
-  assign ports_state$002$clk          = clk;
-  assign ports_state$002$reset        = reset;
-  assign ports_state$003$clk          = clk;
-  assign ports_state$003$reset        = reset;
-
-  // array declarations
-  wire   [   0:0] coalesced_bits[0:3];
-  assign coalesced_bits[  0] = coalesced_bits$000;
-  assign coalesced_bits[  1] = coalesced_bits$001;
-  assign coalesced_bits[  2] = coalesced_bits$002;
-  assign coalesced_bits[  3] = coalesced_bits$003;
-  reg    [   0:0] opaque_regs$en[0:3];
-  assign opaque_regs$000$en = opaque_regs$en[  0];
-  assign opaque_regs$001$en = opaque_regs$en[  1];
-  assign opaque_regs$002$en = opaque_regs$en[  2];
-  assign opaque_regs$003$en = opaque_regs$en[  3];
-  reg    [   7:0] opaque_regs$in_[0:3];
-  assign opaque_regs$000$in_ = opaque_regs$in_[  0];
-  assign opaque_regs$001$in_ = opaque_regs$in_[  1];
-  assign opaque_regs$002$in_ = opaque_regs$in_[  2];
-  assign opaque_regs$003$in_ = opaque_regs$in_[  3];
-  wire   [   7:0] opaque_regs$out[0:3];
-  assign opaque_regs$out[  0] = opaque_regs$000$out;
-  assign opaque_regs$out[  1] = opaque_regs$001$out;
-  assign opaque_regs$out[  2] = opaque_regs$002$out;
-  assign opaque_regs$out[  3] = opaque_regs$003$out;
-  reg    [   0:0] ports_state$in_[0:3];
-  assign ports_state$000$in_ = ports_state$in_[  0];
-  assign ports_state$001$in_ = ports_state$in_[  1];
-  assign ports_state$002$in_ = ports_state$in_[  2];
-  assign ports_state$003$in_ = ports_state$in_[  3];
-  wire   [   0:0] ports_state$out[0:3];
-  assign ports_state$out[  0] = ports_state$000$out;
-  assign ports_state$out[  1] = ports_state$001$out;
-  assign ports_state$out[  2] = ports_state$002$out;
-  assign ports_state$out[  3] = ports_state$003$out;
-  wire   [ 175:0] reqs_msg[0:3];
-  assign reqs_msg[  0] = reqs$000_msg;
-  assign reqs_msg[  1] = reqs$001_msg;
-  assign reqs_msg[  2] = reqs$002_msg;
-  assign reqs_msg[  3] = reqs$003_msg;
-  reg    [   0:0] reqs_rdy[0:3];
-  assign reqs$000_rdy = reqs_rdy[  0];
-  assign reqs$001_rdy = reqs_rdy[  1];
-  assign reqs$002_rdy = reqs_rdy[  2];
-  assign reqs$003_rdy = reqs_rdy[  3];
-  wire   [   0:0] reqs_val[0:3];
-  assign reqs_val[  0] = reqs$000_val;
-  assign reqs_val[  1] = reqs$001_val;
-  assign reqs_val[  2] = reqs$002_val;
-  assign reqs_val[  3] = reqs$003_val;
-  reg    [ 145:0] resps_msg[0:3];
-  assign resps$000_msg = resps_msg[  0];
-  assign resps$001_msg = resps_msg[  1];
-  assign resps$002_msg = resps_msg[  2];
-  assign resps$003_msg = resps_msg[  3];
-  wire   [   0:0] resps_rdy[0:3];
-  assign resps_rdy[  0] = resps$000_rdy;
-  assign resps_rdy[  1] = resps$001_rdy;
-  assign resps_rdy[  2] = resps$002_rdy;
-  assign resps_rdy[  3] = resps$003_rdy;
-  reg    [   0:0] resps_val[0:3];
-  assign resps$000_val = resps_val[  0];
-  assign resps$001_val = resps_val[  1];
-  assign resps$002_val = resps_val[  2];
-  assign resps$003_val = resps_val[  3];
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_go_bit_set():
-  //
-  //       for i in range( nports ):
-  //         s.go_vector[i].value =  ( s.ports_state[i].out == PORT_STATE_IDLE ) | \
-  //                                 ( s.tmp_resps_val[i] & s.resps[i].rdy )
-  //
-  //       s.go_bit.value = reduce_and( s.go_vector )
-
-  // logic for comb_go_bit_set()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      go_vector[i] = ((ports_state$out[i] == PORT_STATE_IDLE)|(tmp_resps_val[i]&resps_rdy[i]));
-    end
-    go_bit = (&go_vector);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_memreq_set():
-  //
-  //       s.memreq.val.value =  s.go_bit & ( s.arbiter.grants != 0 )
-  //
-  //       s.memreq_kill.value = 0
-  //       s.memreq.msg.value  = 0
-  //
-  //       for i in range( nports ):
-  //         if s.arbiter.grants[i] and s.memreq_kill == 0:
-  //           # hawajkm: PyMTL bug
-  //           s.memreq_tmp_req.value  = s.reqs[i].msg
-  //           s.memreq.msg.value      = s.memreq_tmp_req
-  //           s.memreq_kill.value     = 1
-
-  // logic for comb_memreq_set()
-  always @ (*) begin
-    memreq_val = (go_bit&(arbiter$grants != 0));
-    memreq_kill = 0;
-    memreq_msg = 0;
-    for (i=0; i < nports; i=i+1)
-    begin
-      if ((arbiter$grants[i]&&(memreq_kill == 0))) begin
-        memreq_tmp_req = reqs_msg[i];
-        memreq_msg = memreq_tmp_req;
-        memreq_kill = 1;
-      end
-      else begin
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_reqs_rdy_set():
-  //
-  //       for i in range( nports ):
-  //         if s.coalescing_en:
-  //
-  //           # whether a request can be issued
-  //           s.issued[i].value     = s.go_bit & s.coalesced_bits[i] & s.memreq.rdy
-  //
-  //           # whether a request can be coalesced
-  //           s.coalesced[i].value  = ~s.go_bit & s.coalesced_bits[i] & \
-  //                                   ( s.ports_state[i].out == PORT_STATE_IDLE ) & ~s.memresp.val
-  //
-  //         else:
-  //           # issued only if the requesting port is granted
-  //           s.issued[i].value     = s.go_bit & s.arbiter.grants[i] & s.memreq.rdy
-  //
-  //           # no colaescing allowed
-  //           s.coalesced[i].value  = 0
-  //
-  //         # ready if a request is either issued or coalesced
-  //         s.reqs[i].rdy.value = s.issued[i] | s.coalesced[i]
-
-  // logic for comb_reqs_rdy_set()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      if (coalescing_en) begin
-        issued[i] = ((go_bit&coalesced_bits[i])&memreq_rdy);
-        coalesced[i] = (((~go_bit&coalesced_bits[i])&(ports_state$out[i] == PORT_STATE_IDLE))&~memresp_val);
-      end
-      else begin
-        issued[i] = ((go_bit&arbiter$grants[i])&memreq_rdy);
-        coalesced[i] = 0;
-      end
-      reqs_rdy[i] = (issued[i]|coalesced[i]);
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_memresp_rdy_set():
-  //
-  //       for i in range( nports ):
-  //         s.memresp_rdy_vector[i].value = ( ( s.ports_state[i].out == PORT_STATE_PENDING ) & s.resps[i].rdy ) | \
-  //                                         ( s.ports_state[i].out == PORT_STATE_IDLE )
-  //       s.memresp.rdy.value = reduce_and( s.memresp_rdy_vector )
-
-  // logic for comb_memresp_rdy_set()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      memresp_rdy_vector[i] = (((ports_state$out[i] == PORT_STATE_PENDING)&resps_rdy[i])|(ports_state$out[i] == PORT_STATE_IDLE));
-    end
-    memresp_rdy = (&memresp_rdy_vector);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_resps_set():
-  //
-  //       for i in range( nports ):
-  //         s.tmp_resps_val[i].value = s.memresp.val & \
-  //                                s.memresp.rdy & \
-  //                                ( s.ports_state[i].out == PORT_STATE_PENDING )
-
-  // logic for comb_resps_set()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      tmp_resps_val[i] = ((memresp_val&memresp_rdy)&(ports_state$out[i] == PORT_STATE_PENDING));
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_connect_resp_val():
-  //
-  //       for i in xrange( nports ):
-  //         s.resps[i].val.value = s.tmp_resps_val[i]
-  //
-  //         # hawajkm: PyMTL bug
-  //         s.tmp_resp.value        = s.memresp.msg
-  //         s.tmp_resp.opaque.value = s.opaque_regs[i].out
-  //         s.resps[i].msg.value    = s.tmp_resp
-
-  // logic for comb_connect_resp_val()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      resps_val[i] = tmp_resps_val[i];
-      tmp_resp = memresp_msg;
-      tmp_resp[(142)-1:134] = opaque_regs$out[i];
-      resps_msg[i] = tmp_resp;
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_arbiter_en():
-  //
-  //       s.arbiter.en.value = s.memreq.val & s.memreq.rdy
-
-  // logic for comb_arbiter_en()
-  always @ (*) begin
-    arbiter$en = (memreq_val&memreq_rdy);
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_encode_arb_grants():
-  //
-  //       s.encoder_kill.value = 0
-  //       s.encoded_arb_grant.value = 0
-  //
-  //       for i in range( nports ):
-  //         if s.arbiter.grants[i] and s.encoder_kill == 0:
-  //           s.encoded_arb_grant.value = i
-  //           s.encoder_kill.value = 1
-
-  // logic for comb_encode_arb_grants()
-  always @ (*) begin
-    encoder_kill = 0;
-    encoded_arb_grant = 0;
-    for (i=0; i < nports; i=i+1)
-    begin
-      if ((arbiter$grants[i]&&(encoder_kill == 0))) begin
-        encoded_arb_grant = i;
-        encoder_kill = 1;
-      end
-      else begin
-      end
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_curr_addr_reg_en():
-  //
-  //       s.curr_addr_reg.en.value = s.go_bit
-
-  // logic for comb_curr_addr_reg_en()
-  always @ (*) begin
-    curr_addr_reg$en = go_bit;
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def ports_state_transition():
-  //
-  //       for i in range( nports ):
-  //         curr_state = s.ports_state[i].out
-  //         next_state = s.ports_state[i].out
-  //
-  //         # PORT_STATE_IDLE -> PORT_STATE_PENDING
-  //         if ( curr_state == PORT_STATE_IDLE ):
-  //           if ( s.reqs[i].val and s.reqs[i].rdy ):
-  //             next_state = PORT_STATE_PENDING
-  //
-  //         # PORT_STATE_PENDING -> PORT_STATE_IDLE
-  //         elif ( curr_state == PORT_STATE_PENDING ):
-  //           if ( s.memresp.rdy and s.memresp.val and ~( s.reqs[i].val and s.reqs[i].rdy ) ):
-  //             next_state = PORT_STATE_IDLE
-  //
-  //         s.ports_state[i].in_.value = next_state
-
-  // logic for ports_state_transition()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      curr_state__9 = ports_state$out[i];
-      next_state__9 = ports_state$out[i];
-      if ((curr_state__9 == PORT_STATE_IDLE)) begin
-        if ((reqs_val[i]&&reqs_rdy[i])) begin
-          next_state__9 = PORT_STATE_PENDING;
-        end
-        else begin
-        end
-      end
-      else begin
-        if ((curr_state__9 == PORT_STATE_PENDING)) begin
-          if ((memresp_rdy&&memresp_val&&~(reqs_val[i]&&reqs_rdy[i]))) begin
-            next_state__9 = PORT_STATE_IDLE;
-          end
-          else begin
-          end
-        end
-        else begin
-        end
-      end
-      ports_state$in_[i] = next_state__9;
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_opaque_regs_en():
-  //
-  //       for i in range( nports ):
-  //         # hawajkm: PyMTL bug
-  //         s.opaque_tmp_req.value = s.reqs[i].msg
-  //         s.opaque_regs[i].en.value = s.go_bit | ( s.ports_state[i].out == PORT_STATE_IDLE )
-  //         s.opaque_regs[i].in_.value = s.opaque_tmp_req.opaque
-
-  // logic for comb_opaque_regs_en()
-  always @ (*) begin
-    for (i=0; i < nports; i=i+1)
-    begin
-      opaque_tmp_req = reqs_msg[i];
-      opaque_regs$en[i] = (go_bit|(ports_state$out[i] == PORT_STATE_IDLE));
-      opaque_regs$in_[i] = opaque_tmp_req[(172)-1:164];
-    end
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_cmp_addr_sel_mux_sel():
-  //
-  //       s.cmp_addr_sel_mux.sel.value = ~s.go_bit
-
-  // logic for comb_cmp_addr_sel_mux_sel()
-  always @ (*) begin
-    cmp_addr_sel_mux$sel = ~go_bit;
-  end
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_granted_addr_sel_mux_sel():
-  //
-  //       s.granted_addr_sel_mux.sel.value = s.encoded_arb_grant
-
-  // logic for comb_granted_addr_sel_mux_sel()
-  always @ (*) begin
-    granted_addr_sel_mux$sel = encoded_arb_grant;
-  end
-
-
-endmodule // MemCoalescer_0x64e5f16502bd9749
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
-// EqComparator_0x20454677a5a72bab
-//-----------------------------------------------------------------------------
-// nbits: 32
-// dump-vcd: False
-// verilator-xinit: zeros
-`default_nettype none
-module EqComparator_0x20454677a5a72bab
-(
-  input  wire [   0:0] clk,
-  input  wire [  31:0] in0,
-  input  wire [  31:0] in1,
-  output reg  [   0:0] out,
-  input  wire [   0:0] reset
-);
-
-
-
-  // PYMTL SOURCE:
-  //
-  // @s.combinational
-  // def comb_logic():
-  //       s.out.value = s.in0 == s.in1
-
-  // logic for comb_logic()
-  always @ (*) begin
-    out = (in0 == in1);
-  end
-
-
-endmodule // EqComparator_0x20454677a5a72bab
-`default_nettype wire
-
-//-----------------------------------------------------------------------------
 // HostAdapter_MduReqMsg_32_8_MduRespMsg_32
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f293d3846d0>
-// req: <pymtl.model.signals.InPort object at 0x7f293d393b50>
+// resp: <pymtl.model.signals.OutPort object at 0x7fd20d33f450>
+// req: <pymtl.model.signals.InPort object at 0x7fd20d337f10>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -26734,7 +26758,8 @@ module CtrlReg_0x6aec39a1ab183c1
   output wire [  32:0] resp_msg,
   input  wire [   0:0] resp_rdy,
   output wire [   0:0] resp_val,
-  input  wire [   0:0] stats_en
+  input  wire [   0:0] stats_en,
+  output wire [  31:0] trigger_fc
 );
 
   // wire declarations
@@ -26756,6 +26781,8 @@ module CtrlReg_0x6aec39a1ab183c1
   reg    [  31:0] cr_go_in;
   reg    [   0:0] cr_misc_en;
   reg    [  31:0] cr_misc_in;
+  reg    [   0:0] cr_trigger_fc_en;
+  reg    [  31:0] cr_trigger_fc_in;
   reg    [   0:0] cyclecounters_en;
   reg    [  31:0] cyclecounters_in;
   reg    [   3:0] instcounters_en;
@@ -26773,6 +26800,7 @@ module CtrlReg_0x6aec39a1ab183c1
   localparam cr_go = 0;
   localparam cr_host_en = 7;
   localparam cr_misc = 12;
+  localparam cr_trigger_fc = 13;
   localparam num_cores = 4;
   localparam valrdy_ifcs = 5;
 
@@ -27017,7 +27045,7 @@ module CtrlReg_0x6aec39a1ab183c1
   wire   [  31:0] ctrlregs$013$in_;
   wire   [  31:0] ctrlregs$013$out;
 
-  RegEnRst_0x3857337130dc0828 ctrlregs$013
+  RegEnRst_0x34afaf727071a2d0 ctrlregs$013
   (
     .reset ( ctrlregs$013$reset ),
     .en    ( ctrlregs$013$en ),
@@ -27133,6 +27161,8 @@ module CtrlReg_0x6aec39a1ab183c1
   assign ctrlregs$012$in_     = cr_misc_in;
   assign ctrlregs$012$reset   = reset;
   assign ctrlregs$013$clk     = clk;
+  assign ctrlregs$013$en      = cr_trigger_fc_en;
+  assign ctrlregs$013$in_     = cr_trigger_fc_in;
   assign ctrlregs$013$reset   = reset;
   assign ctrlregs$014$clk     = clk;
   assign ctrlregs$014$reset   = reset;
@@ -27166,6 +27196,7 @@ module CtrlReg_0x6aec39a1ab183c1
   assign req_rdy              = in_q$enq_rdy;
   assign resp_msg             = out_q$deq_msg;
   assign resp_val             = out_q$deq_val;
+  assign trigger_fc           = ctrlregs$013$out;
 
   // array declarations
   wire   [  31:0] ctrlregs$out[0:15];
@@ -27307,6 +27338,19 @@ module CtrlReg_0x6aec39a1ab183c1
   always @ (*) begin
     cr_misc_en = (rf_wen&(rf_waddr == cr_misc));
     cr_misc_in = rf_wdata;
+  end
+
+  // PYMTL SOURCE:
+  //
+  // @s.combinational
+  // def comb_cr_trigger_fc_logic():
+  //       s.cr_trigger_fc_en.value = s.rf_wen & ( s.rf_waddr == cr_trigger_fc )
+  //       s.cr_trigger_fc_in.value = s.rf_wdata
+
+  // logic for comb_cr_trigger_fc_logic()
+  always @ (*) begin
+    cr_trigger_fc_en = (rf_wen&(rf_waddr == cr_trigger_fc));
+    cr_trigger_fc_in = rf_wdata;
   end
 
   // PYMTL SOURCE:
@@ -27578,6 +27622,55 @@ endmodule // RegEn_0x3ed9fadb7a785162
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
+// RegEnRst_0x34afaf727071a2d0
+//-----------------------------------------------------------------------------
+// reset_value: 8
+// dtype: 32
+// dump-vcd: False
+// verilator-xinit: zeros
+`default_nettype none
+module RegEnRst_0x34afaf727071a2d0
+(
+  input  wire [   0:0] clk,
+  input  wire [   0:0] en,
+  input  wire [  31:0] in_,
+  output reg  [  31:0] out,
+  input  wire [   0:0] reset
+);
+
+  // localparam declarations
+  localparam reset_value = 8;
+
+
+
+  // PYMTL SOURCE:
+  //
+  // @s.posedge_clk
+  // def seq_logic():
+  //       if s.reset:
+  //         s.out.next = reset_value
+  //       elif s.en:
+  //         s.out.next = s.in_
+
+  // logic for seq_logic()
+  always @ (posedge clk) begin
+    if (reset) begin
+      out <= reset_value;
+    end
+    else begin
+      if (en) begin
+        out <= in_;
+      end
+      else begin
+      end
+    end
+  end
+
+
+endmodule // RegEnRst_0x34afaf727071a2d0
+`default_nettype wire
+
+//-----------------------------------------------------------------------------
 // SingleElementNormalQueue_0x79667c2fcd82f209
 //-----------------------------------------------------------------------------
 // dtype: 33
@@ -27733,16 +27826,16 @@ endmodule // RegEn_0x77783ba1bb4fce3e
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
-// BloomFilterXcel_0x5b4bdcc6dd97c7e3
+// BloomFilterXcel_0x485cf945abf3c47
 //-----------------------------------------------------------------------------
-// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7f293de42790>
+// snoop_mem_msg: <ifcs.MemMsg.MemMsg object at 0x7fd20ddd75d0>
 // csr_begin: 0
 // num_hash_funs: 3
 // num_bits_exponent: 8
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
-module BloomFilterXcel_0x5b4bdcc6dd97c7e3
+module BloomFilterXcel_0x485cf945abf3c47
 (
   input  wire [   0:0] clk,
   input  wire [  77:0] memreq_snoop_msg,
@@ -28185,7 +28278,7 @@ module BloomFilterXcel_0x5b4bdcc6dd97c7e3
   end
 
 
-endmodule // BloomFilterXcel_0x5b4bdcc6dd97c7e3
+endmodule // BloomFilterXcel_0x485cf945abf3c47
 `default_nettype wire
 
 //-----------------------------------------------------------------------------
@@ -29647,8 +29740,8 @@ endmodule // Reg_0x20dfe5f222b87beb
 //-----------------------------------------------------------------------------
 // HostAdapter_MemReqMsg_8_32_128_MemRespMsg_8_128
 //-----------------------------------------------------------------------------
-// resp: <pymtl.model.signals.OutPort object at 0x7f293de5ca50>
-// req: <pymtl.model.signals.InPort object at 0x7f293de5c710>
+// resp: <pymtl.model.signals.OutPort object at 0x7fd20ddf3310>
+// req: <pymtl.model.signals.InPort object at 0x7fd20ddebf90>
 // dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
@@ -30215,6 +30308,7 @@ module FlowControlOut_0x3b27d8429613db76
   input  wire [   0:0] req_val$008,
   input  wire [   0:0] req_val$009,
   input  wire [   0:0] reset,
+  input  wire [  31:0] trigger_fc,
   output reg  [  49:0] update_msg,
   input  wire [   0:0] update_rdy,
   output reg  [   0:0] update_val
@@ -30232,6 +30326,7 @@ module FlowControlOut_0x3b27d8429613db76
   wire   [   4:0] n_credits$008;
   wire   [   4:0] n_credits$009;
   wire   [  49:0] vec_credits;
+  wire   [   4:0] trigger_threshold;
   wire   [   4:0] credits$000;
   wire   [   4:0] credits$001;
   wire   [   4:0] credits$002;
@@ -30264,12 +30359,12 @@ module FlowControlOut_0x3b27d8429613db76
 
   // localparam declarations
   localparam num_ports = 10;
-  localparam trigger_threshold = 5'd8;
 
   // loop variable declarations
   integer i;
 
   // signal connections
+  assign trigger_threshold  = trigger_fc[4:0];
   assign vec_credits[14:10] = credits$002;
   assign vec_credits[19:15] = credits$003;
   assign vec_credits[24:20] = credits$004;
