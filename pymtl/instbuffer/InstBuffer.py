@@ -13,6 +13,7 @@ from pclib.ifcs import InValRdyBundle, OutValRdyBundle
 from ifcs import MemReqMsg, MemRespMsg
 
 from pclib.rtl.queues import SingleElementBypassQueue
+from pclib.rtl.queues import SingleElementPipelinedQueue
 
 from DirectMappedInstBuffer  import DirectMappedInstBuffer
 
@@ -47,7 +48,7 @@ class InstBuffer( Model ):
     # Add a bypass queue to fix a potential val-rdy cycle between proc and
     # arbiter
 
-    s.memresp_queue = SingleElementBypassQueue( MemRespMsg(opaque_nbits, line_nbits) )
+    s.memresp_queue = SingleElementPipelinedQueue( MemRespMsg(opaque_nbits, line_nbits) )
 
     s.connect_pairs( s.memresp_queue.enq, s.memresp )
 
