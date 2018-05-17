@@ -44,7 +44,7 @@ abbr.calibre-drc-top = drc-top
 # constructed the collect dir, so we temporarily magically reach into the
 # correct handoff dir.
 
-calibre_drc_top_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
+calibre_drc_top_gds = $(handoff_dir.calibre-stamp)/stamped.gds
 
 #-------------------------------------------------------------------------
 # Variables

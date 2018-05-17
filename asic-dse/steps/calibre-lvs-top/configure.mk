@@ -44,7 +44,7 @@ abbr.calibre-lvs-top = lvs-top
 # build system has constructed the collect dir, so we temporarily
 # magically reach into the correct handoff dir.
 
-calibre_lvs_top_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
+calibre_lvs_top_gds = $(handoff_dir.calibre-stamp)/stamped.gds
 calibre_lvs_top_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 
 # Also pull in any extra files we need (e.g., SRAM cdl)
