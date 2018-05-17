@@ -40,16 +40,16 @@ mappings = {
 
     'west_iocell_12'  :  'vss_core_west_1_iocell', # ------- Ground (core)
     'west_iocell_11'  :  'vdd_core_west_1_iocell', # ------- Power (core)
-    'west_iocell_10'  :    'vss_dummy_h_6_iocell', # Dummy
-    'west_iocell_9'   :    'vss_dummy_h_5_iocell', # Dummy
-    'west_iocell_8'   :    'vss_dummy_h_4_iocell', # Dummy
-    'west_iocell_7'   :    'vss_dummy_h_3_iocell', # Dummy
-    'west_iocell_6'   :    'vss_dummy_h_2_iocell', # Dummy
+    'west_iocell_10'  :      'pll_clk_ref_iocell', # Input
+    'west_iocell_9'   :      'pll_scn_clk_iocell', # Input
+    'west_iocell_8'   :          'pll_sdi_iocell', # Input
+    'west_iocell_7'   :         'pll_rstb_iocell', # Input
+    'west_iocell_6'   :  'pll_chip_select_iocell', # Input
     'west_iocell_5'   :  'vdd_core_west_0_iocell', # ------- Power (core)
     'west_iocell_4'   :  'vss_core_west_0_iocell', # ------- Ground (core)
-    'west_iocell_3'   :    'vss_dummy_h_1_iocell', # Dummy
+    'west_iocell_3'   :      'pll_out_sdo_iocell', # Output
     'west_iocell_2'   :    'vdd_io_west_0_iocell', # ------- Power (IO)
-    'west_iocell_1'   :    'vss_dummy_h_0_iocell', # Dummy
+    'west_iocell_1'   :      'pll_out_clk_iocell', # Output
     'west_iocell_0'   :    'vss_io_west_0_iocell', # ------- Ground (IO)
 
     # North side, left to right

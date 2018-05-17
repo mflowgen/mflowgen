@@ -10,6 +10,6 @@ elaborate ${DESIGN_NAME}
 
 # Change link for pll
 
-#change_link [get_cells *core_clk_pll] pll_lib/pll
+change_link [get_cells *pll] pll_lib/pll
 
 

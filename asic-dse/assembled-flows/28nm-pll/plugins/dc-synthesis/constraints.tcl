@@ -27,19 +27,19 @@ create_clock -name clk_pll -period 0.416 \
 #
 
 create_generated_clock -name clk_ref -edges { 1 49 97 } [get_ports in_clk_ref] \
-  -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
+  -add -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
 
 create_generated_clock -name clk_alpha_and_accum -edges { 25 73 121 } [get_ports in_clk_ref] \
-  -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
+  -add -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
 
 create_generated_clock -name clk_dlc -edges { 49 97 145 } [get_ports in_clk_ref] \
- -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
+  -add -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
 
 create_generated_clock -name clk_fce -edges { 73 121 169 } [get_ports in_clk_ref] \
-  -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
+  -add -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
 
 create_generated_clock -name clk_dco -edges { 76 124 172 } [get_ports in_clk_ref] \
-  -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
+  -add -source [get_pins pll_loop/ring_oscillator_top/out_pll_clk]
 
 #-------------------------------------------------------------------------
 # Special dont touch and dont retime

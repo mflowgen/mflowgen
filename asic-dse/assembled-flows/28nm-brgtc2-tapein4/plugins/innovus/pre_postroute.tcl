@@ -18,5 +18,12 @@ setOptMode -setupTargetSlack 0.000
 
 setOptMode -usefulSkewPostRoute true
 
-set_clock_uncertainty 0.01 [get_clocks core_clk]
+# Setup clock uncertainty is at signoff level now
+
+set_clock_uncertainty 0.01 [get_clocks core_clk] -setup
+
+# Set a slightly conservative hold uncertainty during postroute to help
+# meet hold time and correct for postroute correlation with signoff
+
+set_clock_uncertainty 0.07 [get_clocks core_clk] -hold
 

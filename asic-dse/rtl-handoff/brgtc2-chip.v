@@ -18,6 +18,27 @@ module ResetSynchronizer
 endmodule
 
 //----------------------------------------------------------------------
+// PLL black box
+//----------------------------------------------------------------------
+
+module pll
+(
+  input  wire in_clk_ref,
+  input  wire in_chip_select,
+  input  wire in_scn_clk,
+  input  wire in_sdi,
+  input  wire in_rstb,
+  output wire out_sdo,
+  output wire out_clk_tst,
+  output wire out_clk
+);
+
+  assign out_clk     = in_clk_ref;
+  assign out_clk_tst = in_clk_ref;
+
+endmodule
+
+//----------------------------------------------------------------------
 // brgtc2_chip
 //----------------------------------------------------------------------
 
@@ -32,15 +53,15 @@ module brgtc2_chip
   input  wire [ 7:0] in__msg_io,
   output wire [ 0:0] out_req_io,
   input  wire [ 0:0] out_ack_io,
-  output wire [ 7:0] out_msg_io
+  output wire [ 7:0] out_msg_io,
 //  output wire [ 0:0] observe_io,
-//  input  wire [ 0:0] pll_clk_ref_io,
-//  input  wire [ 0:0] pll_scn_clk_io,
-//  input  wire [ 0:0] pll_sdi_io,
-//  input  wire [ 0:0] pll_rstb_io,
-//  input  wire [ 0:0] pll_chip_select_io,
-//  output wire [ 0:0] pll_out_sdo_io,
-//  output wire [ 0:0] pll_out_clk_io
+  input  wire [ 0:0] pll_clk_ref_io,
+  input  wire [ 0:0] pll_scn_clk_io,
+  input  wire [ 0:0] pll_sdi_io,
+  input  wire [ 0:0] pll_rstb_io,
+  input  wire [ 0:0] pll_chip_select_io,
+  output wire [ 0:0] pll_out_sdo_io,
+  output wire [ 0:0] pll_out_clk_io
 );
 
   //----------------------------------------------------------------------
@@ -176,32 +197,41 @@ module brgtc2_chip
 
   // PLL pads
 
+  wire pll_clk_buf;
+
   //                          Inst Name                       PAD                   data
 
-//   `INPUT_PAD_H(     pll_clk_ref_iocell,        pll_clk_ref_io[0],        pll_clk_ref[0] ) // West
-//   `INPUT_PAD_H(     pll_scn_clk_iocell,        pll_scn_clk_io[0],        pll_scn_clk[0] ) // West
-//   `INPUT_PAD_H(         pll_sdi_iocell,            pll_sdi_io[0],            pll_sdi[0] ) // West
-//   `INPUT_PAD_H(        pll_rstb_iocell,           pll_rstb_io[0],           pll_rstb[0] ) // West
-//   `INPUT_PAD_H( pll_chip_select_iocell,    pll_chip_select_io[0],    pll_chip_select[0] ) // West
+   `INPUT_PAD_H(     pll_clk_ref_iocell,        pll_clk_ref_io[0],        pll_clk_ref[0] ) // West
+   `INPUT_PAD_H(     pll_scn_clk_iocell,        pll_scn_clk_io[0],        pll_scn_clk[0] ) // West
+   `INPUT_PAD_H(         pll_sdi_iocell,            pll_sdi_io[0],            pll_sdi[0] ) // West
+   `INPUT_PAD_H(        pll_rstb_iocell,           pll_rstb_io[0],           pll_rstb[0] ) // West
+   `INPUT_PAD_H( pll_chip_select_iocell,    pll_chip_select_io[0],    pll_chip_select[0] ) // West
 
-//  `OUTPUT_PAD_H(     pll_out_sdo_iocell,        pll_out_sdo_io[0],        pll_out_sdo[0] ) // West
-//  `OUTPUT_PAD_H(     pll_out_clk_iocell,        pll_out_clk_io[0],        pll_out_clk[0] ) // West
+  `OUTPUT_PAD_H(     pll_out_sdo_iocell,        pll_out_sdo_io[0],        pll_out_sdo[0] ) // West
+  `OUTPUT_PAD_H(     pll_out_clk_iocell,        pll_out_clk_io[0],        pll_clk_buf    ) // West
 
   //----------------------------------------------------------------------
   // PLL
   //----------------------------------------------------------------------
 
-//  pll pll
-//  (
-//    .in_clk_ref     (pll_clk_ref),
-//    .in_scn_clk     (pll_scn_clk)
-//    .in_sdi         (pll_sdi)
-//    .in_rstb        (pll_rstb)
-//    .in_chip_select (pll_chip_select)
-//    .out_sdo        (pll_out_sdo)
-//    .out_clk        (pll_out_clk)
-//    .out_clk_tst    ()
-//  );
+  pll pll
+  (
+    .in_clk_ref     (pll_clk_ref),
+    .in_scn_clk     (pll_scn_clk),
+    .in_sdi         (pll_sdi),
+    .in_rstb        (pll_rstb),
+    .in_chip_select (pll_chip_select),
+    .out_sdo        (pll_out_sdo),
+    .out_clk        (pll_out_clk),
+    .out_clk_tst    ()
+  );
+
+  // Make sure to set don't touch on this balanced-drive cell!
+
+  BUFH_X4M_A9PP140TS_C30 pll_buf (
+    .A (pll_out_clk),
+    .Y (pll_clk_buf)
+  );
 
   //----------------------------------------------------------------------
   // Clock mux
@@ -212,16 +242,21 @@ module brgtc2_chip
   wire clk;
   wire clk_mux_out;
 
+  // Make sure to set don't touch on this balanced-drive cell!
+
   MXIT2_X2M_A9PP140TS_C30 clk_mux
   (
     .A  (clk_ext),     // S0 = 0, pick A
-//    .B  (pll_out_clk), // S0 = 1, pick B
-    .B  (1'b0),        // S0 = 1, pick B
+    .B  (pll_clk_buf), // S0 = 1, pick B
     .S0 (clk_sel),
     .Y  (clk_mux_out)
   );
 
-  INV_X16B_A9PP140TS_C30 clk_inv (
+  // This cell can be optimized because the tools are aware that the
+  // output of the clk_mux is a clock signal. There is no need to set
+  // don't touch on this cell.
+
+  INV_X8B_A9PP140TS_C30 clk_inv (
     .A (clk_mux_out),
     .Y (clk)
   );

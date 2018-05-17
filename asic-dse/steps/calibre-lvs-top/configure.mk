@@ -7,14 +7,14 @@
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.calibre-lvs-filled = \
+descriptions.calibre-lvs-top = \
 	"LVS for sealed and filled design"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.calibre-lvs-filled
+define ascii.calibre-lvs-top
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
 	@echo '#                            _     __      __  _____                            #'
@@ -23,7 +23,7 @@ define ascii.calibre-lvs-filled
 	@echo '#                           | |      \ \/ /   \___ \                            #'
 	@echo '#                           | |____   \  /    ____) |                           #'
 	@echo '#                           |______|   \/    |_____/                            #'
-	@echo '#                                  F I L L E D                                  #'
+	@echo '#                                    T  O  P                                    #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
 endef
@@ -32,7 +32,7 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-abbr.calibre-lvs-filled = lvs-filled
+abbr.calibre-lvs-top = lvs-top
 
 #-------------------------------------------------------------------------
 # Collect
@@ -44,12 +44,12 @@ abbr.calibre-lvs-filled = lvs-filled
 # build system has constructed the collect dir, so we temporarily
 # magically reach into the correct handoff dir.
 
-calibre_lvs_filled_gds = $(handoff_dir.calibre-fill)/top.gds
-calibre_lvs_filled_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
+calibre_lvs_top_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
+calibre_lvs_top_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 
 # Also pull in any extra files we need (e.g., SRAM cdl)
 
-calibre_lvs_filled_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
+calibre_lvs_top_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
 
 #-------------------------------------------------------------------------
 # Variables
@@ -57,33 +57,33 @@ calibre_lvs_filled_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
 
 # Runset files -- the template will be populated to generate the runset
 
-calibre_lvs_filled_runset_template = $(plugins_dir)/calibre/lvs-filled.runset.template
-calibre_lvs_filled_runset          = $(results_dir.calibre-lvs-filled)/lvs-filled.runset
+calibre_lvs_top_runset_template = $(plugins_dir)/calibre/lvs-top.runset.template
+calibre_lvs_top_runset          = $(results_dir.calibre-lvs-top)/lvs-top.runset
 
 # Common variables to substitute into the runset template
 #
 # Note: Some of the paths must be absolute
 
-export calibre_lvs_filled_rulesfile      = $(adk_dir)/calibre-lvs.rule
-export calibre_lvs_filled_rundir         = $(PWD)/$(results_dir.calibre-lvs-filled)
+export calibre_lvs_top_rulesfile      = $(adk_dir)/calibre-lvs.rule
+export calibre_lvs_top_rundir         = $(PWD)/$(results_dir.calibre-lvs-top)
 
-export calibre_lvs_filled_layoutpaths    = $(PWD)/$(calibre_lvs_filled_gds)
-export calibre_lvs_filled_layoutprimary  = $(design_name)
-export calibre_lvs_filled_extractedspice = $(calibre_lvs_filled_rundir)/lvs.extracted.sp
+export calibre_lvs_top_layoutpaths    = $(PWD)/$(calibre_lvs_top_gds)
+export calibre_lvs_top_layoutprimary  = $(design_name)
+export calibre_lvs_top_extractedspice = $(calibre_lvs_top_rundir)/lvs.extracted.sp
 
-export calibre_lvs_filled_sourcepath     = $(PWD)/$(calibre_lvs_filled_v)
-export calibre_lvs_filled_sourceprimary  = $(design_name)
+export calibre_lvs_top_sourcepath     = $(PWD)/$(calibre_lvs_top_v)
+export calibre_lvs_top_sourceprimary  = $(design_name)
 
-export calibre_lvs_filled_logsfile       = $(calibre_lvs_filled_rundir)/lvs.log
-export calibre_lvs_filled_ercdatabase    = $(calibre_lvs_filled_rundir)/lvs.erc.results
-export calibre_lvs_filled_ercsummaryfile = $(calibre_lvs_filled_rundir)/lvs.erc.summary
-export calibre_lvs_filled_reportfile     = $(calibre_lvs_filled_rundir)/lvs.report
+export calibre_lvs_top_logsfile       = $(calibre_lvs_top_rundir)/lvs.log
+export calibre_lvs_top_ercdatabase    = $(calibre_lvs_top_rundir)/lvs.erc.results
+export calibre_lvs_top_ercsummaryfile = $(calibre_lvs_top_rundir)/lvs.erc.summary
+export calibre_lvs_top_reportfile     = $(calibre_lvs_top_rundir)/lvs.report
 
-calibre_lvs_filled_spiceincfiles        += $(adk_dir)/stdcells.cdl
-calibre_lvs_filled_spiceincfiles        += $(adk_dir)/iocells.spi
-calibre_lvs_filled_spiceincfiles        += $(foreach x, $(calibre_lvs_filled_extras),$(PWD)/$x)
+calibre_lvs_top_spiceincfiles        += $(adk_dir)/stdcells.cdl
+calibre_lvs_top_spiceincfiles        += $(adk_dir)/iocells.spi
+calibre_lvs_top_spiceincfiles        += $(foreach x, $(calibre_lvs_top_extras),$(PWD)/$x)
 
-export calibre_lvs_filled_spiceincfiles
+export calibre_lvs_top_spiceincfiles
 
 #-------------------------------------------------------------------------
 # Targets for LVS checks
@@ -91,16 +91,16 @@ export calibre_lvs_filled_spiceincfiles
 
 # Chip LVS (Filled)
 
-$(calibre_lvs_filled_logsfile): $(dependencies.calibre-lvs-filled)
-	@mkdir -p $(results_dir.calibre-lvs-filled)
+$(calibre_lvs_top_logsfile): $(dependencies.calibre-lvs-top)
+	@mkdir -p $(results_dir.calibre-lvs-top)
 	@touch $@.start
 	@echo '================================================================================'
 	@echo 'Chip LVS (Sealed and filled)'
 	@echo '================================================================================'
 # Select the LVS rules file and generate the lvs runset from the template
-	envsubst < $(calibre_lvs_filled_runset_template) > $(calibre_lvs_filled_runset)
+	envsubst < $(calibre_lvs_top_runset_template) > $(calibre_lvs_top_runset)
 # Run lvs using the runset
-	calibre -gui -lvs -batch -runset $(calibre_lvs_filled_runset)
+	calibre -gui -lvs -batch -runset $(calibre_lvs_top_runset)
 
 #-------------------------------------------------------------------------
 # Options
@@ -119,7 +119,7 @@ $(calibre_lvs_filled_logsfile): $(dependencies.calibre-lvs-filled)
 # Extra dependencies
 #-------------------------------------------------------------------------
 
-extra_dependencies.calibre-lvs-filled += $(calibre_lvs_filled_logsfile)
+extra_dependencies.calibre-lvs-top += $(calibre_lvs_top_logsfile)
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -127,16 +127,16 @@ extra_dependencies.calibre-lvs-filled += $(calibre_lvs_filled_logsfile)
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-skipvpath.calibre-lvs-filled = yes
+skipvpath.calibre-lvs-top = yes
 
-define commands.calibre-lvs-filled
-	@echo "Layout    : $(calibre_lvs_filled_gds)"
-	@echo "Schematic : $(calibre_lvs_filled_v)"
+define commands.calibre-lvs-top
+	@echo "Layout    : $(calibre_lvs_top_gds)"
+	@echo "Schematic : $(calibre_lvs_top_v)"
 	@echo
 	@echo '================================================================================'
 	@echo 'Chip LVS (sealed and filled)'
 	@echo '================================================================================'
-	@sed -n "/OVERALL COMPARISON RESULTS/,/\*\*\*\*/p" $(calibre_lvs_filled_reportfile)
+	@sed -n "/OVERALL COMPARISON RESULTS/,/\*\*\*\*/p" $(calibre_lvs_top_reportfile)
 endef
 
 #-------------------------------------------------------------------------
@@ -147,17 +147,17 @@ endef
 
 # Clean
 
-clean-calibre-lvs-filled:
-	rm -rf ./$(VPATH)/calibre-lvs-filled
-	rm -rf ./$(results_dir.calibre-lvs-filled)
-	rm -rf ./$(collect_dir.calibre-lvs-filled)
+clean-calibre-lvs-top:
+	rm -rf ./$(VPATH)/calibre-lvs-top
+	rm -rf ./$(results_dir.calibre-lvs-top)
+	rm -rf ./$(collect_dir.calibre-lvs-top)
 
-clean-lvs-filled: clean-calibre-lvs-filled
+clean-lvs-top: clean-calibre-lvs-top
 
 # Debug
 
-debug-lvs-filled:
-	calibredrv -m $(calibre_lvs_filled_gds) \
+debug-lvs-top:
+	calibredrv -m $(calibre_lvs_top_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -lvs $(calibre_lvs_filled_rundir)/svdb
+	           -rve -lvs $(calibre_lvs_top_rundir)/svdb
 

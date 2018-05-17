@@ -23,7 +23,7 @@ define ascii.calibre-drc-top
 	@echo '#                           | | | | |  _  /  | |                                #'
 	@echo '#                           | |_| | | | \ \  | |____                            #'
 	@echo '#                           |____/  |_|  \_\  \_____|                           #'
-	@echo '#                                 F I L L E D                                   #'
+	@echo '#                                   T  O  P                                     #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
 endef

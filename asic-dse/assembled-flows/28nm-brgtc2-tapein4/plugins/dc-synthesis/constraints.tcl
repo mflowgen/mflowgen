@@ -7,8 +7,11 @@
 #-------------------------------------------------------------------------
 
 # Don't touch the balanced clock mux built with hand-instantiated stdcells
+# and don't touch the pll buffer that drives the pll to the clock mux
+# (where the tool will be told the clock originates).
 
 set_dont_touch clk_mux
+set_dont_touch pll_buf
 
 # Make sure that min_delay has priority. The chip will not work if this is
 # not honored.
@@ -19,13 +22,13 @@ set_cost_priority {min_delay}
 # Create clocks
 #-------------------------------------------------------------------------
 
-set core_clk_net    clk_io
+set core_clk_pin    clk_mux/Y
 set core_clk_name   core_clk
 set core_clk_period $dc_clock_period
 
 create_clock -name   $core_clk_name   \
              -period $core_clk_period \
-             [get_ports $core_clk_net]
+             [get_pins $core_clk_pin]
 
 #-------------------------------------------------------------------------
 # Clock uncertainty

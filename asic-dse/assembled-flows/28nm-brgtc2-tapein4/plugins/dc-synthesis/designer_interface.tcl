@@ -61,7 +61,17 @@ set TLUPLUS_MIN_FILE            $::env(adk_dir)/rtk-min.tluplus
 
 set stdcells_tcl                $::env(adk_dir)/stdcells.tcl
 
+#-------------------------------------------------------------------------
+# Hierarchical flow
+#-------------------------------------------------------------------------
+
+set BLOCK_LINK_LIBS [glob /work/global/brgtc2/pll-pt/*.db]
+
+set ADDITIONAL_LINK_LIB_FILES $BLOCK_LINK_LIBS
+
+#-------------------------------------------------------------------------
 # alib_dir
+#-------------------------------------------------------------------------
 #
 # Design Compiler caches analyzed libraries to improve performance using
 # ".alib" directories. The alib takes a while to generate but is reused on

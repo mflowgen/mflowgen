@@ -66,7 +66,8 @@ export pt_sdc_input       = $(pt_collect_dir)/$(design_name).pt.sdc
 pt_exec = pt_shell
 pt_tcl  = $(flow_dir.pt-signoff)/rm_pt_scripts/pt.tcl
 
-pt_corners = typical ff_typical
+#pt_corners = typical ff_typical
+pt_corners = typical
 
 #-------------------------------------------------------------------------
 # Primary command target

@@ -30,7 +30,7 @@ steps = \
   calibre-drc-top \
   calibre-lvs \
   calibre-lvs-sealed \
-  calibre-lvs-filled \
+  calibre-lvs-top \
   sim-prep \
   vcs-common-build \
   vcs-rtl-build \
@@ -93,16 +93,17 @@ dependencies.vcs-aprsdfx         = vcs-aprsdfx-build
 # Calibre steps
 
 dependencies.calibre-seal        = innovus-signoff gen-sram-gds
-dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-fill        = calibre-seal
 dependencies.calibre-stamp       = calibre-fill
+
+dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-drc-top     = calibre-stamp
 
 dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
 dependencies.calibre-lvs-sealed  = innovus-signoff calibre-seal gen-sram-cdl
-dependencies.calibre-lvs-filled  = innovus-signoff calibre-fill gen-sram-cdl
+dependencies.calibre-lvs-top     = innovus-signoff calibre-stamp gen-sram-cdl
 
 # MOSIS handoff
 
-dependencies.mosis               = calibre-fill
+dependencies.mosis               = calibre-stamp
 

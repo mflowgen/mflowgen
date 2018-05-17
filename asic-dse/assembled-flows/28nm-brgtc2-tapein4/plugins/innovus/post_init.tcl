@@ -71,7 +71,9 @@ timeDesign -preplace -hold -expandedViews -prefix preplace -outDir $vars(rpt_dir
 #-------------------------------------------------------------------------
 
 # Don't touch the balanced clock mux built with hand-instantiated stdcells
+# and don't touch the pll buffer that drives the pll to the clock mux
+# (where the tool will be told the clock originates).
 
 set_dont_touch clk_mux
-set_dont_touch clk_inv
+set_dont_touch pll_buf
 

@@ -22,3 +22,14 @@ set vars(reduced_effort_flow) false
 #
 # set vars(run_clp) false
 
+# Add the PLL hierarchically
+
+set pll_lib [glob /work/global/brgtc2/pll-pt/*.lib]
+
+set pll_lef [glob /work/global/brgtc2/pll-innovus/*.lef]
+
+set vars(libs_typical,timing) [join "$vars(libs_typical,timing) $pll_lib" ]
+set vars(libs_bc,timing)      [join "$vars(libs_bc,timing)      $pll_lib" ]
+set vars(libs_wc,timing)      [join "$vars(libs_wc,timing)      $pll_lib" ]
+set vars(lef_files)           [join "$vars(lef_files)           $pll_lef" ]
+

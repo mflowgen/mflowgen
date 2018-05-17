@@ -64,6 +64,12 @@ add_gui_text -label VDD    -pt $label_vdd_llx    $label_vdd_lly    -layer CUSTOM
 add_gui_text -label POC    -pt $label_poc_llx    $label_poc_lly    -layer CUSTOM_BRG_LVS_M3 -height 5
 
 #-------------------------------------------------------------------------
+# Save design before continuing
+#-------------------------------------------------------------------------
+
+saveDesign $vars(dbs_dir)/$vars(step).power.enc -relativePath
+
+#-------------------------------------------------------------------------
 # M2 power rail preroute
 #-------------------------------------------------------------------------
 # ARM 28nm standard cells use 130nm width M2 rails. ARM suggests
@@ -144,10 +150,8 @@ addStripe -nets {VSS VDD} -layer M3 -direction vertical \
     -set_to_set_distance $M3_str_interset_pitch         \
     -start_offset $M3_str_offset
 
-# FIXME: use CPF?
-
 #-------------------------------------------------------------------------
-# Power ring
+# Core power ring
 #-------------------------------------------------------------------------
 
 addRing -nets {VDD VSS} -type core_rings -follow core   \
@@ -167,6 +171,50 @@ sroute                                  \
  -padPinLayerRange { M1 M2 }            \
  -padPinPortConnect { allPort allGeom } \
  -padPinTarget { ring }
+
+#-------------------------------------------------------------------------
+# PLL power ring connections
+#-------------------------------------------------------------------------
+
+setAddRingMode -reset
+setAddRingMode -stacked_via_bottom_layer M8
+setAddRingMode -stacked_via_top_layer M9
+
+# Because the PLL is right next to the core power ring, when adding this block
+# power ring, the tool is smart enough to not build the west side of the
+# block ring and instead directly extend the top and bottom of the block
+# ring into the core power ring.
+
+selectInst pll
+addRing -nets {VDD VSS} -type block_rings \
+        -around selected \
+        -layer {top M8 bottom M8 left M9 right M9} \
+        -width 1.0 -spacing 0.2 -offset 0.2
+deselectAll
+
+# Hookup the PLL to the ring
+
+sroute -connect blockPin \
+       -allowJogging 0 \
+       -allowLayerChange 0 \
+       -blockPin useLef \
+       -blockPinTarget blockring \
+       -crossoverViaLayerRange "M8 M9" \
+       -inst pll \
+       -layerChangeRange "M8 M9" \
+       -nets {VDD VSS} \
+       -noBlockPinOneAmongOverlappedPins \
+       -targetViaLayerRange "M8 M9" \
+       -verbose
+
+# Cover the PLL with a routing block to prevent the PG coarse mesh from
+# interfering with the power inside, and also to prevent any signal
+# routing since the PLL is using all the routing layers.
+
+createRouteBlk -name pll_route_block \
+               -inst pll -cover \
+               -layer all \
+               -spacing [expr $pll_margin*2]
 
 #-------------------------------------------------------------------------
 # M5 straps over memory
@@ -356,6 +404,12 @@ addStripe -nets {VDD VSS} -layer M9 -direction vertical \
     -start [expr $M9_str_pitch/4]
 
 #-------------------------------------------------------------------------
+# Save design after power routing
+#-------------------------------------------------------------------------
+
+saveDesign $vars(dbs_dir)/$vars(step).power.done.enc -relativePath
+
+#-------------------------------------------------------------------------
 # SRAM routing halos
 #-------------------------------------------------------------------------
 # Encourage signal router to access block pins with planar access instead
@@ -384,5 +438,5 @@ foreach block $mem_macro_paths {
 #-------------------------------------------------------------------------
 
 set_interactive_constraint_modes [all_constraint_modes -active]
-set_clock_uncertainty 0.05 [get_clocks]
+set_clock_uncertainty 0.05 [get_clocks core_clk]
 

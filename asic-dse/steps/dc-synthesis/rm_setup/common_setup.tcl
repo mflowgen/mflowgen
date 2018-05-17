@@ -43,7 +43,7 @@ set HIERARCHICAL_CELLS             ""
 #set TARGET_LIBRARY_FILES          ""  ;#  Target technology logical libraries
 
 #  Extra link logical libraries not included in TARGET_LIBRARY_FILES
-set ADDITIONAL_LINK_LIB_FILES     ""  ;
+#set ADDITIONAL_LINK_LIB_FILES     ""  ;
 
 #  List of max min library pairs "max1 min1 max2 min2 max3 min3"...
 set MIN_LIBRARY_FILES             ""  ;

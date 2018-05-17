@@ -18,7 +18,6 @@ proc snapToTrackPitch {x} {
 
 set t_pitch 0.10; # Pitch between m2 tracks (track pitch)
 set r_pitch 0.90; # Pitch between power rails (standard cell height)
-# FIXME
 
 #-------------------------------------------------------------------------
 # Floorplan variables
@@ -118,5 +117,10 @@ set core_ury [expr $die_height - $seal_ring_len - $io_len - $core_margin_len]
 set mem_macros      [dbGet top.insts.cell.name sram* -p2]
 set mem_macro_paths [dbGet [dbGet top.insts.cell.name sram* -p2].name]
 
-set sram_margin [expr $r_pitch * 1]; # Halo margin around each SRAM
+set sram_margin     [expr $r_pitch * 1]; # Halo margin around each SRAM
+
+# PLL variables
+
+set pll_margin      [expr $r_pitch * 3]; # Halo margin around the PLL
+
 

@@ -29,6 +29,12 @@ endef
 abbr.calibre-seal = seal
 
 #-------------------------------------------------------------------------
+# BRGTC2-specific gds
+#-------------------------------------------------------------------------
+
+pll_gds = $(wildcard /work/global/brgtc2/pll-innovus/*.gds.gz)
+
+#-------------------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------------------
 
@@ -58,6 +64,7 @@ define commands.calibre-seal
 		-in $(adk_dir)/stdcells.gds \
 		-in $(adk_dir)/iocells.gds \
 		-in $(adk_dir)/iocells-bondpads.gds \
+		-in $(pll_gds) \
 		-topcell $(design_name) \
 		-out $(unsealed_gds) \
 	) > $(logs_dir.calibre-seal)/merge-unsealed.log 2>&1

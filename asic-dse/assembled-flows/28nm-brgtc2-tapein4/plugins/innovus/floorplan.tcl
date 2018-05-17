@@ -82,13 +82,13 @@ addInst -physical -cell PVSS2CDE_V_G -inst vss_io_south_1_iocell; # S, vertical
 
 # Dummy cells
 
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_0_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_1_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_2_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_3_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_4_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_5_iocell; # horizontal
-addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_6_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_0_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_1_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_2_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_3_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_4_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_5_iocell; # horizontal
+#addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_6_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_7_iocell; # horizontal
 addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_8_iocell; # horizontal
 #addInst -physical -cell PVDD2CDE_H_G -inst  vss_dummy_h_9_iocell; # horizontal
@@ -262,6 +262,27 @@ setIoFlowFlag 0
 # Pull this in from 180nm-pcosync-chip if needed
 
 #-------------------------------------------------------------------------
+# PLL
+#-------------------------------------------------------------------------
+
+selectInst pll
+
+set pll_height_half  [ expr [dbGet selected.box_sizey] / 2 ]
+set core_height_half [ expr ($core_ury - $core_lly)    / 2 ]
+
+deselectAll
+
+placeInstance pll \
+              [ expr $core_llx ] \
+              [ expr $core_lly + $core_height_half - $pll_height_half ]
+
+# Cut the stdcell rows around the pll
+
+selectInst pll
+cutRow -selected -halo $pll_margin
+deselectInst *
+
+#-------------------------------------------------------------------------
 # SRAM
 #-------------------------------------------------------------------------
 
@@ -272,34 +293,34 @@ set sram_inset [expr $r_pitch * 10]
 # I$ SRAMs
 
 placeInstance brgtc2/dut/icache/dpath/data_array_0/sram/mem_000_000 \
-              [ expr $core_llx +               000.00 ] \
+              [ expr $core_llx +               110.00 ] \
               [ expr $core_lly + $sram_inset ] \
               My
 
 placeInstance brgtc2/dut/icache/dpath/tag_array_0/sram/mem_000_000 \
-              [ expr $core_llx +               000.00 ] \
+              [ expr $core_llx +               110.00 ] \
               [ expr $core_lly + $sram_inset + 436.62 ] \
               My
 
 placeInstance brgtc2/dut/icache/dpath/data_array_1/sram/mem_000_000 \
-              [ expr $core_llx +               240.00 ] \
+              [ expr $core_llx +               340.00 ] \
               [ expr $core_lly + $sram_inset ] \
               R0
 
 placeInstance brgtc2/dut/icache/dpath/tag_array_1/sram/mem_000_000 \
-              [ expr $core_llx +               240.00 ] \
+              [ expr $core_llx +               340.00 ] \
               [ expr $core_lly + $sram_inset + 436.62 ] \
               R0
 
 # D$ SRAMs
 
 placeInstance brgtc2/dut/dcache/dpath/data_array_0/sram/mem_000_000 \
-              [ expr $core_llx +               348.33 ] \
+              [ expr $core_llx +               448.33 ] \
               [ expr $core_lly + $sram_inset ] \
               My
 
 placeInstance brgtc2/dut/dcache/dpath/tag_array_0/sram/mem_000_000 \
-              [ expr $core_llx +               348.33 ] \
+              [ expr $core_llx +               448.33 ] \
               [ expr $core_lly + $sram_inset + 436.62 ] \
               My
 
@@ -312,6 +333,35 @@ placeInstance brgtc2/dut/dcache/dpath/tag_array_1/sram/mem_000_000 \
               [ expr $core_llx +               742.45 ] \
               [ expr $core_lly + $sram_inset + 436.62 ] \
               R0
+
+# Reserve space for hold-fixing buffers right next to the SRAM pins
+
+set sram_soft_blockage_len 2.5
+
+createPlaceBlockage -inst brgtc2/dut/icache/dpath/data_array_0/sram/mem_000_000 \
+                    -type soft -outerRingBySide 0 0 $sram_soft_blockage_len 0
+
+createPlaceBlockage -inst brgtc2/dut/icache/dpath/tag_array_0/sram/mem_000_000 \
+                    -type soft -outerRingBySide 0 0 $sram_soft_blockage_len 0
+
+createPlaceBlockage -inst brgtc2/dut/icache/dpath/data_array_1/sram/mem_000_000 \
+                    -type soft -outerRingBySide $sram_soft_blockage_len 0 0 0
+
+createPlaceBlockage -inst brgtc2/dut/icache/dpath/tag_array_1/sram/mem_000_000 \
+                    -type soft -outerRingBySide $sram_soft_blockage_len 0 0 0
+
+
+createPlaceBlockage -inst brgtc2/dut/dcache/dpath/data_array_0/sram/mem_000_000 \
+                    -type soft -outerRingBySide 0 0 $sram_soft_blockage_len 0
+
+createPlaceBlockage -inst brgtc2/dut/dcache/dpath/tag_array_0/sram/mem_000_000 \
+                    -type soft -outerRingBySide 0 0 $sram_soft_blockage_len 0
+
+createPlaceBlockage -inst brgtc2/dut/dcache/dpath/data_array_1/sram/mem_000_000 \
+                    -type soft -outerRingBySide $sram_soft_blockage_len 0 0 0
+
+createPlaceBlockage -inst brgtc2/dut/dcache/dpath/tag_array_1/sram/mem_000_000 \
+                    -type soft -outerRingBySide $sram_soft_blockage_len 0 0 0
 
 # Cut the stdcell rows around the SRAM
 

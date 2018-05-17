@@ -52,6 +52,12 @@ calibre_lvs_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 calibre_lvs_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
 
 #-------------------------------------------------------------------------
+# BRGTC2-specific netlists
+#-------------------------------------------------------------------------
+
+pll_lvs_v = $(wildcard /work/global/brgtc2/pll-innovus/*.lvs.v)
+
+#-------------------------------------------------------------------------
 # Variables
 #-------------------------------------------------------------------------
 
@@ -72,6 +78,7 @@ export calibre_lvs_layoutprimary  = $(design_name)
 export calibre_lvs_extractedspice = $(calibre_lvs_rundir)/lvs.extracted.sp
 
 export calibre_lvs_sourcepath     = $(PWD)/$(calibre_lvs_v)
+export calibre_lvs_sourcepath    += $(pll_lvs_v)
 export calibre_lvs_sourceprimary  = $(design_name)
 
 export calibre_lvs_logsfile       = $(calibre_lvs_rundir)/lvs.log
