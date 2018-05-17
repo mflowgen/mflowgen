@@ -88,7 +88,7 @@ calibre_drc_sealed_summaryfile_wirebond = $(results_dir.calibre-drc-sealed)/drc-
 
 export calibre_drc_sealed_rundir        = $(PWD)/$(results_dir.calibre-drc-sealed)
 export calibre_drc_sealed_layoutpaths   = $(PWD)/$(calibre_drc_sealed_gds)
-export calibre_drc_sealed_layoutprimary = top
+export calibre_drc_sealed_layoutprimary = top_sealed
 
 #-------------------------------------------------------------------------
 # Targets for individual DRC checks

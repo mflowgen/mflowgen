@@ -38,11 +38,11 @@ brg_logo_gds             = $(plugins_dir)/calibre/brg_logo.gds.gz
 
 # Input gds
 
-calibre_stamp_input_gds  = $(handoff_dir.calibre-fill)/top.gds
+calibre_stamp_input_gds  = $(handoff_dir.calibre-fill)/filled.gds
 
 # Output gds
 
-calibre_stamp_output_gds = $(handoff_dir.calibre-stamp)/top_stamped.gds
+calibre_stamp_output_gds = $(handoff_dir.calibre-stamp)/stamped.gds
 
 #-------------------------------------------------------------------------
 # Primary command target

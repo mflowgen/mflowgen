@@ -45,7 +45,7 @@ calibre_fill_fill_gds   = $(handoff_dir.calibre-fill)/fill.gds
 
 # Merged GDS with filled design
 
-calibre_fill_output_gds = $(handoff_dir.calibre-fill)/top.gds
+calibre_fill_output_gds = $(handoff_dir.calibre-fill)/filled.gds
 
 # Runset files -- the template will be populated to generate the runset
 
@@ -59,7 +59,7 @@ calibre_fill_runset          = $(results_dir.calibre-fill)/fill.runset
 export calibre_fill_rulesfile      = $(adk_dir)/calibre-fill.rule
 export calibre_fill_rundir         = $(PWD)/$(results_dir.calibre-fill)
 export calibre_fill_layoutpaths    = $(PWD)/$(calibre_fill_input_gds)
-export calibre_fill_layoutprimary  = top
+export calibre_fill_layoutprimary  = top_sealed
 export calibre_fill_resultsfile    = $(PWD)/$(calibre_fill_fill_gds)
 export calibre_fill_transcriptfile = $(PWD)/$(logs_dir.calibre-fill)/fill.log
 
@@ -80,7 +80,8 @@ define commands.calibre-fill
 	(set -x; \
 	calibredrv -a layout filemerge \
 		-in $(calibre_fill_input_gds) \
-		-in $(calibre_fill_fill_gds) \
+		-infile [list -name $(calibre_fill_fill_gds) -suffix _fill] \
+		-createtop top_filled \
 		-out $(calibre_fill_output_gds) \
 	) > $(logs_dir.calibre-fill)/fill-merge.log 2>&1
 	@cat $(logs_dir.calibre-fill)/fill-merge.log

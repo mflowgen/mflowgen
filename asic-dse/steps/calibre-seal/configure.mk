@@ -76,7 +76,7 @@ define commands.calibre-seal
 	calibredrv -a layout filemerge \
 		-in $(unsealed_gds) \
 		-in $(adk_dir)/brgtc2-sealring.gds \
-		-createtop top \
+		-createtop top_sealed \
 		-out $(sealed_gds) \
 	) > $(logs_dir.calibre-seal)/merge-sealed.log 2>&1
 	@cat $(logs_dir.calibre-seal)/merge-sealed.log
