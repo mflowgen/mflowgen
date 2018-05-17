@@ -272,9 +272,10 @@ set core_height_half [ expr ($core_ury - $core_lly)    / 2 ]
 
 deselectAll
 
-placeInstance pll \
-              [ expr $core_llx ] \
-              [ expr $core_lly + $core_height_half - $pll_height_half ]
+set pll_llx $core_llx
+set pll_lly [ expr $core_lly + $core_height_half - $pll_height_half ]
+
+placeInstance pll $pll_llx $pll_lly
 
 # Cut the stdcell rows around the pll
 
@@ -368,4 +369,50 @@ createPlaceBlockage -inst brgtc2/dut/dcache/dpath/tag_array_1/sram/mem_000_000 \
 selectInst $mem_macros
 cutRow -selected -halo $sram_margin
 deselectInst *
+
+#-------------------------------------------------------------------------
+# Floorplanning
+#-------------------------------------------------------------------------
+# Not strictly necessary, but rough floorplan
+
+# Host region
+
+set host_region_start_x $core_llx
+set host_region_end_x   [ expr $core_llx + 110.00 ]
+
+set host_region [list $host_region_start_x $core_lly \
+                      $host_region_end_x   $core_ury ]
+
+set host_queues [ dbGet top.hInst.allTreeInsts.name *in_q_00? ]
+
+foreach queue $host_queues {
+  createRegion $queue $host_region
+}
+
+# Icache region
+
+set icache_region_start_x [ expr $core_llx + 215.0 ]
+set icache_region_end_x   [ expr $core_llx + 345.0 ]
+
+set icache_region [list $icache_region_start_x $core_lly \
+                        $icache_region_end_x   $core_ury ]
+
+createRegion brgtc2/dut/icache           $icache_region
+createRegion brgtc2/dut/l0i_000          $icache_region
+createRegion brgtc2/dut/l0i_001          $icache_region
+createRegion brgtc2/dut/l0i_002          $icache_region
+createRegion brgtc2/dut/l0i_003          $icache_region
+createRegion brgtc2/dut/icache_coalescer $icache_region
+
+# Dcache region
+
+set dcache_region_start_x [ expr $core_llx + 555.0 ]
+set dcache_region_end_x   [ expr $core_llx + 745.0 ]
+
+set dcache_region [list $dcache_region_start_x $core_lly \
+                        $dcache_region_end_x   $core_ury ]
+
+createRegion brgtc2/dut/dcache $dcache_region
+createRegion brgtc2/dut/fpu    $dcache_region
+createRegion brgtc2/dut/mdu    $dcache_region
 
