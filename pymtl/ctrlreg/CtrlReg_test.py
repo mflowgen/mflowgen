@@ -81,14 +81,26 @@ def resp( type_, data ):
 
   return msg
 
+#-------------------------------------------------------------------------
+# Default values
+#-------------------------------------------------------------------------
+
+writable_regs = [ 0, 1, 7, 8, 9, 10, 11 ] # These registers are r/w
+num_msgs = 100
+
 #----------------------------------------------------------------------
 # Message generation: random
 #----------------------------------------------------------------------
 
-def random_msgs( writable_regs, num_msgs = 20 ):
+def random_msgs( writable_regs=writable_regs, num_msgs = num_msgs ):
 
   rgen = random.Random()
   rgen.seed(0xa4e28cc2)
+
+  # Get masked data
+
+  def get_masked_data(data, mask = 0xfffffff0):
+    return data & mask
 
   # Virtual regfile
 
@@ -98,6 +110,10 @@ def random_msgs( writable_regs, num_msgs = 20 ):
   # Initialize registers
 
   for i in writable_regs:
+    if i == 0:
+      # Prevent the go bit from being set :)
+      vmem[i] = get_masked_data( vmem[i] )
+
     msgs.extend([
       req( 'wr', i, vmem[i] ), resp( 'wr', 0 ),
     ])
@@ -119,6 +135,11 @@ def random_msgs( writable_regs, num_msgs = 20 ):
     else:
 
       new_data = rgen.randint(0,0xffffffff)
+
+      if addr == 0:
+        # Prevent the go bit from being set :)
+        new_data = get_masked_data( new_data )
+
       vmem[addr] = new_data
       msgs.extend([
         req( 'wr', addr, new_data ), resp( 'wr', 0 ),
@@ -130,12 +151,15 @@ def random_msgs( writable_regs, num_msgs = 20 ):
 # Test table for generic test
 #-------------------------------------------------------------------------
 
+writable_regs = [ 0, 1, 7, 8, 9, 10, 11 ] # These registers are r/w
+num_msgs = 100
+
 test_case_table = mk_test_case_table([
-  (                           "msg_func    src sink"),
-  [ "random",                 random_msgs,   0,   0  ],
-  [ "random_0_3",             random_msgs,   0,   3  ],
-  [ "random_3_0",             random_msgs,   3,   0  ],
-  [ "random_3_3",             random_msgs,   3,   3  ],
+  (               "msg_func     src_delay sink_delay"),
+  [ "random",     random_msgs,  0,        0          ],
+  [ "random_0_3", random_msgs,  0,        3          ],
+  [ "random_3_0", random_msgs,  3,        0          ],
+  [ "random_3_3", random_msgs,  3,        3          ],
 ])
 
 @pytest.mark.parametrize( **test_case_table )
@@ -146,8 +170,6 @@ def test_generic( test_params, dump_vcd, test_verilog ):
 
   dut = CtrlReg( num_cores, valrdy_ifcs )
 
-  writable_regs = [ 0, 1, 7, 8, 9, 10, 11 ] # These registers are r/w
-  num_msgs = 100
   msgs     = test_params.msg_func( writable_regs, num_msgs )
 
   # Instantiate testharness
