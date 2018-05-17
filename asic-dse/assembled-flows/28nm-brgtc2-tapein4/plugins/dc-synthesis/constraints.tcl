@@ -157,20 +157,23 @@ set_load -pin_load 12 [all_outputs]
 
 set_max_transition 4 [all_outputs]
 
-# Technically we should constrain:
+# Outputs are driving 12pF, and the IO cells take about 2ns to drive the
+# bond wires with that load. These paths should not be constrained to any
+# internal clocks.
 #
-# - Path from the PLL clock output port to the "pll_out_clk" pad
+# Technically we should instead constrain:
 #
-#     - Make it a certain length to prevent a meandering path
-#     - FIXME: For now, leaving it constrained to the clock period and
-#       hoping the tool is smart enough to just connect it quickly.
+# - Length of feedthrough path from the PLL clock output port to the
+#   "pll_out_clk" pad to prevent meandering
 #
-# - Path from clk in pad to clk out pad (same reason, prevent meandering)
+# - Length of feedthrough path from clk in pad to clk out pad to prevent
+#   meandering
 #
-# - Path to all output ports for the 8-bit data buses
+# - Skew on path to all output ports for the 8-bit data buses to make all
+#   data paths arrive at the outputs at similar times
 #
-#     - Make all data paths arrive at the outputs at similar times
-#     - FIXME: For now, leaving it constrained to the clock period..
+# But for now, we will just let the tool do whatever it wants by setting
+# false path on outputs.
 
 set pll_outputs  [ filter_collection -regexp [all_outputs] "name =~ pll.*" ]
 set pll_outputs  [ remove_from_collection $pll_outputs pll_out_clk_io[0] ]
@@ -179,8 +182,8 @@ set core_outputs [ remove_from_collection [all_outputs] $pll_outputs ]
 set core_outputs [ remove_from_collection $core_outputs clk_out_io[0] ]
 set core_outputs [ remove_from_collection $core_outputs pll_out_clk_io[0] ]
 
-set_output_delay -clock $core_clk_name 0 $core_outputs
-set_output_delay -clock $pll_clk_name  0 $pll_outputs
+set_false_path $pll_outputs
+set_false_path $core_outputs
 
 #-------------------------------------------------------------------------
 # Reset
