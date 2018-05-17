@@ -117,6 +117,10 @@ report_clock -groups -nosplit -skew > reports/dc-synthesis/${DESIGN_NAME}.clocks
 # Register retiming
 #-------------------------------------------------------------------------
 
+set_ungroup IntMulPipelined_2Stage
+set_ungroup DW_fp_div_pipelined
+set_ungroup DW_fp_addsub_pipelined
+
 # Retime the multiplier
 
 set_optimize_registers true \
