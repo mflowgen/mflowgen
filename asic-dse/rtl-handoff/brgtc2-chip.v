@@ -256,7 +256,7 @@ module brgtc2_chip
   // output of the clk_mux is a clock signal. There is no need to set
   // don't touch on this cell.
 
-  INV_X8B_A9PP140TS_C30 clk_inv (
+  INV_X4B_A9PP140TS_C30 clk_inv (
     .A (clk_mux_out),
     .Y (clk)
   );
