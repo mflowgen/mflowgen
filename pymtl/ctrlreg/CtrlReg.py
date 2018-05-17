@@ -234,7 +234,7 @@ class CtrlReg( Model ):
     s.cr_misc_in = Wire( 32 )
 
     @s.combinational
-    def comb_cr_debug_logic():
+    def comb_cr_misc_logic():
       s.cr_misc_en.value = s.rf_wen & ( s.rf_waddr == cr_misc )
       s.cr_misc_in.value = s.rf_wdata
 
