@@ -157,26 +157,26 @@ set_load -pin_load 12 [all_outputs]
 
 set_max_transition 4 [all_outputs]
 
-#set pll_outputs  [ filter_collection -regexp [all_outputs] "name =~ pll.*" ]
-#set core_outputs [ filter_collection [all_outputs] $pll_outputs ]
-
-# FIXMEs
-#
 # Technically we should constrain:
 #
 # - Path from the PLL clock output port to the "pll_out_clk" pad
 #
 #     - Make it a certain length to prevent a meandering path
-#     - FIXME: For now, leaving it unconstrained and hoping the tool is
-#       smart enough to just connect it quickly.
+#     - FIXME: For now, leaving it constrained to the clock period and
+#       hoping the tool is smart enough to just connect it quickly.
 #
 # - Path from clk in pad to clk out pad (same reason, prevent meandering)
 #
 # - Path to all output ports for the 8-bit data buses
 #
 #     - Make all data paths arrive at the outputs at similar times
-#     - FIXME: For now, leaving it unconstrained.. which is likely fine
-#
+#     - FIXME: For now, leaving it constrained to the clock period..
+
+set pll_outputs  [ filter_collection -regexp [all_outputs] "name =~ pll.*" ]
+set core_outputs [ remove_from_collection [all_outputs] $pll_outputs ]
+
+set_output_delay -clock $core_clk_name 0 $core_outputs
+set_output_delay -clock $pll_clk_name  0 $pll_outputs
 
 #-------------------------------------------------------------------------
 # Reset
@@ -193,6 +193,33 @@ set_max_transition 4 [all_outputs]
 #set reset_input_delay [expr ((100-$reset_percent) * $core_clk_period) / 100.0]
 
 #set_input_delay -clock $core_clk_name $reset_input_delay $reset_port
+
+#-------------------------------------------------------------------------
+# False paths
+#-------------------------------------------------------------------------
+
+# To -> clk_out_io[0]
+#
+# Reason: As long as the edge is sharp on the clk out, this is a false
+# path from a delay perspective. It does not matter too much how long it
+# takes. We should constrain its length to some reasonable number, but for
+# now it is a false path.
+
+set_false_path -to clk_out_io[0]
+
+# To -> pll_out_clk_io[0]
+#
+# Reason: As long as the edge is sharp, this is a false path from a delay
+# perspective. See above note.
+
+set_false_path -to pll_out_clk_io[0]
+
+# From -> clk_sel_io[0]
+#
+# Reason: The clock select will not change during operation, so it is
+# essentially a constant.
+
+set_false_path -from clk_sel_io[0]
 
 #-------------------------------------------------------------------------
 # Reports
