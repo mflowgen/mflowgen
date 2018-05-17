@@ -297,11 +297,15 @@ class TestHarness( Model ):
     ID_MEMCOALESCE_EN = CtrlRegReqMsg.ID_MEMCOALESCE_EN
     ID_IBUFFER_EN     = CtrlRegReqMsg.ID_IBUFFER_EN
 
-    assert msg_type in ctrlreg_msgs, "{} is not a valid control reg message sequence name.".format( msg_type )
+    if not isinstance( msg_type, list ):
+      assert msg_type in ctrlreg_msgs, "{} is not a valid control reg message sequence name.".format( msg_type )
 
     # By default, the msgs starts with a simple check of debug bit
 
-    msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ msg_type ]
+    if isinstance( msg_type, list ):
+      msgs = ctrlreg_msgs[ "debug" ] + msg_type
+    else:
+      msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ msg_type ]
 
     self.ctrlregsrc.src.msgs   = msgs[::2]
     self.ctrlregsink.sink.msgs = msgs[1::2]
@@ -466,11 +470,33 @@ def run_test( model, msgs, num_cores, cacheline_nbits=128,
 
   # Checking types of incoming messages
 
-  assert isinstance( ctrlreg_msg, basestring        ) or isinstance( asm_msg, str ) # ctrlreg
-  assert isinstance( asm_msg    , SparseMemoryImage ) or asm_msg is None            # asm test
-  assert isinstance( mdu_msg    , list              )                               # mdu
-  assert isinstance( icache_msg , list              )                               # icache
-  assert isinstance( dcache_msg , list              )                               # dcache
+  # ctrlreg
+  ctr_type_check = isinstance( ctrlreg_msg, basestring        ) or \
+                   isinstance( ctrlreg_msg, str               ) or \
+                   isinstance( ctrlreg_msg, list              )
+
+  # asm test
+  asm_type_check = isinstance( asm_msg    , SparseMemoryImage ) or \
+                   asm_msg is None
+
+  # mdu
+  mdu_type_check = isinstance( mdu_msg    , list              ) or \
+                   mdu_msg is None
+
+  # icache
+  ich_type_check = isinstance( icache_msg , list              ) or \
+                   icache_msg is None
+
+  # dcache
+  dch_type_check = isinstance( dcache_msg , list              ) or \
+                   dcache_msg is None
+
+
+  assert ctr_type_check
+  assert asm_type_check
+  assert mdu_type_check
+  assert ich_type_check
+  assert dch_type_check
 
   model.load_ctrlreg( ctrlreg_msg )
 

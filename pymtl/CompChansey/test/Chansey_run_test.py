@@ -32,7 +32,10 @@ def run_test( test, dump_vcd, test_verilog,
       from Chansey_harness import ctrlreg_msgs
       # dump ctrlreg msg
 
-      msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ test[0] ]
+      if isinstance( test[0], list ):
+        msgs = ctrlreg_msgs[ "debug" ] + test[0]
+      else:
+        msgs = ctrlreg_msgs[ "debug" ] + ctrlreg_msgs[ test[0] ]
 
       for x in msgs[::2]:
         f.write( "  load_src_ctrlreg( 37'h%s );\n" % Bits(37,x) )
