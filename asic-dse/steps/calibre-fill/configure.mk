@@ -79,7 +79,7 @@ define commands.calibre-fill
 # Merge the design with the fill gds
 	(set -x; \
 	calibredrv -a layout filemerge \
-		-in $(calibre_fill_input_gds) \
+		-infile [list -name $(calibre_fill_input_gds) -suffix _design] \
 		-infile [list -name $(calibre_fill_fill_gds) -suffix _fill] \
 		-createtop top_filled \
 		-out $(calibre_fill_output_gds) \
