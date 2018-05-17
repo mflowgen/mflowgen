@@ -173,7 +173,11 @@ set_max_transition 4 [all_outputs]
 #     - FIXME: For now, leaving it constrained to the clock period..
 
 set pll_outputs  [ filter_collection -regexp [all_outputs] "name =~ pll.*" ]
+set pll_outputs  [ remove_from_collection $pll_outputs pll_out_clk_io[0] ]
+
 set core_outputs [ remove_from_collection [all_outputs] $pll_outputs ]
+set core_outputs [ remove_from_collection $core_outputs clk_out_io[0] ]
+set core_outputs [ remove_from_collection $core_outputs pll_out_clk_io[0] ]
 
 set_output_delay -clock $core_clk_name 0 $core_outputs
 set_output_delay -clock $pll_clk_name  0 $pll_outputs
