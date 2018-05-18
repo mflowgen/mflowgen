@@ -88,7 +88,8 @@ if (true) {
 
 set_clock_groups -asynchronous \
                  -group $core_clk_name \
-                 -group $pll_ref_clk_name
+                 -group $pll_ref_clk_name \
+                 -group $pll_clk_name
 
 #-------------------------------------------------------------------------
 # Clock uncertainty
