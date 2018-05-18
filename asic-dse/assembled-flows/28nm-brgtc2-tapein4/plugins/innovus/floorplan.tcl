@@ -273,7 +273,7 @@ set core_height_half [ expr ($core_ury - $core_lly)    / 2 ]
 deselectAll
 
 set pll_llx $core_llx
-set pll_lly [ expr $core_lly + $core_height_half - $pll_height_half ]
+set pll_lly $core_lly
 
 placeInstance pll $pll_llx $pll_lly
 
