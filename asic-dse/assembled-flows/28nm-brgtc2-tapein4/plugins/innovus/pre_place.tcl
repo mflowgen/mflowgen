@@ -207,15 +207,6 @@ sroute -connect blockPin \
        -targetViaLayerRange "M8 M9" \
        -verbose
 
-# Cover the PLL with a routing block to prevent the PG coarse mesh from
-# interfering with the power inside, and also to prevent any signal
-# routing since the PLL is using all the routing layers.
-
-createRouteBlk -name pll_route_block \
-               -inst pll -cover \
-               -layer all \
-               -spacing [expr $pll_margin*2]
-
 #-------------------------------------------------------------------------
 # M5 straps over memory
 #-------------------------------------------------------------------------

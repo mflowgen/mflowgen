@@ -266,14 +266,12 @@ setIoFlowFlag 0
 #-------------------------------------------------------------------------
 
 selectInst pll
-
-set pll_height_half  [ expr [dbGet selected.box_sizey] / 2 ]
-set core_height_half [ expr ($core_ury - $core_lly)    / 2 ]
-
+set pll_height  [dbGet selected.box_sizey]
 deselectAll
 
-set pll_llx $core_llx
-set pll_lly $core_lly
+set pll_extra_pad [ expr $r_pitch * 6 ]
+set pll_llx       [ expr $core_llx + $pll_extra_pad ]
+set pll_lly       [ expr $core_ury - $pll_height - $pll_extra_pad ]
 
 placeInstance pll $pll_llx $pll_lly
 
@@ -281,7 +279,32 @@ placeInstance pll $pll_llx $pll_lly
 
 selectInst pll
 cutRow -selected -halo $pll_margin
+cutRow -selected -leftGap   [expr $pll_margin + 5] \
+                 -topGap    [expr $pll_margin + 5] \
+                 -bottomGap [expr $pll_margin] \
+                 -rightGap  [expr $pll_margin]
 deselectInst *
+
+# PLL placement halo
+
+createPlaceBlockage -inst pll -type soft -outerRingBySide \
+  $pll_extra_pad $pll_extra_pad $pll_extra_pad $pll_extra_pad
+
+# Cover the PLL with a routing block to prevent the PG coarse mesh from
+# interfering with the power inside, and also to prevent any signal
+# routing since the PLL is using all the routing layers.
+
+createRouteBlk -name pll_route_block \
+               -inst pll -cover \
+               -layer all \
+               -spacing [expr $pll_margin]
+
+# PLL routing halo
+
+addRoutingHalo -inst   pll \
+               -space  $pll_extra_pad \
+               -bottom M1 \
+               -top    M9
 
 #-------------------------------------------------------------------------
 # SRAM

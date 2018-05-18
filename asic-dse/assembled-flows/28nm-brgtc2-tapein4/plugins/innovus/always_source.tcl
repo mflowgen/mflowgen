@@ -121,6 +121,6 @@ set sram_margin     [expr $r_pitch * 1]; # Halo margin around each SRAM
 
 # PLL variables
 
-set pll_margin      [expr $r_pitch * 3]; # Halo margin around the PLL
+set pll_margin      [expr $r_pitch * 4]; # Halo margin around the PLL
 
 
