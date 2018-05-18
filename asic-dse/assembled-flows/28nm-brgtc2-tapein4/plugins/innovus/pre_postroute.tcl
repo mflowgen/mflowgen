@@ -20,10 +20,10 @@ setOptMode -usefulSkewPostRoute true
 
 # Setup clock uncertainty is at signoff level now
 
-set_clock_uncertainty 0.01 [get_clocks core_clk] -setup
+set_clock_uncertainty 0.01 [get_clocks *] -setup
 
 # Set a slightly conservative hold uncertainty during postroute to help
 # meet hold time and correct for postroute correlation with signoff
 
-set_clock_uncertainty 0.10 [get_clocks core_clk] -hold
+set_clock_uncertainty 0.10 [get_clocks *] -hold
 

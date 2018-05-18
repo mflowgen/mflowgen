@@ -429,5 +429,5 @@ foreach block $mem_macro_paths {
 #-------------------------------------------------------------------------
 
 set_interactive_constraint_modes [all_constraint_modes -active]
-set_clock_uncertainty 0.05 [get_clocks core_clk]
+set_clock_uncertainty 0.05 [get_clocks *]
 

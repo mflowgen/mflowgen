@@ -5,5 +5,5 @@
 
 # Reset clock uncertainty to signoff levels now that postroute is done
 
-set_clock_uncertainty 0.01 [get_clocks core_clk]
+set_clock_uncertainty 0.01 [get_clocks *]
 

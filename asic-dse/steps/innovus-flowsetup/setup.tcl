@@ -291,7 +291,7 @@ set vars(post_postroute_tcl)          $vars(plug_dir)/post_postroute.tcl
 #set vars(post_postroute_si_hold_tcl)  $vars(plug_dir)/post_postroute_si_hold.tcl
 #set vars(pre_postroute_si_tcl)        $vars(plug_dir)/pre_postroute_si.tcl
 #set vars(post_postroute_si_tcl)       $vars(plug_dir)/post_postroute_si.tcl
-#set vars(pre_signoff_tcl)             $vars(plug_dir)/pre_signoff.tcl
+set vars(pre_signoff_tcl)             $vars(plug_dir)/pre_signoff.tcl
 set vars(post_signoff_tcl)            $vars(plug_dir)/post_signoff.tcl
 
 # Special options for saving and restoring design

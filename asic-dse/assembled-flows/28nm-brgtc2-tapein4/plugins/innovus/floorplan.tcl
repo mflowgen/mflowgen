@@ -299,6 +299,19 @@ createRouteBlk -name pll_route_block \
                -layer all \
                -spacing [expr $pll_margin]
 
+set pll_llx_calc  [dbGet selected.box_llx]
+set pll_lly_calc  [dbGet selected.box_lly]
+set pll_urx_calc  [dbGet selected.box_urx]
+set pll_ury_calc  [dbGet selected.box_ury]
+
+# Extra routing block to get rid of some remaining M3 VDD/VSS strap
+
+createRouteBlk -name pll_route_block2 \
+               -box [expr $pll_llx_calc - $pll_extra_pad] \
+                    [expr $pll_lly_calc - $pll_margin]    \
+                          $pll_urx_calc                   \
+                          $pll_ury_calc
+
 # PLL routing halo
 
 addRoutingHalo -inst   pll \
