@@ -182,8 +182,8 @@ set core_outputs [ remove_from_collection [all_outputs] $pll_outputs ]
 set core_outputs [ remove_from_collection $core_outputs clk_out_io[0] ]
 set core_outputs [ remove_from_collection $core_outputs pll_out_clk_io[0] ]
 
-set_false_path $pll_outputs
-set_false_path $core_outputs
+set_false_path -to $pll_outputs
+set_false_path -to $core_outputs
 
 #-------------------------------------------------------------------------
 # Reset
