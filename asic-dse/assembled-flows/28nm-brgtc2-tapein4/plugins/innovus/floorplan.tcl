@@ -416,3 +416,16 @@ createRegion brgtc2/dut/dcache $dcache_region
 createRegion brgtc2/dut/fpu    $dcache_region
 createRegion brgtc2/dut/mdu    $dcache_region
 
+# Procs go into either icache or dcache regions
+
+set proc_region_start_x $icache_region_start_x
+set proc_region_end_x   $dcache_region_end_x
+
+set proc_region [list $proc_region_start_x $core_lly \
+                      $proc_region_end_x   $core_ury ]
+
+createRegion brgtc2/dut/proc_000 $proc_region
+createRegion brgtc2/dut/proc_001 $proc_region
+createRegion brgtc2/dut/proc_002 $proc_region
+createRegion brgtc2/dut/proc_003 $proc_region
+
