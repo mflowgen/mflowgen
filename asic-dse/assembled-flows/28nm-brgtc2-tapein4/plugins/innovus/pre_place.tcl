@@ -198,7 +198,7 @@ sroute -connect blockPin \
        -allowJogging 0 \
        -allowLayerChange 0 \
        -blockPin useLef \
-       -blockPinTarget blockring \
+       -blockPinTarget nearestTarget \
        -crossoverViaLayerRange "M8 M9" \
        -inst pll \
        -layerChangeRange "M8 M9" \
