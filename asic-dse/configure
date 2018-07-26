@@ -130,4 +130,14 @@ if [[ x$1 == x--28nm-brgtc2-tapein4* ]]; then
   ln -sf ../assembled-flows/28nm-brgtc2-tapein4/Makefrag
 fi
 
+#-------------------------------------------------------------------------
+# rgals
+#-------------------------------------------------------------------------
+# This flow has its own Makefrag
+
+if [[ x$1 == x--rgals ]]; then
+  ln -sf ../assembled-flows/28nm-rgals/setup-flow.mk
+  ln -sf ../assembled-flows/28nm-rgals/Makefrag
+fi
+
 

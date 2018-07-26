@@ -11,12 +11,13 @@
 # is too large the tools will have no trouble but you will get a very
 # conservative implementation.
 
-set clock_net  clk
-set clock_name ideal_clock
+create_clock -name clk1 \
+             -period 1.0 \
+             [get_ports clk1]
 
-create_clock -name ${clock_name} \
-             -period ${dc_clock_period} \
-             [get_ports ${clock_net}]
+create_clock -name clk2 \
+             -period 1.0 \
+             [get_ports clk2]
 
 # This constrainst sets the load capacitance in picofarads of the
 # output pins of your design. 4fF is reasonable if your design is
@@ -37,11 +38,11 @@ set_driving_cell -no_design_rule \
 
 # set_input_delay constraints for input ports
 
-set_input_delay -clock ${clock_name} 0 [all_inputs]
+set_input_delay -clock clk1 0 [all_inputs]
 
 # set_output_delay constraints for output ports
 
-set_output_delay -clock ${clock_name} 0 [all_outputs]
+set_output_delay -clock clk1 0 [all_outputs]
 
 #Make all signals limit their fanout
 
@@ -49,7 +50,7 @@ set_max_fanout 20 ${DESIGN_NAME}
 
 # Make all signals meet good slew
 
-set_max_transition [expr 0.25*${dc_clock_period}] ${DESIGN_NAME}
+#set_max_transition [expr 0.25*${dc_clock_period}] ${DESIGN_NAME}
 
 #set_input_transition 1 [all_inputs]
 #set_max_transition 10 [all_outputs]

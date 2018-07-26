@@ -50,6 +50,7 @@ set TARGET_LIBRARY_FILES        [join "
                                 "]
 
 set ADDITIONAL_SEARCH_PATH      $::env(adk_dir)
+set ADDITIONAL_LINK_LIB_FILES   ""
 set MW_REFERENCE_LIB_DIRS       $::env(adk_dir)/stdcells.mwlib
 set TECH_FILE                   $::env(adk_dir)/rtk-tech.tf
 set MAP_FILE                    $::env(adk_dir)/rtk-tluplus.map
