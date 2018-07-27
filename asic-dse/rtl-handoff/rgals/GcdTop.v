@@ -29,33 +29,69 @@ module GcdTop (
 
   // GcdSource
 
-  wire          req_val;
-  wire          req_rdy;
-  wire [  31:0] req_msg;
+  wire          src_val;
+  wire          src_rdy;
+  wire [  31:0] src_msg;
 
   GcdSource src (
     .clk      ( clk1     ),
     .reset    ( reset    ),
-    .req_val  ( req_val  ),
-    .req_rdy  ( req_rdy  ),
-    .req_msg  ( req_msg  ),
+    .req_val  ( src_val  ),
+    .req_rdy  ( src_rdy  ),
+    .req_msg  ( src_msg  ),
     .done     ( src_done )
   );
 
+  // RgalsSuppressor -- src
+
+  wire          req_val;
+  wire          req_rdy;
+  wire [  31:0] req_msg;
+
+  RgalsSuppressor #(3, 5) src_valrdy_suppress (
+    .clk_left   ( clk1      ),
+    .clk_right  ( clk2      ),
+    .clk_reset  ( clk_reset ),
+    .from_left  ( src_val   ),
+    .to_right   ( req_val   ),
+    .from_right ( req_rdy   ),
+    .to_left    ( src_rdy   )
+  );
+
+  assign req_msg = src_msg;
+
   // GcdSink
+
+  wire          sink_val;
+  wire          sink_rdy;
+  wire [  15:0] sink_msg;
+
+  GcdSink sink (
+    .clk       ( clk1      ),
+    .reset     ( reset     ),
+    .resp_val  ( sink_val  ),
+    .resp_rdy  ( sink_rdy  ),
+    .resp_msg  ( sink_msg  ),
+    .done      ( sink_done )
+  );
+
+  // RgalsSuppressor -- sink
 
   wire          resp_val;
   wire          resp_rdy;
   wire [  15:0] resp_msg;
 
-  GcdSink sink (
-    .clk       ( clk1      ),
-    .reset     ( reset     ),
-    .resp_val  ( resp_val  ),
-    .resp_rdy  ( resp_rdy  ),
-    .resp_msg  ( resp_msg  ),
-    .done      ( sink_done )
+  RgalsSuppressor #(5, 3) sink_valrdy_suppress (
+    .clk_left   ( clk2      ),
+    .clk_right  ( clk1      ),
+    .clk_reset  ( clk_reset ),
+    .from_left  ( resp_val  ),
+    .to_right   ( sink_val  ),
+    .from_right ( sink_rdy  ),
+    .to_left    ( resp_rdy  )
   );
+
+  assign sink_msg = resp_msg;
 
   // GcdUnit
 
@@ -103,7 +139,88 @@ module ClockDivider
 
   // Align all divided clocks to the first edge after reset
 
-  assign clk_divided = clk & ( counter == 32'd1 );
+  assign clk_divided = ( counter == 32'd1 );
+
+endmodule
+
+//------------------------------------------------------------------------
+// RgalsSuppressor
+//------------------------------------------------------------------------
+
+module RgalsSuppressor
+#(
+  parameter p_clk_left_foo  = 3,
+  parameter p_clk_right_foo = 5,
+  parameter p_data_width    = 1
+)(
+  input  wire                    clk_left,
+  input  wire                    clk_right,
+  input  wire                    clk_reset,
+  input  wire [p_data_width-1:0] from_left,
+  output wire [p_data_width-1:0] to_right,
+  input  wire [p_data_width-1:0] from_right,
+  output wire [p_data_width-1:0] to_left
+);
+
+  // The RGALS suppressor counter has to reset to zero and begin counting
+  // precisely aligned with the divided clocks. However, in order to reset
+  // synchronously to zero, it needs to be clocked somehow before the
+  // divided clocks are even generated.
+  //
+  // FIXME: for now, this will just be asynchronously reset
+
+  // Left counter is responsible for deciding in the left clock domain
+  // which cycle is safe to transmit data
+
+  reg [31:0] counter_left;
+
+  always @ ( posedge clk_left or posedge clk_reset ) begin
+    if ( clk_reset ) begin
+      counter_left <= '0;
+    end
+    else begin
+      if ( counter_left == p_clk_left_foo - 1'b1 ) begin
+        counter_left <= '0;
+      end
+      else begin
+        counter_left <= counter_left + 1'b1;
+      end
+    end
+  end
+
+  wire suppress_from_left = ( counter_left != 32'd0 );
+
+  // Right counter is responsible for deciding in the right clock domain
+  // which cycle is safe to transmit data
+
+  reg [31:0] counter_right;
+
+  always @ ( posedge clk_right or posedge clk_reset ) begin
+    if ( clk_reset ) begin
+      counter_right <= '0;
+    end
+    else begin
+      if ( counter_right == p_clk_right_foo - 1'b1 ) begin
+        counter_right <= '0;
+      end
+      else begin
+        counter_right <= counter_right + 1'b1;
+      end
+    end
+  end
+
+  wire suppress_from_right = ( counter_right != 32'd0 );
+
+  // The transaction is only permitted if the cycle is safe for both the
+  // left and right clock domains (i.e., if there are no suppression
+  // signals from either domain.
+
+  wire suppress = suppress_from_left || suppress_from_right;
+
+  // If suppressed, send zeroes, otherwise allow the data to pass through
+
+  assign to_right   = ( suppress ) ? '0 : from_left;
+  assign to_left    = ( suppress ) ? '0 : from_right;
 
 endmodule
 
