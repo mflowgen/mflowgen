@@ -450,7 +450,7 @@ endmodule
 //-----------------------------------------------------------------------------
 // GcdUnit
 //-----------------------------------------------------------------------------
-// dump-vcd: True
+// dump-vcd: False
 // verilator-xinit: zeros
 `default_nettype none
 module GcdUnit
@@ -615,19 +615,19 @@ module GcdUnitCtrlRTL_0x29124399ca008c5e
   //       curr_state = s.state.out
   //       next_state = s.state.out
   //
-  //       # Transistions out of IDLE state
+  //       # Transitions out of IDLE state
   //
   //       if ( curr_state == s.STATE_IDLE ):
   //         if ( s.req_val and s.req_rdy ):
   //           next_state = s.STATE_CALC
   //
-  //       # Transistions out of CALC state
+  //       # Transitions out of CALC state
   //
   //       if ( curr_state == s.STATE_CALC ):
   //         if ( not s.is_a_lt_b and s.is_b_zero ):
   //           next_state = s.STATE_DONE
   //
-  //       # Transistions out of DONE state
+  //       # Transitions out of DONE state
   //
   //       if ( curr_state == s.STATE_DONE ):
   //         if ( s.resp_val and s.resp_rdy ):
@@ -676,6 +676,18 @@ module GcdUnitCtrlRTL_0x29124399ca008c5e
   //
   //       current_state = s.state.out
   //
+  //       # Avoid latches
+  //
+  //       s.do_swap.value   = 0
+  //       s.do_sub .value   = 0
+  //
+  //       s.req_rdy.value   = 0
+  //       s.resp_val.value  = 0
+  //       s.a_mux_sel.value = 0
+  //       s.a_reg_en.value  = 0
+  //       s.b_mux_sel.value = 0
+  //       s.b_reg_en.value  = 0
+  //
   //       # In IDLE state we simply wait for inputs to arrive and latch them
   //
   //       if current_state == s.STATE_IDLE:
@@ -713,6 +725,14 @@ module GcdUnitCtrlRTL_0x29124399ca008c5e
   // logic for state_outputs()
   always @ (*) begin
     current_state__1 = state$out;
+    do_swap = 0;
+    do_sub = 0;
+    req_rdy = 0;
+    resp_val = 0;
+    a_mux_sel = 0;
+    a_reg_en = 0;
+    b_mux_sel = 0;
+    b_reg_en = 0;
     if ((current_state__1 == STATE_IDLE)) begin
       req_rdy = 1;
       resp_val = 0;
