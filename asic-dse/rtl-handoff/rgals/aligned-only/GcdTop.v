@@ -10,18 +10,21 @@ module GcdTop (
   output wire sink_done
 );
 
+  localparam p_clk1div = 5;
+  localparam p_clk2div = 3;
+
   // Clock dividers
 
   wire clk1;
   wire clk2;
 
-  ClockDivider #(5) clk_div_1 (
+  ClockDivider #( p_clk1div ) clk_div_1 (
     .clk         ( clk       ),
     .clk_reset   ( clk_reset ),
     .clk_divided ( clk1      )
   );
 
-  ClockDivider #(3) clk_div_2 (
+  ClockDivider #( p_clk2div ) clk_div_2 (
     .clk         ( clk       ),
     .clk_reset   ( clk_reset ),
     .clk_divided ( clk2      )
@@ -48,7 +51,7 @@ module GcdTop (
   wire          req_rdy;
   wire [  31:0] req_msg;
 
-  RgalsSuppressor #(3, 5) src_valrdy_suppress (
+  RgalsSuppressor #( p_clk2div, p_clk1div ) src_valrdy_suppress (
     .clk_left   ( clk1      ),
     .clk_right  ( clk2      ),
     .clk_reset  ( clk_reset ),
@@ -81,7 +84,7 @@ module GcdTop (
   wire          resp_rdy;
   wire [  15:0] resp_msg;
 
-  RgalsSuppressor #(5, 3) sink_valrdy_suppress (
+  RgalsSuppressor #( p_clk1div, p_clk2div ) sink_valrdy_suppress (
     .clk_left   ( clk2      ),
     .clk_right  ( clk1      ),
     .clk_reset  ( clk_reset ),

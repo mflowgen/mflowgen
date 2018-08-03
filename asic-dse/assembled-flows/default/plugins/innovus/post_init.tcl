@@ -44,6 +44,10 @@ group_path -name In2Out  -from $inputs  -to $outputs
 group_path -name Reg2Reg     -from $regs    -to $regs
 group_path -name Reg2ClkGate -from $allregs -to $icgs
 
+# High-effort path groups
+
+setPathGroupOptions Reg2Reg -effortLevel high
+
 #-------------------------------------------------------------------------
 # Report timing -- hold
 #-------------------------------------------------------------------------
