@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------
 // GcdTop
 //------------------------------------------------------------------------
+// Has bisynchronous fifos between (src, gcd) and between (gcd, sink).
 
 module GcdTop (
   input  wire clk,
@@ -45,23 +46,24 @@ module GcdTop (
     .done     ( src_done )
   );
 
-  // RgalsSuppressor -- src
+  // FIFO for source
 
   wire          req_val;
   wire          req_rdy;
   wire [  31:0] req_msg;
 
-  RgalsSuppressor #( p_clk2div, p_clk1div ) src_valrdy_suppress (
-    .clk_left   ( clk1      ),
-    .clk_right  ( clk2      ),
-    .clk_reset  ( clk_reset ),
-    .from_left  ( src_val   ),
-    .to_right   ( req_val   ),
-    .from_right ( req_rdy   ),
-    .to_left    ( src_rdy   )
+  BisynchronousNormalQueue #(32,2) fifo_src
+  (
+    .w_clk ( clk1    ),
+    .r_clk ( clk2    ),
+    .reset ( reset   ),
+    .w_val ( src_val ),
+    .w_rdy ( src_rdy ),
+    .w_msg ( src_msg ),
+    .r_val ( req_val ),
+    .r_rdy ( req_rdy ),
+    .r_msg ( req_msg )
   );
-
-  assign req_msg = src_msg;
 
   // GcdSink
 
@@ -78,23 +80,24 @@ module GcdTop (
     .done      ( sink_done )
   );
 
-  // RgalsSuppressor -- sink
+  // FIFO for sink
 
   wire          resp_val;
   wire          resp_rdy;
   wire [  15:0] resp_msg;
 
-  RgalsSuppressor #( p_clk1div, p_clk2div ) sink_valrdy_suppress (
-    .clk_left   ( clk2      ),
-    .clk_right  ( clk1      ),
-    .clk_reset  ( clk_reset ),
-    .from_left  ( resp_val  ),
-    .to_right   ( sink_val  ),
-    .from_right ( sink_rdy  ),
-    .to_left    ( resp_rdy  )
+  BisynchronousNormalQueue #(16,2) fifo_sink
+  (
+    .w_clk ( clk2     ),
+    .r_clk ( clk1     ),
+    .reset ( reset    ),
+    .w_val ( resp_val ),
+    .w_rdy ( resp_rdy ),
+    .w_msg ( resp_msg ),
+    .r_val ( sink_val ),
+    .r_rdy ( sink_rdy ),
+    .r_msg ( sink_msg )
   );
-
-  assign sink_msg = resp_msg;
 
   // GcdUnit
 
@@ -143,87 +146,6 @@ module ClockDivider
   // Align all divided clocks to the first edge after reset
 
   assign clk_divided = ( counter == 32'd1 );
-
-endmodule
-
-//------------------------------------------------------------------------
-// RgalsSuppressor
-//------------------------------------------------------------------------
-
-module RgalsSuppressor
-#(
-  parameter p_clk_left_foo  = 3,
-  parameter p_clk_right_foo = 5,
-  parameter p_data_width    = 1
-)(
-  input  wire                    clk_left,
-  input  wire                    clk_right,
-  input  wire                    clk_reset,
-  input  wire [p_data_width-1:0] from_left,
-  output wire [p_data_width-1:0] to_right,
-  input  wire [p_data_width-1:0] from_right,
-  output wire [p_data_width-1:0] to_left
-);
-
-  // The RGALS suppressor counter has to reset to zero and begin counting
-  // precisely aligned with the divided clocks. However, in order to reset
-  // synchronously to zero, it needs to be clocked somehow before the
-  // divided clocks are even generated.
-  //
-  // FIXME: for now, this will just be asynchronously reset
-
-  // Left counter is responsible for deciding in the left clock domain
-  // which cycle is safe to transmit data
-
-  reg [31:0] counter_left;
-
-  always @ ( posedge clk_left or posedge clk_reset ) begin
-    if ( clk_reset ) begin
-      counter_left <= '0;
-    end
-    else begin
-      if ( counter_left == p_clk_left_foo - 1'b1 ) begin
-        counter_left <= '0;
-      end
-      else begin
-        counter_left <= counter_left + 1'b1;
-      end
-    end
-  end
-
-  wire suppress_from_left = ( counter_left != 32'd0 );
-
-  // Right counter is responsible for deciding in the right clock domain
-  // which cycle is safe to transmit data
-
-  reg [31:0] counter_right;
-
-  always @ ( posedge clk_right or posedge clk_reset ) begin
-    if ( clk_reset ) begin
-      counter_right <= '0;
-    end
-    else begin
-      if ( counter_right == p_clk_right_foo - 1'b1 ) begin
-        counter_right <= '0;
-      end
-      else begin
-        counter_right <= counter_right + 1'b1;
-      end
-    end
-  end
-
-  wire suppress_from_right = ( counter_right != 32'd0 );
-
-  // The transaction is only permitted if the cycle is safe for both the
-  // left and right clock domains (i.e., if there are no suppression
-  // signals from either domain.
-
-  wire suppress = suppress_from_left || suppress_from_right;
-
-  // If suppressed, send zeroes, otherwise allow the data to pass through
-
-  assign to_right   = ( suppress ) ? '0 : from_left;
-  assign to_left    = ( suppress ) ? '0 : from_right;
 
 endmodule
 
@@ -1225,4 +1147,145 @@ module Subtractor_0x422b1f52edd46a85
 
 endmodule // Subtractor_0x422b1f52edd46a85
 `default_nettype wire
+
+//------------------------------------------------------------------------
+// BisynchronousNormalQueue
+//------------------------------------------------------------------------
+// A bisynchronous normal queue built to interface between two clock
+// domains. This queue does not have brute-force synchronizers and gray
+// code counters, so it is not an asynchronous fifo. It is meant to be
+// used with the help of static timing analysis tools (e.g., as is enabled
+// by using a ratiochronous design methodology).
+//
+// Note: This implementation only supports numbers of entries that are
+// powers of 2.
+//
+// This queue uses read and write pointers that have an extra bit to
+// differentiate full and empty conditions. The two pointers are initially
+// reset so that they are equal (e.g., resetting both to 0 works), and
+// this indicates an empty queue. Subsequent writes then bump the write
+// pointer, while subsequent reads bump the read pointer and eventually
+// "catch up" to the write pointer. The queue is full when the write
+// pointer has incremented "full circle" such that the read and write
+// pointers are now equal again, except for having different MSBs.
+//
+// Date   : August 3, 2018
+// Author : Christopher Torng
+
+module BisynchronousNormalQueue
+#(
+  parameter p_data_width  = 32,
+  parameter p_num_entries = 8           // Only supports powers of 2!
+)(
+  input  wire                    w_clk, // Write clock
+  input  wire                    r_clk, // Read clock
+  input  wire                    reset,
+  input  wire                    w_val,
+  output wire                    w_rdy,
+  input  wire [p_data_width-1:0] w_msg,
+  output wire                    r_val,
+  input  wire                    r_rdy,
+  output wire [p_data_width-1:0] r_msg
+);
+
+  localparam p_num_entries_bits = $clog2( p_num_entries );
+
+  //----------------------------------------------------------------------
+  // Control
+  //----------------------------------------------------------------------
+
+  // Go signals
+
+  wire w_go = w_val & w_rdy;
+  wire r_go = r_val & r_rdy;
+
+  // Read and write pointers, including the extra wrap bit
+
+  reg  [p_num_entries_bits:0] w_ptr_with_wrapbit;
+  reg  [p_num_entries_bits:0] r_ptr_with_wrapbit;
+
+  // Convenience wires to separate the wrap bits from the actual pointers
+
+  wire [p_num_entries_bits-1:0] w_ptr;
+  wire                          w_ptr_wrapbit;
+
+  wire [p_num_entries_bits-1:0] r_ptr;
+  wire                          r_ptr_wrapbit;
+
+  assign w_ptr         = w_ptr_with_wrapbit[0+:p_num_entries_bits];
+  assign w_ptr_wrapbit = w_ptr_with_wrapbit[p_num_entries_bits];
+
+  assign r_ptr         = r_ptr_with_wrapbit[0+:p_num_entries_bits];
+  assign r_ptr_wrapbit = r_ptr_with_wrapbit[p_num_entries_bits];
+
+  // Write pointer update, clocked with the write clock
+
+  always @ ( posedge w_clk ) begin
+    if ( reset ) begin
+      w_ptr_with_wrapbit <= '0;
+    end
+    else if ( w_go ) begin
+      w_ptr_with_wrapbit <= w_ptr_with_wrapbit + 1'b1;
+    end
+  end
+
+  // Read pointer update, clocked with the read clock
+
+  always @ ( posedge r_clk ) begin
+    if ( reset ) begin
+      r_ptr_with_wrapbit <= '0;
+    end
+    else if ( r_go ) begin
+      r_ptr_with_wrapbit <= r_ptr_with_wrapbit + 1'b1;
+    end
+  end
+
+  // full
+  //
+  // The queue is full when the read and write pointers are equal but have
+  // different wrap bits (i.e., different MSBs). This indicates that we
+  // have enqueued "num_entries" messages and cannot store any more.
+  //
+  // Note -- this queue implementation only works if "num_entries" is
+  // a power of two, since we have assumed here that equal pointers
+  // indicates a full queue,
+
+  wire full = ( w_ptr == r_ptr ) && ( w_ptr_wrapbit != r_ptr_wrapbit );
+
+  // empty
+  //
+  // The queue is empty when the full-length pointers (including wrap
+  // bits) are equal.
+
+  wire empty = ( w_ptr_with_wrapbit == r_ptr_with_wrapbit );
+
+  // Set output control signals
+  //
+  // - w_rdy: We are ready to write if the queue has space, i.e., not full
+  // - r_val: Data is valid for read if the queue is not empty
+
+  assign w_rdy = !full;
+  assign r_val = !empty;
+
+  //----------------------------------------------------------------------
+  // Datapath
+  //----------------------------------------------------------------------
+
+  // Internal memory
+
+  reg [p_data_width-1:0] mem [p_num_entries-1:0];
+
+  // Writes, clocked with the write clock
+
+  always @ ( posedge w_clk ) begin
+    if ( w_go ) begin
+      mem[ w_ptr ] <= w_msg;
+    end
+  end
+
+  // Reads are synchronous with the read clock
+
+  assign r_msg = mem[ r_ptr ];
+
+endmodule
 

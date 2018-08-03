@@ -78,7 +78,7 @@ module FifoTop (
   assign resp_rdy = sink_rdy;
   assign sink_msg = resp_msg;
 
-  // GcdUnit
+  // Bisynchronous NormalQueue
 
   BisynchronousNormalQueue #(16,2) fifo
   (
