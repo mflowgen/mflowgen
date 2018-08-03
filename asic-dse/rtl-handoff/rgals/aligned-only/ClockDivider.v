@@ -11,7 +11,9 @@ module ClockDivider
   output wire clk_divided
 );
 
-  reg [31:0] counter;
+  localparam p_counter_bits = $clog2(p_divideby);
+
+  reg [p_counter_bits-1:0] counter;
 
   always @ ( posedge clk ) begin
     if ( clk_reset ) begin
