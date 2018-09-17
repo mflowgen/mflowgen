@@ -48,5 +48,6 @@ class AluPePRTL ( Model ):
 	  s.out[i].val.value = 0
     
   def line_trace(s):
-    return "{}:{} {}:{} >> {}:{}".format(s.config[0:2], s.in0_mux.out, s.config[2:4], 
-                                         s.in1_mux.out, s.config[4:6], s.add.out)
+    return "({}|{}){}:{} ({}|{}){}:{} >> {}:{}({}|{})".format(s.in_[s.config[0:2]].val,s.in_[s.config[0:2]].rdy, s.config[0:2], s.in0_mux.out, 
+                                                              s.in_[s.config[2:4]].val,s.in_[s.config[2:4]].rdy, s.config[2:4], s.in1_mux.out, 
+							      s.config[4:6], s.add.out, s.out[s.config[4:6]].val,s.out[s.config[4:6]].rdy)

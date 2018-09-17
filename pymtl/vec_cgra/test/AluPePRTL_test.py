@@ -19,6 +19,7 @@ class TestHarness (Model):
     s.sink_msgs  = sink_msgs
     s.src_delay  = src_delay
     s.sink_delay = sink_delay
+    s.config     = config
 
     s.src = [ TestSource (DataBits, s.src_msgs[x], s.src_delay)
               for x in xrange( nports ) ] 
@@ -44,8 +45,12 @@ class TestHarness (Model):
     
   def done( s ):
     done_flag = 1
-    for i in xrange( 4 ):
-      done_flag &= s.src[i].done and s.sink[i].done
+    
+    src0 = s.config & 0b011
+    src1 = (s.config & 0b01100) >> 2
+    dest = (s.config & 0b0110000) >> 4
+    
+    done_flag &= s.src[src0].done and s.src[src1].done and s.sink[dest].done
     return done_flag
 
   def line_trace( s ):
@@ -87,15 +92,12 @@ def mk_alu_msgs( nports, config, msg_list ):
   src_msgs    = [ [] for x in xrange(nports) ]
   sink_msgs   = [ [] for x in xrange(nports) ]
   for x in msg_list:
-#    for i in xrange( nports ):
-#      src_msgs[i].append(Bits(32,x[i]))
+    for i in xrange( nports ):
+      src_msgs[i].append(Bits(32,x[i]))
 
     src0 = config & 0b011
     src1 = (config & 0b01100) >> 2
-    dest = (config & 0x0110000) >> 4
-    
-    src_msgs[src0].append(Bits(32, x[src0]))
-    src_msgs[src1].append(Bits(32, x[src1]))
+    dest = (config & 0b0110000) >> 4
 
     res = x[src0] + x[src1]
     sink_msgs[dest].append(Bits(32,res))
@@ -115,6 +117,8 @@ test_case_table = mk_test_case_table([
   (                  "msgs                       config    src_delay      sink_delay"),
   [ "basic_012",     very_basic_test(0b0000110), 0b0000110, 0,            0          ],
   [ "basic_012_2_4", very_basic_test(0b0000110), 0b0000110, 2,            4          ],
+  [ "basic_321",     very_basic_test(0b0111001), 0b0111001, 0,            0          ],
+  [ "basic_321_3_1", very_basic_test(0b0111001), 0b0111001, 3,            1          ],
 ])
 
 @pytest.mark.parametrize( **test_case_table )
