@@ -7,19 +7,33 @@ class AluPePRTL ( Model ):
   
   def __init__( s, nports = 4, DataBits = 32, ConfigBits = 32 ):
 
+    # local params
+    sel_bits = clog2( nports )
+
     s.config = InPort( ConfigBits )
     s.in_    = InValRdyBundle   [ nports ]( DataBits )
     s.out    = OutValRdyBundle  [ nports ]( DataBits )
     
+    # selection signals
+    s.in0_sel = Wire( sel_bits )
+    s.in1_sel = Wire( sel_bits )
+    s.out_sel = Wire( sel_bits )
+
+    s.connect_pairs(
+      s.in0_sel, s.config[ 0          : sel_bits  ],
+      s.in1_sel, s.config[ sel_bits   : 2*sel_bits],
+      s.out_sel, s.config[ 2*sel_bits : 3*sel_bits],
+    )
+
     # input mux 0
     s.in0_mux = m = Mux( DataBits, nports )
-    s.connect( m.sel, s.config[0:2] )
+    s.connect( m.sel, s.in0_sel )
     for i in xrange( nports ):
       s.connect( m.in_[i], s.in_[i].msg )
 
     # input mux 1
     s.in1_mux = m = Mux( DataBits, nports)
-    s.connect( m.sel, s.config[2:4] )
+    s.connect( m.sel, s.in1_sel )
     for i in xrange( nports ):
       s.connect( m.in_[i], s.in_[i].msg )
     
@@ -35,19 +49,20 @@ class AluPePRTL ( Model ):
     @s.combinational
     def comb_logic():
       for i in xrange( nports ):
-        if (i == s.config[0:2]):
-	  s.in_[i].rdy.value = s.in_[s.config[2:4]].val and s.out[s.config[4:6]].rdy 
-        elif (i == s.config[2:4]):
-	  s.in_[i].rdy.value = s.in_[s.config[0:2]].val and s.out[s.config[4:6]].rdy
-	else:
-	  s.in_[i].rdy.value = 0
-	
-	if (i == s.config[4:6]):
-	  s.out[i].val.value = s.in_[s.config[0:2]].val and s.in_[s.config[2:4]].val
-	else:
-	  s.out[i].val.value = 0
+        if (i == s.in0_sel):
+          s.in_[i].rdy.value = s.in_[s.in1_sel].val and s.out[s.out_sel].rdy 
+        elif (i == s.in1_sel):
+          s.in_[i].rdy.value = s.in_[s.in0_sel].val and s.out[s.out_sel].rdy
+        else:
+          s.in_[i].rdy.value = 0
+          
+        if (i == s.out_sel):
+          s.out[i].val.value = s.in_[s.in0_sel].val and s.in_[s.in1_sel].val
+        else:
+          s.out[i].val.value = 0
     
   def line_trace(s):
-    return "({}|{}){}:{} ({}|{}){}:{} >> {}:{}({}|{})".format(s.in_[s.config[0:2]].val,s.in_[s.config[0:2]].rdy, s.config[0:2], s.in0_mux.out, 
-                                                              s.in_[s.config[2:4]].val,s.in_[s.config[2:4]].rdy, s.config[2:4], s.in1_mux.out, 
-							      s.config[4:6], s.add.out, s.out[s.config[4:6]].val,s.out[s.config[4:6]].rdy)
+    return "({}|{}){}:{} ({}|{}){}:{} >> {}:{}({}|{})".format(
+    s.in_[s.in0_sel].val,s.in_[s.in0_sel].rdy, s.in0_sel, s.in0_mux.out,
+    s.in_[s.in1_sel].val,s.in_[s.in1_sel].rdy, s.in1_sel, s.in1_mux.out,
+    s.out_sel, s.add.out, s.out[s.out_sel].val,s.out[s.out_sel].rdy)
