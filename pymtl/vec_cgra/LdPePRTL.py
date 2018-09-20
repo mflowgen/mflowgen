@@ -5,7 +5,8 @@ from pclib.ifcs import MemMsg4B, MemReqMsg4B, MemRespMsg4B
 
 class LdPePRTL ( Model ):
   
-  def __init__( s, nports = 4, DataBits = 32, ConfigBits = 32 ):
+  def __init__( s, nports = 4, DataBits = 32, ConfigBits = 32,
+                mem_ifcs_types = MemMsg4B() ):
 
     # local params
     sel_bits = clog2( nports )
