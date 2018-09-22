@@ -42,7 +42,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_select = pymtl-imul-pipelined-4stage
+design_select = pymtl-gcd
 
 #-------------------------------------------------------------------------
 # PyMTL GcdUnit
@@ -51,7 +51,7 @@ design_select = pymtl-imul-pipelined-4stage
 ifeq ($(design_select),pymtl-gcd)
   design_name  = GcdUnit
   clock_period = 2.0
-  design_v     = rtl-handoff/GcdUnit.v
+  design_v     = ../pymtl/build/GcdUnit.v
 endif
 
 #-------------------------------------------------------------------------
