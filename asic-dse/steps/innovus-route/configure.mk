@@ -2,6 +2,9 @@
 # configure.mk
 #=========================================================================
 # This file will be included inside the Makefile in the build directory
+#
+# Author : Christopher Torng
+# Date   : March 26, 2018
 
 #-------------------------------------------------------------------------
 # Step Description -- innovus-route
