@@ -66,7 +66,7 @@ innovus_ff_setup_dir = $(flow_dir.innovus-flowsetup)
 # The setup tcl needs to know where the script root is
 
 export innovus_ff_script_root = \
-	$(flow_dir.innovus-flowsetup)/foundation-flow/SCRIPTS
+	$(flow_dir.innovus-flowsetup)/SCRIPTS
 
 # The setup tcl needs to know where the collected results from dc are
 
@@ -102,11 +102,16 @@ export innovus_ff_collect_dir = $(collect_dir.innovus-flowsetup)
 
 define commands.innovus-flowsetup
 	mkdir -p $(logs_dir.innovus-flowsetup)
+	mkdir -p $(results_dir.innovus-flowsetup)
+# Generate the foundation flow
+	innovus -64 -no_gui -no_logv -batch \
+    -execute "writeFlowTemplate -directory $(results_dir.innovus-flowsetup)"
+	rm -f innovus.log innovus.cmd
 # Run the foundation flow gen_flow.tcl
-	$(flow_dir.innovus-flowsetup)/foundation-flow/SCRIPTS/gen_flow.tcl  \
-    -m flat --Verbose --nomake                                        \
-    --setup $(innovus_ff_setup_dir)                                   \
-    --dir $(results_dir.innovus-flowsetup)                            \
+	$(results_dir.innovus-flowsetup)/SCRIPTS/gen_flow.tcl \
+    -m flat --Verbose --nomake                                          \
+    --setup $(innovus_ff_setup_dir)                                     \
+    --dir $(results_dir.innovus-flowsetup)                              \
     all | tee $(logs_dir.innovus-flowsetup)/flowsetup.log
 # Remove Innovus vpath cmds from scripts, which conflicts with our flow
 	sed -i "s/.*VPATH.*touch.*/#\0/" \
