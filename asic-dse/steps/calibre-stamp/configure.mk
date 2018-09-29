@@ -37,7 +37,7 @@ abbr.calibre-stamp = stamp
 
 # Logo gds
 
-brg_logo_gds             = $(plugins_dir)/calibre/brg_logo.gds.gz
+brg_logo_gds             = $(adk_dir)/brgtc2_logo.gds.gz
 
 # Input gds
 
