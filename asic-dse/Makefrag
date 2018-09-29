@@ -1,13 +1,26 @@
 #=========================================================================
 # Makefrag
 #=========================================================================
-# This file sets up the ASIC design kit and the design specification for
-# the default asic flow.
+# When using the default ASIC flow (i.e., in assembled-flows/default),
+# this Makefile fragment sets up two important pieces:
 #
-# The default asic flow has the set of default asic steps for any design
-# for which we want to do architectural design-space exploration. This
-# configuration should always work as long as the ASIC design kit (ADK) is
-# set up.
+# - the ASIC design kit
+# - the specification for the design
+#
+# The default asic flow has the set of common ASIC steps we will need to
+# do architectural design-space exploration. This configuration should
+# _always_ work as long as the ASIC design kit (ADK) is set up properly.
+#
+# Author : Christopher Torng
+# Date   : March 26, 2018
+
+#=========================================================================
+# Design Flow
+#=========================================================================
+# Selects which flow to use from the "assembled-flows" directory
+#
+# - design_flow : Select which assembled flow to use (e.g., "default")
+#
 
 design_flow = default
 
@@ -41,6 +54,8 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 #=========================================================================
 # Design
 #=========================================================================
+# Here we select the design to push as well as its top-level Verilog
+# module name, the clock target, and the Verilog source file.
 
 design_select = pymtl-gcd
 
