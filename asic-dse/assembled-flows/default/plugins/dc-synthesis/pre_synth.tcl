@@ -2,6 +2,9 @@
 # pre_synth.tcl
 #=========================================================================
 # This plug-in script is called before synthesis
+#
+# Author : Christopher Torng
+# Date   : May 14, 2018
 
 # Enable additional area optimizations (skip false = enable optimizations)
 

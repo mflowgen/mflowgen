@@ -3,6 +3,9 @@
 #=========================================================================
 # This plug-in script is called from all Innovus flow scripts after
 # loading setup.tcl.
+#
+# Author : Christopher Torng
+# Date   : March 26, 2018
 
 #-------------------------------------------------------------------------
 # Functions

@@ -3,6 +3,9 @@
 #=========================================================================
 # This plug-in script is called after the corresponding Innovus flow step
 #
+# Author : Christopher Torng
+# Date   : March 26, 2018
+
 #-------------------------------------------------------------------------
 # Can be used for various floorplan related tasks, like:
 #              - Die/core boundary

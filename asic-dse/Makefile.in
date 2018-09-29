@@ -16,6 +16,8 @@
 # - list    : List all configured steps, their short names, and other
 #             useful targets
 #
+# Author : Christopher Torng
+# Date   : March 26, 2018
 
 #-------------------------------------------------------------------------
 # Front matter

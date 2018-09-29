@@ -13,6 +13,9 @@
 #
 # - The CAPITALIZED_VARIABLES are usually Synopsys Design Compiler's
 #   reference methodology variables.
+#
+# Author : Christopher Torng
+# Date   : May 16, 2018
 
 #-------------------------------------------------------------------------
 # Interface to the build system
