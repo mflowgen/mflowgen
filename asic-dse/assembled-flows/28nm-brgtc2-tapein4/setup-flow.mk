@@ -52,6 +52,7 @@ dependencies.info                = seed
 dependencies.gen-sram-verilog    = seed
 dependencies.gen-sram-db         = seed
 dependencies.gen-sram-lef        = seed
+dependencies.gen-sram-lib        = seed
 dependencies.gen-sram-gds        = seed
 dependencies.gen-sram-cdl        = seed
 

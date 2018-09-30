@@ -125,14 +125,46 @@ def main():
   for k, v in dependencies.iteritems():
     dependencies[k] = v.split()
 
-  # Remove 'seed' step if it exists
+  # Here is the list of all steps, including the implicit steps: "seed"
+  # and "all"
 
-  if 'seed' in steps:
-    steps.remove( 'seed' )
+  all_steps = set( steps + ["seed", "all"] )
 
-  # Remove any steps with no dependencies
+  #-----------------------------------------------------------------------
+  # Check for inconsistencies
+  #-----------------------------------------------------------------------
 
-  steps = [ x for x in steps if x in dependencies ]
+  # Make sure that for each step, all dependencies of that step are also
+  # recognized steps. For example, if we defined "dependencies[s] = foo
+  # bar baz", then "foo", "bar", and "baz" must all be in the list of
+  # recognized steps).
+
+  for s in all_steps:
+    if s in dependencies:
+      for d in dependencies[s]:
+        assert d in all_steps, "%s does not exist in list of steps!" % d
+
+  # Make sure that all steps that are listed as having dependencies are
+  # recognized steps. For example, if we defined "dependencies[s] = ...",
+  # then 's' must be in the list of recognized steps).
+
+  for s in dependencies:
+    assert s in all_steps, "%s does not exist in list of steps!" % s
+
+  # Currently, this script only works if the "seed" step is the only step
+  # at the top of the dependency tree. All other steps must depend either
+  # on each other or on "seed". The "seed" step must be the only step
+  # without dependencies. Assert if this is not true, since we cannot
+  # graph it.
+
+  for s in all_steps:
+    if s in dependencies:
+      for d in dependencies[s]:
+        if d != "seed":
+          assert d in dependencies, \
+            "Unable to graph dependency tree due to multiple roots. " \
+            "To fix this, at least add 'seed' to the list of " \
+            "dependencies for the step '%s'!" % d
 
   #-----------------------------------------------------------------------
   # Create a throwaway git repo and make commits matching the dependencies
@@ -164,7 +196,16 @@ def main():
   # When we have popped all nodes from "steps" and placed them into the
   # graph (i.e., added to the "graph" list), we are done.
 
-  # Iterate over steps until all steps are added to the graph
+  # Remove implicit steps if they exist
+
+  if 'seed' in steps : steps.remove( 'seed' )
+  if 'all'  in steps : steps.remove( 'all' )
+
+  # Remove any steps with no dependencies
+
+  steps = [ x for x in steps if x in dependencies ]
+
+  # Iterate until all steps are added to the graph
 
   i = 0
 
