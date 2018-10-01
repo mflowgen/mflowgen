@@ -35,7 +35,7 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 #=========================================================================
 
 design_name        = brgtc2_chip
-clock_period       = 3.0
+clock_period       = 2.0
 design_v           = rtl-handoff/brgtc2-chip.v
 
 # For simulation

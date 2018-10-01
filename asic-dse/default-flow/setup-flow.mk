@@ -20,7 +20,10 @@ steps = \
   innovus-postctshold \
   innovus-route \
   innovus-postroute \
-  innovus-signoff
+  innovus-signoff \
+  calibre-gds-merge \
+  calibre-drc \
+  calibre-lvs
 
 # Step dependency graph
 
@@ -36,6 +39,10 @@ dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
 dependencies.innovus-postroute   = innovus-flowsetup innovus-route
 dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
 dependencies.all                 = innovus-signoff
+
+dependencies.calibre-gds-merge   = innovus-signoff
+dependencies.calibre-drc         = calibre-gds-merge
+dependencies.calibre-lvs         = calibre-gds-merge
 
 #-------------------------------------------------------------------------
 # Notes on step dependency graph

@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------
 
 descriptions.calibre-lvs = \
-	"LVS for block-level design"
+	"LVS for unsealed and unfilled design"
 
 #-------------------------------------------------------------------------
 # ASCII art
@@ -26,7 +26,7 @@ define ascii.calibre-lvs
 	@echo '#                           | |      \ \/ /   \___ \                            #'
 	@echo '#                           | |____   \  /    ____) |                           #'
 	@echo '#                           |______|   \/    |_____/                            #'
-	@echo '#                                   B L O C K                                   #'
+	@echo '#                                U N S E A L E D                                #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
 endef
@@ -47,12 +47,18 @@ abbr.calibre-lvs = lvs
 # build system has constructed the collect dir, so we temporarily
 # magically reach into the correct handoff dir.
 
-calibre_lvs_gds = $(handoff_dir.calibre-gds-merge)/$(design_name).gds
+calibre_lvs_gds = $(handoff_dir.calibre-seal)/unsealed.gds
 calibre_lvs_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 
 # Also pull in any extra files we need (e.g., SRAM cdl)
 
-#calibre_lvs_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
+calibre_lvs_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
+
+#-------------------------------------------------------------------------
+# BRGTC2-specific netlists
+#-------------------------------------------------------------------------
+
+pll_lvs_v = $(wildcard /work/global/brgtc2/pll-innovus/*.lvs.v)
 
 #-------------------------------------------------------------------------
 # Variables
@@ -75,6 +81,7 @@ export calibre_lvs_layoutprimary  = $(design_name)
 export calibre_lvs_extractedspice = $(calibre_lvs_rundir)/lvs.extracted.sp
 
 export calibre_lvs_sourcepath     = $(PWD)/$(calibre_lvs_v)
+export calibre_lvs_sourcepath    += $(pll_lvs_v)
 export calibre_lvs_sourceprimary  = $(design_name)
 
 export calibre_lvs_logsfile       = $(calibre_lvs_rundir)/lvs.log
@@ -83,7 +90,8 @@ export calibre_lvs_ercsummaryfile = $(calibre_lvs_rundir)/lvs.erc.summary
 export calibre_lvs_reportfile     = $(calibre_lvs_rundir)/lvs.report
 
 calibre_lvs_spiceincfiles        += $(adk_dir)/stdcells.cdl
-#calibre_lvs_spiceincfiles        += $(foreach x, $(calibre_lvs_extras),$(PWD)/$x)
+calibre_lvs_spiceincfiles        += $(adk_dir)/iocells.spi
+calibre_lvs_spiceincfiles        += $(foreach x, $(calibre_lvs_extras),$(PWD)/$x)
 
 export calibre_lvs_spiceincfiles
 
@@ -91,13 +99,13 @@ export calibre_lvs_spiceincfiles
 # Targets for LVS checks
 #-------------------------------------------------------------------------
 
-# Block-level LVS
+# Chip LVS (unsealed)
 
 $(calibre_lvs_logsfile): $(dependencies.calibre-lvs)
 	@mkdir -p $(results_dir.calibre-lvs)
 	@touch $@.start
 	@echo '================================================================================'
-	@echo 'Block-Level LVS'
+	@echo 'Chip LVS (Unsealed)'
 	@echo '================================================================================'
 # Select the LVS rules file and generate the lvs runset from the template
 	envsubst < $(calibre_lvs_runset_template) > $(calibre_lvs_runset)
@@ -136,7 +144,7 @@ define commands.calibre-lvs
 	@echo "Schematic : $(calibre_lvs_v)"
 	@echo
 	@echo '================================================================================'
-	@echo 'Block-Level LVS'
+	@echo 'Chip LVS (unsealed and unfilled)'
 	@echo '================================================================================'
 	@sed -n "/OVERALL COMPARISON RESULTS/,/\*\*\*\*/p" $(calibre_lvs_reportfile)
 endef

@@ -19,7 +19,7 @@ steps = \
   calibre-drc-sealed \
   calibre-fill \
   calibre-drc-filled \
-  calibre-lvs \
+  calibre-lvs-brgtc2 \
   sim-prep \
   vcs-common-build \
   vcs-rtl-build \
@@ -75,5 +75,5 @@ dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-fill        = calibre-seal
 dependencies.calibre-drc-filled  = calibre-fill
 
-dependencies.calibre-lvs         = innovus-signoff calibre-seal
+dependencies.calibre-lvs-brgtc2  = innovus-signoff calibre-seal
 

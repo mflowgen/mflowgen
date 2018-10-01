@@ -1,0 +1,12 @@
+*drcRulesFile: ${calibre_drc_rulesfile}
+*drcRunDir: ${calibre_drc_rundir}
+*drcLayoutPaths: ${calibre_drc_layoutpaths}
+*drcLayoutPrimary: ${calibre_drc_layoutprimary}
+*drcResultsFile: ${calibre_drc_resultsfile}
+*drcSummaryFile: ${calibre_drc_summaryfile}
+*cmnShowOptions: 1
+*cmnTranscriptFile: ${calibre_drc_transcriptfile}
+*cmnTranscriptEchoToFile: 1
+*drcIncludeCmdsType: SVRF
+*cmnRunMT: 1
+*cmnRunHyper: 1

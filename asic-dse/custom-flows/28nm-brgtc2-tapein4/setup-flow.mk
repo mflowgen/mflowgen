@@ -28,7 +28,7 @@ steps = \
   calibre-fill \
   calibre-stamp \
   calibre-drc-top \
-  calibre-lvs \
+  calibre-lvs-brgtc2 \
   calibre-lvs-sealed \
   calibre-lvs-top \
   sim-prep \
@@ -100,7 +100,7 @@ dependencies.calibre-stamp       = calibre-fill
 dependencies.calibre-drc-sealed  = calibre-seal
 dependencies.calibre-drc-top     = calibre-stamp
 
-dependencies.calibre-lvs         = innovus-signoff calibre-seal gen-sram-cdl
+dependencies.calibre-lvs-brgtc2  = innovus-signoff calibre-seal gen-sram-cdl
 dependencies.calibre-lvs-sealed  = innovus-signoff calibre-seal gen-sram-cdl
 dependencies.calibre-lvs-top     = innovus-signoff calibre-stamp gen-sram-cdl
 

@@ -4,28 +4,28 @@
 # This file will be included inside the Makefile in the build directory
 #
 # Author : Christopher Torng
-# Date   : March 26, 2018
+# Date   : May 8, 2018
 
 #-------------------------------------------------------------------------
 # Step Description
 #-------------------------------------------------------------------------
 
-descriptions.calibre-lvs = \
-	"LVS for block-level design"
+descriptions.calibre-drc = \
+	"DRC for block-level design"
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.calibre-lvs
+define ascii.calibre-drc
 	@echo -e $(echo_green)
 	@echo '#################################################################################'
-	@echo '#                            _     __      __  _____                            #'
-	@echo '#                           | |    \ \    / / / ____|                           #'
-	@echo '#                           | |     \ \  / / | (___                             #'
-	@echo '#                           | |      \ \/ /   \___ \                            #'
-	@echo '#                           | |____   \  /    ____) |                           #'
-	@echo '#                           |______|   \/    |_____/                            #'
+	@echo '#                            ____    _____     _____                            #'
+	@echo '#                           |  _ \  |  __ \   / ____|                           #'
+	@echo '#                           | | | | | |__) | | |                                #'
+	@echo '#                           | | | | |  _  /  | |                                #'
+	@echo '#                           | |_| | | | \ \  | |____                            #'
+	@echo '#                           |____/  |_|  \_\  \_____|                           #'
 	@echo '#                                   B L O C K                                   #'
 	@echo '#################################################################################'
 	@echo -e $(echo_nocolor)
@@ -35,24 +35,19 @@ endef
 # Alias -- short name for this step
 #-------------------------------------------------------------------------
 
-abbr.calibre-lvs = lvs
+abbr.calibre-drc = drc
 
 #-------------------------------------------------------------------------
 # Collect
 #-------------------------------------------------------------------------
 
-# The GDS and LVS netlist are available from a previous step
+# The GDS is available from a previous step
 
-# Unfortunately, the intermediate LVS target will try to run before the
-# build system has constructed the collect dir, so we temporarily
-# magically reach into the correct handoff dir.
+# Unfortunately, the intermediate DRC targets run before the build system has
+# constructed the collect dir, so we temporarily magically reach into the
+# correct handoff dir.
 
-calibre_lvs_gds = $(handoff_dir.calibre-gds-merge)/$(design_name).gds
-calibre_lvs_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
-
-# Also pull in any extra files we need (e.g., SRAM cdl)
-
-#calibre_lvs_extras += $(wildcard $(handoff_dir.gen-sram-cdl)/*.cdl)
+calibre_drc_gds = $(handoff_dir.calibre-gds-merge)/$(design_name).gds
 
 #-------------------------------------------------------------------------
 # Variables
@@ -60,49 +55,48 @@ calibre_lvs_v   = $(wildcard $(handoff_dir.innovus-signoff)/*.lvs.v)
 
 # Runset files -- the template will be populated to generate the runset
 
-calibre_lvs_runset_template       = $(plugins_dir)/calibre/lvs.runset.template
-calibre_lvs_runset                = $(results_dir.calibre-lvs)/lvs.runset
+calibre_drc_runset_template      = $(plugins_dir)/calibre/drc.runset.template
+calibre_drc_runset               = $(results_dir.calibre-drc)/drc.runset
+
+# DRC rules files
+
+calibre_drc_rulesfile            = $(adk_dir)/calibre-drc-block.rule
+
+# DRC output files
+
+calibre_drc_logsfile             = $(logs_dir.calibre-drc)/drc.log
+calibre_drc_resultsfile          = $(results_dir.calibre-drc)/drc.results
+calibre_drc_summaryfile          = $(results_dir.calibre-drc)/drc.summary
 
 # Common variables to substitute into the runset template
 #
-# Note: Some of the paths must be absolute
+# Note: The paths must be absolute or Calibre will complain
 
-export calibre_lvs_rulesfile      = $(adk_dir)/calibre-lvs.rule
-export calibre_lvs_rundir         = $(PWD)/$(results_dir.calibre-lvs)
-
-export calibre_lvs_layoutpaths    = $(PWD)/$(calibre_lvs_gds)
-export calibre_lvs_layoutprimary  = $(design_name)
-export calibre_lvs_extractedspice = $(calibre_lvs_rundir)/lvs.extracted.sp
-
-export calibre_lvs_sourcepath     = $(PWD)/$(calibre_lvs_v)
-export calibre_lvs_sourceprimary  = $(design_name)
-
-export calibre_lvs_logsfile       = $(calibre_lvs_rundir)/lvs.log
-export calibre_lvs_ercdatabase    = $(calibre_lvs_rundir)/lvs.erc.results
-export calibre_lvs_ercsummaryfile = $(calibre_lvs_rundir)/lvs.erc.summary
-export calibre_lvs_reportfile     = $(calibre_lvs_rundir)/lvs.report
-
-calibre_lvs_spiceincfiles        += $(adk_dir)/stdcells.cdl
-#calibre_lvs_spiceincfiles        += $(foreach x, $(calibre_lvs_extras),$(PWD)/$x)
-
-export calibre_lvs_spiceincfiles
+export calibre_drc_rundir        = $(PWD)/$(results_dir.calibre-drc)
+export calibre_drc_layoutpaths   = $(PWD)/$(calibre_drc_gds)
+export calibre_drc_layoutprimary = $(design_name)
 
 #-------------------------------------------------------------------------
-# Targets for LVS checks
+# Targets for individual DRC checks
 #-------------------------------------------------------------------------
 
-# Block-level LVS
+# Block-level DRC
 
-$(calibre_lvs_logsfile): $(dependencies.calibre-lvs)
-	@mkdir -p $(results_dir.calibre-lvs)
+$(calibre_drc_logsfile): $(dependencies.calibre-drc)
+	@mkdir -p $(logs_dir.calibre-drc)
+	@mkdir -p $(results_dir.calibre-drc)
 	@touch $@.start
 	@echo '================================================================================'
-	@echo 'Block-Level LVS'
+	@echo 'Block-Level DRC'
 	@echo '================================================================================'
-# Select the LVS rules file and generate the lvs runset from the template
-	envsubst < $(calibre_lvs_runset_template) > $(calibre_lvs_runset)
-# Run lvs using the runset
-	calibre -gui -lvs -batch -runset $(calibre_lvs_runset)
+# Select the DRC rules file and generate the drc runset from the template
+	( export calibre_drc_rulesfile=$(calibre_drc_rulesfile); \
+		export calibre_drc_transcriptfile=$(PWD)/$(calibre_drc_logsfile); \
+		export calibre_drc_resultsfile=$(PWD)/$(calibre_drc_resultsfile); \
+		export calibre_drc_summaryfile=$(PWD)/$(calibre_drc_summaryfile); \
+		envsubst < $(calibre_drc_runset_template) > $(calibre_drc_runset) )
+# Run drc using the runset
+	calibre -gui -drc -batch -runset $(calibre_drc_runset)
 
 #-------------------------------------------------------------------------
 # Options
@@ -121,7 +115,7 @@ $(calibre_lvs_logsfile): $(dependencies.calibre-lvs)
 # Extra dependencies
 #-------------------------------------------------------------------------
 
-extra_dependencies.calibre-lvs += $(calibre_lvs_logsfile)
+extra_dependencies.calibre-drc += $(calibre_drc_logsfile)
 
 #-------------------------------------------------------------------------
 # Primary command target
@@ -129,16 +123,15 @@ extra_dependencies.calibre-lvs += $(calibre_lvs_logsfile)
 # These are the commands run when executing this step. These commands are
 # included into the build Makefile.
 
-skipvpath.calibre-lvs = yes
+skipvpath.calibre-drc = yes
 
-define commands.calibre-lvs
-	@echo "Layout    : $(calibre_lvs_gds)"
-	@echo "Schematic : $(calibre_lvs_v)"
+define commands.calibre-drc
+	@echo '================================================================================'
+	@echo 'Block-Level DRC'
+	@echo '================================================================================'
+	@tail -11 $(calibre_drc_logsfile)
 	@echo
-	@echo '================================================================================'
-	@echo 'Block-Level LVS'
-	@echo '================================================================================'
-	@sed -n "/OVERALL COMPARISON RESULTS/,/\*\*\*\*/p" $(calibre_lvs_reportfile)
+	@grep --color -e "TOTAL RESULTS GENERATED" $(calibre_drc_logsfile)
 endef
 
 #-------------------------------------------------------------------------
@@ -149,17 +142,18 @@ endef
 
 # Clean
 
-clean-calibre-lvs:
-	rm -rf ./$(VPATH)/calibre-lvs
-	rm -rf ./$(results_dir.calibre-lvs)
-	rm -rf ./$(collect_dir.calibre-lvs)
+clean-calibre-drc:
+	rm -rf ./$(VPATH)/calibre-drc
+	rm -rf ./$(logs_dir.calibre-drc)
+	rm -rf ./$(collect_dir.calibre-drc)
+	rm -rf ./$(results_dir.calibre-drc)
 
-clean-lvs: clean-calibre-lvs
+clean-drc: clean-calibre-drc
 
 # Debug
 
-debug-lvs:
-	calibredrv -m $(calibre_lvs_gds) \
+debug-drc:
+	calibredrv -m $(calibre_drc_gds) \
 	           -l $(adk_dir)/calibre.layerprops \
-	           -rve -lvs $(calibre_lvs_rundir)/svdb
+	           -rve -drc $(calibre_drc_resultsfile)
 
