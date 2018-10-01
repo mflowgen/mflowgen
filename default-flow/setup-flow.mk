@@ -1,9 +1,9 @@
 #=========================================================================
 # setup-flow.mk
 #=========================================================================
-# This design flow has the set of default ASIC steps for any design we
-# want to do architectural design-space exploration on. This configuration
-# should always work as long as the ASIC design kit (ADK) is set up.
+# The default asic flow has the set of common ASIC steps we will need to
+# do architectural design-space exploration. This configuration should
+# always work as long as the ASIC design kit (ADK) is set up properly.
 #
 # Author : Christopher Torng
 # Date   : March 26, 2018

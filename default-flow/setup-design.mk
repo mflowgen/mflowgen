@@ -1,51 +1,11 @@
 #=========================================================================
-# Makefrag
-#=========================================================================
-# When using the default ASIC flow (i.e., in assembled-flows/default),
-# this Makefile fragment sets up two important pieces:
-#
-# - the ASIC design kit
-# - the specification for the design
-#
-# The default asic flow has the set of common ASIC steps we will need to
-# do architectural design-space exploration. This configuration should
-# _always_ work as long as the ASIC design kit (ADK) is set up properly.
-#
-# Author : Christopher Torng
-# Date   : March 26, 2018
-
-#=========================================================================
-# ASIC design kit (ADK)
-#=========================================================================
-# The ADK provides the interface to the process technology files
-#
-# - adk      : ASIC design kit name (e.g., "tsmc-28nm-cln28hpc")
-# - adk_view : ASIC design kit view (e.g., "stdview")
-#
-# Available ADKs:
-#
-# - tsmc-180nm-cl018g
-# - tsmc-28nm-cln28hpc
-#
-# ADKs that need to be updated before they will work:
-#
-# - ibm-130nm-bicmos8hp
-# - saed-90nm
-# - tsmc-65nm-cln65lp
-# - tsmc-40nm-cln40lp
-# - tsmc-16nm-cln16fcll001
-#
-
-adk      = tsmc-28nm-cln28hpc
-adk_view = stdview
-
-export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
-
-#=========================================================================
-# Design
+# setup-design.mk
 #=========================================================================
 # Here we select the design to push as well as its top-level Verilog
 # module name, the clock target, and the Verilog source file.
+#
+# Author : Christopher Torng
+# Date   : March 26, 2018
 
 design_select = pymtl-gcd
 
@@ -56,7 +16,7 @@ design_select = pymtl-gcd
 ifeq ($(design_select),pymtl-gcd)
   design_name  = GcdUnit
   clock_period = 2.0
-  design_v     = ../pymtl/build/GcdUnit.v
+  design_v     = designs/GcdUnit-demo.v
 endif
 
 #-------------------------------------------------------------------------
@@ -66,31 +26,31 @@ endif
 ifeq ($(design_select),pymtl-imul-pipelined-2stage)
   design_name  = IntMulPipelined_2Stage
   clock_period = 1.0
-  design_v     = ../pymtl/build/IntMulPipelined_2Stage.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_2Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-4stage)
   design_name  = IntMulPipelined_4Stage
   clock_period = 1.0
-  design_v     = ../pymtl/build/IntMulPipelined_4Stage.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_4Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-8stage)
   design_name  = IntMulPipelined_8Stage
   clock_period = 1.0
-  design_v     = ../pymtl/build/IntMulPipelined_8Stage.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_8Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-16stage)
   design_name  = IntMulPipelined_16Stage
   clock_period = 1.0
-  design_v     = ../pymtl/build/IntMulPipelined_16Stage.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_16Stage.v
 endif
 
 ifeq ($(design_select),pymtl-mdu)
   design_name  = IntMulDivUnit
   clock_period = 1.0
-  design_v     = rtl-handoff/IntMulDivUnit.v
+  design_v     = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/IntMulDivUnit.v
 endif
 
 #-------------------------------------------------------------------------
@@ -100,43 +60,43 @@ endif
 ifeq ($(design_select),pymtl-dm-ibuffer-2-16B)
   design_name  = DirectMappedInstBuffer_2_16B
   clock_period = 0.5
-  design_v     = ../pymtl/build/DirectMappedInstBuffer_2_16B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_16B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-2-32B)
   design_name  = DirectMappedInstBuffer_2_32B
   clock_period = 0.5
-  design_v     = ../pymtl/build/DirectMappedInstBuffer_2_32B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_32B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-4-16B)
   design_name  = DirectMappedInstBuffer_4_16B
   clock_period = 0.5
-  design_v     = ../pymtl/build/DirectMappedInstBuffer_4_16B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_16B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-4-32B)
   design_name  = DirectMappedInstBuffer_4_32B
   clock_period = 0.5
-  design_v     = ../pymtl/build/DirectMappedInstBuffer_4_32B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_32B.v
 endif
 
 ifeq ($(design_select),pymtl-fa-ibuffer-2-16B)
   design_name  = FullyAssocInstBuffer_2_16B
   clock_period = 0.5
-  design_v     = ../pymtl/build/FullyAssocInstBuffer_2_16B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_16B.v
 endif
 
 ifeq ($(design_select),pymtl-fa-ibuffer-2-32B)
   design_name  = FullyAssocInstBuffer_2_32B
   clock_period = 0.5
-  design_v     = ../pymtl/build/FullyAssocInstBuffer_2_32B.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_32B.v
 endif
 
 ifeq ($(design_select),pymtl-procl0mdu)
   design_name  = ProcL0Mdu
   clock_period = 0.8
-  design_v     = ../pymtl/build/ProcL0Mdu.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/ProcL0Mdu.v
 endif
 
 #-------------------------------------------------------------------------
@@ -147,7 +107,7 @@ endif
 ifeq ($(design_select),pymtl-dw-fpu)
   design_name  = DesignWareFloatingPointUnit
   clock_period = 1.0
-  design_v     = ../pymtl/build/DesignWareFloatingPointUnit.v
+  design_v     = ../alloy-sim/brgtc2/pymtl/build/DesignWareFloatingPointUnit.v
 endif
 
 #-------------------------------------------------------------------------
@@ -157,7 +117,7 @@ endif
 ifeq ($(design_select),verilog-synthesizable-pll)
   design_name  = pll
   clock_period = 2.0
-  design_v     = rtl-handoff/pll.v
+  design_v     = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/pll.v
 endif
 
 #-------------------------------------------------------------------------

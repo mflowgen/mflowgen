@@ -1,1 +1,1 @@
-../default/setup-flow.mk
+../../default-flow/setup-flow.mk

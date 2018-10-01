@@ -34,7 +34,7 @@ endef
 # Vars
 #-------------------------------------------------------------------------
 
-var.dir = ../rtl-handoff/Chansey-sram
+var.dir = ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/Chansey-sram
 mem_generator = $(plugins_dir)/srams/gen-srams
 
 #-------------------------------------------------------------------------

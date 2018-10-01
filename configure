@@ -3,154 +3,154 @@
 # configure
 #=========================================================================
 # Configuration involves choosing an assembled flow (i.e., with
-# setup-flow.mk and a set of plugins) and also selecting an ASIC design
-# kit and design specification (i.e., Makefrag).
+# setup-flow.mk and a set of plugins), selecting an ASIC design kit (i.e.,
+# setup-adk.mk), and selecting the design specification (i.e.,
+# setup-design.mk).
 
 ln -sf ../Makefile.in Makefile
 
 #-------------------------------------------------------------------------
 # Default
 #-------------------------------------------------------------------------
-# Use the default assembled flow if no options are passed in, and also
-# pull in the Makefrag (copy it so that many build directories can be made
-# that point to different designs)
+# Use the default assembled flow if no options are passed in
 
 if [[ x$1 == x"" ]]; then
+  ln -sf ../default-flow/setup-adk.mk
+  ln -sf ../default-flow/setup-design.mk
   ln -sf ../default-flow/setup-flow.mk
   ln -sf ../default-flow/plugins
-  cp -rf ../Makefrag .
 fi
 
 #-------------------------------------------------------------------------
 # 180nm-pcosync-chip
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--180* ]]; then
+  ln -sf ../custom-flows/180nm-pcosync-chip/setup-adk.mk
+  ln -sf ../custom-flows/180nm-pcosync-chip/setup-design.mk
   ln -sf ../custom-flows/180nm-pcosync-chip/setup-flow.mk
   ln -sf ../custom-flows/180nm-pcosync-chip/plugins
-  ln -sf ../custom-flows/180nm-pcosync-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-gcd-chip
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-gcd-chip ]]; then
+  ln -sf ../custom-flows/28nm-gcd-chip/setup-adk.mk
+  ln -sf ../custom-flows/28nm-gcd-chip/setup-design.mk
   ln -sf ../custom-flows/28nm-gcd-chip/setup-flow.mk
   ln -sf ../custom-flows/28nm-gcd-chip/plugins
-  ln -sf ../custom-flows/28nm-gcd-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-HostGcdUnit-chip
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-HostGcdUnit-chip ]]; then
+  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/setup-adk.mk
+  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/setup-design.mk
   ln -sf ../custom-flows/28nm-HostGcdUnit-chip/setup-flow.mk
   ln -sf ../custom-flows/28nm-HostGcdUnit-chip/plugins
-  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-pll
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-pll* ]]; then
+  ln -sf ../custom-flows/28nm-pll/setup-adk.mk
+  ln -sf ../custom-flows/28nm-pll/setup-design.mk
   ln -sf ../custom-flows/28nm-pll/setup-flow.mk
   ln -sf ../custom-flows/28nm-pll/plugins
-  ln -sf ../custom-flows/28nm-pll/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-pll-ro
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-pll-ro* ]]; then
+  ln -sf ../custom-flows/28nm-pll-ro/setup-adk.mk
+  ln -sf ../custom-flows/28nm-pll-ro/setup-design.mk
   ln -sf ../custom-flows/28nm-pll-ro/setup-flow.mk
   ln -sf ../custom-flows/28nm-pll-ro/plugins
-  ln -sf ../custom-flows/28nm-pll-ro/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-sram
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-sram* ]]; then
+  ln -sf ../custom-flows/28nm-sram/setup-adk.mk
+  ln -sf ../custom-flows/28nm-sram/setup-design.mk
   ln -sf ../custom-flows/28nm-sram/setup-flow.mk
   ln -sf ../custom-flows/28nm-sram/plugins
-  ln -sf ../custom-flows/28nm-sram/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-cache
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-cache* ]]; then
+  ln -sf ../custom-flows/28nm-cache/setup-adk.mk
+  ln -sf ../custom-flows/28nm-cache/setup-design.mk
   ln -sf ../custom-flows/28nm-cache/setup-flow.mk
   ln -sf ../custom-flows/28nm-cache/plugins
-  ln -sf ../custom-flows/28nm-cache/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-brgtc2-tapein1
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein1* ]]; then
+  ln -sf ../custom-flows/28nm-brgtc2-tapein1/setup-adk.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein1/setup-design.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein1/setup-flow.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein1/plugins
-  ln -sf ../custom-flows/28nm-brgtc2-tapein1/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-brgtc2-tapein2
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein2* ]]; then
+  ln -sf ../custom-flows/28nm-brgtc2-tapein2/setup-adk.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein2/setup-design.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein2/setup-flow.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein2/plugins
-  ln -sf ../custom-flows/28nm-brgtc2-tapein2/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-brgtc2-tapein3
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein3* ]]; then
+  ln -sf ../custom-flows/28nm-brgtc2-tapein3/setup-adk.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein3/setup-design.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein3/setup-flow.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein3/plugins
-  ln -sf ../custom-flows/28nm-brgtc2-tapein3/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # 28nm-brgtc2-tapein4
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein4* ]]; then
+  ln -sf ../custom-flows/28nm-brgtc2-tapein4/setup-adk.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein4/setup-design.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein4/setup-flow.mk
   ln -sf ../custom-flows/28nm-brgtc2-tapein4/plugins
-  ln -sf ../custom-flows/28nm-brgtc2-tapein4/Makefrag
 fi
 
 #-------------------------------------------------------------------------
 # rgals
 #-------------------------------------------------------------------------
-# This flow has its own Makefrag
 
 if [[ x$1 == x--rgals ]]; then
+  ln -sf ../custom-flows/28nm-rgals/setup-adk.mk
+  ln -sf ../custom-flows/28nm-rgals/setup-design.mk
   ln -sf ../custom-flows/28nm-rgals/setup-flow.mk
   ln -sf ../custom-flows/28nm-rgals/plugins
-  ln -sf ../custom-flows/28nm-rgals/Makefrag
 fi
 
 

@@ -36,7 +36,8 @@ default: all
 #-------------------------------------------------------------------------
 
 include setup-flow.mk
-include Makefrag
+include setup-adk.mk
+include setup-design.mk
 
 #-------------------------------------------------------------------------
 # Directories
