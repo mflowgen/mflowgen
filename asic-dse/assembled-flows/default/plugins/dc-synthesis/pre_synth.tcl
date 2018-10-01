@@ -6,6 +6,19 @@
 # Author : Christopher Torng
 # Date   : May 14, 2018
 
+# Number of cores for multicore optimization
+
+set dc_num_cores 16
+
+# Add more link libraries (e.g., IO cells, hierarchical blocks)
+
+# set dc_extra_link_libraries  [join "
+#                                $dc_extra_link_libraries
+#                                extra1.db
+#                                extra2.db
+#                                extra3.db
+#                              "]
+
 # Enable additional area optimizations (skip false = enable optimizations)
 
 set DC_SKIP_OPTIMIZE_NETLIST false
