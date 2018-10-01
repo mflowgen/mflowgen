@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/stream_out.tcl
+../../../../default-flow/plugins/innovus/stream_out.tcl

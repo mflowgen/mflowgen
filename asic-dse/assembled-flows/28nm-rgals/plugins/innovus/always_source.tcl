@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/always_source.tcl
+../../../../default-flow/plugins/innovus/always_source.tcl

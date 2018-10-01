@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/post_cts.tcl
+../../../../default-flow/plugins/innovus/post_cts.tcl

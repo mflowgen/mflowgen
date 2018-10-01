@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/setup.tcl
+../../../../default-flow/plugins/innovus/setup.tcl

@@ -15,16 +15,6 @@
 # Date   : March 26, 2018
 
 #=========================================================================
-# Design Flow
-#=========================================================================
-# Selects which flow to use from the "assembled-flows" directory
-#
-# - design_flow : Select which assembled flow to use (e.g., "default")
-#
-
-design_flow = default
-
-#=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
 # The ADK provides the interface to the process technology files

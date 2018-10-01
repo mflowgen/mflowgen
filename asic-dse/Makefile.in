@@ -220,20 +220,18 @@ githash_cmd = \
 
 seed:
 # Generate all asic flow directories
-	@mkdir -p $(VPATH) $(flow_dir) $(plugins_dir)
-	@mkdir -p $(logs_dir) $(reports_dir) $(results_dir)
+	@mkdir -p $(VPATH) $(flow_dir) $(logs_dir)
+	@mkdir -p $(reports_dir) $(results_dir)
 	@mkdir -p $(collect_dir) $(handoff_dir) $(timestamps_dir)
 	@mkdir -p $(githashes_dir)
 # Seed links to the master steps into the flow directory
 	@$(foreach x, $(steps), \
       ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir);)
-# Pull design-specific plugins into the plugins directory
-	@ln -srf $(base_dir)/$(master_flows_dir)/$(design_flow)/plugins/* $(plugins_dir)
 # Mark this step done
 	@touch $(VPATH)/$@
 
-junk += $(flow_dir) $(plugins_dir)
-junk += $(logs_dir) $(reports_dir) $(results_dir)
+junk += $(flow_dir) $(logs_dir)
+junk += $(reports_dir) $(results_dir)
 junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 junk += $(githashes_dir)
 

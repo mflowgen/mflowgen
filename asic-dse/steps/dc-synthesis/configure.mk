@@ -149,19 +149,19 @@ define commands.dc-synthesis
 
 	mv command.log          $(logs_dir.dc-synthesis) || true
 	mv lc_shell_command.log $(logs_dir.dc-synthesis) || true
-	mv *_LIB                $(logs_dir.dc-synthesis) || true
+	mv *_lib                $(logs_dir.dc-synthesis) || true
 
 # Prepare handoffs
 
 	mkdir -p $(handoff_dir.dc-synthesis)
 	ln -srf $(results_dir.dc-synthesis)/* $(handoff_dir.dc-synthesis)
 
-# Grep for errors
+# Grep for failure messages
 
-	grep --color "^Error" $(logs_dir.dc-synthesis)/dc.log || true
-	grep --color -B 3 "*** Presto compilation terminated" \
+	@grep --color "^Error" $(logs_dir.dc-synthesis)/dc.log || true
+	@grep --color -B 3 "*** Presto compilation terminated" \
     $(logs_dir.dc-synthesis)/dc.log || true
-	grep --color "unresolved references." \
+	@grep --color "unresolved references." \
     $(logs_dir.dc-synthesis)/dc.log || true
 
 endef

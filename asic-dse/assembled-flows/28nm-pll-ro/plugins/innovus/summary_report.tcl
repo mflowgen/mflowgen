@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/summary_report.tcl
+../../../../default-flow/plugins/innovus/summary_report.tcl

@@ -66,9 +66,9 @@ set vars(dbs_dir)             $::env(innovus_handoffs_dir)
 # - The analysis view can focus on setup or hold, depending on which
 #   corner and which constraints mode is picked
 
-# Source the setup file for the stdcells
+# Source the setup file for the ADK
 
-source $adk_dir/stdcells.tcl
+source $adk_dir/adk.tcl
 
 # Library sets
 

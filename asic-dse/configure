@@ -2,9 +2,9 @@
 #=========================================================================
 # configure
 #=========================================================================
-# Configuration involves choosing an assembled flow (i.e.,
-# "setup-flow.mk") and also selecting an ASIC design kit and design
-# specification (i.e., "Makefrag").
+# Configuration involves choosing an assembled flow (i.e., with
+# setup-flow.mk and a set of plugins) and also selecting an ASIC design
+# kit and design specification (i.e., Makefrag).
 
 ln -sf ../Makefile.in Makefile
 
@@ -16,7 +16,8 @@ ln -sf ../Makefile.in Makefile
 # that point to different designs)
 
 if [[ x$1 == x"" ]]; then
-  ln -sf ../assembled-flows/default/setup-flow.mk
+  ln -sf ../default-flow/setup-flow.mk
+  ln -sf ../default-flow/plugins
   cp -rf ../Makefrag .
 fi
 
@@ -26,8 +27,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--180* ]]; then
-  ln -sf ../assembled-flows/180nm-pcosync-chip/setup-flow.mk
-  ln -sf ../assembled-flows/180nm-pcosync-chip/Makefrag
+  ln -sf ../custom-flows/180nm-pcosync-chip/setup-flow.mk
+  ln -sf ../custom-flows/180nm-pcosync-chip/plugins
+  ln -sf ../custom-flows/180nm-pcosync-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -36,8 +38,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-gcd-chip ]]; then
-  ln -sf ../assembled-flows/28nm-gcd-chip/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-gcd-chip/Makefrag
+  ln -sf ../custom-flows/28nm-gcd-chip/setup-flow.mk
+  ln -sf ../custom-flows/28nm-gcd-chip/plugins
+  ln -sf ../custom-flows/28nm-gcd-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -46,8 +49,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-HostGcdUnit-chip ]]; then
-  ln -sf ../assembled-flows/28nm-HostGcdUnit-chip/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-HostGcdUnit-chip/Makefrag
+  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/setup-flow.mk
+  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/plugins
+  ln -sf ../custom-flows/28nm-HostGcdUnit-chip/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -56,8 +60,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-pll* ]]; then
-  ln -sf ../assembled-flows/28nm-pll/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-pll/Makefrag
+  ln -sf ../custom-flows/28nm-pll/setup-flow.mk
+  ln -sf ../custom-flows/28nm-pll/plugins
+  ln -sf ../custom-flows/28nm-pll/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -66,8 +71,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-pll-ro* ]]; then
-  ln -sf ../assembled-flows/28nm-pll-ro/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-pll-ro/Makefrag
+  ln -sf ../custom-flows/28nm-pll-ro/setup-flow.mk
+  ln -sf ../custom-flows/28nm-pll-ro/plugins
+  ln -sf ../custom-flows/28nm-pll-ro/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -76,8 +82,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-sram* ]]; then
-  ln -sf ../assembled-flows/28nm-sram/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-sram/Makefrag
+  ln -sf ../custom-flows/28nm-sram/setup-flow.mk
+  ln -sf ../custom-flows/28nm-sram/plugins
+  ln -sf ../custom-flows/28nm-sram/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -86,8 +93,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-cache* ]]; then
-  ln -sf ../assembled-flows/28nm-cache/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-cache/Makefrag
+  ln -sf ../custom-flows/28nm-cache/setup-flow.mk
+  ln -sf ../custom-flows/28nm-cache/plugins
+  ln -sf ../custom-flows/28nm-cache/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -96,8 +104,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein1* ]]; then
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein1/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein1/Makefrag
+  ln -sf ../custom-flows/28nm-brgtc2-tapein1/setup-flow.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein1/plugins
+  ln -sf ../custom-flows/28nm-brgtc2-tapein1/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -106,8 +115,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein2* ]]; then
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein2/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein2/Makefrag
+  ln -sf ../custom-flows/28nm-brgtc2-tapein2/setup-flow.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein2/plugins
+  ln -sf ../custom-flows/28nm-brgtc2-tapein2/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -116,8 +126,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein3* ]]; then
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein3/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein3/Makefrag
+  ln -sf ../custom-flows/28nm-brgtc2-tapein3/setup-flow.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein3/plugins
+  ln -sf ../custom-flows/28nm-brgtc2-tapein3/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -126,8 +137,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--28nm-brgtc2-tapein4* ]]; then
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein4/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-brgtc2-tapein4/Makefrag
+  ln -sf ../custom-flows/28nm-brgtc2-tapein4/setup-flow.mk
+  ln -sf ../custom-flows/28nm-brgtc2-tapein4/plugins
+  ln -sf ../custom-flows/28nm-brgtc2-tapein4/Makefrag
 fi
 
 #-------------------------------------------------------------------------
@@ -136,8 +148,9 @@ fi
 # This flow has its own Makefrag
 
 if [[ x$1 == x--rgals ]]; then
-  ln -sf ../assembled-flows/28nm-rgals/setup-flow.mk
-  ln -sf ../assembled-flows/28nm-rgals/Makefrag
+  ln -sf ../custom-flows/28nm-rgals/setup-flow.mk
+  ln -sf ../custom-flows/28nm-rgals/plugins
+  ln -sf ../custom-flows/28nm-rgals/Makefrag
 fi
 
 

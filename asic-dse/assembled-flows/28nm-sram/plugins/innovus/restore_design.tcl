@@ -1,1 +1,1 @@
-../../../default/plugins/innovus/restore_design.tcl
+../../../../default-flow/plugins/innovus/restore_design.tcl

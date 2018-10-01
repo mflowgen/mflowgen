@@ -1,1 +1,1 @@
-../../../default/plugins/dc-synthesis/constraints.tcl
+../../../../default-flow/plugins/dc-synthesis/constraints.tcl
