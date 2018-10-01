@@ -24,9 +24,9 @@ set vars(reduced_effort_flow) false
 
 # Add the PLL hierarchically
 
-set pll_lib [glob /work/global/brgtc2/pll-pt/*.lib]
+set pll_lib [glob /work/global/clt67/brgtc2-pin/*.lib]
 
-set pll_lef [glob /work/global/brgtc2/pll-innovus/*.lef]
+set pll_lef [glob /work/global/clt67/brgtc2-pin/*.lef]
 
 set vars(libs_typical,timing) [join "$vars(libs_typical,timing) $pll_lib" ]
 set vars(libs_bc,timing)      [join "$vars(libs_bc,timing)      $pll_lib" ]
