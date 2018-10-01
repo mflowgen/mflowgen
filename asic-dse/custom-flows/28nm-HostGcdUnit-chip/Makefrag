@@ -3,8 +3,6 @@
 #=========================================================================
 # This file sets up the ASIC design kit and the design specification.
 
-design_flow = 180nm-pcosync-chip
-
 #=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
@@ -27,7 +25,7 @@ design_flow = 180nm-pcosync-chip
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-180nm-cl018g
+adk      = tsmc-28nm-cln28hpc
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
@@ -36,9 +34,15 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = correlator_top
-clock_period = 50.0
-design_v     = rtl-handoff/top.v
+design_name        = HostGcdUnit
+clock_period       = 1.0
+design_v           = rtl-handoff/HostGcdUnit.v
+
+# For simulation
+
+pytest_target_str  = ../pymtl/HostGcdUnit
+testing_files      = rtl-handoff/HostGcdUnit-test/HostGcdUnit_tb.v
+testing_files     += rtl-handoff/HostGcdUnit.swshim.v
 
 #-------------------------------------------------------------------------
 # Export

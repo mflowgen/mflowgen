@@ -3,8 +3,6 @@
 #=========================================================================
 # This file sets up the ASIC design kit and the design specification.
 
-design_flow = 28nm-sram
-
 #=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
@@ -36,9 +34,9 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = SramValRdyPRTL
-clock_period = 1.0
-design_v     = ../pymtl/build/SramValRdyPRTL_blackbox.v
+design_name  = HostCompCtrlregMcoreL0ArbiterMduCache
+clock_period = 3.0
+design_v     = rtl-handoff/brgtc2-tapein1.v
 
 #-------------------------------------------------------------------------
 # Export

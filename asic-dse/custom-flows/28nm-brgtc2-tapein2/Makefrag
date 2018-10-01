@@ -3,8 +3,6 @@
 #=========================================================================
 # This file sets up the ASIC design kit and the design specification.
 
-design_flow = 28nm-HostGcdUnit-chip
-
 #=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
@@ -36,15 +34,15 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name        = HostGcdUnit
-clock_period       = 1.0
-design_v           = rtl-handoff/HostGcdUnit.v
+design_name        = HostButterfree
+clock_period       = 3.0
+design_v           = rtl-handoff/HostButterfree_blackbox.v
 
 # For simulation
 
-pytest_target_str  = ../pymtl/HostGcdUnit
-testing_files      = rtl-handoff/HostGcdUnit-test/HostGcdUnit_tb.v
-testing_files     += rtl-handoff/HostGcdUnit.swshim.v
+pytest_target_str  = ../pymtl/CompButterfree/test/Butterfree_test*
+testing_files      = rtl-handoff/Butterfree-test/Butterfree_tb.v
+testing_files     += rtl-handoff/HostButterfree.swshim.v
 
 #-------------------------------------------------------------------------
 # Export

@@ -3,8 +3,6 @@
 #=========================================================================
 # This file sets up the ASIC design kit and the design specification.
 
-design_flow = 28nm-rgals
-
 #=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
@@ -27,7 +25,7 @@ design_flow = 28nm-rgals
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-28nm-cln28hpc
+adk      = tsmc-180nm-cl018g
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
@@ -36,9 +34,9 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name  = GcdTop
-clock_period = 1.0
-design_v     = rtl-handoff/rgals/aligned-only/GcdTop.v
+design_name  = correlator_top
+clock_period = 50.0
+design_v     = rtl-handoff/top.v
 
 #-------------------------------------------------------------------------
 # Export

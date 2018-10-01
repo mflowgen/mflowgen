@@ -3,8 +3,6 @@
 #=========================================================================
 # This file sets up the ASIC design kit and the design specification.
 
-design_flow = 28nm-brgtc2-tapein3
-
 #=========================================================================
 # ASIC design kit (ADK)
 #=========================================================================
@@ -36,15 +34,9 @@ export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
 # Design
 #=========================================================================
 
-design_name        = HostChansey
-clock_period       = 3.0
-design_v           = rtl-handoff/HostChansey_blackbox.v
-
-# For simulation
-
-pytest_target_str  = ../pymtl/CompChansey/test/Chansey_test*
-testing_files      = rtl-handoff/Chansey-test/Chansey_tb.v
-testing_files     += rtl-handoff/HostChansey.swshim.v
+design_name  = ring_oscillator_top
+clock_period = 1.0
+design_v     = rtl-handoff/pll-ro.v
 
 #-------------------------------------------------------------------------
 # Export
