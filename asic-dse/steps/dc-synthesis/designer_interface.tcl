@@ -22,7 +22,7 @@ set dc_milkyway_tf              $::env(adk_dir)/rtk-tech.tf
 set dc_tluplus_map              $::env(adk_dir)/rtk-tluplus.map
 set dc_tluplus_max              $::env(adk_dir)/rtk-max.tluplus
 set dc_tluplus_min              $::env(adk_dir)/rtk-min.tluplus
-set dc_stdcells_tcl             $::env(adk_dir)/stdcells.tcl
+set dc_adk_tcl                  $::env(adk_dir)/adk.tcl
 
 set dc_target_libraries         stdcells.db
 

@@ -56,10 +56,10 @@ if {[file exists [which $dc_pre_synthesis_plugin]]} {
 # Setup
 #-------------------------------------------------------------------------
 
-# Set up variables for this specific stdcell library
+# Set up variables for this specific ASIC design kit
 
 set SYNOPSYS_TOOL "dc-syn"
-source -echo -verbose $dc_stdcells_tcl
+source -echo -verbose $dc_adk_tcl
 
 # Multicore support -- watch how many licenses we have!
 
