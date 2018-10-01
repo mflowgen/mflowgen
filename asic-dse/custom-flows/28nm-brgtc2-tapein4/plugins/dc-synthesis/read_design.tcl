@@ -3,10 +3,10 @@
 #=========================================================================
 # This script performs a custom read design
 
-if { ![analyze -format sverilog ${RTL_SOURCE_FILES}] } {
+if { ![analyze -format sverilog $dc_rtl_handoff] } {
   exit 1
 }
-elaborate ${DESIGN_NAME}
+elaborate $dc_design_name
 
 # Change link for pll
 

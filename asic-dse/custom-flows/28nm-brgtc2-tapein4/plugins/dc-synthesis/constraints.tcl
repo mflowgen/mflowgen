@@ -121,7 +121,7 @@ set_clock_uncertainty $pll_ref_clk_uncertainty [get_clocks $pll_ref_clk_name]
 #
 # General rule of thumb for max transition is 20% of the clock period.
 
-set_max_transition 0.15 ${DESIGN_NAME}
+set_max_transition 0.15 $dc_design_name
 
 #-------------------------------------------------------------------------
 # Inputs
@@ -235,13 +235,13 @@ set_false_path -from clk_sel_io[0]
 
 # Report constraints on the ports
 
-report_port -verbose -nosplit > reports/dc-synthesis/${DESIGN_NAME}.ports.constraints.rpt
-report_attribute -port        > reports/dc-synthesis/${DESIGN_NAME}.ports.attributes.rpt
+report_port -verbose -nosplit > reports/dc-synthesis/$dc_design_name.ports.constraints.rpt
+report_attribute -port        > reports/dc-synthesis/$dc_design_name.ports.attributes.rpt
 
 # Report clocks
 
-report_clock -groups -nosplit       > reports/dc-synthesis/${DESIGN_NAME}.clocks.rpt
-report_clock -groups -nosplit -skew > reports/dc-synthesis/${DESIGN_NAME}.clocks.skew.rpt
+report_clock -groups -nosplit       > reports/dc-synthesis/$dc_design_name.clocks.rpt
+report_clock -groups -nosplit -skew > reports/dc-synthesis/$dc_design_name.clocks.skew.rpt
 
 #-------------------------------------------------------------------------
 # Register retiming
