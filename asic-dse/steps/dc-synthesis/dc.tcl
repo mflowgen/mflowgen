@@ -124,10 +124,6 @@ if {![file isdirectory $milkyway_library ]} {
 
 open_mw_lib $milkyway_library
 
-# Check libraries
-
-check_library > $dc_reports_dir/${dc_design_name}.check_library.rpt
-
 # Set up TLU plus
 
 set_tlu_plus_files -max_tluplus  $dc_tluplus_max \
@@ -186,9 +182,17 @@ set_app_var sh_new_variable_message false
 #  saif_map -start
 #}
 
+# Hook to drop into interactive Design Compiler shell after setup
+
+if {[info exists ::env(DC_EXIT_AFTER_SETUP)]} { return }
+
 #-------------------------------------------------------------------------
 # Read design
 #-------------------------------------------------------------------------
+
+# Check libraries
+
+check_library > $dc_reports_dir/${dc_design_name}.check_library.rpt
 
 # The first "WORK" is a reserved word for Design Compiler. The value for
 # the -path option is customizable.

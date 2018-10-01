@@ -190,17 +190,19 @@ clean-synth: clean-dc-synthesis
 # we know what is going to be used everywhere...
 
 debug-dc-synthesis:
-	design_vision-xg -topographical -x \
-                      "source $(flow_dir.dc-synthesis)/rm_setup/dc_setup.tcl; \
-                       read_ddc $(results_dir.dc-synthesis)/$(design_name).mapped.ddc"
+	export DC_EXIT_AFTER_SETUP=1 && \
+    design_vision-xg -topographical -x \
+      "source $(flow_dir.dc-synthesis)/dc.tcl; \
+       read_ddc $(results_dir.dc-synthesis)/$(design_name).mapped.ddc"
 
 
 debug-synth: debug-dc-synthesis
 
 debug-dc-synthesis-elaborated:
-	design_vision-xg -topographical -x \
-                      "source $(flow_dir.dc-synthesis)/rm_setup/dc_setup.tcl; \
-                       read_ddc $(results_dir.dc-synthesis)/$(design_name).elab.ddc"
+	export DC_EXIT_AFTER_SETUP=1 && \
+    design_vision-xg -topographical -x \
+      "source $(flow_dir.dc-synthesis)/dc.tcl; \
+       read_ddc $(results_dir.dc-synthesis)/$(design_name).elab.ddc"
 
 debug-synth-elaborated: debug-dc-synthesis-elaborated
 
