@@ -1,5 +1,0 @@
-basic_0x0
-basic_5x0
-basic_0x5
-basic_3x9
-random_3x9
