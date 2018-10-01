@@ -187,7 +187,7 @@ set_app_var sh_new_variable_message false
 #}
 
 #-------------------------------------------------------------------------
-# Read in the RTL Design
+# Read design
 #-------------------------------------------------------------------------
 
 # The first "WORK" is a reserved word for Design Compiler. The value for
@@ -235,8 +235,10 @@ write -hierarchy -format verilog \
 # saif_map -rtl_summary -missing_rtl -report
 
 #-------------------------------------------------------------------------
-# Logical design constraints
+# Apply design constraints
 #-------------------------------------------------------------------------
+
+# Apply logical design constraints
 
 puts "Info: Reading constraints file plugin: $dc_constraints_plugin"
 
@@ -269,10 +271,8 @@ group_path -name FEEDTHROUGH \
            -from [remove_from_collection [all_inputs] $ports_clock_root] \
            -to   [all_outputs]
 
-#-------------------------------------------------------------------------
-# Physical design constraints
-#-------------------------------------------------------------------------
-
+# Apply physical design constraints
+#
 # Set the minimum and maximum routing layers used in DC topographical mode
 
 set_ignored_layers -min_routing_layer $STDCELLS_MIN_ROUTING_LAYER_DC
