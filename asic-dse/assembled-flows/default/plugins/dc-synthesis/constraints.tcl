@@ -18,13 +18,10 @@ create_clock -name ${clock_name} \
              -period ${dc_clock_period} \
              [get_ports ${clock_net}]
 
-# This constrainst sets the load capacitance in picofarads of the
-# output pins of your design. 4fF is reasonable if your design is
-# driving another block of on-chip logic.
+# This constraint sets the load capacitance in picofarads of the
+# output pins of your design.
 
-# FIXME: make this general across technologies
-
-set_load -pin_load 0.004 [all_outputs]
+set_load -pin_load $STDCELLS_TYPICAL_ON_CHIP_LOAD [all_outputs]
 
 # This constraint sets the input drive strength of the input pins of
 # your design. We specifiy a specific standard cell which models what
