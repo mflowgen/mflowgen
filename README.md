@@ -324,43 +324,43 @@ directories for modular steps, for the default flow, for custom
 flows, and for the design source code:
 
 ```
-alloy-asic
+alloy-asic/
 │
-├── Makefile.in  -- Primary makefile for the build system
+├── Makefile.in   -- Primary makefile for the build system
 │
-├── designs      -- RTL source code
+├── designs/      -- RTL source code
 │
-├── default-flow -- Default flow for architectural design-space explor.
-├── custom-flows -- Custom flows for VLSI exploration, full chips, etc.
+├── default-flow/ -- Default flow for architectural design-space expl.
+├── custom-flows/ -- Custom flows for VLSI exploration, chips, etc.
 │
-├── steps        -- Collection of modular steps
+├── steps/        -- Collection of modular steps
 │
-│── utils        -- Helper scripts
+│── utils/        -- Helper scripts
 │
-├── configure    -- Configure script to select an assembled ASIC flow
-├── configure.ac -- Autoconf configure script that generates "configure"
-├── ctx.m4       -- Autoconf helper macros
+├── configure     -- Configure script to select an assembled ASIC flow
+├── configure.ac  -- Autoconf configure script generatings "configure"
+├── ctx.m4        -- Autoconf helper macros
 │
-└── LICENSE      -- License
+└── LICENSE       -- License
 ```
 
 An assembled flow brings together an ADK, the flow dependency graph,
-the design souRTL, and a set of plugins for customizing the steps.
-For example, the default flow is organized like this:
+the design source RTL, and a set of plugins for customizing the
+steps. For example, the default flow is organized like this:
 
 ```
 default-flow/
 │
-├── setup-adk.mk      # <-- ADK selection
-├── setup-design.mk   # <-- Design
-├── setup-flow.mk     # <-- Flow composed of modular steps
+├── setup-adk.mk     -- ADK selection
+├── setup-design.mk  -- Design
+├── setup-flow.mk    -- Flow composed of modular steps
 │
-└── plugins           # <-- Plugins that hook into steps
-    ├── calibre
+└── plugins/         -- Plugins that hook into steps
+    ├── calibre/
     │   └── (calibre-plugins)
-    ├── dc-synthesis
+    ├── dc-synthesis/
     │   └── (dc-synthesis-plugins)
-    └── innovus
+    └── innovus/
         └── (innovus-plugins)
 ```
 
@@ -393,9 +393,9 @@ configuration time:
 ```
 custom-flows/
 │
-├── designA    # ../configure --with-designA
-├── designB    # ../configure --with-designB
-└── designC    # ../configure --with-designC
+├── designA/   -- ../configure --with-designA
+├── designB/   -- ../configure --with-designB
+└── designC/   -- ../configure --with-designC
 ```
 
 Note that the top-level configure.ac must include an entry for each
