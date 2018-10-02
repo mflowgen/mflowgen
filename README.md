@@ -386,8 +386,8 @@ plugins to customize the steps:
   complex designs (e.g., taping out a chip) will require heavy
   modifications to the plugin scripts.
 
-The top-level "custom-flows" directory can hold additional flows for
-different projects, and selecting between flows is done at
+Finally, the top-level "custom-flows" directory can hold additional
+flows for different projects, and selecting between flows is done at
 configuration time:
 
 ```

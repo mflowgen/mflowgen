@@ -76,7 +76,7 @@ set vars(library_sets)        "libs_typical libs_bc libs_wc"
 
 set vars(libs_typical,timing) [join "
                                 $adk_dir/stdcells.lib
-                                $adk_dir/iocells.lib
+                                [glob -nocomplain $adk_dir/iocells.lib]
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*tt*.lib]
                               "]
 
@@ -88,7 +88,7 @@ set vars(libs_typical,timing) [join "
 
 set vars(libs_bc,timing)      [join "
                                 $adk_dir/stdcells-bc.lib
-                                $adk_dir/iocells-bc.lib
+                                [glob -nocomplain $adk_dir/iocells-bc.lib]
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*ff*.lib]
                               "]
 
@@ -100,35 +100,44 @@ set vars(libs_bc,timing)      [join "
 
 set vars(libs_wc,timing)      [join "
                                 $adk_dir/stdcells-wc.lib
-                                $adk_dir/iocells-wc.lib
+                                [glob -nocomplain $adk_dir/iocells-wc.lib]
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*ss*.lib]
                               "]
 
 set vars(lef_files) [join "
                       $adk_dir/rtk-tech.lef
-                      $adk_dir/iocells.lef
-                      $adk_dir/iocells-bondpads.lef
                       $adk_dir/stdcells.lef
+                      [glob -nocomplain $adk_dir/iocells.lef]
+                      [glob -nocomplain $adk_dir/iocells-bondpads.lef]
                       [glob -nocomplain $::env(innovus_ff_collect_dir)/*.lef]
-                    " ]
+                    "]
 
 #-------------------------------------------------------------------------
 # RC Corners
 #-------------------------------------------------------------------------
 
-set vars(rc_corners)                        "typical rcbest rcworst"
+set vars(rc_corners)                      "typical rcbest rcworst"
 
-set vars(typical,cap_table)                 $adk_dir/rtk-typical.captable
-set vars(typical,qx_tech_file)              $adk_dir/pdk-typical-qrcTechFile
-set vars(typical,T)                         25
+set vars(typical,cap_table)               $adk_dir/rtk-typical.captable
+set vars(typical,T)                       25
 
-set vars(rcbest,cap_table)                  $adk_dir/rtk-rcbest.captable
-set vars(rcbest,qx_tech_file)               $adk_dir/pdk-rcbest-qrcTechFile
-set vars(rcbest,T)                          25
+set vars(rcbest,cap_table)                $adk_dir/rtk-rcbest.captable
+set vars(rcbest,T)                        25
 
-set vars(rcworst,cap_table)                 $adk_dir/rtk-rcworst.captable
-set vars(rcworst,qx_tech_file)              $adk_dir/pdk-rcworst-qrcTechFile
-set vars(rcworst,T)                         25
+set vars(rcworst,cap_table)               $adk_dir/rtk-rcworst.captable
+set vars(rcworst,T)                       25
+
+# Source QRC tech files if they exist
+
+set captable_only_mode false
+
+if {[file exists $adk_dir/pdk-typical-qrcTechFile]} {
+  set vars(typical,qx_tech_file)          $adk_dir/pdk-typical-qrcTechFile
+  set vars(rcbest,qx_tech_file)           $adk_dir/pdk-rcbest-qrcTechFile
+  set vars(rcworst,qx_tech_file)          $adk_dir/pdk-rcworst-qrcTechFile
+} else {
+  set captable_only_mode true
+}
 
 #-------------------------------------------------------------------------
 # Delay Corners (OCV style)
@@ -455,6 +464,13 @@ set vars(multi_cut_effort)             high
 
 set vars(postroute_extraction_effort)  high
 set vars(signoff_extraction_effort)    high
+
+# Cap tables can only be used with low-effort extraction
+
+if {$captable_only_mode} {
+  set vars(postroute_extraction_effort)  low
+  set vars(signoff_extraction_effort)    low
+}
 
 #set vars(leakage_power_effort)         none
 #set vars(dynamic_power_effort)         none
