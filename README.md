@@ -3,42 +3,15 @@ The Modular VLSI Build System
 - Author : Christopher Torng
 - Date   : March 26, 2018
 
-Building VLSI implementations with millions of transistors is a
-tremendous challenge for computer architecture and VLSI researchers,
-and it is even more challenging to go beyond RTL to tape out fully
-functional silicon prototypes for use as research vehicles. One of
-the most challenging aspects of working with ASIC flows is managing
-the many moving pieces (e.g., PDK, physical IP libraries,
-ASIC-specific tools), which come from many different vendors and yet
-must still be made to work together coherently. Once an ASIC flow
-has been successfully assembled, it would be great to reuse it.
-Unfortunately, teams typically end up with little reuse since new
-designs may for example require slightly different ASIC flows,
-target different technology nodes, or use different vendors for
-physical IP.
+Building VLSI implementations with millions of transistors is a tremendous challenge for computer architecture and VLSI researchers, and it is even more challenging to go beyond RTL to tape out fully functional silicon prototypes for use as research vehicles. One of the most challenging aspects of working with ASIC flows is managing the many moving pieces (e.g., PDK, physical IP libraries, ASIC-specific tools), which come from many different vendors and yet must still be made to work together coherently. Once an ASIC flow has been successfully assembled, it would be great to reuse it. Unfortunately, teams typically end up with little reuse since new designs may for example require slightly different ASIC flows, target different technology nodes, or even use different vendors for physical IP.
 
-The Modular VLSI Build System is a set of ASIC tool scripts and
-makefiles for managing the moving pieces as well as a carefully
-designed set of policies for minimizing the friction when building
-new designs. The key idea is to avoid rigidly structured ASIC flows
-that cannot be repurposed and to instead break the ASIC flow into
-modular steps that can be re-assembled into different flows. We also
-introduce the idea of an ASIC design kit (ADK), which is the
-specific set of physical backend files required to successfully
-build chips, as well as a unified and standard interface to those
-files. A well-defined interface enables swapping process and IP
-libraries without modification to the scripts that use them. The ADK
-may include process technology files, physical IP libraries (e.g.,
-IO cells, standard cells, memory compilers), as well as physical
-verification decks (e.g., Calibre DRC/LVS).
+The Modular VLSI Build System is a set of ASIC tool scripts and makefiles for managing the moving pieces as well as a carefully designed set of policies for minimizing the friction when building new designs. The key idea is to avoid rigidly structured ASIC flows that cannot be repurposed and to instead break the ASIC flow into modular steps that can be re-assembled into different flows. We also introduce the idea of an ASIC design kit (ADK), which is the specific set of physical backend files required to successfully build chips, as well as a unified and standard interface to those files. A well-defined interface enables swapping process and IP libraries without modification to the scripts that use them. Finally, this approach embraces plugins that hook into steps across the entire ASIC flow for customizing the flow in design-specific ways.
 
 --------------------------------------------------------------------------
 License
 --------------------------------------------------------------------------
 
-The Modular VLSI Build System is offered under the terms of the Open
-Source Initiative BSD 3-Clause License. More information about this
-license can be found here:
+The Modular VLSI Build System is offered under the terms of the Open Source Initiative BSD 3-Clause License. More information about this license can be found here:
 
 - http://choosealicense.com/licenses/bsd-3-clause
 - http://opensource.org/licenses/BSD-3-Clause
@@ -47,10 +20,7 @@ license can be found here:
 Quick Start
 --------------------------------------------------------------------------
 
-This repo includes the Verilog for a greater common divisor unit
-that can be used to demo the ASIC flow (designs/GcdUnit-demo.v).
-This section steps through how to clone the repo and push this
-design through synthesis and automatic place-and-route.
+This repo includes the Verilog for a greater common divisor unit that can be used to demo the ASIC flow (designs/GcdUnit-demo.v). This section steps through how to clone the repo and push this design through synthesis and automatic place-and-route.
 
 Clone the repo:
 
@@ -98,22 +68,17 @@ Other useful asic flow commands:
     % make runtimes      # Table of runtimes
     % make seed          # Just generates the build directories
 
-The rest of this README describes the ASIC Design Kit interface, the
-modularized steps, the organization of the repository, the tools
-used, and the verified tool versions in more detail.
+The rest of this README describes the ASIC Design Kit interface, the modularized steps, the organization of the repository, the tools used, and the verified tool versions in more detail.
 
 --------------------------------------------------------------------------
 ASIC Design Kit (ADK) Interface
 --------------------------------------------------------------------------
 
-The ADK interface is a standard set of filenames that are used
-across all ASIC scripts in the flow. Regardless of how the actual
-packages and IP libraries are downloaded, the ADK interface can be
-created by making a single directory and copying or symlinking
-(recommended) to the appropriate file in the backing store.
+The ADK interface is a standard set of filenames that are used across all ASIC scripts in the flow. Regardless of how the actual packages and IP libraries are downloaded, the ADK interface can be created by making a single directory and copying or symlinking (recommended) to the appropriate file in the backing store.
 
-Here is the ADK interface that we use in this repository (files not
-included):
+The ADK may include process technology files, physical IP libraries (e.g., IO cells, standard cells, memory compilers), as well as physical verification decks (e.g., Calibre DRC/LVS).
+
+Here is the ADK interface that we use in this repository (files not included):
 
 ```
 adk.tcl                     -- ADK-specific setup script
@@ -179,21 +144,14 @@ stdcells-wc.lib             -- Standard cell library worst-case Liberty
 Modularized Steps
 --------------------------------------------------------------------------
 
-The key idea of a modular VLSI build system is to avoid rigidly
-structured ASIC flows that cannot be repurposed and to instead break
-the ASIC flow into modular steps that can be re-assembled into
-different flows. Specifically, instead of having ASIC steps that
-directly feed into the next steps, we design each step in modular
-fashion with a collection directory for inputs and a handoff
-directory for outputs. If we then describe the ASIC flow as a
-dependency graph of these modular steps, then we can leverage the
-build system to handle the edges by moving files from the handoff of
-one step to the collection of the dependent step.
+The key idea of a modular VLSI build system is to avoid rigidly structured ASIC flows that cannot be repurposed and to instead break the ASIC flow into modular steps that can be re-assembled into different flows. Specifically, instead of having ASIC steps that directly feed into the next steps, we design each step in modular fashion with a collection directory for inputs and a handoff directory for outputs. If we then describe the ASIC flow as a dependency graph of these modular steps, then we can leverage the build system to handle the edges by moving files from the handoff of one step to the collection of the dependent step.
 
-Here is a list of example steps, of which a subset are included in
-this repository for reference:
+Here is a list of example steps, of which a subset are included in this repository for reference:
 
 ```
+template-step          -- Template for creating new steps
+template-step-verbose  -- Template for creating new steps with help
+
 calibre-drc            -- Run block-level DRC (Calibre)
 calibre-drc-sealed     -- Run seal-ring'ed DRC (Calibre)
 calibre-drc-top        -- Run chip-level DRC (Calibre)
@@ -234,9 +192,6 @@ vcs-aprsdfx-build      -- Gate-level sim for timing with X
 vcs-common-build       -- Common step for VCS sim
 vcs-rtl                -- Synopsys VCS RTL sim
 vcs-rtl-build          -- Synopsys VCS RTL sim
-
-template-step          -- Template for creating new steps
-template-step-verbose  -- Template for creating new steps with help
 ```
 
 --------------------------------------------------------------------------
@@ -266,10 +221,7 @@ alloy-asic
 └── LICENSE      -- License
 ```
 
-Assembling a flow involves (1) setting up the ADK, (2) setting up
-the design, (3) assembling the ASIC flow from modular steps, and (4)
-providing plugins to customize the steps. For example, here is the
-default flow:
+Assembling a flow involves (1) setting up the ADK, (2) setting up the design, (3) assembling the ASIC flow from modular steps, and (4) providing plugins to customize the steps. For example, here is the default flow:
 
 ```
 default-flow/
@@ -287,30 +239,19 @@ default-flow/
         └── (innovus-plugins)
 ```
 
-- **Setting up the ADK**: This just involves setting the "$adk\_dir"
-  variable to point to the directory with the ADK symlinks.
+- **Setting up the ADK**: This just involves setting the "$adk\_dir" variable to point to the directory with the ADK symlinks.
 
-- **Setting up the design**: This involves selecting the design to push
-  as well as its top-level Verilog module name, the clock target,
-  and the Verilog source file.
+- **Setting up the design**: This involves selecting the design to push as well as its top-level Verilog module name, the clock target, and the Verilog source file.
 
-- **Assembling the ASIC flow**: To assemble an ASIC flow, list the
-  steps and then specify for each step what the dependencies of that
-  step are. See the default flow "setup-flow.mk" for an example.
+- **Assembling the ASIC flow**: To assemble an ASIC flow, list the steps and then specify for each step what the dependencies of that step are. See the default flow "setup-flow.mk" for an example.
 
-- **Creating plugins for customization**: Plugin scripts are called
-  from within steps and serve as user-defined hooks for customizing
-  a step to a particular design. The default flow has default
-  plugins that will work for a small subset of designs, but more
-  complex designs (e.g., taping out a chip) will require heavy
-  modifications to the plugin scripts.
+- **Creating plugins for customization**: Plugin scripts are called from within steps and serve as user-defined hooks for customizing a step to a particular design. The default flow has default plugins that will work for a small subset of designs, but more complex designs (e.g., taping out a chip) will require heavy modifications to the plugin scripts.
 
 --------------------------------------------------------------------------
 Tools
 --------------------------------------------------------------------------
 
-The existing steps are based on the following tools, but other tools
-can be plugged into the flow as well.
+The existing steps are based on the following tools, but other tools can be plugged into the flow as well.
 
 - Synopsys Design Compiler
 - Synopsys VCS
@@ -323,8 +264,7 @@ can be plugged into the flow as well.
 Verified Tool Versions
 --------------------------------------------------------------------------
 
-This build system has been verified with the following ASIC tool
-versions.
+This build system has been verified with the following ASIC tool versions.
 
 Synopsys Design Compiler:
 
