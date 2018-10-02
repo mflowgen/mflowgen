@@ -8,13 +8,16 @@
 #
 # Extra commonly useful targets are also provided:
 #
-# - all     : Execute all steps
-# - clean   : Clean up junk
-# - debug-* : Bring up debug view for Innovus targets
-# - run-*   : Run command with Makefile variables available
-# - print-* : Print any Makefile variable
-# - list    : List all configured steps, their short names, and other
-#             useful targets
+# - all      : Execute all steps
+# - clean    : Clean up junk
+# - debug-*  : Bring up debug view for many targets
+# - graph    : Draws an ASCII dependency graph of steps
+# - list     : List all configured steps + short names + other targets
+# - print.*  : Print any Makefile variable
+# - print    : Print contents of all variables in "print_list"
+# - run-*    : Run command with Makefile variables available
+# - runtimes : Prints runtimes for each executed step
+# - seed     : Creates all build directories and seeds the flow steps
 #
 # Author : Christopher Torng
 # Date   : March 26, 2018
@@ -107,14 +110,17 @@ junk += $(VPATH)
 #
 # Useful target that lists all configured steps and their short names. The
 # abbreviated versions can be defined in each step's configuration file
-# and should be defined as a variable called "abbr.name_of_the_step".
+# and should be defined as a variable called "abbr.name_of_the_step". If a
+# variable for "descriptions.name_of_the_step" is provided, the
+# description will also be listed.
 #
-# The output will look similar to this:
+# The output will look something like this:
 #
-# - dc-synthesis  : synth
-# - innovus-init  : init
-# - innovus-place : place
-# - ...
+#       (Long Name)       (Short Name)    (Description)
+#       ----------------------------------------------------------------
+#     - info                              Prints useful design information
+#     - dc-synthesis      synth           Synthesize RTL into gates
+#     - ...
 #
 
 list:
@@ -128,9 +134,16 @@ list:
 	@echo
 	@echo "Other useful targets"
 	@echo
-	@echo "- seed     : Creates all build directories and seeds the flow steps"
-	@echo "- runtimes : Prints runtimes for each executed step"
+	@echo "- all      : Execute all steps"
+	@echo "- clean    : Clean up junk"
+	@echo "- debug-*  : Bring up debug view for many targets"
 	@echo "- graph    : Draws an ASCII dependency graph of steps"
+	@echo "- list     : List all configured steps + short names + other targets"
+	@echo "- print.*  : Print any Makefile variable"
+	@echo "- print    : Print contents of all variables in "print_list""
+	@echo "- run-*    : Run command with Makefile variables available"
+	@echo "- runtimes : Prints runtimes for each executed step"
+	@echo "- seed     : Creates all build directories and seeds the flow steps"
 	@echo
 
 # runtimes
