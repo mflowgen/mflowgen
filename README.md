@@ -44,6 +44,23 @@ license can be found here:
 - http://opensource.org/licenses/BSD-3-Clause
 
 --------------------------------------------------------------------------
+Tool Dependencies
+--------------------------------------------------------------------------
+
+The existing steps are based on the following tools, but other tools
+can be plugged into the flow as well.
+
+- Synopsys Design Compiler
+- Synopsys VCS
+- Cadence Innovus
+- Cadence Virtuoso
+- Calibre
+- Calibre DESIGNrev
+
+The list of ASIC tool versions that this build system has been
+verified with is listed later in this README.
+
+--------------------------------------------------------------------------
 Quick Start
 --------------------------------------------------------------------------
 
@@ -99,8 +116,8 @@ Other useful asic flow commands:
     % make seed          # Just generates the build directories
 
 The rest of this README describes the ASIC Design Kit interface, the
-modularized steps, the organization of the repository, the tools
-used, and the verified tool versions in more detail.
+modularized steps, the organization of the repository, and the
+verified tool versions in more detail.
 
 --------------------------------------------------------------------------
 ASIC Design Kit (ADK) Interface
@@ -308,20 +325,6 @@ default-flow/
   plugins that will work for a small subset of designs, but more
   complex designs (e.g., taping out a chip) will require heavy
   modifications to the plugin scripts.
-
---------------------------------------------------------------------------
-Tools
---------------------------------------------------------------------------
-
-The existing steps are based on the following tools, but other tools
-can be plugged into the flow as well.
-
-- Synopsys Design Compiler
-- Synopsys VCS
-- Cadence Innovus
-- Cadence Virtuoso
-- Calibre
-- Calibre DESIGNrev
 
 --------------------------------------------------------------------------
 Verified Tool Versions
