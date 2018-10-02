@@ -32,6 +32,10 @@ Finally, this approach embraces plugins that hook into steps across
 the entire ASIC flow for customizing the flow in design-specific
 ways.
 
+This repository has been used to tape out multiple chips at Cornell
+University in advanced process technology nodes (e.g., TSMC 28nm)
+and in older process technology nodes (e.g., TSMC 180nm).
+
 --------------------------------------------------------------------------
 License
 --------------------------------------------------------------------------
@@ -127,14 +131,39 @@ The ADK interface is a standard set of filenames that are used
 across all ASIC scripts in the flow. Regardless of how the actual
 packages and IP libraries are downloaded, the ADK interface can be
 created by making a single directory and copying or symlinking
-(recommended) to the appropriate file in the backing store.
+(recommended) to the appropriate file in the backing store. The ADK
+may include process technology files, physical IP libraries (e.g.,
+IO cells, standard cells, memory compilers), as well as physical
+verification decks (e.g., Calibre DRC/LVS).
 
-The ADK may include process technology files, physical IP libraries
-(e.g., IO cells, standard cells, memory compilers), as well as
-physical verification decks (e.g., Calibre DRC/LVS).
+Here is a minimal interface to an ASIC design kit containing only
+the front-end views to a standard cell library and a routing
+technology kit (files not included). This interface is useful for
+architectural design-space exploration of block-level designs.
 
-Here is the ADK interface that we use in this repository (files not
-included):
+**Note**: The ADK-specific setup script is sourced by every ASIC
+tool and specifies high-level ADK-specific information (e.g., the
+list of filler cells, min/max routing metal layers, etc.).
+
+```
+adk.tcl                     -- ADK-specific setup script
+
+rtk-max.tluplus             -- Interconnect parasitics (max timing)
+rtk-min.tluplus             -- Interconnect parasitics (min timing)
+rtk-typical.captable        -- Interconnect parasitics (typical)
+rtk-tech.lef                -- Routing tech kit LEF
+rtk-tech.tf                 -- Routing tech kit Milkyway techfile
+rtk-tluplus.map             -- Routing tech kit TLUPlus map
+
+stdcells.db                 -- Standard cell library typical DB
+stdcells.lef                -- Standard cell library LEF
+stdcells.lib                -- Standard cell library typical Liberty
+stdcells.mwlib              -- Standard cell library Milkyway
+stdcells.v                  -- Standard cell library Verilog
+```
+
+Here is the more general-purpose ADK interface that we use in this
+repository (files not included):
 
 ```
 adk.tcl                     -- ADK-specific setup script
@@ -166,23 +195,23 @@ iocells-wc.lib              -- IO cell library worst-case Liberty
 klayout.lyp                 -- KLayout GDS viewer display file
 pdk                         -- Link to PDK directory
 pdk.layermap                -- PDK layer mapping file
-pdk-rcbest-qrcTechFile      -- Interconnect parasitics (best case)
-pdk-rcworst-qrcTechFile     -- Interconnect parasitics (worst case)
+pdk-rcbest-qrcTechFile      -- Interconnect parasitics (rcbest)
+pdk-rcworst-qrcTechFile     -- Interconnect parasitics (rcworst)
 pdk-typical-qrcTechFile     -- Interconnect parasitics (typical)
-rtk-antenna-rules.tcl       -- Routing tech kit antenna rule script
-rtk-cbest.captable          -- Routing tech kit cbest cap tables
-rtk-cworst.captable         -- Routing tech kit cworst cap tables
-rtk-max.tluplus             -- Routing tech kit max TLUPlus parasitics
-rtk-min.tluplus             -- Routing tech kit min TLUPlus parasitics
-rtk-rcbest.captable         -- Routing tech kit rcbest cap tables
-rtk-rcworst.captable        -- Routing tech kit rcworst cap tables
+rtk-antenna-rules.tcl       -- Routing rules to avoid antennas
+rtk-cbest.captable          -- Interconnect parasitics (cbest)
+rtk-cworst.captable         -- Interconnect parasitics (cworst)
+rtk-max.tluplus             -- Interconnect parasitics (max timing)
+rtk-min.tluplus             -- Interconnect parasitics (min timing)
+rtk-rcbest.captable         -- Interconnect parasitics (rcbest)
+rtk-rcworst.captable        -- Interconnect parasitics (rcworst)
 rtk-stream-in-milkyway.map  -- GDS-to-Milkyway layer map
 rtk-stream-out.map          -- Innovus/EDI-to-GDS layer map
 rtk-stream-out-milkyway.map -- Milkyway-to-GDS layer map
 rtk-tech.lef                -- Routing tech kit LEF
 rtk-tech.tf                 -- Routing tech kit Milkyway techfile
 rtk-tluplus.map             -- Routing tech kit TLUPlus map
-rtk-typical.captable        -- Routing tech kit typical cap tables
+rtk-typical.captable        -- Interconnect parasitics (typical)
 stdcells-bc.db              -- Standard cell library best-case DB
 stdcells-bc.lib             -- Standard cell library best-case Liberty
 stdcells.cdl                -- Standard cell library CDL for LVS
@@ -208,11 +237,33 @@ directly feed into the next steps, we design each step in modular
 fashion with a collection directory for inputs and a handoff
 directory for outputs. If we then describe the ASIC flow as a
 dependency graph of these modular steps, then we can leverage the
-build system to handle the edges by moving files from the handoff of
-one step to the collection of the dependent step.
+build system to handle the edges of the graph by simply moving files
+from the handoff of one step to the collection of the dependent step
+before each step executes.
 
-Here is a list of example steps, of which a subset are included in
-this repository for reference:
+A minimal set of steps for architectural design-space exploration of
+block-level designs can include just the following steps:
+
+```
+dc-synthesis           -- Synthesize the design RTL
+
+innovus-flowsetup      -- Generate the Innovus Foundation Flow
+innovus-init           -- Initialize and floorplan the design
+innovus-place          -- Place
+innovus-cts            -- Clock tree synthesis
+innovus-postctshold    -- Hold-fixing after clock tree synthesis
+innovus-route          -- Routing
+innovus-postroute      -- Timing optimization and final tweaks
+innovus-signoff        -- Verifying the design + Generating results
+```
+
+A minimal step is as simple as a variable specifying a command to
+run (e.g., `command = echo "Hello world!"`) in a single-line
+Makefile fragment. The build system takes care of hooking it into
+the flow.
+
+Here is a broader list of example steps, of which a subset are
+included in this repository for reference:
 
 ```
 template-step          -- Template for creating new steps
@@ -235,13 +286,13 @@ gen-sram-lef           -- Generate LEF from memory compiler
 gen-sram-lib           -- Generate Liberty from memory compiler
 gen-sram-verilog       -- Generate Verilog from memory compiler
 info                   -- Print useful summary information
-innovus-cts            -- Clock tree synthesis
 innovus-flowsetup      -- Generate the Innovus Foundation Flow
 innovus-init           -- Initialize and floorplan the design
 innovus-place          -- Place
+innovus-cts            -- Clock tree synthesis
 innovus-postctshold    -- Hold-fixing after clock tree synthesis
-innovus-postroute      -- Timing optimization and final tweaks
 innovus-route          -- Routing
+innovus-postroute      -- Timing optimization and final tweaks
 innovus-signoff        -- Verifying the design + Generating results
 mosis                  -- Tarball + Generate checksum before tapeout
 sim-prep               -- Simulation preparation
@@ -325,6 +376,58 @@ default-flow/
   plugins that will work for a small subset of designs, but more
   complex designs (e.g., taping out a chip) will require heavy
   modifications to the plugin scripts.
+
+--------------------------------------------------------------------------
+Adding New Modular Steps to an ASIC Flow
+--------------------------------------------------------------------------
+
+Adding new steps is extremely low overhead, especially considering
+that steps can be as simple as a variable specifying a command to
+run (e.g., `command = echo "Hello world!"`) in a single-line
+Makefile fragment. Within the top-level "steps" directory, each
+sub-directory is a step. Therefore, we can add a new minimal step
+and include a new configuration makefile fragment like this:
+
+```
+% cd $TOP/steps
+% mkdir hello
+% echo "commands.hello = echo Hello World" > hello/configure.mk
+```
+
+We can then modify the default flow, for example, so that this new
+step always runs first. Add the new "hello" step to
+`$TOP/default-flow/setup-flow.mk` like this:
+
+```
+steps = \
+  hello \
+  (...)
+
+dependencies.hello = seed
+```
+
+Note that the "seed" step is provided by the build system and simply
+creates all configured build directories. We have configured "hello"
+to depend on "seed" and they will therefore run in that order.
+
+Now we can run the new step, which will output "Hello World":
+
+```
+% cd $TOP                  #
+% mkdir build && cd build  #
+% ../configure             # <-- configure for the default flow
+
+% make list                # <-- the new step "hello" is in the list!
+% make graph               # <-- visualize the dependencies
+
+% make hello               # <-- run the new step
+```
+
+Template step descriptions with additional built-in handles for
+various convenient features of the build system are provided below:
+
+- [Step Template](steps/template-step/configure.mk)
+- [Step Template (verbose)](steps/template-step-verbose/configure.mk)
 
 --------------------------------------------------------------------------
 Verified Tool Versions
