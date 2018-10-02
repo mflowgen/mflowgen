@@ -138,8 +138,9 @@ verification decks (e.g., Calibre DRC/LVS).
 
 Here is a minimal interface to an ASIC design kit containing only
 the front-end views to a standard cell library and a routing
-technology kit (files not included). This interface is useful for
-architectural design-space exploration of block-level designs.
+technology kit (**ADK files not included**). This interface is
+useful for architectural design-space exploration of block-level
+designs.
 
 **Note**: The ADK-specific setup script is sourced by every ASIC
 tool and specifies high-level ADK-specific information (e.g., the
@@ -163,7 +164,7 @@ stdcells.v                  -- Standard cell library Verilog
 ```
 
 Here is the more general-purpose ADK interface that we use in this
-repository (files not included):
+repository (**ADK files not included**):
 
 ```
 adk.tcl                     -- ADK-specific setup script
@@ -241,6 +242,14 @@ build system to handle the edges of the graph by simply moving files
 from the handoff of one step to the collection of the dependent step
 before each step executes.
 
+A minimal step is as simple as a variable specifying a command to
+run in a single-line Makefile fragment. The build system then takes
+care of hooking it into the flow.
+
+```
+command = echo "Hello world!"
+```
+
 A minimal set of steps for architectural design-space exploration of
 block-level designs can include just the following steps:
 
@@ -256,11 +265,6 @@ innovus-route          -- Routing
 innovus-postroute      -- Timing optimization and final tweaks
 innovus-signoff        -- Verifying the design + Generating results
 ```
-
-A minimal step is as simple as a variable specifying a command to
-run (e.g., `command = echo "Hello world!"`) in a single-line
-Makefile fragment. The build system takes care of hooking it into
-the flow.
 
 Here is a broader list of example steps, of which a subset are
 included in this repository for reference:
@@ -315,7 +319,9 @@ vcs-rtl-build          -- Synopsys VCS RTL sim
 Organization of the Repository
 --------------------------------------------------------------------------
 
-The repository is organized as follows:
+The repository is organized at the top level with individual
+directories for modular steps, for the default flow, for custom
+flows, and for the design source code:
 
 ```
 alloy-asic
@@ -338,19 +344,18 @@ alloy-asic
 └── LICENSE      -- License
 ```
 
-Assembling a flow involves (1) setting up the ADK, (2) setting up
-the design, (3) assembling the ASIC flow from modular steps, and (4)
-providing plugins to customize the steps. For example, here is the
-default flow:
+An assembled flow brings together an ADK, the flow dependency graph,
+the design souRTL, and a set of plugins for customizing the steps.
+For example, the default flow is organized like this:
 
 ```
 default-flow/
 │
-├── setup-adk.mk
-├── setup-design.mk
-├── setup-flow.mk
+├── setup-adk.mk      # <-- ADK selection
+├── setup-design.mk   # <-- Design
+├── setup-flow.mk     # <-- Flow composed of modular steps
 │
-└── plugins
+└── plugins           # <-- Plugins that hook into steps
     ├── calibre
     │   └── (calibre-plugins)
     ├── dc-synthesis
@@ -358,6 +363,10 @@ default-flow/
     └── innovus
         └── (innovus-plugins)
 ```
+
+Assembling a flow involves setting up the ADK, setting up the
+design, assembling the ASIC flow from modular steps, and providing
+plugins to customize the steps:
 
 - **Setting up the ADK**: This just involves setting the "$adk\_dir"
   variable to point to the directory with the ADK symlinks.
@@ -376,6 +385,29 @@ default-flow/
   plugins that will work for a small subset of designs, but more
   complex designs (e.g., taping out a chip) will require heavy
   modifications to the plugin scripts.
+
+The top-level "custom-flows" directory can hold additional flows for
+different projects, and selecting between flows is done at
+configuration time:
+
+```
+custom-flows/
+│
+├── designA    # ../configure --with-designA
+├── designB    # ../configure --with-designB
+└── designC    # ../configure --with-designC
+```
+
+Note that the top-level configure.ac must include an entry for each
+custom flow for the configure script to work:
+
+```
+% cd $TOP
+(add new entry for "designA" to the configure.ac)
+% autoconf
+% mkdir build && cd build
+% ../configure --with-designA
+```
 
 --------------------------------------------------------------------------
 Adding New Modular Steps to an ASIC Flow
