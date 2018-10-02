@@ -39,9 +39,9 @@ skipvpath.info = yes
 
 define commands.info
 	@echo "- Design       : " $(design_name)
-	@echo "- Design Flow  : " $(design_flow)
 	@echo "- Clock Period : " $(clock_period)
 	@echo "- Verilog Src  : " $(design_v)
+	@echo "- Flow Path    : " $(flow_path)
 	@echo
 endef
 

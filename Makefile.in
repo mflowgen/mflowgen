@@ -35,9 +35,11 @@ default: all
 # Generated variables from configuration
 #-------------------------------------------------------------------------
 
-include setup-flow.mk
-include setup-adk.mk
-include setup-design.mk
+include @flow_path@/setup-flow.mk
+include @flow_path@/setup-adk.mk
+include @flow_path@/setup-design.mk
+
+flow_path = @flow_path@
 
 #-------------------------------------------------------------------------
 # Directories
@@ -228,6 +230,12 @@ seed:
 # Seed links to the master steps into the flow directory
 	@$(foreach x, $(steps), \
       ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir);)
+# Link in the setup make fragments for reference
+	@ln -srf @flow_path@/setup-adk.mk
+	@ln -srf @flow_path@/setup-design.mk
+	@ln -srf @flow_path@/setup-flow.mk
+# Link in the plugins
+	@ln -srf @flow_path@/plugins
 # Mark this step done
 	@touch $(VPATH)/$@
 
@@ -235,6 +243,7 @@ junk += $(flow_dir) $(logs_dir)
 junk += $(reports_dir) $(results_dir)
 junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 junk += $(githashes_dir)
+junk += setup-adk.mk setup-design.mk setup-flow.mk $(plugins_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
