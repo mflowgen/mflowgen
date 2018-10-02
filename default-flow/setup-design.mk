@@ -16,7 +16,7 @@ design_select = pymtl-gcd
 ifeq ($(design_select),pymtl-gcd)
   design_name  = GcdUnit
   clock_period = 2.0
-  design_v     = designs/GcdUnit-demo.v
+  design_v     = ../designs/GcdUnit-demo.v
 endif
 
 #-------------------------------------------------------------------------
@@ -26,31 +26,31 @@ endif
 ifeq ($(design_select),pymtl-imul-pipelined-2stage)
   design_name  = IntMulPipelined_2Stage
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_2Stage.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_2Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-4stage)
   design_name  = IntMulPipelined_4Stage
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_4Stage.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_4Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-8stage)
   design_name  = IntMulPipelined_8Stage
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_8Stage.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_8Stage.v
 endif
 
 ifeq ($(design_select),pymtl-imul-pipelined-16stage)
   design_name  = IntMulPipelined_16Stage
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_16Stage.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/IntMulPipelined_16Stage.v
 endif
 
 ifeq ($(design_select),pymtl-mdu)
   design_name  = IntMulDivUnit
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/IntMulDivUnit.v
+  design_v     = ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/IntMulDivUnit.v
 endif
 
 #-------------------------------------------------------------------------
@@ -60,43 +60,43 @@ endif
 ifeq ($(design_select),pymtl-dm-ibuffer-2-16B)
   design_name  = DirectMappedInstBuffer_2_16B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_16B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_16B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-2-32B)
   design_name  = DirectMappedInstBuffer_2_32B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_32B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_2_32B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-4-16B)
   design_name  = DirectMappedInstBuffer_4_16B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_16B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_16B.v
 endif
 
 ifeq ($(design_select),pymtl-dm-ibuffer-4-32B)
   design_name  = DirectMappedInstBuffer_4_32B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_32B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/DirectMappedInstBuffer_4_32B.v
 endif
 
 ifeq ($(design_select),pymtl-fa-ibuffer-2-16B)
   design_name  = FullyAssocInstBuffer_2_16B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_16B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_16B.v
 endif
 
 ifeq ($(design_select),pymtl-fa-ibuffer-2-32B)
   design_name  = FullyAssocInstBuffer_2_32B
   clock_period = 0.5
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_32B.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/FullyAssocInstBuffer_2_32B.v
 endif
 
 ifeq ($(design_select),pymtl-procl0mdu)
   design_name  = ProcL0Mdu
   clock_period = 0.8
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/ProcL0Mdu.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/ProcL0Mdu.v
 endif
 
 #-------------------------------------------------------------------------
@@ -107,7 +107,7 @@ endif
 ifeq ($(design_select),pymtl-dw-fpu)
   design_name  = DesignWareFloatingPointUnit
   clock_period = 1.0
-  design_v     = ../alloy-sim/brgtc2/pymtl/build/DesignWareFloatingPointUnit.v
+  design_v     = ../../alloy-sim/brgtc2/pymtl/build/DesignWareFloatingPointUnit.v
 endif
 
 #-------------------------------------------------------------------------
@@ -117,7 +117,7 @@ endif
 ifeq ($(design_select),verilog-synthesizable-pll)
   design_name  = pll
   clock_period = 2.0
-  design_v     = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/pll.v
+  design_v     = ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/pll.v
 endif
 
 #-------------------------------------------------------------------------

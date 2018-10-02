@@ -13,13 +13,13 @@
 
 design_name        = brgtc2_chip
 clock_period       = 2.0
-design_v           = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip.v
+design_v           = ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip.v
 
 # For simulation
 
-pytest_target_str  = ../alloy-sim/brgtc2/pymtl/CompChansey/test/Chansey_test*
-testing_files      = ../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip-test/Chansey_tb.v
-testing_files     += ../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip.swshim.v
+pytest_target_str  = ../../alloy-sim/brgtc2/pymtl/CompChansey/test/Chansey_test*
+testing_files      = ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip-test/Chansey_tb.v
+testing_files     += ../../alloy-sim/brgtc2/asic-dse/rtl-handoff/brgtc2-chip.swshim.v
 
 #-------------------------------------------------------------------------
 # Export
