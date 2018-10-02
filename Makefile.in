@@ -207,11 +207,9 @@ junk += .graph # hidden dir used by utils/graph.py
 
 githash_cmd = \
 	$(shell git log --oneline -1 | \
-	        sed "s| |-|g" | \
-	        sed "s|\[|-|g" | \
-	        sed "s|\]|-|g" | \
-	        sed "s|/|-|g" | \
-	        cut -c 1-80)
+	          tr  ' !@\#$$%^&*()[]{}/"' '-----------------' | \
+	          sed "s|'|-|g" | \
+	          cut -c 1-80)
 
 #-------------------------------------------------------------------------
 # Seeding the build directory
@@ -372,7 +370,7 @@ clean:
 # print.%
 #
 # This target makes it easier to debug Makefile rules by allowing you to
-# print any variable. For example, "make print-junk" prints the value of
+# print any variable. For example, "make print.junk" prints the value of
 # the junk variable.
 
 print.% :
