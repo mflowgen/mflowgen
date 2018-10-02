@@ -205,7 +205,7 @@ endef
 print.vcs-aprsdfx-build:
 	@echo $(vcs_aprsdfx_build_cmd)
 
-print_list += vcs-aprsdfx-build
+print_list += vcs_aprsdfx_build_cmd
 
 # Clean
 

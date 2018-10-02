@@ -234,7 +234,7 @@ endef
 print.vcs-aprff-build:
 	@echo $(vcs_aprff_build_cmd)
 
-print_list += vcs-aprff-build
+print_list += vcs_aprff_build_cmd
 
 # Clean
 

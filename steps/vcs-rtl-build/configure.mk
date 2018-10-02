@@ -199,7 +199,7 @@ endef
 print.vcs-rtl-build:
 	@echo $(vcs_rtl_build_cmd)
 
-print_list += vcs-rtl-build
+print_list += vcs_rtl_build_cmd
 
 # Clean
 

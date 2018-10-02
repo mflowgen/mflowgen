@@ -200,7 +200,7 @@ endef
 print.vcs-aprffx-build:
 	@echo $(vcs_aprffx_build_cmd)
 
-print_list += vcs-aprffx-build
+print_list += vcs_aprffx_build_cmd
 
 # Clean
 

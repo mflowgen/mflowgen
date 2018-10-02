@@ -378,14 +378,14 @@ print.% :
 
 # print
 #
-# List any targets explicitly defined in the "print.*" namespace
+# Print the values of any variables in the print_list
 
 print:
 	@echo "--------------------------------------------------------------------------"
-	@echo "Available print targets"
+	@echo "Variables in print_list"
 	@echo "--------------------------------------------------------------------------"
-	@echo
-	@$(foreach var, $(print_list),printf "%s %-30s   %s\n" '-' "$(var)"  $(descriptions.$(step)) ;)
+	@$(foreach var, $(print_list), \
+       printf "%30.30s -- %38.38s .\n" "$(var)" "$($(var))";)
 	@echo
 
 # run-%

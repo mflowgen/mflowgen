@@ -140,7 +140,7 @@ endef
 print.sim-prep.test-categories:
 	@echo $(test_categories)
 
-print_list += sim-prep.test-categories
+print_list += test_categories
 
 # Print test cases
 
