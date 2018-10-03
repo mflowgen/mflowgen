@@ -155,6 +155,7 @@ rtk-typical.captable        -- Interconnect parasitics (typical)
 rtk-tech.lef                -- Routing tech kit LEF
 rtk-tech.tf                 -- Routing tech kit Milkyway techfile
 rtk-tluplus.map             -- Routing tech kit TLUPlus map
+rtk-stream-out.map          -- Stream-out layer map for final GDS
 
 stdcells.db                 -- Standard cell library typical DB
 stdcells.lef                -- Standard cell library LEF
@@ -207,7 +208,7 @@ rtk-min.tluplus             -- Interconnect parasitics (min timing)
 rtk-rcbest.captable         -- Interconnect parasitics (rcbest)
 rtk-rcworst.captable        -- Interconnect parasitics (rcworst)
 rtk-stream-in-milkyway.map  -- GDS-to-Milkyway layer map
-rtk-stream-out.map          -- Innovus/EDI-to-GDS layer map
+rtk-stream-out.map          -- Stream-out layer map for final GDS
 rtk-stream-out-milkyway.map -- Milkyway-to-GDS layer map
 rtk-tech.lef                -- Routing tech kit LEF
 rtk-tech.tf                 -- Routing tech kit Milkyway techfile
