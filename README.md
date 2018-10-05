@@ -17,20 +17,20 @@ designs may for example require slightly different ASIC flows,
 target different technology nodes, or even use different vendors for
 physical IP.
 
-The Modular VLSI Build System is a set of ASIC tool scripts and
-makefiles for managing the moving pieces as well as a carefully
-designed set of policies for minimizing the friction when building
-new designs. The key idea is to avoid rigidly structured ASIC flows
-that cannot be repurposed and to instead break the ASIC flow into
-modular steps that can be re-assembled into different flows. We also
-introduce the idea of an ASIC design kit (ADK), which is the
-specific set of physical backend files required to successfully
-build chips, as well as a unified and standard interface to those
-files. A well-defined interface enables swapping process and IP
-libraries without modification to the scripts that use them.
-Finally, this approach embraces plugins that hook into steps across
-the entire ASIC flow for customizing the flow in design-specific
-ways.
+The Modular VLSI Build System is an open-source set of ASIC tool
+scripts and makefiles for managing the moving pieces as well as a
+carefully designed set of policies for minimizing the friction when
+building new designs. The key idea is to avoid rigidly structured
+ASIC flows that cannot be repurposed and to instead break the ASIC
+flow into modular steps that can be re-assembled into different
+flows. We also introduce the idea of an ASIC design kit (ADK), which
+is the specific set of physical backend files required to
+successfully build chips, as well as a unified and standard
+interface to those files. A well-defined interface enables swapping
+process and IP libraries without modification to the scripts that
+use them. Finally, this approach embraces plugins that hook into
+steps across the entire ASIC flow for customizing the flow in
+design-specific ways.
 
 This repository has been used to tape out multiple chips at Cornell
 University in advanced process technology nodes (e.g., TSMC 28nm)
