@@ -88,36 +88,47 @@ Configure for the default ASIC flow:
     % make graph # <-- shows which steps are in the configured flow
     % make list  # <-- shows most things you can do
 
+Set up the interface to the ADK (see section below for details):
+
+    % cd $TOP
+    % mkdir adk && cd adk
+    % ln -s /path/to/stdcells.lib
+    % ln -s /path/to/stdcells.lef
+    % ln -s /path/to/stdcells.v
+    (...)
+    % cd $TOP/build       # <-- point the build system to your ADK
+    (modify "setup-adk.mk" and set "adk_dir" to "$TOP/adk")
+
 Start with synthesis:
 
-    % make synth         # <-- this can take about a minute
-    % make runtimes      # <-- check how long each step took
-    % make debug-synth   # <-- bring up synthesis results in the GUI
+    % make synth          # <-- this can take about a minute
+    % make runtimes       # <-- check how long each step took
+    % make debug-synth    # <-- bring up synthesis results in the GUI
 
 Continue with place-and-route:
 
-    % make signoff       # <-- this can take about ten minutes
-    % make debug-signoff # <-- bring up the final layout in the GUI
+    % make signoff        # <-- this can take about ten minutes
+    % make debug-signoff  # <-- bring up the final layout in the GUI
 
 Run Calibre DRC and LVS:
 
-    % make drc           # <-- these can run in parallel with -j
-    % make lvs           # <-- these can run in parallel with -j
+    % make drc            # <-- these can run in parallel with -j
+    % make lvs            # <-- these can run in parallel with -j
 
 Other useful asic flow commands:
 
-    % make               # Execute all steps
-    % make info          # Prints useful design information
-    % make debug-synth   # Open design vision for synth
-    % make debug-init    # See floorplan in Innovus
-    % make debug-place   # See placement and power routing in Innovus
-    % make debug-signoff # See final design in Innovus
-    % make graph         # Draws an ASCII dependency graph of steps
-    % make list          # Shows most things you can do
-    % make print.*       # Print any Makefile variable
-    % make print         # Print contents of all variables in print_list
-    % make runtimes      # Table of runtimes
-    % make seed          # Just generates the build directories
+    % make                # Execute all steps
+    % make info           # Prints useful design information
+    % make debug-synth    # Open design vision for synth
+    % make debug-init     # See floorplan in Innovus
+    % make debug-place    # See placement and power routing in Innovus
+    % make debug-signoff  # See final design in Innovus
+    % make graph          # Draws an ASCII dependency graph of steps
+    % make list           # Shows most things you can do
+    % make print.*        # Print any Makefile variable
+    % make print          # Print contents of all vars in print_list
+    % make runtimes       # Table of runtimes
+    % make seed           # Just generates the build directories
 
 The rest of this README describes the ASIC Design Kit interface, the
 modularized steps, the organization of the repository, and the
