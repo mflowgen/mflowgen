@@ -97,7 +97,7 @@ Set up the interface to the ADK (see section below for details):
     % ln -s /path/to/stdcells.v
     (...)
     % cd $TOP/build       # <-- point the build system to your ADK
-    (modify "setup-adk.mk" and set "adk_dir" to "$TOP/adk")
+    (modify setup-adk.mk, set adk_dir as absolute path to $TOP/adk)
 
 Start with synthesis:
 
