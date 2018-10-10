@@ -220,7 +220,7 @@ junk += .graph # hidden dir used by utils/graph.py
 
 githash_cmd = \
 	$(shell git log --oneline -1 | \
-	          tr  ' !@\#$$%^&*()[]{}/"' '-----------------' | \
+	          tr  ' !@\#$$%^&*()[]{}/:;"' '-------------------' | \
 	          sed "s|'|-|g" | \
 	          cut -c 1-80)
 
