@@ -240,13 +240,14 @@ seed:
 	@mkdir -p $(githashes_dir)
 # Seed links to the master steps into the flow directory
 	@$(foreach x, $(steps), \
-      ln -srf $(base_dir)/$(master_steps_dir)/$x $(flow_dir);)
+    (cd $(flow_dir) && \
+      ln -sf ../$(relative_base_dir)/$(master_steps_dir)/$x);)
 # Link in the setup make fragments for reference
-	@ln -srf @flow_path@/setup-adk.mk
-	@ln -srf @flow_path@/setup-design.mk
-	@ln -srf @flow_path@/setup-flow.mk
+	@ln -sf @flow_path@/setup-adk.mk
+	@ln -sf @flow_path@/setup-design.mk
+	@ln -sf @flow_path@/setup-flow.mk
 # Link in the plugins
-	@ln -srf @flow_path@/plugins
+	@ln -sf @flow_path@/plugins
 # Mark this step done
 	@touch $(VPATH)/$@
 
@@ -332,7 +333,7 @@ $(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
 	@mkdir -p $$(collect_dir.$(1))
 	@$$(foreach dep, $$(dependencies.$(1)), \
      $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
-       ln -srf $$(file) $$(collect_dir.$(1));))
+       (cd $$(collect_dir.$(1)) && ln -sf ../../$$(file);)))
 # Execute the step
 	@date > $$(timestamps_dir)/$(1).start
 ifdef ascii.$(1)

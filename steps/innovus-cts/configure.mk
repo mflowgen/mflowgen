@@ -67,7 +67,8 @@ define commands.innovus-cts
     -log $(innovus_logs_dir)/cts.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-cts)
-	ln -srf $(innovus_handoffs_dir)/cts.* $(handoff_dir.innovus-cts)
+	(cd $(handoff_dir.innovus-cts) && \
+    ln -sf ../../$(innovus_handoffs_dir)/cts.* .)
 endef
 
 #-------------------------------------------------------------------------

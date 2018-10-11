@@ -1696,13 +1696,12 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-# The default flow is used if no --with options are given at config time
-
-flow_path=../default-flow/
+flow_path=../default-flow
 
 #-------------------------------------------------------------------------
 # List of custom flows
 #-------------------------------------------------------------------------
+# Adding to this list will create a new "--with" option at configure time
 
 
 
@@ -1722,11 +1721,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_180nm_pcosync_chip}" = "yes"; then :
 
-    flow_path=../custom-flows/180nm-pcosync-chip/
+    flow_path=../custom-flows/180nm-pcosync-chip
 
 
 fi
@@ -1750,11 +1749,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_brgtc2_tapein_ka429}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-brgtc2-tapein-ka429/
+    flow_path=../custom-flows/28nm-brgtc2-tapein-ka429
 
 
 fi
@@ -1778,11 +1777,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_brgtc2_tapein1}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-brgtc2-tapein1/
+    flow_path=../custom-flows/28nm-brgtc2-tapein1
 
 
 fi
@@ -1806,11 +1805,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_brgtc2_tapein2}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-brgtc2-tapein2/
+    flow_path=../custom-flows/28nm-brgtc2-tapein2
 
 
 fi
@@ -1834,11 +1833,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_brgtc2_tapein3}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-brgtc2-tapein3/
+    flow_path=../custom-flows/28nm-brgtc2-tapein3
 
 
 fi
@@ -1862,11 +1861,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_brgtc2_tapein4}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-brgtc2-tapein4/
+    flow_path=../custom-flows/28nm-brgtc2-tapein4
 
 
 fi
@@ -1890,11 +1889,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_gcd_chip}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-gcd-chip/
+    flow_path=../custom-flows/28nm-gcd-chip
 
 
 fi
@@ -1918,11 +1917,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_HostGcdUnit_chip}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-HostGcdUnit-chip/
+    flow_path=../custom-flows/28nm-HostGcdUnit-chip
 
 
 fi
@@ -1946,11 +1945,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_pll_ro}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-pll-ro/
+    flow_path=../custom-flows/28nm-pll-ro
 
 
 fi
@@ -1974,11 +1973,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_pll}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-pll/
+    flow_path=../custom-flows/28nm-pll
 
 
 fi
@@ -2002,11 +2001,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_rgals}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-rgals/
+    flow_path=../custom-flows/28nm-rgals
 
 
 fi
@@ -2030,11 +2029,11 @@ fi
   # string. For example, "--with-foo-bar" results in the variable
   # ${with_foo_bar} set to "yes".
   #
-  # If selected, emit code to link in the selected flow's files.
+  # If selected, emit code for the selected flow path.
 
   if test "${with_28nm_sram}" = "yes"; then :
 
-    flow_path=../custom-flows/28nm-sram/
+    flow_path=../custom-flows/28nm-sram
 
 
 fi

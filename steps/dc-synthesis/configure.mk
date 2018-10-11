@@ -154,7 +154,8 @@ define commands.dc-synthesis
 # Prepare handoffs
 
 	mkdir -p $(handoff_dir.dc-synthesis)
-	ln -srf $(results_dir.dc-synthesis)/* $(handoff_dir.dc-synthesis)
+	(cd $(handoff_dir.dc-synthesis) && \
+    ln -sf ../../$(results_dir.dc-synthesis)/* .)
 
 # Grep for failure messages
 

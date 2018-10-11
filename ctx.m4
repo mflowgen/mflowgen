@@ -32,7 +32,7 @@ AC_DEFUN([CTX_INCLUDE],
 
   AS_IF([test "${with_[]CTX_CUSTOM_FLOWU}" = "yes"],
   [
-    flow_path=../custom-flows/[]CTX_CUSTOM_FLOW[]/
+    flow_path=../custom-flows/[]CTX_CUSTOM_FLOW[]
     AC_SUBST([flow_path])
   ])
 

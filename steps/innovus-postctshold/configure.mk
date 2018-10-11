@@ -67,7 +67,8 @@ define commands.innovus-postctshold
     -log $(innovus_logs_dir)/postctshold.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-postctshold)
-	ln -srf $(innovus_handoffs_dir)/postctshold.* $(handoff_dir.innovus-postctshold)
+	(cd $(handoff_dir.innovus-postctshold) && \
+    ln -sf ../../$(innovus_handoffs_dir)/postcts_hold.* .)
 endef
 
 #-------------------------------------------------------------------------

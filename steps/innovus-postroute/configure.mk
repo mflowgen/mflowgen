@@ -68,7 +68,8 @@ define commands.innovus-postroute
     -log $(innovus_logs_dir)/postroute.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-postroute)
-	ln -srf $(innovus_handoffs_dir)/postroute.* $(handoff_dir.innovus-postroute)
+	(cd $(handoff_dir.innovus-postroute) && \
+    ln -sf ../../$(innovus_handoffs_dir)/postroute.* .)
 # Clean up extraction reports
 	mkdir -p $(innovus_logs_dir)/extLogDir
 	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true

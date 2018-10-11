@@ -67,7 +67,8 @@ define commands.innovus-init
     -log  $(innovus_logs_dir)/init.log
 # Prepare handoffs
 	mkdir -p $(handoff_dir.innovus-init)
-	ln -srf $(innovus_handoffs_dir)/init.* $(handoff_dir.innovus-init)
+	(cd $(handoff_dir.innovus-init) && \
+    ln -sf ../../$(innovus_handoffs_dir)/init.* .)
 endef
 
 #-------------------------------------------------------------------------
