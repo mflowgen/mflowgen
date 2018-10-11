@@ -333,7 +333,7 @@ $(1): $$(dependencies.$(1)) $$(extra_dependencies.$(1))
 	@mkdir -p $$(collect_dir.$(1))
 	@$$(foreach dep, $$(dependencies.$(1)), \
      $$(foreach file, $$(wildcard $$(handoff_dir.$$(dep))/*), \
-       (cd $$(collect_dir.$(1)) && ln -sf ../../$$(file);)))
+       (cd $$(collect_dir.$(1)) && ln -sf ../../$$(file));))
 # Execute the step
 	@date > $$(timestamps_dir)/$(1).start
 ifdef ascii.$(1)
