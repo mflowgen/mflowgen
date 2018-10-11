@@ -422,6 +422,64 @@ custom flow for the configure script to work:
 ```
 
 --------------------------------------------------------------------------
+Adding Custom Flows
+--------------------------------------------------------------------------
+
+The "generate-custom-flow.py" script generates a new custom flow using symlinks
+pointing to the default flow. This means that the new custom flow uses the
+default flow by default (via symlinks), but the user can replace the default
+symlinks with a different version wherever customization is needed.
+
+For example, a custom flow called "foo" will look like this:
+
+```
+foo/
+├── plugins/
+│   ├── calibre/
+│   │   └── (default symlinks)
+│   ├── dc-synthesis/
+│   │   └── (default symlinks)
+│   ├── innovus/
+│   │   └── (default symlinks)
+│   └── pt-signoff/
+│       └── (default symlinks)
+├── setup-adk.mk
+├── setup-design.mk
+└── setup-flow.mk
+```
+
+In this example, to use the default flow but customize only the dc-synthesis
+constraints, we would just delete the generated symlink located at
+"plugins/dc-synthesis/constraints.tcl", and then we would create our own
+"constraints.tcl", while leaving all other default symlinks in place.
+
+Here is how to generate a new custom flow called "foo":
+
+```
+% cd $TOP/custom-flows
+% ./generate-custom-flow.py --name foo
+```
+
+Add the new custom flow to the list in `configure.ac`:
+
+```
+% cd $TOP
+(Edit the top-level configure.ac to add "foo" to the list of custom flows)
+% autoconf     # <-- regenerates the configure script
+```
+
+Now we can target the new custom flow in a build directory:
+
+```
+% cd $TOP
+% mkdir build && cd build
+% ../configure --with-foo
+% make info
+```
+
+The flow path should now point to the new custom flow.
+
+--------------------------------------------------------------------------
 Adding New Modular Steps to an ASIC Flow
 --------------------------------------------------------------------------
 

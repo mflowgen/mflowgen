@@ -1,1 +1,0 @@
-../../../default/plugins/innovus/restore_design.tcl
