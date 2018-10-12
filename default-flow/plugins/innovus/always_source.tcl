@@ -8,22 +8,8 @@
 # Date   : March 26, 2018
 
 #-------------------------------------------------------------------------
-# Functions
-#-------------------------------------------------------------------------
-
-# Function to snap to track pitch
-
-proc snapToTrackPitch {x} {
-  global t_pitch
-  return [expr [tcl::mathfunc::ceil [expr $x / $t_pitch] ] *  $t_pitch]
-}
-
-#-------------------------------------------------------------------------
 # Floorplan variables
 #-------------------------------------------------------------------------
-
-set t_pitch 0.10; # Pitch between m2 tracks (track pitch)
-set r_pitch 0.90; # Pitch between power rails (standard cell height)
 
 # Set the floorplan to target a reasonable placement density with a good
 # aspect ratio (height:width). An aspect ratio of 2.0 here will make a
@@ -38,8 +24,11 @@ set pwr_net_list {VDD VSS}; # List of Power nets
 
 # Power ring metal width and spacing
 
-set p_ring_width   2.4; # Arbitrary and temporary!
-set p_ring_spacing 1.2; # Arbitrary and temporary!
+set M1_min_width   [dbGet [dbGetLayerByZ 1].minWidth]
+set M1_min_spacing [dbGet [dbGetLayerByZ 1].minSpacing]
+
+set p_ring_width   [expr 48 * $M1_min_width];   # Arbitrary!
+set p_ring_spacing [expr 24 * $M1_min_spacing]; # Arbitrary!
 
 # Core bounding box margins
 

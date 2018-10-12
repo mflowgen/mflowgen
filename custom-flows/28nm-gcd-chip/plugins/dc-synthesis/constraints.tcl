@@ -31,7 +31,7 @@ set_load -pin_load 15 [all_outputs]
 # your inputs.
 
 set_driving_cell -no_design_rule \
-  -lib_cell ${STDCELLS_DRIVING_CELL} [all_inputs]
+  -lib_cell $ADK_DRIVING_CELL [all_inputs]
 
 # set_input_delay constraints for input ports
 

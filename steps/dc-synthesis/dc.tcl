@@ -279,8 +279,8 @@ group_path -name FEEDTHROUGH \
 #
 # Set the minimum and maximum routing layers used in DC topographical mode
 
-set_ignored_layers -min_routing_layer $STDCELLS_MIN_ROUTING_LAYER_DC
-set_ignored_layers -max_routing_layer $STDCELLS_MAX_ROUTING_LAYER_DC
+set_ignored_layers -min_routing_layer $ADK_MIN_ROUTING_LAYER_DC
+set_ignored_layers -max_routing_layer $ADK_MAX_ROUTING_LAYER_DC
 
 report_ignored_layers
 

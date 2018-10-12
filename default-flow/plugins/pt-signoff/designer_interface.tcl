@@ -109,7 +109,7 @@ set stdcells_tcl                $::env(adk_dir)/stdcells.tcl
 
 set alib_dir ./alib
 
-# Voltage: This should go into stdcells.tcl
+# Voltage: This should go into adk.tcl
 
 set PNS_VOLTAGE_SUPPLY      0.9
 

@@ -21,7 +21,7 @@ create_clock -name ${clock_name} \
 # This constraint sets the load capacitance in picofarads of the
 # output pins of your design.
 
-set_load -pin_load $STDCELLS_TYPICAL_ON_CHIP_LOAD [all_outputs]
+set_load -pin_load $ADK_TYPICAL_ON_CHIP_LOAD [all_outputs]
 
 # This constraint sets the input drive strength of the input pins of
 # your design. We specifiy a specific standard cell which models what
@@ -30,7 +30,7 @@ set_load -pin_load $STDCELLS_TYPICAL_ON_CHIP_LOAD [all_outputs]
 # your inputs.
 
 set_driving_cell -no_design_rule \
-  -lib_cell ${STDCELLS_DRIVING_CELL} [all_inputs]
+  -lib_cell $ADK_DRIVING_CELL [all_inputs]
 
 # set_input_delay constraints for input ports
 

@@ -13,14 +13,14 @@
 #            - Power Shut-off cell power hookup
 #-------------------------------------------------------------------------
 
-specifyCellPad DFF* 2
+specifyCellPad *DFF* 2
 reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 
 #-------------------------------------------------------------------------
 # Global net connections for PG pins
 #-------------------------------------------------------------------------
 
-# FIXME: this might need to be refactored into stdcells.tcl
+# FIXME: this might need to be refactored into adk.tcl
 
 globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
 globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose

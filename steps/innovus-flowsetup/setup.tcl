@@ -270,8 +270,8 @@ set vars(power_analysis_view)                  analysis_default
 # Process information
 #-------------------------------------------------------------------------
 
-set vars(process)                           $STDCELLS_PROCESS
-set vars(max_route_layer)              $STDCELLS_MAX_ROUTING_LAYER_INNOVUS
+set vars(process)                           $ADK_PROCESS
+set vars(max_route_layer)                   $ADK_MAX_ROUTING_LAYER_INNOVUS
 
 #-------------------------------------------------------------------------
 # User Plugins
@@ -374,30 +374,30 @@ set vars(ground_nets) "VSS VPW VSSPST VSSE"
 # - The maximum distance allowed (in microns) can be tweaked if needed
 # - The maximum fanout can be tweaked if needed
 
-set vars(tie_cells) $STDCELLS_TIE_CELLS
+set vars(tie_cells)              $ADK_TIE_CELLS
 
 set vars(tie_cells,max_distance) 20
 set vars(tie_cells,max_fanout)   8
 
 # Filler cells
 
-set vars(filler_cells) $STDCELLS_FILLER_CELLS
+set vars(filler_cells)           $ADK_FILLER_CELLS
 
 # Welltaps
 
-set vars(welltaps)               $STDCELLS_WELL_TAP_CELL
+set vars(welltaps)               $ADK_WELL_TAP_CELL
 set vars(welltaps,checkerboard)  true
 set vars(welltaps,verify_rule)   60
 set vars(welltaps,cell_interval) 120
 
 # Endcaps
 
-set vars(pre_endcap)             $STDCELLS_END_CAP_CELL
-set vars(post_endcap)            $STDCELLS_END_CAP_CELL
+set vars(pre_endcap)             $ADK_END_CAP_CELL
+set vars(post_endcap)            $ADK_END_CAP_CELL
 
 # Antenna
 
-set vars(antenna_diode)          $STDCELLS_ANTENNA_CELL
+set vars(antenna_diode)          $ADK_ANTENNA_CELL
 
 # List of buffers to use during useful skew
 

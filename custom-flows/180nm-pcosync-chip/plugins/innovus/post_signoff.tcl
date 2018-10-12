@@ -16,31 +16,28 @@ write_sdf $vars(results_dir)/$vars(design).sdf
 # cells instances with VDD/VSS ports, and this will cause LVS to flag a
 # "mismatch" with the layout.
 
-# FIXME: This list should be refactored into stdcells.tcl
+foreach x $ADK_LVS_EXCLUDE_CELL_LIST {
+  append lvs_exclude_list [dbGet -u -e top.physInsts.cell.name $x] " "
+}
 
-set lvs_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL*] \
-                      [dbGet -u -e top.physInsts.cell.name TAPCELL*] \
-                      [dbGet -u -e top.physInsts.cell.name PAD80LU_OBV] \
-                      [dbGet -u -e top.physInsts.cell.name PCORNER] \
-                      [dbGet -u -e top.physInsts.cell.name PFILLER*] \
-                      [dbGet -u -e top.physInsts.cell.name PRCUT]"
-
-saveNetlist -excludeLeafCell -phys -excludeCellInst $lvs_exclude_list $vars(results_dir)/$vars(design).lvs.v
+saveNetlist -excludeLeafCell                   \
+            -phys                              \
+            -excludeCellInst $lvs_exclude_list \
+            $vars(results_dir)/$vars(design).lvs.v
 
 # Write netlist for Virtuoso simulation
 #
 # This is the same as the lvs netlist but does not have decaps to speed up
 # simulation.
 
-set virtuoso_exclude_list "[dbGet -u -e top.physInsts.cell.name FILL*] \
-                           [dbGet -u -e top.physInsts.cell.name TAPCELL*] \
-                           [dbGet -u -e top.physInsts.cell.name PAD80LU_OBV] \
-                           [dbGet -u -e top.physInsts.cell.name PCORNER] \
-                           [dbGet -u -e top.physInsts.cell.name PFILLER*] \
-                           [dbGet -u -e top.physInsts.cell.name PRCUT] \
-                           [dbGet -u -e top.physInsts.cell.name DCAP*]"
+foreach x $ADK_VIRTUOSO_EXCLUDE_CELL_LIST {
+  append virtuoso_exclude_list [dbGet -u -e top.physInsts.cell.name $x] " "
+}
 
-saveNetlist -excludeLeafCell -phys -excludeCellInst $virtuoso_exclude_list $vars(results_dir)/$vars(design).virtuoso.v
+saveNetlist -excludeLeafCell                        \
+            -phys                                   \
+            -excludeCellInst $virtuoso_exclude_list \
+            $vars(results_dir)/$vars(design).virtuoso.v
 
 # Write netlist for GL simulation
 
