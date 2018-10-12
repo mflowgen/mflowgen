@@ -1,1 +1,0 @@
-../../../../default-flow/plugins/innovus/setup.tcl
