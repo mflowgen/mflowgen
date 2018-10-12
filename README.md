@@ -238,6 +238,27 @@ stdcells-wc.db              -- Standard cell library worst-case DB
 stdcells-wc.lib             -- Standard cell library worst-case Liberty
 ```
 
+The adk.tcl will define the following variables (example values
+are given), which are used in the listed steps and plugins:
+
+```
+set ADK_PROCESS                     28           # steps/innovus-flowsetup
+set ADK_MIN_ROUTING_LAYER_DC        M2           # steps/dc-synthesis
+set ADK_MAX_ROUTING_LAYER_DC        M7           # steps/dc-synthesis
+set ADK_MAX_ROUTING_LAYER_INNOVUS   7            # steps/innovus-flowsetup
+set ADK_POWER_MESH_BOT_LAYER        8            # plugins/innovus
+set ADK_POWER_MESH_TOP_LAYER        9            # plugins/innovus
+set ADK_DRIVING_CELL                (cell-name)  # plugins/dc-synthesis
+set ADK_TYPICAL_ON_CHIP_LOAD        0.005        # plugins/dc-synthesis
+set ADK_FILLER_CELLS                (list)       # steps/innovus-flowsetup
+set ADK_TIE_CELLS                   (list)       # steps/innovus-flowsetup
+set ADK_WELL_TAP_CELL               (cell-name)  # steps/innovus-flowsetup
+set ADK_END_CAP_CELL                (cell-name)  # steps/innovus-flowsetup
+set ADK_ANTENNA_CELL                (cell-name)  # steps/innovus-flowsetup
+set ADK_LVS_EXCLUDE_CELL_LIST       ""           # plugins/innovus
+set ADK_VIRTUOSO_EXCLUDE_CELL_LIST  ""           # plugins/innovus
+```
+
 --------------------------------------------------------------------------
 Modularized Steps
 --------------------------------------------------------------------------
