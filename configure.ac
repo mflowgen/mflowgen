@@ -27,19 +27,13 @@ flow_path=../default-flow
 # List of custom flows
 #-------------------------------------------------------------------------
 # Adding to this list will create a new "--with" option at configure time
+#
+# For example, to add a new custom flow called "foo", call this macro:
+#
+#   CTX_INCLUDE([foo])
+#
 
-CTX_INCLUDE([180nm-pcosync-chip])
-CTX_INCLUDE([28nm-brgtc2-tapein-ka429])
-CTX_INCLUDE([28nm-brgtc2-tapein1])
-CTX_INCLUDE([28nm-brgtc2-tapein2])
-CTX_INCLUDE([28nm-brgtc2-tapein3])
-CTX_INCLUDE([28nm-brgtc2-tapein4])
-CTX_INCLUDE([28nm-gcd-chip])
-CTX_INCLUDE([28nm-HostGcdUnit-chip])
-CTX_INCLUDE([28nm-pll-ro])
-CTX_INCLUDE([28nm-pll])
-CTX_INCLUDE([28nm-rgals])
-CTX_INCLUDE([28nm-sram])
+CTX_INCLUDE([example])
 
 #-------------------------------------------------------------------------
 # Output

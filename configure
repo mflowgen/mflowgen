@@ -625,18 +625,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
-with_180nm_pcosync_chip
-with_28nm_brgtc2_tapein_ka429
-with_28nm_brgtc2_tapein1
-with_28nm_brgtc2_tapein2
-with_28nm_brgtc2_tapein3
-with_28nm_brgtc2_tapein4
-with_28nm_gcd_chip
-with_28nm_HostGcdUnit_chip
-with_28nm_pll_ro
-with_28nm_pll
-with_28nm_rgals
-with_28nm_sram
+with_example
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1247,25 +1236,7 @@ if test -n "$ac_init_help"; then
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --with-180nm-pcosync-chip
-                          Custom flow 180nm-pcosync-chip
-  --with-28nm-brgtc2-tapein-ka429
-                          Custom flow 28nm-brgtc2-tapein-ka429
-  --with-28nm-brgtc2-tapein1
-                          Custom flow 28nm-brgtc2-tapein1
-  --with-28nm-brgtc2-tapein2
-                          Custom flow 28nm-brgtc2-tapein2
-  --with-28nm-brgtc2-tapein3
-                          Custom flow 28nm-brgtc2-tapein3
-  --with-28nm-brgtc2-tapein4
-                          Custom flow 28nm-brgtc2-tapein4
-  --with-28nm-gcd-chip    Custom flow 28nm-gcd-chip
-  --with-28nm-HostGcdUnit-chip
-                          Custom flow 28nm-HostGcdUnit-chip
-  --with-28nm-pll-ro      Custom flow 28nm-pll-ro
-  --with-28nm-pll         Custom flow 28nm-pll
-  --with-28nm-rgals       Custom flow 28nm-rgals
-  --with-28nm-sram        Custom flow 28nm-sram
+  --with-example          Custom flow example
 
 Report bugs to the package provider.
 _ACEOF
@@ -1702,12 +1673,17 @@ flow_path=../default-flow
 # List of custom flows
 #-------------------------------------------------------------------------
 # Adding to this list will create a new "--with" option at configure time
+#
+# For example, to add a new custom flow called "foo", call this macro:
+#
+#   CTX_INCLUDE([foo])
+#
 
 
 
-# Check whether --with-180nm-pcosync-chip was given.
-if test "${with_180nm_pcosync_chip+set}" = set; then :
-  withval=$with_180nm_pcosync_chip;
+# Check whether --with-example was given.
+if test "${with_example+set}" = set; then :
+  withval=$with_example;
 fi
 
 
@@ -1723,317 +1699,9 @@ fi
   #
   # If selected, emit code for the selected flow path.
 
-  if test "${with_180nm_pcosync_chip}" = "yes"; then :
+  if test "${with_example}" = "yes"; then :
 
-    flow_path=../custom-flows/180nm-pcosync-chip
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-brgtc2-tapein-ka429 was given.
-if test "${with_28nm_brgtc2_tapein_ka429+set}" = set; then :
-  withval=$with_28nm_brgtc2_tapein_ka429;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_brgtc2_tapein_ka429}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-brgtc2-tapein-ka429
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-brgtc2-tapein1 was given.
-if test "${with_28nm_brgtc2_tapein1+set}" = set; then :
-  withval=$with_28nm_brgtc2_tapein1;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_brgtc2_tapein1}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-brgtc2-tapein1
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-brgtc2-tapein2 was given.
-if test "${with_28nm_brgtc2_tapein2+set}" = set; then :
-  withval=$with_28nm_brgtc2_tapein2;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_brgtc2_tapein2}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-brgtc2-tapein2
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-brgtc2-tapein3 was given.
-if test "${with_28nm_brgtc2_tapein3+set}" = set; then :
-  withval=$with_28nm_brgtc2_tapein3;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_brgtc2_tapein3}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-brgtc2-tapein3
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-brgtc2-tapein4 was given.
-if test "${with_28nm_brgtc2_tapein4+set}" = set; then :
-  withval=$with_28nm_brgtc2_tapein4;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_brgtc2_tapein4}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-brgtc2-tapein4
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-gcd-chip was given.
-if test "${with_28nm_gcd_chip+set}" = set; then :
-  withval=$with_28nm_gcd_chip;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_gcd_chip}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-gcd-chip
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-HostGcdUnit-chip was given.
-if test "${with_28nm_HostGcdUnit_chip+set}" = set; then :
-  withval=$with_28nm_HostGcdUnit_chip;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_HostGcdUnit_chip}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-HostGcdUnit-chip
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-pll-ro was given.
-if test "${with_28nm_pll_ro+set}" = set; then :
-  withval=$with_28nm_pll_ro;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_pll_ro}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-pll-ro
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-pll was given.
-if test "${with_28nm_pll+set}" = set; then :
-  withval=$with_28nm_pll;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_pll}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-pll
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-rgals was given.
-if test "${with_28nm_rgals+set}" = set; then :
-  withval=$with_28nm_rgals;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_rgals}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-rgals
-
-
-fi
-
-
-
-
-# Check whether --with-28nm-sram was given.
-if test "${with_28nm_sram+set}" = set; then :
-  withval=$with_28nm_sram;
-fi
-
-
-  # Define m4 variables for the custom flow name with and without
-  # underscores
-
-
-
-
-  # Check if the option was selected using the underscore version of the
-  # string. For example, "--with-foo-bar" results in the variable
-  # ${with_foo_bar} set to "yes".
-  #
-  # If selected, emit code for the selected flow path.
-
-  if test "${with_28nm_sram}" = "yes"; then :
-
-    flow_path=../custom-flows/28nm-sram
+    flow_path=../custom-flows/example
 
 
 fi
