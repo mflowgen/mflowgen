@@ -88,15 +88,16 @@ Configure for the default ASIC flow:
     % make graph # <-- shows which steps are in the configured flow
     % make list  # <-- shows most things you can do
 
-Set up the interface to the ADK (see section below for details):
+The most important step is setting up your interface to the physical
+backend files (see section on ADK below for details):
 
     % cd $TOP
-    % mkdir adk && cd adk
+    % mkdir adk && cd adk # <-- make this directory anywhere
     % ln -s /path/to/stdcells.lib
     % ln -s /path/to/stdcells.lef
     % ln -s /path/to/stdcells.v
     (...)
-    % cd $TOP/build       # <-- point the build system to your ADK
+    % cd $TOP/build       # v-- point the build system to your ADK
     (modify setup-adk.mk, set adk_dir as absolute path to $TOP/adk)
 
 Start with synthesis:
@@ -238,8 +239,9 @@ stdcells-wc.db              -- Standard cell library worst-case DB
 stdcells-wc.lib             -- Standard cell library worst-case Liberty
 ```
 
-The adk.tcl will define the following variables (example values
-are given), which are used in the listed steps and plugins:
+Our default flow assumes that the adk.tcl defines the following
+variables (example values are given), which are used in the listed
+steps and plugins:
 
 ```
 set ADK_PROCESS                     28           # steps/innovus-flowsetup
