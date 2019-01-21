@@ -207,4 +207,7 @@ debug-dc-synthesis-elaborated:
 
 debug-synth-elaborated: debug-dc-synthesis-elaborated
 
+debug-synth-shell:
+	$(dc_exec) -output_log_file $(logs_dir.dc-synthesis)/interactive.log
+
 

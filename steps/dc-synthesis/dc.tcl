@@ -124,13 +124,15 @@ if {![file isdirectory $milkyway_library ]} {
 
 open_mw_lib $milkyway_library
 
-# Set up TLU plus
+# Set up TLU plus (if the files exist)
 
-set_tlu_plus_files -max_tluplus  $dc_tluplus_max \
-                   -min_tluplus  $dc_tluplus_min \
-                   -tech2itf_map $dc_tluplus_map
+if {[file exists [which $dc_tluplus_max]]} {
+  set_tlu_plus_files -max_tluplus  $dc_tluplus_max \
+                     -min_tluplus  $dc_tluplus_min \
+                     -tech2itf_map $dc_tluplus_map
 
-check_tlu_plus_files
+  check_tlu_plus_files
+}
 
 # Avoiding X-propagation for synchronous reset DFFs
 #
