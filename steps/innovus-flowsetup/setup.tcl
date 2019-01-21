@@ -72,7 +72,7 @@ source $adk_dir/adk.tcl
 
 # Library sets
 
-set vars(library_sets)        "libs_typical libs_bc libs_wc"
+set vars(library_sets)        "libs_typical"
 
 set vars(libs_typical,timing) [join "
                                 $adk_dir/stdcells.lib
@@ -86,11 +86,14 @@ set vars(libs_typical,timing) [join "
 # - Voltage: highest
 # - Temperature: highest (temperature inversion at 28nm and below)
 
-set vars(libs_bc,timing)      [join "
+if {[file exists $adk_dir/stdcells-bc.lib]} {
+  set vars(libs_bc,timing)    [join "
                                 $adk_dir/stdcells-bc.lib
                                 [glob -nocomplain $adk_dir/iocells-bc.lib]
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*ff*.lib]
                               "]
+  lappend vars(library_sets)  "libs_bc"
+}
 
 # The worst case is:
 #
@@ -98,11 +101,14 @@ set vars(libs_bc,timing)      [join "
 # - Voltage: lowest
 # - Temperature: lowest (temperature inversion at 28nm and below)
 
-set vars(libs_wc,timing)      [join "
+if {[file exists $adk_dir/stdcells-wc.lib]} {
+  set vars(libs_wc,timing)    [join "
                                 $adk_dir/stdcells-wc.lib
                                 [glob -nocomplain $adk_dir/iocells-wc.lib]
                                 [glob -nocomplain $::env(innovus_ff_collect_dir)/*ss*.lib]
                               "]
+  lappend vars(library_sets)  "libs_wc"
+}
 
 set vars(lef_files) [join "
                       $adk_dir/rtk-tech.lef
@@ -116,25 +122,35 @@ set vars(lef_files) [join "
 # RC Corners
 #-------------------------------------------------------------------------
 
-set vars(rc_corners)                      "typical rcbest rcworst"
+set vars(rc_corners)              "typical"
 
-set vars(typical,cap_table)               $adk_dir/rtk-typical.captable
-set vars(typical,T)                       25
+set vars(typical,cap_table)       $adk_dir/rtk-typical.captable
+set vars(typical,T)               25
 
-set vars(rcbest,cap_table)                $adk_dir/rtk-rcbest.captable
-set vars(rcbest,T)                        25
+# RC best corner
 
-set vars(rcworst,cap_table)               $adk_dir/rtk-rcworst.captable
-set vars(rcworst,T)                       25
+if {[file exists $adk_dir/rtk-rcbest.captable]} {
+  set vars(rcbest,cap_table)      $adk_dir/rtk-rcbest.captable
+  set vars(rcbest,T)              25
+  lappend vars(rc_corners)        "rcbest"
+}
+
+# RC worst corner
+
+if {[file exists $adk_dir/rtk-rcworst.captable]} {
+  set vars(rcworst,cap_table)     $adk_dir/rtk-rcworst.captable
+  set vars(rcworst,T)             25
+  lappend vars(rc_corners)        "rcworst"
+}
 
 # Source QRC tech files if they exist
 
 set captable_only_mode false
 
 if {[file exists $adk_dir/pdk-typical-qrcTechFile]} {
-  set vars(typical,qx_tech_file)          $adk_dir/pdk-typical-qrcTechFile
-  set vars(rcbest,qx_tech_file)           $adk_dir/pdk-rcbest-qrcTechFile
-  set vars(rcworst,qx_tech_file)          $adk_dir/pdk-rcworst-qrcTechFile
+  set vars(typical,qx_tech_file)  $adk_dir/pdk-typical-qrcTechFile
+  set vars(rcbest,qx_tech_file)   $adk_dir/pdk-rcbest-qrcTechFile
+  set vars(rcworst,qx_tech_file)  $adk_dir/pdk-rcworst-qrcTechFile
 } else {
   set captable_only_mode true
 }
@@ -145,9 +161,15 @@ if {[file exists $adk_dir/pdk-typical-qrcTechFile]} {
 
 set vars(delay_corners)                      "delay_default"
 
-set vars(delay_default,early_library_set)    libs_bc
+set vars(delay_default,early_library_set)    libs_typical
 set vars(delay_default,late_library_set)     libs_typical
 set vars(delay_default,rc_corner)            typical
+
+# Use the best case for hold instead if the files are available
+
+if {[file exists $adk_dir/stdcells-bc.lib]} {
+  set vars(delay_default,early_library_set)    libs_bc
+}
 
 #-------------------------------------------------------------------------
 # Delay Corners (old bc_wc style)
@@ -383,17 +405,21 @@ set vars(tie_cells,max_fanout)   8
 
 set vars(filler_cells)           $ADK_FILLER_CELLS
 
-# Welltaps
+# Welltaps (if they exist)
 
-set vars(welltaps)               $ADK_WELL_TAP_CELL
-set vars(welltaps,checkerboard)  true
-set vars(welltaps,verify_rule)   60
-set vars(welltaps,cell_interval) 120
+if { $ADK_WELL_TAP_CELL != "" } {
+  set vars(welltaps)               $ADK_WELL_TAP_CELL
+  set vars(welltaps,checkerboard)  true
+  set vars(welltaps,verify_rule)   60
+  set vars(welltaps,cell_interval) 120
+}
 
-# Endcaps
+# Endcaps (if they exist)
 
-set vars(pre_endcap)             $ADK_END_CAP_CELL
-set vars(post_endcap)            $ADK_END_CAP_CELL
+if { $ADK_END_CAP_CELL != "" } {
+  set vars(pre_endcap)             $ADK_END_CAP_CELL
+  set vars(post_endcap)            $ADK_END_CAP_CELL
+}
 
 # Antenna
 

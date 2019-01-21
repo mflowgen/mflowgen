@@ -21,9 +21,14 @@ reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 #-------------------------------------------------------------------------
 
 globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
-globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
 globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
-globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
+
+# Connect VNW / VPW if any cells have these pins
+
+if { [ lindex [dbGet top.insts.cell.pgterms.name VNW] 0 ] != 0x0 } {
+  globalNetConnect VDD    -type pgpin -pin VNW    -inst * -verbose
+  globalNetConnect VSS    -type pgpin -pin VPW    -inst * -verbose
+}
 
 #-------------------------------------------------------------------------
 # Stdcell power rail preroute
