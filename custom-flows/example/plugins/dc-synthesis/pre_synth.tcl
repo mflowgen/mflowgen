@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/dc-synthesis/pre_synth.tcl
+../../../../plugins/dc-synthesis/pre_synth.tcl

@@ -40,7 +40,7 @@
 # - tsmc-16nm-cln16fcll001
 #
 
-adk      = tsmc-28nm-cln28hpc
+adk      = freepdk-45nm
 adk_view = stdview
 
 export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)

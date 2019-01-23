@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/post_signoff.tcl
+../../../../plugins/innovus/post_signoff.tcl

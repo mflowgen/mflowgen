@@ -21,7 +21,7 @@ m4_include([ctx.m4])
 
 AC_INIT
 
-flow_path=../default-flow
+flow_path=..
 
 #-------------------------------------------------------------------------
 # List of custom flows

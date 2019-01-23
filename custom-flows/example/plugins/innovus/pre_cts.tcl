@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/pre_cts.tcl
+../../../../plugins/innovus/pre_cts.tcl

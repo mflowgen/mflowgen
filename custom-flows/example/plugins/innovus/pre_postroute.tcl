@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/pre_postroute.tcl
+../../../../plugins/innovus/pre_postroute.tcl

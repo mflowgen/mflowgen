@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/pre_place.tcl
+../../../../plugins/innovus/pre_place.tcl

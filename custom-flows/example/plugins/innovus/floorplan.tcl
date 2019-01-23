@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/floorplan.tcl
+../../../../plugins/innovus/floorplan.tcl

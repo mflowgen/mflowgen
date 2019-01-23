@@ -355,8 +355,8 @@ Organization of the Repository
 --------------------------------------------------------------------------
 
 The repository is organized at the top level with individual
-directories for modular steps, for the default flow, for custom
-flows, and for the design source code:
+directories for modular steps, for custom flows (the default flow is
+at the top level), and for the design source code:
 
 ```
 alloy-asic/
@@ -365,7 +365,6 @@ alloy-asic/
 │
 ├── designs/      -- RTL source code
 │
-├── default-flow/ -- Default flow for architectural design-space expl.
 ├── custom-flows/ -- Custom flows for VLSI exploration, chips, etc.
 │
 ├── steps/        -- Collection of modular steps
@@ -384,7 +383,7 @@ the design source RTL, and a set of plugins for customizing the
 steps. For example, the default flow is organized like this:
 
 ```
-default-flow/
+alloy-asic/
 │
 ├── setup-adk.mk     -- ADK selection
 ├── setup-design.mk  -- Design
@@ -521,7 +520,7 @@ and include a new configuration makefile fragment like this:
 
 We can then modify the default flow, for example, so that this new
 step always runs first. Add the new "hello" step to
-`$TOP/default-flow/setup-flow.mk` like this:
+`$TOP/setup-flow.mk` like this:
 
 ```
 steps = \

@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/pt-signoff/designer_interface.tcl
+../../../../plugins/pt-signoff/designer_interface.tcl

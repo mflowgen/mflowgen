@@ -14,7 +14,7 @@
 #
 #  -h --help     Display this message
 #  -v --verbose  Verbose mode
-#     --name     Name of the custom flow to generate
+#  -n --name     Name of the custom flow to generate
 #
 # Author : Christopher Torng
 # Date   : October 11, 2018
@@ -40,7 +40,7 @@ def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
   p.add_argument( "-v", "--verbose", action="store_true" )
   p.add_argument( "-h", "--help",    action="store_true" )
-  p.add_argument(       "--name",    required=True       )
+  p.add_argument( "-n", "--name",    required=True       )
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -59,9 +59,9 @@ def main():
 
   # Pull in the default setup Makefile fragments
 
-  os.system( "cp -f ../../default-flow/setup-flow.mk ." )
-  os.system( "cp -f ../../default-flow/setup-design.mk ." )
-  os.system( "cp -f ../../default-flow/setup-adk.mk ." )
+  os.system( "cp -f ../../setup-flow.mk ." )
+  os.system( "cp -f ../../setup-design.mk ." )
+  os.system( "cp -f ../../setup-adk.mk ." )
 
   # Create plugins
 
@@ -70,8 +70,8 @@ def main():
 
   # Set up symlinks to default plugins
 
-  os.system( "for x in ../../../default-flow/plugins/*; do mkdir $(basename $x); done" )
-  os.system( "for x in *; do cd $x; ln -s ../../../../default-flow/plugins/$x/* .; cd ..; done" )
+  os.system( "for x in ../../../plugins/*; do mkdir $(basename $x); done" )
+  os.system( "for x in *; do cd $x; ln -s ../../../../plugins/$x/* .; cd ..; done" )
 
 main()
 

@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/check_design.tcl
+../../../../plugins/innovus/check_design.tcl

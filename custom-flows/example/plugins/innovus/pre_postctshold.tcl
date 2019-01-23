@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/pre_postctshold.tcl
+../../../../plugins/innovus/pre_postctshold.tcl

@@ -1,1 +1,1 @@
-../../../../default-flow/plugins/innovus/power_strategy_dualmesh.tcl
+../../../../plugins/innovus/power_strategy_dualmesh.tcl

@@ -29,6 +29,7 @@
 #
 # - tsmc-180nm-cl018g
 # - tsmc-28nm-cln28hpc
+# - freepdk-45nm
 #
 # ADKs that need to be updated before they will work:
 #
