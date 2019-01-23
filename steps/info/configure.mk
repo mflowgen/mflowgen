@@ -38,6 +38,9 @@ skipvpath.info = yes
 # included into the build Makefile.
 
 define commands.info
+	@echo "- ADK          : " $(adk)
+	@echo "- ADK View     : " $(adk_view)
+	@echo
 	@echo "- Design       : " $(design_name)
 	@echo "- Clock Period : " $(clock_period)
 	@echo "- Verilog Src  : " $(design_v)
