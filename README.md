@@ -202,8 +202,17 @@ alloy-asic/
 ```
 
 To use the default flow, configure a new build directory without any
-options. Switching between designs defined in `setup-design.mk` can
-be done at configuration time:
+options:
+
+```
+% cd $TOP
+% mkdir build && cd build
+% ../configure
+% make info
+```
+
+Switching between designs defined in `setup-design.mk` can be done
+at configuration time:
 
 ```
 % cd $TOP
