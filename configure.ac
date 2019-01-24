@@ -54,6 +54,19 @@ AS_IF([test "x$design" = x],
 )
 
 #-------------------------------------------------------------------------
+# Copy in Makefile Fragments
+#-------------------------------------------------------------------------
+# From the selected flow path, copy in the following Makefile fragments:
+#
+# - setup-adk.mk
+# - setup-design.mk
+# - setup-flow.mk
+
+cp $flow_path/setup-adk.mk .
+cp $flow_path/setup-design.mk .
+cp $flow_path/setup-flow.mk .
+
+#-------------------------------------------------------------------------
 # Output
 #-------------------------------------------------------------------------
 

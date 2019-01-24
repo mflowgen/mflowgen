@@ -41,9 +41,9 @@ default: all
 design    = @design@
 flow_path = @flow_path@
 
-include @flow_path@/setup-flow.mk
-include @flow_path@/setup-adk.mk
-include @flow_path@/setup-design.mk
+include setup-adk.mk
+include setup-design.mk
+include setup-flow.mk
 
 #-------------------------------------------------------------------------
 # Directories
@@ -244,11 +244,13 @@ seed:
     (cd $(flow_dir) && \
       ln -sf ../$(relative_base_dir)/$(master_steps_dir)/$x);)
 # Link in the setup make fragments for reference
-	@ln -sf @flow_path@/setup-adk.mk
-	@ln -sf @flow_path@/setup-design.mk
-	@ln -sf @flow_path@/setup-flow.mk
+#  @ln -sf @flow_path@/setup-adk.mk
+#  @ln -sf @flow_path@/setup-design.mk
+#  @ln -sf @flow_path@/setup-flow.mk
 # Link in the plugins
-	@ln -sf @flow_path@/plugins
+#  @ln -sf @flow_path@/plugins
+	@rm -rf ./$(plugins_dir)
+	@cp -rf @flow_path@/plugins ./$(plugins_dir)
 # Mark this step done
 	@touch $(VPATH)/$@
 
@@ -256,7 +258,8 @@ junk += $(flow_dir) $(logs_dir)
 junk += $(reports_dir) $(results_dir)
 junk += $(collect_dir) $(handoff_dir) $(timestamps_dir)
 junk += $(githashes_dir)
-junk += setup-adk.mk setup-design.mk setup-flow.mk $(plugins_dir)
+#junk += setup-adk.mk setup-design.mk setup-flow.mk
+junk += $(plugins_dir)
 
 #-------------------------------------------------------------------------
 # Rules template for each step
