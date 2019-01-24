@@ -583,6 +583,7 @@ PACKAGE_URL=
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+design
 flow_path
 target_alias
 host_alias
@@ -629,7 +630,8 @@ with_example
 '
       ac_precious_vars='build_alias
 host_alias
-target_alias'
+target_alias
+design'
 
 
 # Initialize some variables set by options.
@@ -1238,6 +1240,12 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-example          Custom flow example
 
+Some influential environment variables:
+  design      Selected design for default flow
+
+Use these variables to override the choices made by `configure' or to help
+it to find libraries and programs with nonstandard names/locations.
+
 Report bugs to the package provider.
 _ACEOF
 ac_status=$?
@@ -1707,6 +1715,25 @@ fi
 fi
 
 
+
+#-------------------------------------------------------------------------
+# Design
+#-------------------------------------------------------------------------
+# In the default flow, the design should be selected at configure time:
+#
+#     "../configure --design=foo", which will
+#
+# This variable will be used to select the right set of design-specific
+# parameters in setup-design.mk.
+
+
+
+# Set a default design if there is none defined
+
+if test "x$design" = x; then :
+  design=pymtl-gcd
+
+fi
 
 #-------------------------------------------------------------------------
 # Output

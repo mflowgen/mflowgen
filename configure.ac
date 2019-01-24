@@ -36,6 +36,24 @@ flow_path=..
 CTX_INCLUDE([example])
 
 #-------------------------------------------------------------------------
+# Design
+#-------------------------------------------------------------------------
+# In the default flow, the design should be selected at configure time:
+#
+#     "../configure --design=foo", which will
+#
+# This variable will be used to select the right set of design-specific
+# parameters in setup-design.mk.
+
+AC_ARG_VAR(design, [Selected design for default flow])
+
+# Set a default design if there is none defined
+
+AS_IF([test "x$design" = x],
+  design=pymtl-gcd
+)
+
+#-------------------------------------------------------------------------
 # Output
 #-------------------------------------------------------------------------
 

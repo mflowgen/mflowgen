@@ -38,11 +38,12 @@ default: all
 # Generated variables from configuration
 #-------------------------------------------------------------------------
 
+design    = @design@
+flow_path = @flow_path@
+
 include @flow_path@/setup-flow.mk
 include @flow_path@/setup-adk.mk
 include @flow_path@/setup-design.mk
-
-flow_path = @flow_path@
 
 #-------------------------------------------------------------------------
 # Directories
@@ -363,6 +364,27 @@ $(foreach step, $(steps), \
 .PHONY: all
 
 all: $(dependencies.all)
+
+#-------------------------------------------------------------------------
+# Regenerate configure information
+#-------------------------------------------------------------------------
+
+configure_prereq = \
+  $(base_dir)/configure.ac \
+  $(base_dir)/ctx.m4
+
+$(base_dir)/configure : $(configure_prereq)
+	cd $(base_dir) && autoconf
+
+config.status : $(base_dir)/configure
+	./config.status --recheck
+
+makefile_prereq = \
+  config.status \
+  $(base_dir)/Makefile.in
+
+Makefile : $(makefile_prereq)
+	./config.status
 
 #-------------------------------------------------------------------------
 # Misc
