@@ -242,7 +242,8 @@ seed:
 # Seed links to the master steps into the flow directory
 	@$(foreach x, $(steps), \
     (cd $(flow_dir) && \
-      ln -sf ../$(relative_base_dir)/$(master_steps_dir)/$x);)
+      cp -rf ../$(relative_base_dir)/$(master_steps_dir)/$x .);)
+#      ln -sf ../$(relative_base_dir)/$(master_steps_dir)/$x);)
 # Link in the setup make fragments for reference
 #  @ln -sf @flow_path@/setup-adk.mk
 #  @ln -sf @flow_path@/setup-design.mk
