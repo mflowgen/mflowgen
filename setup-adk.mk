@@ -43,6 +43,6 @@
 adk      = freepdk-45nm
 adk_view = stdview
 
-export adk_dir = /work/global/brg/install/adk-pkgs/$(adk)/$(adk_view)
+export adk_dir = $(ADK_PKGS)/$(adk)/$(adk_view)
 
 
