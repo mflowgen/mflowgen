@@ -131,9 +131,92 @@ Other useful asic flow commands:
     % make runtimes       # Table of runtimes
     % make seed           # Just generates the build directories
 
-The rest of this README describes the ASIC Design Kit interface, the
-modularized steps, the organization of the repository, and the
-verified tool versions in more detail.
+The rest of this README describes the organization of the
+repository, the default flow, the ASIC Design Kit interface, an
+overview of modularized steps, an overview of custom flows, and a
+listing of verified tool versions.
+
+--------------------------------------------------------------------------
+Organization
+--------------------------------------------------------------------------
+
+The repository is organized at the top level with directories for
+the design source code, the default flow, custom flows, modular
+steps, and utility scripts:
+
+```
+alloy-asic/
+│
+├── Makefile.in     -- Primary Makefile for the build system
+│
+├── designs/        -- Design RTL source code
+│
+├── setup-adk.mk    -- Default flow: ADK selection
+├── setup-design.mk -- Default flow: Design parameters
+├── setup-flow.mk   -- Default flow: Flow dependency graph of steps
+├── plugins/        -- Default flow: Plugins that hook into steps
+│
+├── custom-flows/   -- Custom flows: for chips, VLSI research, etc.
+│
+├── steps/          -- Collection of modular steps
+│
+│── utils/          -- Helper scripts
+│
+├── configure       -- Config script to select an assembled flow
+├── configure.ac    -- Autoconf configure script
+├── ctx.m4          -- Autoconf helper macros
+│
+└── LICENSE         -- License
+```
+
+--------------------------------------------------------------------------
+The Default Flow
+--------------------------------------------------------------------------
+
+The goal of the default flow is to enable architectural design-space
+exploration for a wide range of designs. The default flow is
+technology-agnostic and design-agnostic, and it is composed of the
+most common ASIC steps. This configuration should always work as
+long as the ASIC design kit (ADK) is set up properly.
+
+An assembled flow brings together an ADK, the design source RTL, the
+flow dependency graph of steps, and a set of plugins for customizing
+the steps.
+
+The default flow includes these files:
+
+```
+alloy-asic/
+│
+├── setup-adk.mk     -- ADK selection
+├── setup-design.mk  -- Design parameters
+├── setup-flow.mk    -- Flow dependency graph
+│
+└── plugins/         -- Plugins that hook into steps
+    ├── calibre/
+    │   └── (calibre-plugins)
+    ├── dc-synthesis/
+    │   └── (dc-synthesis-plugins)
+    └── innovus/
+        └── (innovus-plugins)
+```
+
+To use the default flow, configure a new build directory without any
+options. Switching between designs defined in `setup-design.mk` can
+be done at configuration time:
+
+```
+% cd $TOP
+% mkdir build && cd build
+% ../configure design=A   # <-- target design A
+% ../configure design=B   # <-- target design B
+% ../configure design=C   # <-- target design C
+% make info               # <-- prints info for the chosen design
+```
+
+If no design is selected, the configuration script will
+automatically target the greatest common divisor unit located in
+`designs/GcdUnit-demo.v` as a demo.
 
 --------------------------------------------------------------------------
 ASIC Design Kit (ADK) Interface
@@ -351,63 +434,74 @@ vcs-rtl-build          -- Synopsys VCS RTL sim
 ```
 
 --------------------------------------------------------------------------
-Organization of the Repository
+Adding New Modular Steps to an ASIC Flow
 --------------------------------------------------------------------------
 
-The repository is organized at the top level with individual
-directories for modular steps, for custom flows (the default flow is
-at the top level), and for the design source code:
+Adding new steps is extremely low overhead, especially considering
+that steps can be as simple as a variable specifying a command to
+run (e.g., `command = echo "Hello world!"`) in a single-line
+Makefile fragment. Within the top-level "steps" directory, each
+sub-directory is a step. Therefore, we can add a new minimal step
+and include a new configuration makefile fragment like this:
 
 ```
-alloy-asic/
-│
-├── Makefile.in   -- Primary makefile for the build system
-│
-├── designs/      -- RTL source code
-│
-├── custom-flows/ -- Custom flows for VLSI exploration, chips, etc.
-│
-├── steps/        -- Collection of modular steps
-│
-│── utils/        -- Helper scripts
-│
-├── configure     -- Configure script to select an assembled ASIC flow
-├── configure.ac  -- Autoconf configure script generatings "configure"
-├── ctx.m4        -- Autoconf helper macros
-│
-└── LICENSE       -- License
+% cd $TOP/steps
+% mkdir hello
+% echo "commands.hello = echo Hello World" > hello/configure.mk
 ```
 
-An assembled flow brings together an ADK, the flow dependency graph,
-the design source RTL, and a set of plugins for customizing the
-steps. For example, the default flow is organized like this:
+We can then modify the default flow, for example, so that this new
+step always runs first. Add the new "hello" step to
+`$TOP/setup-flow.mk` like this:
 
 ```
-alloy-asic/
-│
-├── setup-adk.mk     -- ADK selection
-├── setup-design.mk  -- Design
-├── setup-flow.mk    -- Flow composed of modular steps
-│
-└── plugins/         -- Plugins that hook into steps
-    ├── calibre/
-    │   └── (calibre-plugins)
-    ├── dc-synthesis/
-    │   └── (dc-synthesis-plugins)
-    └── innovus/
-        └── (innovus-plugins)
+steps = \
+  hello \
+  (...)
+
+dependencies.hello = seed
 ```
 
-Assembling a flow involves setting up the ADK, setting up the
-design, assembling the ASIC flow from modular steps, and providing
-plugins to customize the steps:
+Note that the "seed" step is provided by the build system and simply
+creates all configured build directories. We have configured "hello"
+to depend on "seed" and they will therefore run in that order.
+
+Now we can run the new step, which will output "Hello World":
+
+```
+% cd $TOP                  #
+% mkdir build && cd build  #
+% ../configure             # <-- configure for the default flow
+
+% make list                # <-- the new step "hello" is in the list!
+% make graph               # <-- visualize the dependencies
+
+% make hello               # <-- run the new step
+```
+
+Template step descriptions with additional built-in handles for
+various convenient features of the build system are provided below:
+
+- [Step Template](steps/template-step/configure.mk)
+- [Step Template (verbose)](steps/template-step-verbose/configure.mk)
+
+--------------------------------------------------------------------------
+Custom Flows
+--------------------------------------------------------------------------
+
+Custom flows can be built for purposes beyond architectural
+design-space exploration (e.g., VLSI research, taping out a chip).
+
+Like the default flow, assembling a custom flow involves setting up
+the ADK, setting up the design, assembling the ASIC flow (from
+modular steps), and providing plugins to customize the steps:
 
 - **Setting up the ADK**: This just involves setting the "$adk\_dir"
-  variable to point to the directory with the ADK symlinks.
+  variable to point to the directory with the ADK.
 
-- **Setting up the design**: This involves selecting the design to
-  push as well as its top-level Verilog module name, the clock
-  target, and the Verilog source file.
+- **Setting up the design**: This involves defining the design's
+  top-level Verilog module name, the clock target, and the Verilog
+  source file.
 
 - **Assembling the ASIC flow**: To assemble an ASIC flow, list the
   steps and then specify for each step what the dependencies of that
@@ -420,32 +514,28 @@ plugins to customize the steps:
   complex designs (e.g., taping out a chip) will require heavy
   modifications to the plugin scripts.
 
-Finally, the top-level "custom-flows" directory can hold additional
-flows for different projects, and selecting between flows is done at
-configuration time:
+The top-level "custom-flows" directory can hold custom flows for
+different projects. Selecting between custom flows can be done at
+configuration time like this:
 
 ```
 custom-flows/
 │
-├── designA/   -- ../configure --with-designA
-├── designB/   -- ../configure --with-designB
-└── designC/   -- ../configure --with-designC
+├── designA/  -- choose designA with "../configure --with-designA"
+├── designB/  -- choose designB with "../configure --with-designB"
+└── designC/  -- choose designC with "../configure --with-designC"
 ```
 
-Note that the top-level configure.ac must include an entry for each
-custom flow for the configure script to work:
+For this to work, note that the top-level configure.ac must include
+an entry for each custom flow:
 
 ```
 % cd $TOP
-(add new entry for "designA" to the configure.ac)
+(add a new entry for "designA" to the configure.ac)
 % autoconf
 % mkdir build && cd build
 % ../configure --with-designA
 ```
-
---------------------------------------------------------------------------
-Adding Custom Flows
---------------------------------------------------------------------------
 
 The "generate-custom-flow.py" script generates a new custom flow using symlinks
 pointing to the default flow. This means that the new custom flow uses the
@@ -500,58 +590,6 @@ Now we can target the new custom flow in a build directory:
 ```
 
 The flow path should now point to the new custom flow.
-
---------------------------------------------------------------------------
-Adding New Modular Steps to an ASIC Flow
---------------------------------------------------------------------------
-
-Adding new steps is extremely low overhead, especially considering
-that steps can be as simple as a variable specifying a command to
-run (e.g., `command = echo "Hello world!"`) in a single-line
-Makefile fragment. Within the top-level "steps" directory, each
-sub-directory is a step. Therefore, we can add a new minimal step
-and include a new configuration makefile fragment like this:
-
-```
-% cd $TOP/steps
-% mkdir hello
-% echo "commands.hello = echo Hello World" > hello/configure.mk
-```
-
-We can then modify the default flow, for example, so that this new
-step always runs first. Add the new "hello" step to
-`$TOP/setup-flow.mk` like this:
-
-```
-steps = \
-  hello \
-  (...)
-
-dependencies.hello = seed
-```
-
-Note that the "seed" step is provided by the build system and simply
-creates all configured build directories. We have configured "hello"
-to depend on "seed" and they will therefore run in that order.
-
-Now we can run the new step, which will output "Hello World":
-
-```
-% cd $TOP                  #
-% mkdir build && cd build  #
-% ../configure             # <-- configure for the default flow
-
-% make list                # <-- the new step "hello" is in the list!
-% make graph               # <-- visualize the dependencies
-
-% make hello               # <-- run the new step
-```
-
-Template step descriptions with additional built-in handles for
-various convenient features of the build system are provided below:
-
-- [Step Template](steps/template-step/configure.mk)
-- [Step Template (verbose)](steps/template-step-verbose/configure.mk)
 
 --------------------------------------------------------------------------
 Verified Tool Versions
