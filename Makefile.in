@@ -382,7 +382,10 @@ configure_prereq = \
 $(base_dir)/configure : $(configure_prereq)
 	cd $(base_dir) && autoconf
 
-config.status : $(base_dir)/configure
+config_status_prereq = \
+  $(base_dir)/configure
+
+config.status : $(config_status_prereq)
 	./config.status --recheck
 
 makefile_prereq = \
