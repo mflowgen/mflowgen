@@ -251,7 +251,7 @@ seed:
 # Link in the plugins
 #  @ln -sf @flow_path@/plugins
 	@rm -rf ./$(plugins_dir)
-	@cp -rf @flow_path@/plugins ./$(plugins_dir)
+	@cp -rfL @flow_path@/plugins ./$(plugins_dir)
 # Mark this step done
 	@touch $(VPATH)/$@
 
