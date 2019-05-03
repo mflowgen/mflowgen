@@ -11,6 +11,10 @@ floorPlan -r $core_aspect_ratio $core_density_target \
 
 setFlipping s
 
+# Use automatic floorplan synthesis to pack macros (e.g., SRAMs) together
+
+planDesign
+
 # Take all ports and split into halves
 
 set all_ports       [dbGet top.terms.name]
