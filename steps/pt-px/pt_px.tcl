@@ -1,14 +1,14 @@
 #=========================================================================
-## pt-px.tcl
-##=========================================================================
-## We use Synopsys Prime-Time to get the power analysis of the PnR Netlist.
-##
-## This Prime-Time Power analysis step follows the Signoff step to estimate
-## the average power of the gate-level netlist using RTL SAIF file.
-##
-## Author : Shady Agwa
-## Date   : May 7, 2019
-##
+# pt_px.tcl
+#=========================================================================
+# We use Synopsys Prime-Time to get the power analysis of the PnR Netlist.
+#
+# This Prime-Time Power analysis step follows the Signoff step to estimate
+# the average power of the gate-level netlist using RTL SAIF file.
+#
+# Author : Shady Agwa
+# Date   : May 7, 2019
+#
 
 set pt_search_path  $::env(adk_dir)
 set pt_target_libraries stdcells.db

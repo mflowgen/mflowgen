@@ -1,15 +1,15 @@
 #=========================================================================
 # configure.mk
-# #=========================================================================
-# # This file will be included inside the Makefile in the build directory
-# #
-# # Author : Shady Agwa
-# # Date   : May 7, 2019
+#=========================================================================
+# This file will be included inside the Makefile in the build directory
 #
-# #-------------------------------------------------------------------------
-# # Step Description -- pt-px
-# #-------------------------------------------------------------------------
-# # This step runs Power analysis using Synopsys Prime-Time
+# Author : Shady Agwa
+# Date   : May 7, 2019
+#
+#-------------------------------------------------------------------------
+# Step Description -- pt-px
+#-------------------------------------------------------------------------
+# This step runs Power analysis using Synopsys Prime-Time
 #
 
 #-------------------------------------------------------------------------
