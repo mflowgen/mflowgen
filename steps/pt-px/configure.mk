@@ -60,7 +60,7 @@ define commands.pt-px
 
 pt_shell -file ../${master_steps_dir}/pt-px/pt_px.tcl
 
-python ../${master_steps_dir}/pt-px/summery.py
+python ../${master_steps_dir}/pt-px/summary.py
 
 endef
 
