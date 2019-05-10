@@ -7,7 +7,7 @@
 # Date   : May 7, 2019
 #
 #-------------------------------------------------------------------------
-# Step Description -- pt-px
+# Step Description -- synopsys-ptpx
 #-------------------------------------------------------------------------
 # This step runs Power analysis using Synopsys Prime-Time
 #
@@ -16,7 +16,7 @@
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.pt-px
+define ascii.synopsys-ptpx
         @echo -e $(echo_green)
         @echo '#################################################################################'
         @echo '#                     ______     __________                                     #'
@@ -30,10 +30,12 @@ define ascii.pt-px
         @echo -e $(echo_nocolor)
 endef
 
+abbr.synopsys-ptpx = ptpx
+
 pt_search_path=$(adk_dir)
 pt_target_libraries=stdcells.db
 pt_design_name=$(design_name)
-pt_reports=reports/pt-px
+pt_reports=reports/synopsys-ptpx
 pt_design_v=$(design_v)
 pt_pnr_design=$(innovus_results_dir)
 pt_clk?=clk
@@ -41,7 +43,7 @@ pt_uut?=operator
 
 export pt_clk_p = $(clock_period)
 
-define commands.pt-px
+define commands.synopsys-ptpx
 
 @mkdir ${pt_reports}
 
@@ -58,14 +60,14 @@ define commands.pt-px
 @echo "                 Prime-Time Power Analysis Starts                          ";
 @echo "=========================================================================";
 
-pt_shell -file ../${master_steps_dir}/pt-px/pt_px.tcl
-
-python ../${master_steps_dir}/pt-px/summary.py
+pt_shell -file ../${master_steps_dir}/synopsys-ptpx/pt_px.tcl
 
 endef
 
-clean-pt-px:
+clean-synopsys-ptpx:
 	rm -rf ./${pt_reports}
-	rm -rf ./$(VPATH)/pt-px
+	rm -rf ./$(VPATH)/synopsys-ptpx
 	rm -rf pt_shell_command.log
 	rm -rf parasitics_command.log 
+
+clean-ptpx: clean-synopsys-ptpx

@@ -13,11 +13,11 @@
 set pt_search_path  $::env(adk_dir)
 set pt_target_libraries stdcells.db
 set pt_design_name  $::env(design_name)
-set pt_reports reports/pt-px
+set pt_reports reports/synopsys-ptpx
 set pt_pnr_design  $::env(innovus_results_dir)
 set pt_clk clk
 set pt_uut operator
-set pt_clk_period  $::env(pt_clk_p)
+set pt_clk_period $::env(pt_clk_p)
 
 set_app_var target_library "* ${pt_search_path}/${pt_target_libraries}"
 set_app_var link_library "* ${pt_search_path}/${pt_target_libraries} "
