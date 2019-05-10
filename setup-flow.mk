@@ -21,6 +21,8 @@ steps = \
   innovus-route \
   innovus-postroute \
   innovus-signoff \
+  synopsys-ptpx \
+  summary \
   calibre-gds-merge \
   calibre-drc \
   calibre-lvs
@@ -28,7 +30,6 @@ steps = \
 # Step dependency graph
 
 dependencies.info                = seed
-
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.innovus-init        = innovus-flowsetup
@@ -39,7 +40,8 @@ dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
 dependencies.innovus-postroute   = innovus-flowsetup innovus-route
 dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
 dependencies.all                 = innovus-signoff
-
+dependencies.synopsys-ptpx       = innovus-signoff 
+dependencies.summary             = synopsys-ptpx
 dependencies.calibre-gds-merge   = innovus-signoff
 dependencies.calibre-drc         = calibre-gds-merge
 dependencies.calibre-lvs         = calibre-gds-merge
