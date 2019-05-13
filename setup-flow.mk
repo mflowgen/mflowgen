@@ -12,6 +12,7 @@
 
 steps = \
   info \
+  vcs-sim \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -30,6 +31,7 @@ steps = \
 # Step dependency graph
 
 dependencies.info                = seed
+dependencies.vcs-sim             = seed
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.innovus-init        = innovus-flowsetup
