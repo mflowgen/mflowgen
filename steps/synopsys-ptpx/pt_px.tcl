@@ -26,7 +26,8 @@ read_verilog ${pt_pnr_design}/${pt_design_name}.lvs.v
 current_design ${pt_design_name}
 link_design > ${pt_reports}/${pt_design_name}.link.rpt
 create_clock ${pt_clk} -name ideal_clock1 -period ${pt_clk_period}
-read_saif ../../sim/${pt_design_name}/run.saif -strip_path "test_${pt_design_name}/${pt_uut}"
+source reports/dc-synthesis/${pt_design_name}.namemap
+read_saif reports/sim/run.saif -strip_path "test_${pt_design_name}/${pt_uut}"
 read_parasitics -format spef ${pt_pnr_design}/*.spef.gz
 update_power > ${pt_reports}/${pt_design_name}.update.rpt
 report_switching_activity > ${pt_reports}/${pt_design_name}.sw.rpt 
