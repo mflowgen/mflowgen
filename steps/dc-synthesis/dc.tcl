@@ -93,6 +93,11 @@ set_app_var link_library       [join "
                                  $synthetic_library
                                "]
 
+
+# Shady Agwa May 10, 2019
+# SAIF mapping.
+saif_map -start
+
 # Create Milkyway library
 #
 # By default, Milkyway libraries only have 180 or so layers available to
@@ -399,6 +404,10 @@ if {!([info exists DC_SKIP_OPTIMIZE_NETLIST] && $DC_SKIP_OPTIMIZE_NETLIST)} {
 check_design -summary
 check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 
+# Shady Agwa May 10, 2019
+# Write the .namemap file for the Energy analysis
+saif_map -create_map -input "reports/sim/run.saif" -source_instance "test_${dc_design_name}/operator"
+
 #-------------------------------------------------------------------------
 # Write out the design
 #-------------------------------------------------------------------------
@@ -549,6 +558,7 @@ report_resources \
 
 # read_saif -auto_map_names -input ${dc_design_name}.saif \
 #   -instance < DESIGN_INSTANCE > -verbose
+saif_map -type ptpx -write_map ${dc_reports_dir}/${dc_design_name}.namemap
 
 report_power \
   -nosplit   \
