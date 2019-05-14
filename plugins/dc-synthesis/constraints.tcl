@@ -33,14 +33,16 @@ set_driving_cell -no_design_rule \
   -lib_cell $ADK_DRIVING_CELL [all_inputs]
 
 # set_input_delay constraints for input ports
+#
+# - make this non-zero to avoid hold buffers on input-registered designs
 
-set_input_delay -clock ${clock_name} 0 [all_inputs]
+set_input_delay -clock ${clock_name} [expr ${dc_clock_period}/2.0] [all_inputs]
 
 # set_output_delay constraints for output ports
 
 set_output_delay -clock ${clock_name} 0 [all_outputs]
 
-#Make all signals limit their fanout
+# Make all signals limit their fanout
 
 set_max_fanout 20 $dc_design_name
 
