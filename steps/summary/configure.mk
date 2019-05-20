@@ -6,6 +6,7 @@
 # Author : Shady Agwa
 # Date   : May 10, 2019
 #
+
 #-------------------------------------------------------------------------
 # Step Description -- Summary for Area, Power, Clock Period, Slack
 #-------------------------------------------------------------------------
@@ -19,12 +20,12 @@
 define ascii.summary
         @echo -e $(echo_green)
         @echo '#################################################################################'
-        @echo '#                     _________     ______________                              #'
-        @echo '#                    |   _____/    |  ___   ___   |                             #'
-        @echo '#                    |  (_____     |  |  |  |  |  |                             #'
-        @echo '#                    \ ____   |    |  |  |  |  |  |                             #'
-        @echo '#                    ______|  |    |  |  |  |  |  |                             #'
-        @echo '#                   /_________|    |__|  |__|  |__|                             #'
+        @echo '#                        _________     ______________                           #'
+        @echo '#                       |   _____/    |  ___   ___   |                          #'
+        @echo '#                       |  (_____     |  |  |  |  |  |                          #'
+        @echo '#                       \ ____   |    |  |  |  |  |  |                          #'
+        @echo '#                       ______|  |    |  |  |  |  |  |                          #'
+        @echo '#                      /_________|    |__|  |__|  |__|                          #'
         @echo '#                                                                               #'
         @echo '#################################################################################'
         @echo -e $(echo_nocolor)
@@ -40,19 +41,20 @@ sm_design_v=$(design_v)
 
 define commands.summary
 
-@mkdir ${sm_reports}
+@mkdir -p ${sm_reports}
 
 @echo "=========================================================================";
 @echo "                         Design Information                              ";
 @echo "=========================================================================";
-@echo -e "\nVerilog Design: " ${sm_design_v} 
+@echo -e "\n"
+@echo -e "Verilog Design: " ${sm_design_v}
 @echo -e "Clock Period: "${clock_period}
-@echo -e "Std_Cells: " ${sm_search_path}/${sm_target_libraries} 
-@echo -e "Design Name: " ${sm_design_name} 
-@echo -e "P&R File: " ${sm_pnr_design}/${sm_design_name}.lvs.v 
+@echo -e "Std_Cells: " ${sm_search_path}/${sm_target_libraries}
+@echo -e "Design Name: " ${sm_design_name}
+@echo -e "P&R File: " ${sm_pnr_design}/${sm_design_name}.lvs.v
 @echo "=========================================================================";
 
-python ../${master_steps_dir}/summary/summary.py
+python $(flow_dir.summary)/summary.py
 
 endef
 
@@ -61,3 +63,4 @@ clean-summary:
 	rm -rf ./$(VPATH)/summary
 
 clean-sm: clean-summary
+

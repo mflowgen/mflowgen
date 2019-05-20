@@ -66,13 +66,6 @@ define commands.innovus-signoff
 	$(innovus_exec) \
     -init $(collect_dir.innovus-signoff)/INNOVUS/run_signoff.tcl \
     -log $(innovus_logs_dir)/signoff.log
-# Prepare handoffs
-	mkdir -p $(handoff_dir.innovus-signoff)
-	(cd $(handoff_dir.innovus-signoff) && \
-    ln -sf ../../$(innovus_handoffs_dir)/signoff.* .)
-# Hand off results too
-	(cd $(handoff_dir.innovus-signoff) && \
-    ln -sf ../../$(innovus_results_dir)/* .)
 # Clean up
 	mv *.spef.gz $(innovus_results_dir) || true
 	mv *.conn.rpt *.geom.rpt *.antenna.* $(innovus_reports_dir) || true
@@ -80,6 +73,13 @@ define commands.innovus-signoff
 	mkdir -p $(innovus_logs_dir)/extLogDir
 	mv extLogDir/* $(innovus_logs_dir)/extLogDir 2> /dev/null || true
 	rm -rf ./extLogDir
+# Prepare handoffs
+	mkdir -p $(handoff_dir.innovus-signoff)
+	(cd $(handoff_dir.innovus-signoff) && \
+    ln -sf ../../$(innovus_handoffs_dir)/signoff.* .)
+# Hand off results too
+	(cd $(handoff_dir.innovus-signoff) && \
+    ln -sf ../../$(innovus_results_dir)/* .)
 endef
 
 #-------------------------------------------------------------------------

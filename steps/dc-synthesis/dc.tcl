@@ -217,7 +217,12 @@ if {[file exists [which $dc_read_design_plugin]]} {
 } else {
   # Since no read design plugin exists, we do a default read
   if { ![analyze -format sverilog $dc_rtl_handoff] } { exit 1 }
-  elaborate $dc_design_name
+  if {[file exists [which setup-design-params.txt]]} {
+    elaborate $dc_design_name -file_parameters setup-design-params.txt
+    rename_design $dc_design_name* $dc_design_name
+  } else {
+    elaborate $dc_design_name
+  }
 }
 
 current_design $dc_design_name

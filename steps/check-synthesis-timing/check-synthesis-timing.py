@@ -16,7 +16,7 @@ import re
 
 # If we have less than this threshold, then we count timing as failed
 
-threshold_slack = -0.100
+threshold_slack = -0.025
 
 # Read the synthesis QoR report
 
@@ -41,6 +41,6 @@ failed_timing = [ x < threshold_slack for x in slack_values ]
 if any( failed_timing ):
   print '  [failed]'
 else:
-  print '  [passed]'
+  print '  [passed] -- within', threshold_slack, 'slack'
 
 
