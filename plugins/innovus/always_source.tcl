@@ -7,6 +7,10 @@
 # Author : Christopher Torng
 # Date   : March 26, 2018
 
+# Source the adk.tcl
+
+source $::env(adk_dir)/adk.tcl
+
 #-------------------------------------------------------------------------
 # Floorplan variables
 #-------------------------------------------------------------------------

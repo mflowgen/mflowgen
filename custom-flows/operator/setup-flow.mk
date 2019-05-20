@@ -15,13 +15,7 @@ steps = \
   vcs-sim \
   dc-synthesis \
   innovus-flowsetup \
-  innovus-init \
-  innovus-place \
-  innovus-cts \
-  innovus-postctshold \
-  innovus-route \
-  innovus-postroute \
-  innovus-signoff \
+  innovus-full \
   operator-vcs-aprffx \
   synopsys-ptpx-gl \
   summary \
@@ -38,19 +32,13 @@ dependencies.vcs-sim             = seed
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.check-synthesis-timing = dc-synthesis
-dependencies.innovus-init        = innovus-flowsetup
-dependencies.innovus-place       = innovus-flowsetup innovus-init
-dependencies.innovus-cts         = innovus-flowsetup innovus-place
-dependencies.innovus-postctshold = innovus-flowsetup innovus-cts
-dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
-dependencies.innovus-postroute   = innovus-flowsetup innovus-route
-dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
-dependencies.check-pnr-timing    = innovus-signoff
-dependencies.all                 = innovus-signoff
-dependencies.operator-vcs-aprffx = innovus-signoff
-dependencies.synopsys-ptpx-gl    = innovus-signoff operator-vcs-aprffx
+dependencies.innovus-full        = innovus-flowsetup
+dependencies.check-pnr-timing    = innovus-full
+dependencies.all                 = innovus-full
+dependencies.operator-vcs-aprffx = innovus-full
+dependencies.synopsys-ptpx-gl    = innovus-full operator-vcs-aprffx
 dependencies.summary             = synopsys-ptpx-gl
-dependencies.calibre-gds-merge   = innovus-signoff
+dependencies.calibre-gds-merge   = innovus-full
 dependencies.calibre-drc         = calibre-gds-merge
 dependencies.calibre-lvs         = calibre-gds-merge
 
