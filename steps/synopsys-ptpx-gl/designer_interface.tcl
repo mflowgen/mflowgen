@@ -47,3 +47,5 @@ set ptpx_sdc                [glob -nocomplain $ptpx_collect_dir/*.pt.sdc]
 set ptpx_spef               [glob -nocomplain $ptpx_collect_dir/*.spef.gz]
 set ptpx_saif               [glob -nocomplain $ptpx_collect_dir/*.saif]
 
+puts "done"
+
