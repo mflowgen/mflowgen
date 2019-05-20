@@ -49,6 +49,19 @@ ifndef INNOVUS_GUI
 innovus_gui_options = -nowin
 endif
 
+# INNOVUS STEPS
+#
+# The chosen Innovus steps is usually "all". To fine-tune which steps are
+# generated (e.g., for a combinational design that doesn't need CTS), set
+# them like this before running this step:
+#
+#     % export INNOVUS_STEPS = init place postcts_hold route postroute signoff
+#
+
+ifndef INNOVUS_STEPS
+INNOVUS_STEPS = all
+endif
+
 # Innovus execute command
 
 innovus_exec     = innovus -overwrite -64 $(innovus_gui_options)
@@ -110,7 +123,10 @@ define commands.innovus-flowsetup
     -m flat --Verbose --nomake                                          \
     --setup $(flow_dir.innovus-flowsetup)                               \
     --dir $(results_dir.innovus-flowsetup)                              \
-    all | tee $(logs_dir.innovus-flowsetup)/flowsetup.log
+    $(INNOVUS_STEPS) | tee $(logs_dir.innovus-flowsetup)/flowsetup.log
+# Fix a potentially long filename
+  (cd $(results_dir.innovus-flowsetup)/INNOVUS && \
+    mv run_simple*.tcl run_simple.tcl)
 # Remove Innovus vpath cmds from scripts, which conflicts with our flow
 	sed -i "s/.*VPATH.*touch.*/#\0/" \
     $(results_dir.innovus-flowsetup)/INNOVUS/run*.tcl
