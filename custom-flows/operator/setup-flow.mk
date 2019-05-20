@@ -26,6 +26,7 @@ steps = \
   synopsys-ptpx-gl \
   summary \
   check-synthesis-timing \
+  check-pnr-timing \
   calibre-gds-merge \
   calibre-drc \
   calibre-lvs
@@ -44,6 +45,7 @@ dependencies.innovus-postctshold = innovus-flowsetup innovus-cts
 dependencies.innovus-route       = innovus-flowsetup innovus-postctshold
 dependencies.innovus-postroute   = innovus-flowsetup innovus-route
 dependencies.innovus-signoff     = innovus-flowsetup innovus-postroute
+dependencies.check-pnr-timing    = innovus-signoff
 dependencies.all                 = innovus-signoff
 dependencies.operator-vcs-aprffx = innovus-signoff
 dependencies.synopsys-ptpx-gl    = innovus-signoff operator-vcs-aprffx
