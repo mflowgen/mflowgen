@@ -58,7 +58,7 @@ operator_vcs_aprffx_options += -o $(operator_vcs_aprffx_sim_bin)
 
 operator_vcs_aprffx_options += -v $(adk_dir)/stdcells.v
 operator_vcs_aprffx_options += -hsopt=gates -rad
-operator_vcs_aprffx_options += +notimingcheck
+operator_vcs_aprffx_options += +notimingcheck +nospecify
 operator_vcs_aprffx_options += +define+ARM_UD_MODEL
 
 # SAIF dump options
