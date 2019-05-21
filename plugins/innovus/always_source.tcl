@@ -20,7 +20,7 @@ source $::env(adk_dir)/adk.tcl
 # rectangular chip with a height that is twice the width.
 
 set core_aspect_ratio   1.00; # Aspect ratio 1.0 for a square chip
-set core_density_target 0.65; # Placement density of 65% is reasonable
+set core_density_target 0.70; # Placement density of 70% is reasonable
 
 # Power ring
 
