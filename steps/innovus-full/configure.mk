@@ -108,5 +108,5 @@ debug-innovus-full:
     -init $(collect_dir.innovus-full)/INNOVUS/run_debug.tcl \
     -log $(innovus_logs_dir)/debug.log
 
-debug-full: debug-innovus-full
+debug-place-route: debug-innovus-full
 
