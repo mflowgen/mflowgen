@@ -23,11 +23,11 @@ set pt_clk_period $::env(pt_clk_p)
 set_app_var target_library "* ${pt_search_path}/${pt_target_libraries}"
 set_app_var link_library "* ${pt_search_path}/${pt_target_libraries} "
 set_app_var power_enable_analysis true 
-read_verilog ${pt_pnr_design}/${pt_design_name}.lvs.v
+read_verilog ${pt_pnr_design}/${pt_design_name}.vcs.v
 current_design ${pt_design_name}
 link_design > ${pt_reports}/${pt_design_name}.link.rpt
 create_clock ${pt_clk} -name ideal_clock1 -period ${pt_clk_period}
-source reports/dc-synthesis/${pt_design_name}.namemap
+source reports/dc-synthesis/${pt_design_name}.namemap > ${pt_reports}/${pt_design_name}.map.rpt
 read_saif reports/rtl-sim/run.saif -strip_path ${pt_uut}
 read_parasitics -format spef ${pt_pnr_design}/*.spef.gz
 update_power > ${pt_reports}/${pt_design_name}.update.rpt
