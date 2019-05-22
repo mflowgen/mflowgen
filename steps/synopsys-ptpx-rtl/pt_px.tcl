@@ -30,6 +30,7 @@ create_clock ${pt_clk} -name ideal_clock1 -period ${pt_clk_period}
 source reports/dc-synthesis/${pt_design_name}.namemap > ${pt_reports}/${pt_design_name}.map.rpt
 read_saif reports/rtl-sim/run.saif -strip_path ${pt_uut}
 read_parasitics -format spef ${pt_pnr_design}/*.spef.gz
+read_sdc collect/synopsys-ptpx-rtl/${pt_design_name}.pt.sdc > ${pt_reports}/${pt_design_name}.sdc.rpt
 update_power > ${pt_reports}/${pt_design_name}.update.rpt
 report_switching_activity > ${pt_reports}/${pt_design_name}.sw.rpt 
 report_power -nosplit > ${pt_reports}/signoff.pwr.rpt
