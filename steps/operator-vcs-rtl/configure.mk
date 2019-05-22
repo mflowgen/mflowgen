@@ -41,7 +41,7 @@ sim_clk_p = $(clock_period)
 
 define commands.operator-vcs-rtl
 
-@mkdir ${sim_reports}
+@mkdir -p ${sim_reports}
 
 @echo "=========================================================================";
 @echo "                         Design Information                              ";
@@ -55,7 +55,7 @@ define commands.operator-vcs-rtl
 @echo "                     VCS simulation Step Starts                          ";
 @echo "=========================================================================";
 
-vcs -full64 -debug_pp -top th -sverilog ${sim_tb} -v  ${sim_design_v} ${design_tb_options} +vcs+saif_libcell -lca
+vcs -full64 -debug_pp -top th -sverilog ${sim_tb} -v  ${sim_design_v} ${design_tb_options} ${design_deps_v} +vcs+saif_libcell -lca
 ./simv
 mv run.saif ./${sim_reports}/run.saif
 

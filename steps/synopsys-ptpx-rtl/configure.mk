@@ -45,7 +45,7 @@ export pt_clk_p = $(clock_period)
 
 define commands.synopsys-ptpx-rtl
 
-@mkdir ${pt_reports}
+@mkdir -p ${pt_reports}
 
 @echo "=========================================================================";
 @echo "                         Design Information                              ";
