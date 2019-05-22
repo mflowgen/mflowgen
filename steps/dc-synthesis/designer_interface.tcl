@@ -23,7 +23,7 @@ set dc_tluplus_map              $::env(adk_dir)/rtk-tluplus.map
 set dc_tluplus_max              $::env(adk_dir)/rtk-max.tluplus
 set dc_tluplus_min              $::env(adk_dir)/rtk-min.tluplus
 set dc_adk_tcl                  $::env(adk_dir)/adk.tcl
-
+set dc_ptpx_uut                 $::env(design_ptpx_strip_path)
 set dc_target_libraries         stdcells.db
 
 #-------------------------------------------------------------------------

@@ -411,7 +411,7 @@ check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 
 # Shady Agwa May 10, 2019
 # Write the .namemap file for the Energy analysis
-saif_map -create_map -input "reports/sim/run.saif" -source_instance "test_${dc_design_name}/operator"
+saif_map -create_map -input "reports/rtl-sim/run.saif" -source_instance ${dc_ptpx_uut}
 
 #-------------------------------------------------------------------------
 # Write out the design

@@ -7,16 +7,16 @@
 # Date   : May 7, 2019
 #
 #-------------------------------------------------------------------------
-# Step Description -- synopsys-ptpx
+# Step Description -- synopsys-ptpx-rtl
 #-------------------------------------------------------------------------
-# This step runs Power analysis using Synopsys Prime-Time
+# This step runs Power analysis using Synopsys Prime-Time and RTL SAIF
 #
 
 #-------------------------------------------------------------------------
 # ASCII art
 #-------------------------------------------------------------------------
 
-define ascii.synopsys-ptpx
+define ascii.synopsys-ptpx-rtl
         @echo -e $(echo_green)
         @echo '#################################################################################'
         @echo '#                     ______     __________                                     #'
@@ -30,12 +30,12 @@ define ascii.synopsys-ptpx
         @echo -e $(echo_nocolor)
 endef
 
-abbr.synopsys-ptpx = ptpx
+abbr.synopsys-ptpx-rtl = ptpx-rtl
 
 pt_search_path=$(adk_dir)
 pt_target_libraries=stdcells.db
 pt_design_name=$(design_name)
-pt_reports=reports/synopsys-ptpx
+pt_reports=reports/synopsys-ptpx-rtl
 pt_design_v=$(design_v)
 pt_pnr_design=$(innovus_results_dir)
 pt_clk?=clk
@@ -43,7 +43,7 @@ pt_uut?=operator
 
 export pt_clk_p = $(clock_period)
 
-define commands.synopsys-ptpx
+define commands.synopsys-ptpx-rtl
 
 @mkdir ${pt_reports}
 
@@ -60,14 +60,14 @@ define commands.synopsys-ptpx
 @echo "                 Prime-Time Power Analysis Starts                          ";
 @echo "=========================================================================";
 
-pt_shell -file ../${master_steps_dir}/synopsys-ptpx/pt_px.tcl
+pt_shell -file ../${master_steps_dir}/synopsys-ptpx-rtl/pt_px.tcl
 
 endef
 
-clean-synopsys-ptpx:
+clean-synopsys-ptpx-rtl:
 	rm -rf ./${pt_reports}
-	rm -rf ./$(VPATH)/synopsys-ptpx
+	rm -rf ./$(VPATH)/synopsys-ptpx-rtl
 	rm -rf pt_shell_command.log
 	rm -rf parasitics_command.log 
 
-clean-ptpx: clean-synopsys-ptpx
+clean-ptpx-rtl: clean-synopsys-ptpx-rtl

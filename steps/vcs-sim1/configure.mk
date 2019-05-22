@@ -7,9 +7,9 @@
 # Date   : May 7, 2019
 #
 #-------------------------------------------------------------------------
-# Step Description -- synopsys-ptpx
+# Step Description -- VCS RTL Simulation 
 #-------------------------------------------------------------------------
-# This step runs Power analysis using Synopsys Prime-Time
+# This step runs the VCS RTL Simulation, generates SAIF file
 #
 
 #-------------------------------------------------------------------------

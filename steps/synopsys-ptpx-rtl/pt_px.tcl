@@ -13,10 +13,11 @@
 set pt_search_path  $::env(adk_dir)
 set pt_target_libraries stdcells.db
 set pt_design_name  $::env(design_name)
-set pt_reports reports/synopsys-ptpx
+set pt_reports reports/synopsys-ptpx-rtl
 set pt_pnr_design  $::env(innovus_results_dir)
 set pt_clk clk
-set pt_uut operator
+set pt_uut $::env(design_ptpx_strip_path)
+#th/operator
 set pt_clk_period $::env(pt_clk_p)
 
 set_app_var target_library "* ${pt_search_path}/${pt_target_libraries}"
@@ -27,7 +28,7 @@ current_design ${pt_design_name}
 link_design > ${pt_reports}/${pt_design_name}.link.rpt
 create_clock ${pt_clk} -name ideal_clock1 -period ${pt_clk_period}
 source reports/dc-synthesis/${pt_design_name}.namemap
-read_saif reports/sim/run.saif -strip_path "test_${pt_design_name}/${pt_uut}"
+read_saif reports/rtl-sim/run.saif -strip_path ${pt_uut}
 read_parasitics -format spef ${pt_pnr_design}/*.spef.gz
 update_power > ${pt_reports}/${pt_design_name}.update.rpt
 report_switching_activity > ${pt_reports}/${pt_design_name}.sw.rpt 
