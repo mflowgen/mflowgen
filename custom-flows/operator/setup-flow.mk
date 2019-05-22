@@ -30,7 +30,7 @@ steps = \
 
 dependencies.info                = seed
 dependencies.operator-vcs-rtl    = seed
-dependencies.dc-synthesis        = seed
+dependencies.dc-synthesis        = seed operator-vcs-rtl
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.check-synthesis-timing = dc-synthesis
 dependencies.innovus-full        = innovus-flowsetup
