@@ -12,12 +12,13 @@
 
 steps = \
   info \
-  vcs-sim \
+  operator-vcs-rtl \
   dc-synthesis \
   innovus-flowsetup \
   innovus-full \
   operator-vcs-aprffx \
   synopsys-ptpx-gl \
+  synopsys-ptpx-rtl \
   summary \
   check-synthesis-timing \
   check-pnr-timing \
@@ -28,7 +29,7 @@ steps = \
 # Step dependency graph
 
 dependencies.info                = seed
-dependencies.vcs-sim             = seed
+dependencies.operator-vcs-rtl    = seed
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.check-synthesis-timing = dc-synthesis
@@ -37,6 +38,7 @@ dependencies.check-pnr-timing    = innovus-full
 dependencies.all                 = innovus-full
 dependencies.operator-vcs-aprffx = innovus-full
 dependencies.synopsys-ptpx-gl    = innovus-full operator-vcs-aprffx
+dependencies.synopsys-ptpx-rtl   = innovus-full
 dependencies.summary             = synopsys-ptpx-gl
 dependencies.calibre-gds-merge   = innovus-full
 dependencies.calibre-drc         = calibre-gds-merge
