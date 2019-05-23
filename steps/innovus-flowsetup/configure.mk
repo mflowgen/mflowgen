@@ -126,7 +126,7 @@ define commands.innovus-flowsetup
     $(INNOVUS_STEPS) | tee $(logs_dir.innovus-flowsetup)/flowsetup.log
 # Fix a potentially long filename
   (cd $(results_dir.innovus-flowsetup)/INNOVUS && \
-    mv run_simple*.tcl run_simple.tcl)
+    mv run_simple*.tcl run_simple.tcl || true)
 # Remove Innovus vpath cmds from scripts, which conflicts with our flow
 	sed -i "s/.*VPATH.*touch.*/#\0/" \
     $(results_dir.innovus-flowsetup)/INNOVUS/run*.tcl
