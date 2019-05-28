@@ -5,6 +5,7 @@
 # List the steps to use
 
 steps = \
+  info \
   dc-synthesis \
   innovus-flowsetup \
   innovus-init \
@@ -17,6 +18,7 @@ steps = \
 
 # Step dependency graph
 
+dependencies.info                = seed
 dependencies.dc-synthesis        = seed
 dependencies.innovus-flowsetup   = dc-synthesis
 dependencies.innovus-init        = innovus-flowsetup

@@ -1,1 +1,2 @@
-../../../../plugins/innovus/restore_design.tcl
+source $vars(dbs_dir)/$vars(step).enc
+

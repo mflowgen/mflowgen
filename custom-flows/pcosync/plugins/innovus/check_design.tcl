@@ -1,1 +1,1 @@
-../../../../plugins/innovus/check_design.tcl
+checkDesign -all -noHtml -outfile $vars(rpt_dir)/$vars(step).check_design.rpt
