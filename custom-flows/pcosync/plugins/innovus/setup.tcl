@@ -1,0 +1,1 @@
+../../../../plugins/innovus/setup.tcl
