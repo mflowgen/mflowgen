@@ -59,7 +59,7 @@ set vars(dbs_dir)             $::env(innovus_handoffs_dir)
 
 # Source the setup file for the stdcells
 
-source $adk_dir/stdcells.tcl
+source $adk_dir/adk.tcl
 
 # Should this be slow fast only? Or more like corners?
 
