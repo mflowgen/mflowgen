@@ -628,6 +628,7 @@ ac_user_opts='
 enable_option_checking
 with_example
 with_operator
+with_pcosync
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1241,6 +1242,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-example          Custom flow example
   --with-operator         Custom flow operator
+  --with-pcosync          Custom flow pcosync
 
 Some influential environment variables:
   design      Selected design for default flow
@@ -1740,6 +1742,34 @@ fi
   if test "${with_operator}" = "yes"; then :
 
     flow_path=../custom-flows/operator
+
+
+fi
+
+
+
+
+# Check whether --with-pcosync was given.
+if test "${with_pcosync+set}" = set; then :
+  withval=$with_pcosync;
+fi
+
+
+  # Define m4 variables for the custom flow name with and without
+  # underscores
+
+
+
+
+  # Check if the option was selected using the underscore version of the
+  # string. For example, "--with-foo-bar" results in the variable
+  # ${with_foo_bar} set to "yes".
+  #
+  # If selected, emit code for the selected flow path.
+
+  if test "${with_pcosync}" = "yes"; then :
+
+    flow_path=../custom-flows/pcosync
 
 
 fi
