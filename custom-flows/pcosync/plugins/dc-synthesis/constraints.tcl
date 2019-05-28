@@ -225,7 +225,7 @@ set_cost_priority {min_delay max_delay}
 # for (e.g., DFQD2BWP7T, INVD0BWP7T, INVD4BWP7T). So 1ns max transition
 # seems like a good target to aim for across the design.
 
-set_max_transition 1 ${DESIGN_NAME}
+set_max_transition 1 ${dc_design_name}
 
 # Inputs
 #

@@ -96,7 +96,7 @@ set_app_var link_library       [join "
 
 # Shady Agwa May 10, 2019
 # SAIF mapping.
-saif_map -start
+#saif_map -start
 
 # Create Milkyway library
 #
@@ -411,7 +411,7 @@ check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 
 # Shady Agwa May 10, 2019
 # Write the .namemap file for the Energy analysis
-saif_map -create_map -input "reports/rtl-sim/run.saif" -source_instance ${dc_ptpx_uut}
+#saif_map -create_map -input "reports/rtl-sim/run.saif" -source_instance ${dc_ptpx_uut}
 
 #-------------------------------------------------------------------------
 # Write out the design
@@ -563,7 +563,7 @@ report_resources \
 
 # read_saif -auto_map_names -input ${dc_design_name}.saif \
 #   -instance < DESIGN_INSTANCE > -verbose
-saif_map -type ptpx -write_map ${dc_reports_dir}/${dc_design_name}.namemap
+#saif_map -type ptpx -write_map ${dc_reports_dir}/${dc_design_name}.namemap
 
 report_power \
   -nosplit   \
