@@ -10,7 +10,7 @@
 
 design_name  = correlator_top
 clock_period = 50.0
-design_v     = /scratch/clt67/work/top.v
+design_v     = /scratch/ib264/work/rtl/noio.v
 
 #-------------------------------------------------------------------------
 # Export

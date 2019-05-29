@@ -16,11 +16,11 @@ set pco_clk_period   50
 set spi_clk_period   100
 set spi_load_period  100
 
-create_clock -name $core1_clk_name -period $core1_clk_period [get_ports clk1_io]
-create_clock -name $core2_clk_name -period $core2_clk_period [get_ports clk2_io]
-create_clock -name $pco_clk_name   -period $pco_clk_period   [get_ports clkpco_io]
-create_clock -name $spi_clk_name   -period $spi_clk_period   [get_ports spiclk_io]
-create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload_io]
+create_clock -name $core1_clk_name -period $core1_clk_period [get_ports clk1]
+create_clock -name $core2_clk_name -period $core2_clk_period [get_ports clk2]
+create_clock -name $pco_clk_name   -period $pco_clk_period   [get_ports clkpco]
+create_clock -name $spi_clk_name   -period $spi_clk_period   [get_ports spiclk]
+create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload]
 
 # Declare these clocks to be asynchronous
 #
@@ -71,11 +71,11 @@ set_clock_uncertainty 1   [get_clocks $spi_load_name]
 
 # Create shadow clocks for cdc checking
 
-create_clock -add -name ${core1_clk_name}_cdc -period $core1_clk_period [get_ports clk1_io]
-create_clock -add -name ${core2_clk_name}_cdc -period $core2_clk_period [get_ports clk2_io]
-create_clock -add -name ${pco_clk_name}_cdc   -period $pco_clk_period   [get_ports clkpco_io]
-create_clock -add -name ${spi_clk_name}_cdc   -period $spi_clk_period   [get_ports spiclk_io]
-create_clock -add -name ${spi_load_name}_cdc  -period $spi_load_period  [get_ports spiload_io]
+create_clock -add -name ${core1_clk_name}_cdc -period $core1_clk_period [get_ports clk1]
+create_clock -add -name ${core2_clk_name}_cdc -period $core2_clk_period [get_ports clk2]
+create_clock -add -name ${pco_clk_name}_cdc   -period $pco_clk_period   [get_ports clkpco]
+create_clock -add -name ${spi_clk_name}_cdc   -period $spi_clk_period   [get_ports spiclk]
+create_clock -add -name ${spi_load_name}_cdc  -period $spi_load_period  [get_ports spiload]
 
 # Clean up and remove the auto-generated path groups for each of these
 
@@ -253,11 +253,11 @@ set_input_delay -clock $core2_clk_name -add_delay $ADC_input_delay $ADC_input_po
 
 set spidin_input_delay [expr $spi_clk_period/8]
 
-set_input_delay -clock $spi_clk_name $spidin_input_delay spidin_io
+set_input_delay -clock $spi_clk_name $spidin_input_delay spidin
 
 set debug_input_delay [expr $pco_clk_period/4]
 
-set_input_delay -clock $pco_clk_name $debug_input_delay debug_in_io
+set_input_delay -clock $pco_clk_name $debug_input_delay debug_in
 
 # Outputs
 #
@@ -280,7 +280,7 @@ set_output_delay -clock $pco_clk_name   -add_delay $outmux_output_delay [all_out
 # The reset input has special treatment. Give reset 50% of the pco clock
 # cycle to propagate into the chip.
 
-set reset_port greset_n_io
+set reset_port greset_n
 
 set reset_percent 50
 set reset_input_delay [expr ((100-$reset_percent) * $pco_clk_period) / 100.0]
@@ -299,7 +299,7 @@ set_max_delay -from [get_ports ADC*] 15.0; # 11.5 ns to 15.0 ns
 # The debug_in has a feedthrough path that goes straight out to an output
 # pad. Mark it as a false path.
 
-set_false_path -from debug_in_io -to [all_outputs]
+set_false_path -from debug_in -to [all_outputs]
 
 # Report constraints on the ports
 
