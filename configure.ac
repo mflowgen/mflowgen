@@ -36,6 +36,7 @@ flow_path=..
 CTX_INCLUDE([example])
 CTX_INCLUDE([operator])
 CTX_INCLUDE([pcosync])
+CTX_INCLUDE([pcosync-noio])
 
 #-------------------------------------------------------------------------
 # Design
