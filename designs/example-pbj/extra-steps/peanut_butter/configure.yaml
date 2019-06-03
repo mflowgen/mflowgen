@@ -1,0 +1,11 @@
+name: peanut_butter
+
+commands:
+  - make
+
+inputs:
+  - slice_of_bread.txt
+
+outputs:
+  - peanut_butter_on_bread.txt
+

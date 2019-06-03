@@ -1,0 +1,57 @@
+#=========================================================================
+# Cadence Innovus Place and Route
+#=========================================================================
+# Author : Christopher Torng
+# Date   : June 7, 2019
+#
+
+name: cadence-innovus-place-route
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
+  - adk
+  - design.v
+  - design.sdc
+
+outputs:
+  - design.gds.gz
+  - design.lvs.v
+  - design.vcs.v
+  - design.lef
+  - design.pt.sdc
+  - design.sdf
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - ln -sf inputs/innovus-foundation-flow
+  - innovus -overwrite -64 -nowin
+    -init innovus-foundation-flow/INNOVUS/run_simple.tcl
+    -log run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../results/*.gds.gz design.gds.gz
+  - ln -sf ../results/*.lvs.v  design.lvs.v
+  - ln -sf ../results/*.vcs.v  design.vcs.v
+  - ln -sf ../results/*.lef    design.lef
+  - ln -sf ../results/*.pt.sdc design.pt.sdc
+  - ln -sf ../results/*.sdf    design.sdf
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - export STEP=signoff
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
+

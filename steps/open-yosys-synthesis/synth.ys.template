@@ -1,0 +1,114 @@
+#! /usr/bin/env python
+#=========================================================================
+# synth.ys
+#=========================================================================
+# Yosys synthesis script targeting the ADK interface
+#
+# Author : Christopher Torng
+# Date   : June 18, 2019
+#
+
+#-------------------------------------------------------------------------
+# Read the design
+#-------------------------------------------------------------------------
+# We always use the SystemVerilog -sv flag
+
+read_verilog -sv inputs/design.v
+
+#-------------------------------------------------------------------------
+# Synthesis
+#-------------------------------------------------------------------------
+# This is the generic synthesis script provided by yosys
+
+synth -top {design_name}
+
+# flatten
+#
+# This simplifies the design for many open-source backend tools, which
+# tend to have weak support for Verilog hierarchies, etc.
+#
+
+flatten
+opt
+
+# setundef -zero
+#
+# - Replaces x's (e.g., assign foo = 32'hxxxxxxxx) with constant zeros
+# - Tech mapping ignores these weird assignments, and they get left all
+#   over the place
+#
+
+setundef -zero
+clean
+
+#-------------------------------------------------------------------------
+# Technology mapping
+#-------------------------------------------------------------------------
+
+# Technology mapping for sequential cells
+
+dfflibmap -liberty inputs/adk/stdcells.lib
+opt
+
+# Technology mapping for combinational cells
+
+#abc -exe yosys-abc -liberty inputs/adk/stdcells.lib \
+#    -script +strash;scorr;ifraig;retime,{{D}};strash;dch,-f;map,-M,1,{{D}}
+
+abc -liberty inputs/adk/stdcells.lib \
+    -D {clock_period_ps} -constr {constraints_tcl}
+
+# Technology mapping for tie cells
+
+hilomap -hicell {tie_hi_cell} {tie_hi_port}
+hilomap -locell {tie_lo_cell} {tie_lo_port}
+opt
+
+#-------------------------------------------------------------------------
+# Clean up
+#-------------------------------------------------------------------------
+
+# Clear away any remaining assignments statements
+#
+# There should not be any remaining assignment statements in the netlist!
+#
+# However, Yosys is apparently sometimes unable to completely avoid
+# assignment statements (e.g., not allowed to touch output arrays). The
+# "insbuf" command inserts the specified buffer instead of assignment in
+# these cases.
+#
+# - https://www.reddit.com/r/yosys/comments/4qtq1d/openmsp430_core_throwing_out_assign_statements_in/d60sihi
+#
+
+insbuf -buf {min_buf_cell} {min_buf_port_i} {min_buf_port_o}
+
+# Misc
+#
+# - "clean -purge"
+#   - Clear the internal signals that Yosys keeps around to help debug
+#   - This makes the design a bit smaller
+#
+# - "clean"
+#   - Identifies unused wires and cells and removes them
+#
+# - "rename -enumerate"
+#   - Shortens the names of wires that yosys created (i.e., "private")
+#
+
+#clean -purge
+clean
+rename -enumerate
+
+#-------------------------------------------------------------------------
+# Write out the mapped netlist
+#-------------------------------------------------------------------------
+
+write_verilog {design_name}.mapped.v
+
+#-------------------------------------------------------------------------
+# Stats
+#-------------------------------------------------------------------------
+
+tee -o stats.txt stat -liberty inputs/adk/stdcells.lib
+
+

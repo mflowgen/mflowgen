@@ -1,0 +1,15 @@
+name: sum
+
+inputs:
+  - ab.txt
+  - cd.txt
+
+commands:
+  - mkdir -p outputs
+  - ab=$(cat inputs/ab.txt)
+  - cd=$(cat inputs/cd.txt)
+  - echo $(($ab + $cd)) > outputs/sum.txt
+
+outputs:
+  - sum.txt
+

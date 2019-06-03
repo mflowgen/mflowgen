@@ -1,1 +1,0 @@
-../../../../plugins/dc-synthesis/pre_synth.tcl

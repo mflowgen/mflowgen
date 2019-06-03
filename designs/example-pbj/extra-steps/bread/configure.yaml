@@ -1,0 +1,11 @@
+name: bread
+
+commands:
+  - bash run.sh
+
+inputs:
+
+outputs:
+  - slice1.txt
+  - slice2.txt
+

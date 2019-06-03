@@ -1,0 +1,11 @@
+name: a_times_b
+
+commands:
+  - mkdir -p outputs
+  - a=$(cat a.txt)
+  - b=$(cat b.txt)
+  - echo $(($a*$b)) > outputs/ab.txt
+
+outputs:
+  - ab.txt
+

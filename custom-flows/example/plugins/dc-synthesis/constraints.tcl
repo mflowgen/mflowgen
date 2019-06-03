@@ -1,1 +1,0 @@
-../../../../plugins/dc-synthesis/constraints.tcl

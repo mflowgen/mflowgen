@@ -1,0 +1,12 @@
+name: sandwich
+
+commands:
+  - make sandwich
+
+inputs:
+  - half_1.txt
+  - half_2.txt
+
+outputs:
+  - ~: sandwich.txt
+

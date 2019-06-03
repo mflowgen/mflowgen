@@ -1,0 +1,11 @@
+name: c_times_d
+
+commands:
+  - mkdir -p outputs
+  - c=$(cat c.txt)
+  - d=$(cat d.txt)
+  - echo $(($c*$d)) > outputs/cd.txt
+
+outputs:
+  - cd.txt
+
