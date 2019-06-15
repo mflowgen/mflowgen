@@ -2,5 +2,4 @@
 # setup-adk.mk
 #=========================================================================
 
-export adk_dir = /scratch/ib264/PDK_TEMP/stdview
-
+export adk_dir = /research/APSEL/ib264/scratch/PDK_TEMP/stdview
