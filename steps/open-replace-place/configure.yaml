@@ -26,12 +26,20 @@ outputs:
 commands:
   # def
   - python dump_diesize.py --site {lef_site_name}
+    --density {density_target}
   - source ./design.diesize.sh
   - python dump_pinlist.py
   - python pins.py > design.pins
-  - defgenerator -lef inputs/adk/rtk-tech.lef -lef inputs/adk/stdcells.lef -def design.def -lib inputs/adk/stdcells.lib -verilog inputs/design.v -dieAreaInMicron 0 0 ${{die_size_x}} ${{die_size_y}} -defDbu 2000 -design {design_name} -siteName {lef_site_name} -pinLocation design.pins | tee def.log
+  - defgenerator -lef inputs/adk/rtk-tech.lef -lef inputs/adk/stdcells.lef
+    -def design.def -lib inputs/adk/stdcells.lib -verilog inputs/design.v
+    -dieAreaInMicron 0 0 ${{die_size_x}} ${{die_size_y}} -defDbu 2000
+    -design {design_name} -siteName {lef_site_name}
+    -pinLocation design.pins | tee def.log
   # place
-  - replace -bmflag etc -lef inputs/adk/rtk-tech.lef -lef inputs/adk/stdcells.lef -def design.def -dpflag NTU3 -dploc {dploc} -den 0.9 -pcofmax 1.04 -output ./ -routability | tee place.log
+  - replace -bmflag etc -lef inputs/adk/rtk-tech.lef
+    -lef inputs/adk/stdcells.lef -def design.def
+    -dpflag NTU3 -dploc {dploc} -den {density_target} -pcofmax 1.04
+    -output ./ -routability | tee place.log
   # outputs
   - mkdir -p outputs && cd outputs
   - results=$(ls -1tr ../etc/design/ --color=none | tail -1)
@@ -45,6 +53,7 @@ parameters:
   design_name: undefined
   clock_period: 2.0
   lef_site_name: FreePDK45_38x28_10R_NP_162NW_34O
+  density_target: 0.5
   dploc: /work/global/clt67/work/2019-summer/RePlAce/ntuplace/ntuplace3
 
 

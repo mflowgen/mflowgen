@@ -38,6 +38,7 @@ def parse_cmdline():
   p.add_argument( "-v", "--verbose", action="store_true" )
   p.add_argument( "-h", "--help",    action="store_true" )
   p.add_argument(       "--site",    required=True       )
+  p.add_argument(       "--density", required=True       )
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -95,9 +96,9 @@ def main():
   # Choose dimensions
   #-----------------------------------------------------------------------
 
-  # Target a density of 0.8
+  # Target density
 
-  target_area = area / 0.8
+  target_area = area / float(opts.density)
 
   # Target a square aspect ratio
 
