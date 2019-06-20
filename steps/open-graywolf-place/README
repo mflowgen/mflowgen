@@ -1,0 +1,26 @@
+--------------------------------------------------------------------------
+README
+--------------------------------------------------------------------------
+Author : Christopher Torng
+Date   : June 19, 2019
+
+This step is a heavily simplified version of qflow's graywolf placement
+scripts. The intent here is just to get a feel for how a qflow
+graywolf-based placement step might look.
+
+Version and copyright information for qflow's graywolf placement scripts:
+
+    qflow v.1.4
+    ---------------------------------------------------------------
+    Tim Edwards
+    Open Circuit Design
+    v1.0 April    2013
+    v1.1 May      2015
+    v1.2 May      2018
+    v1.3 December 2018
+    v1.4 December 2018
+    ---------------------------------------------------------------
+    GPL Copyright (c) 2019
+    ---------------------------------------------------------------
+
+

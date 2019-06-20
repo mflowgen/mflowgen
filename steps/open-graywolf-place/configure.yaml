@@ -1,0 +1,56 @@
+#=========================================================================
+# Graywolf Placement
+#=========================================================================
+# Author : Christopher Torng
+# Date   : June 18, 2019
+#
+
+name: open-graywolf-place
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.v
+
+outputs:
+  - design.def
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # prepare the .par, .info, and .cel for graywolf
+  - cd qflow-scripts && make && cd ..
+  - ln -s inputs/adk/rtk-tech.par {design_name}.par
+  - ln -s inputs/adk/rtk-tech.info {design_name}.info
+  - ./qflow-scripts/vlog2Verilog -c -p -v VDD -g VSS
+    -l inputs/adk/stdcells.lef -o design.rtlnopwr.v inputs/design.v
+  - ./qflow-scripts/vlog2Cel -l inputs/adk/rtk-tech.lef
+    -l inputs/adk/stdcells.lef -u {lef_database_units}
+    -o {design_name}.cel design.rtlnopwr.v
+  # graywolf
+  - graywolf -n {design_name}
+  # convert graywolf output to def format
+  - qflow-scripts/place2def.tcl {design_name} {fillcell}
+    antennapin={antennapin} antennacell={antennacell}
+    units={lef_database_units}
+  # outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../*.def design.def
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  fillcell: FILLCELL_X1
+  antennacell: ANTENNA_X1
+  antennapin: A
+  lef_database_units: 2000
+
+

@@ -1,0 +1,138 @@
+#=========================================================================
+# rtk-tech.par
+#=========================================================================
+# Parameter file for GrayWolf for FreePDK 45nm
+#
+# - This looks like tech LEF, and freepdk-45nm does not have a .par file,
+#   so I am taking the osu035 .par file, pattern matching, and looking at
+#   the ancient TimberWolf thesis for info on the .par format.
+#
+# - Notes on LEF from the language reference
+#
+#     - "RESISTANCE RPERSQ" is in units of ohms/sq
+#     - "CAPACITANCE CPERSQDIST" is in units of pF/um^2
+#
+# - Notes
+#
+#     - Why is the M2 pitch in the rtk-tech.lef such a weird number (19)?
+#
+# - Notes on values picked, judging from the osu035 example
+#
+#     - "*gridX"       -- seems to be the vertical M2 pitch
+#     - "*gridY"       -- seems to be the horizontal M1 pitch
+#     - "*track.pitch" -- seems to be the M2 pitch
+#
+# Author : Christopher Torng
+# Date   : June 13, 2019
+
+# rtk-tech.par --- Parameter file for GrayWolf
+# NOTE:  all distance units are in centimicrons unless otherwise stated
+
+RULES
+    # values are resistance in ohms/sq and capacitance in fF/um^2
+    layer metal1 0.38 0.077161 horizontal
+    layer metal2 0.25 0.040896 vertical
+    layer metal3 0.25 0.027745 horizontal
+    layer metal4 0.21 0.020743 vertical
+    layer metal5 0.21 0.013527 horizontal
+    layer metal6 0.21 0.010036 vertical
+    layer metal7 0.075 0.0079771 horizontal
+    layer metal8 0.075 0.0050391 vertical
+    layer metal9 0.03 0.0036827 horizontal
+    layer metal10 0.03 0.0022124 vertical
+
+    via via1 metal1 metal2
+    via via2 metal2 metal3
+    via via3 metal3 metal4
+    via via4 metal4 metal5
+    via via5 metal5 metal6
+    via via6 metal6 metal7
+    via via7 metal7 metal8
+    via via8 metal8 metal9
+    via via9 metal9 metal10
+
+    width metal1 7
+    width metal2 7
+    width metal3 7
+    width metal4 14
+    width metal5 14
+    width metal6 14
+    width metal7 40
+    width metal8 40
+    width metal9 80
+    width metal10 80
+    width via1 7
+    width via2 7
+    width via3 7
+    width via4 14
+    width via5 14
+    width via6 14
+    width via7 40
+    width via8 40
+    width via9 80
+
+    # Set spacing = track pitch - width, so that GrayWolf places pins
+    # on the right pitch.
+    # Pitches are (in um):
+    # metal1 = 14,  metal2 = 19,  metal3 = 14,  metal4 = 28
+    # metal5 = 28,  metal6 = 28,  metal7 = 80,  metal8 = 80
+    # metal9 = 160, metal10 = 160
+
+    spacing metal1 metal1 7
+    spacing metal2 metal2 12
+    spacing metal3 metal3 7
+    spacing metal4 metal4 14
+    spacing metal5 metal5 14
+    spacing metal6 metal6 14
+    spacing metal7 metal7 40
+    spacing metal8 metal8 40
+    spacing metal9 metal9 80
+    spacing metal10 metal10 80
+
+    # Stacked vias allowed
+    spacing via1 via2 0
+    spacing via2 via3 0
+    spacing via3 via4 0
+    spacing via4 via5 0
+    spacing via5 via6 0
+    spacing via6 via7 0
+    spacing via7 via8 0
+    spacing via8 via9 0
+
+    # Overhang -- no idea what to put here -- skipping it
+    #
+    # But we are not likely to use GrayWolf for detailed routing anyway
+
+
+ENDRULES
+
+#-------------------------------------------------------------------------
+
+*vertical_wire_weight : 1.0
+*vertical_path_weight : 1.0
+*padspacing           : variable
+*rowSep		      : 0.0   0
+*track.pitch	      : 19
+*minimum_pad_space    : 20
+*gridX		      : 19
+*gridY		      : 14
+*gridOffsetX 	      : 0
+*gridOffsetY 	      : 0
+*graphics.wait        : off
+*last_chance.wait     : off
+*random.seed	      : 12345
+
+TWMC*chip.aspect.ratio : 0.75
+
+TWSC*feedThruWidth    : 19 layer 1
+TWSC*do.global.route  : on
+TWSC*ignore_feeds     : true
+TWSC*call_row_evener	: true
+TWSC*even_rows_maximally : true
+# TWSC*no.graphics    : on
+
+GENR*row_to_tile_spacing: 1
+# GENR*numrows		: 6
+GENR*flip_alternate_rows : 1
+
+

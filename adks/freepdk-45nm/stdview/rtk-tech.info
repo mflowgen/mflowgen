@@ -1,0 +1,12 @@
+qrouter 1.4.61.T
+units scale 200
+metal1 0.14 0.07 0.07 horizontal
+metal2 0.19 0.095 0.07 vertical
+metal3 0.14 0.07 0.07 horizontal
+metal4 0.19 0.095 0.14 vertical 2
+metal5 0.14 0.07 0.14 horizontal 2
+metal6 0.19 0.095 0.14 vertical 2
+metal7 0.14 0.07 0.4 horizontal 6
+metal8 0.19 0.095 0.4 vertical 5
+metal9 0.14 0.07 0.8 horizontal 12
+metal10 0.19 0.095 0.8 vertical 9

@@ -66,11 +66,14 @@ def setup_graph():
   # - info
   # - synthesis
   # - place
+  # - route
   #
 
   info    = Step( 'info',                 default=True )
   yosys   = Step( 'open-yosys-synthesis', default=True )
-  replace = Step( 'open-replace-place',   default=True )
+#  replace = Step( 'open-replace-place',   default=True )
+  graywolf = Step( 'open-graywolf-place', default=True )
+  qrouter  = Step( 'open-qrouter-route',  default=True )
 
   #-----------------------------------------------------------------------
   # Parameterize
@@ -79,16 +82,20 @@ def setup_graph():
   adk.update_params( parameters )
   yosys.update_params( parameters )
   info.update_params( parameters )
-  replace.update_params( parameters )
+#  replace.update_params( parameters )
+  graywolf.update_params( parameters )
+  qrouter.update_params( parameters )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info    )
-  g.add_step( rtl     )
-  g.add_step( yosys   )
-  g.add_step( replace )
+  g.add_step( info     )
+  g.add_step( rtl      )
+  g.add_step( yosys    )
+#  g.add_step( replace  )
+  g.add_step( graywolf )
+  g.add_step( qrouter  )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -97,8 +104,14 @@ def setup_graph():
   g.connect_by_name( rtl, yosys )
   g.connect_by_name( adk, yosys )
 
-  g.connect_by_name( yosys, replace )
-  g.connect_by_name( adk,   replace )
+#  g.connect_by_name( adk,   replace )
+#  g.connect_by_name( yosys, replace )
+  g.connect_by_name( adk,   graywolf )
+  g.connect_by_name( yosys, graywolf )
+
+  g.connect_by_name( adk,      qrouter )
+#  g.connect_by_name( replace,  qrouter )
+  g.connect_by_name( graywolf, qrouter )
 
   return g
 
