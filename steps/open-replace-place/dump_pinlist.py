@@ -67,14 +67,23 @@ def main():
     # Grab input and output declarations in the netlist (there should only
     # be one of these)
 
-    i_lines = [ l for l in lines if re.search( r' input .*'  + p, l ) ]
-    o_lines = [ l for l in lines if re.search( r' output .*' + p, l ) ]
+    # Escape backslashes and dollar signs for RE engine
+    _p = p.replace("\\", "\\\\").replace("$", "\$")
+
+    i_lines = [ l for l in lines if re.search( r' input .*'  + _p, l ) ]
+    o_lines = [ l for l in lines if re.search( r' output .*' + _p, l ) ]
 
     port_declaration_lines = i_lines + o_lines
     assert len( port_declaration_lines ) == 1
 
     port_declaration = port_declaration_lines[0]
     tokens = port_declaration.split()
+
+    # Remove leading backslash
+    if p.startswith("\\"):
+      _p = p[1:]
+    else:
+      _p = p
 
     # Check if this is an array. If it is, then bitblast and append each
     # port to the ports list.
@@ -83,11 +92,11 @@ def main():
       indices = tokens[1].strip('[]').split(':')
       indices = sorted( indices )
       for i in xrange( int(indices[0]), int(indices[1])+1 ):
-        ports_bitblasted.append( p + '[' + str(i) + ']' )
+        ports_bitblasted.append( _p + '[' + str(i) + ']' )
 
     # If not, just put the port in the ports list
 
-    ports_bitblasted.append( p )
+    ports_bitblasted.append( _p )
 
   # Dump the port list
 
