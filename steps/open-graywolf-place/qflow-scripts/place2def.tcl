@@ -56,8 +56,8 @@ while {$argc > 2} {
    set testopt [lindex $argv $argc]
    set eptr [string first = $testopt]
    if {$eptr > 0} {
-      set key [string range $testopt 0 $eptr-1]
-      set value [string range $testopt $eptr+1 end]
+      set key [string range $testopt 0 [expr $eptr-1]]
+      set value [string range $testopt [expr $eptr+1] end]
       switch $key {
 	 layers {set numlayers $value}
 	 units {
