@@ -70,8 +70,8 @@ def main():
     # Escape backslashes and dollar signs for RE engine
     _p = p.replace("\\", "\\\\").replace("$", "\$")
 
-    i_lines = [ l for l in lines if re.search( r' input .*'  + p, l ) ]
-    o_lines = [ l for l in lines if re.search( r' output .*' + p, l ) ]
+    i_lines = [ l for l in lines if re.search( r' input .*'  + _p, l ) ]
+    o_lines = [ l for l in lines if re.search( r' output .*' + _p, l ) ]
 
     port_declaration_lines = i_lines + o_lines
     assert len( port_declaration_lines ) == 1
