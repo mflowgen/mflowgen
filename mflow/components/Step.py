@@ -7,6 +7,7 @@
 # Date   : June 2, 2019
 #
 
+import copy
 import os
 import yaml
 
@@ -127,6 +128,17 @@ class Step( object ):
       os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
 
     s.yaml_name = os.path.basename( yaml_path )
+
+  #-----------------------------------------------------------------------
+  # Clone
+  #-----------------------------------------------------------------------
+
+  def clone( s ):
+    new_step = Step.__new__( Step )
+    new_step._config = copy.deepcopy( s._config )
+    new_step.step_dir  = s.step_dir
+    new_step.yaml_name = s.yaml_name
+    return new_step
 
   #-----------------------------------------------------------------------
   # API to help build graphs interactively

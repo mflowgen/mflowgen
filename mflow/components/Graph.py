@@ -159,6 +159,69 @@ class Graph( object ):
       s.get_step( step_name ).expand_params()
 
   #-----------------------------------------------------------------------
+  # Design-space exploration
+  #-----------------------------------------------------------------------
+
+  # param_space
+  #
+  # Spins out new copies of the step across the parameter space.
+  #
+  # For example, for a graph like this:
+  #
+  #     +-----+    +-----------+
+  #     | foo | -> |    bar    |
+  #     |     |    | ( p = 1 ) |
+  #     +-----+    +-----------+
+  #
+  # this call:
+  #
+  #     s.param_space( 'bar', 'p', [ 1, 2, 3 ] )
+  #
+  # will morph the graph like this:
+  #
+  #                 +-----------+
+  #             +-> |    bar    |
+  #             |   | ( p = 1 ) |
+  #             |   +-----------+
+  #     +-----+ |   +-----------+
+  #     | foo | --> |    bar    |
+  #     |     | |   | ( p = 2 ) |
+  #     +-----+ |   +-----------+
+  #             |   +-----------+
+  #             +-> |    bar    |
+  #                 | ( p = 3 ) |
+  #                 +-----------+
+  #
+
+  def param_space( s, step, param_name, param_space ):
+
+    step_name = step.get_name()
+
+    # Remove the step and its incoming edges from the graph
+
+    del( s._steps[ step_name ] )
+    elist = s._edges[ step_name ]
+    del( s._edges[ step_name ] )
+
+    # Now spin out new copies of the step across the parameter space
+
+    new_steps = []
+
+    for p in param_space:
+      p_step = step.clone()
+      p_step.set_param( param_name, p )
+      p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
+      s.add_step( p_step )
+      for e in elist:
+        src_step_name, src_f = e.get_src()
+        dst_step_name, dst_f = e.get_dst()
+        src_step = s.get_step( src_step_name )
+        s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
+      new_steps.append( p_step )
+
+    return new_steps
+
+  #-----------------------------------------------------------------------
   # Ninja helpers
   #-----------------------------------------------------------------------
 
