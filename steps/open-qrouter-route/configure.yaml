@@ -28,6 +28,9 @@ commands:
   # outputs
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.def design.def
+  # fix the output .def to be usable with klayout
+  - cd ..
+  - python fix-def.py --def-file design.routed.def
 
 #-------------------------------------------------------------------------
 # Parameters
