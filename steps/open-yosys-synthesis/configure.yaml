@@ -24,8 +24,12 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
+  # make the RTL more yosys-friendly
+  - sed -e "s/\\$/_/g" inputs/design.v > design.name_mangled.v
+  # synthesis
   - python generate-synth.py
   - yosys -s synth.ys -l synth.log
+  # outputs
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.mapped.v design.v
   - ln -sf ../stats.txt synth.stats.txt

@@ -13,7 +13,7 @@
 #-------------------------------------------------------------------------
 # We always use the SystemVerilog -sv flag
 
-read_verilog -sv inputs/design.v
+read_verilog -sv design.name_mangled.v
 
 #-------------------------------------------------------------------------
 # Synthesis
