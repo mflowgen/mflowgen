@@ -310,6 +310,7 @@ def make_common_rules( w ):
 define cpdir
 	rm -rf ./$1
 	cp -aL $2 $1
+	chmod +w -R $1
 	touch $3
 endef
 
@@ -320,6 +321,7 @@ endef
 define cpdir-and-parameterize
 	rm -rf ./$1
 	cp -aL $2 $1
+	chmod +w -R $1
 	cp .mflow/$1/configure.yaml $1
 	touch $3
 endef

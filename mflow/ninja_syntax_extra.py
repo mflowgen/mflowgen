@@ -212,6 +212,7 @@ def ninja_common_rules( w ):
     description = 'cpdir: Copying $src to $dst',
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst && ' +
+                  'chmod +w -R $dst && ' +
                   'touch $stamp',
   )
   w.newline()
@@ -225,6 +226,7 @@ def ninja_common_rules( w ):
     description = 'cpdir-and-parameterize: Copying $src to $dst',
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst && ' +
+                  'chmod +w -R $dst && ' +
                   'cp .mflow/$dst/configure.yaml $dst && ' +
                   'touch $stamp',
   )
