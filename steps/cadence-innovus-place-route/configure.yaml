@@ -25,6 +25,7 @@ outputs:
   - design.lef
   - design.pt.sdc
   - design.sdf
+  - design.virtuoso.v
 
 #-------------------------------------------------------------------------
 # Commands
@@ -44,6 +45,7 @@ commands:
   - ln -sf ../results/*.lef    design.lef
   - ln -sf ../results/*.pt.sdc design.pt.sdc
   - ln -sf ../results/*.sdf    design.sdf
+  - ln -sf ../results/*.virtuoso.v  design.virtuoso.v
 
 #-------------------------------------------------------------------------
 # Debug
