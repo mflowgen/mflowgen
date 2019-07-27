@@ -27,13 +27,21 @@ addInst -physical -cell PCORNER -inst PCORNER_BOTTOMRIGHT
 
 # Core VDD and VSS pads
 
+addInst -physical -cell PVDD1ANA -inst vdd_acore_0_iocell
+addInst -physical -cell PVDD1ANA -inst vdd_acore_1_iocell
+addInst -physical -cell PVDD1ANA -inst vdd_acore_2_iocell
+addInst -physical -cell PVDD1ANA -inst vdd_acore_3_iocell
+
+addInst -physical -cell PVSS1ANA -inst vss_acore_0_iocell
+addInst -physical -cell PVSS1ANA -inst vss_acore_1_iocell
+addInst -physical -cell PVSS1ANA -inst vss_acore_2_iocell
+addInst -physical -cell PVSS1ANA -inst vss_acore_3_iocell
+
 addInst -physical -cell PVDD1CDG -inst vdd_core_0_iocell
 addInst -physical -cell PVDD1CDG -inst vdd_core_1_iocell
 
 addInst -physical -cell PVSS1CDG -inst vss_core_0_iocell
 addInst -physical -cell PVSS1CDG -inst vss_core_1_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_2_iocell
-addInst -physical -cell PVSS1CDG -inst vss_core_3_iocell
 
 # IO VDD and VSS pads
 
@@ -56,12 +64,6 @@ addInst -physical -cell PVDD2POC -inst vdd_poc_0_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_0_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_1_iocell
 addInst -physical -cell PVSS2CDG -inst vss_dummy_2_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_3_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_4_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_5_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_6_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_7_iocell
-addInst -physical -cell PVSS2CDG -inst vss_dummy_8_iocell
 
 # The "dummy" is a blank entry that makes the iteration variable "i"
 # increment just to make the inner/outer match up with the even/odd setup

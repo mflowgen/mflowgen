@@ -13,36 +13,36 @@
 (iopad
     (row
 	(locals row_name="iorow_TR")
-	(inst  name="PCORNER_TOPRIGHT"	offset=0.0000)
+	(inst  name="PCORNER_TOPRIGHT"      offset=0.0000)
     )
     (row
 	(locals row_name="iorow_TL")
-	(inst  name="PCORNER_TOPLEFT"	offset=0.0000)
+	(inst  name="PCORNER_TOPLEFT"       offset=0.0000)
     )
     (row
 	(locals row_name="iorow_BR")
-	(inst  name="PCORNER_BOTTOMRIGHT"	offset=0.0000)
+	(inst  name="PCORNER_BOTTOMRIGHT"   offset=0.0000)
     )
     (row
 	(locals row_name="iorow_BL")
-	(inst  name="PCORNER_BOTTOMLEFT"	offset=0.0000)
+	(inst  name="PCORNER_BOTTOMLEFT"    offset=0.0000)
     )
     (row
 	(locals row_name="iorow_W")
 	(inst  name="clk2_iocell"           offset=   0.0000) # Left Bottom
 	(inst  name="greset_n_iocell"       offset= 100.0000)
 	(inst  name="debug_in_iocell"       offset= 200.0000)
-	(inst  name="vss_core_0_iocell"     offset= 300.0000)
-	(inst  name="vss_dummy_0_iocell"    offset= 400.0000) # extra
-	(inst  name="vss_dummy_1_iocell"    offset= 500.0000) # extra
-	(inst  name="vss_dummy_2_iocell"    offset= 600.0000) # extra
-	(inst  name="vss_dummy_3_iocell"    offset= 700.0000) # extra
-	(inst  name="vss_dummy_4_iocell"    offset= 800.0000) # extra
-	(inst  name="vss_dummy_5_iocell"    offset= 900.0000) # extra
-	(inst  name="vss_dummy_6_iocell"    offset=1000.0000) # extra
-	(inst  name="vss_dummy_7_iocell"    offset=1100.0000) # extra
-	(inst  name="vss_dummy_8_iocell"    offset=1200.0000) # extra
-	(inst  name="vss_core_1_iocell"     offset=1300.0000) # extra
+	(inst  name="vss_acore_0_iocell"    offset= 300.0000)
+	(inst  name="vdd_acore_0_iocell"    offset= 400.0000) # extra
+	(inst  name="vdd_acore_1_iocell"    offset= 500.0000) # extra
+	(inst  name="vss_acore_1_iocell"    offset= 600.0000) # extra
+	(inst  name="vss_dummy_0_iocell"    offset= 700.0000) # extra
+	(inst  name="vss_dummy_1_iocell"    offset= 800.0000) # extra
+	(inst  name="vss_dummy_2_iocell"    offset= 900.0000) # extra
+	(inst  name="vss_acore_2_iocell"    offset=1000.0000) # extra
+	(inst  name="vdd_acore_2_iocell"    offset=1100.0000) # extra
+	(inst  name="vdd_acore_3_iocell"    offset=1200.0000) # extra
+	(inst  name="vss_acore_3_iocell"    offset=1300.0000) # extra
 	(inst  name="spiclk_iocell"         offset=1400.0000)
 	(inst  name="spidin_iocell"         offset=1500.0000)
 	(inst  name="clkpco_iocell"         offset=1600.0000)
@@ -58,7 +58,7 @@
 	(inst  name="ADC_I_7_iocell"        offset=420.0000)
 	(inst  name="ADC_I_6_iocell"        offset=520.0000)
 	(inst  name="vdd_core_0_iocell"     offset=620.0000)
-	(inst  name="vss_core_2_iocell"     offset=720.0000)
+	(inst  name="vss_core_0_iocell"     offset=720.0000)
 	(inst  name="ADC_I_5_iocell"        offset=820.0000) # Top Right
     )
     (row
@@ -92,7 +92,7 @@
 	(inst  name="ADC_Q_7_iocell"        offset=420.0000)
 	(inst  name="ADC_Q_6_iocell"        offset=520.0000)
 	(inst  name="vdd_core_1_iocell"     offset=620.0000)
-	(inst  name="vss_core_3_iocell"     offset=720.0000)
+	(inst  name="vss_core_1_iocell"     offset=720.0000)
 	(inst  name="ADC_Q_5_iocell"        offset=820.0000) # Bottom Right
     )
 )

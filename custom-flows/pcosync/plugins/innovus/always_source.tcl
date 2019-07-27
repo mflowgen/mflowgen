@@ -23,8 +23,8 @@ set r_pitch 3.92; # Pitch between power rails (standard cell height)
 # Floorplan variables
 #-------------------------------------------------------------------------
 
-set die_width   1130; # Die area width  1 mm
-set die_height  2130; # Die area height 1 mm
+set die_width   1130; # Die area width
+set die_height  2130; # Die area height
 
 #-------------------------------------------------------------------------
 # IO pad floorplan
@@ -34,27 +34,27 @@ set die_height  2130; # Die area height 1 mm
 #
 # 1. IO cell height (180nm IO library uses 115um height)
 # 2. Extra margin for power routing
+# 3. Space for the power ring
 #
-#           115         8.4
-#             um         um
-#     |----------------|---|----->
-#     ^        ^         ^    ^
-#     |        |         |    +----- Core area from here onward
-#     |        |         +---------- Margin for power routing
-#     |        +-------------------- IO cell height
-#     |
-#     +----------------------------- Die boundary
+#          115       5.0     25
+#           um        um     um
+#    |--------------|-----|-------|----->
+#    ^       ^         ^      ^      ^
+#    |       |         |      |      +----- Core area from here onward
+#    |       |         |      +------------ Power Ring
+#    |       |         +------------------- Margin for power routing
+#    |       +----------------------------- IO cell height
+#    +------------------------------------- Die boundary
 #
 # Summing up from die boundary to core boundary:
 #
-#    25
-# + 110
-# +  90
-# +   8.4
-# -------
-#    233.4
+#   115
+# +   5
+# +  25
+# ------
+#   145
 #
-# Core width = 1000 - 233.4*2 = 533.2 um
+# Core width = 1130 - 145*2 = 840 um
 
 set io_cell_len 115; # IO cell height (IO cell databook)
 

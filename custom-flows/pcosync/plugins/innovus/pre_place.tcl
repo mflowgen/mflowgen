@@ -14,20 +14,24 @@ specifyCellPad DFQ* 2
 reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 
 #-------------------------------------------------------------------------
-# Global net connections for PG pins
+# Global net connections for PG pins (VDDPST, VSSPST, and POC are not required)
 #-------------------------------------------------------------------------
 
 globalNetConnect VDD    -type pgpin -pin VDD    -inst * -verbose
 globalNetConnect VSS    -type pgpin -pin VSS    -inst * -verbose
-globalNetConnect VDDPST -type pgpin -pin VDDPST -inst * -verbose
-globalNetConnect VSSPST -type pgpin -pin VSSPST -inst * -verbose
-globalNetConnect POC    -type pgpin -pin POC    -inst * -verbose
+globalNetConnect VDD    -type pgpin -pin AVDD   -inst * -verbose
+globalNetConnect VSS    -type pgpin -pin AVSS   -inst * -verbose
+#globalNetConnect VDDPST -type pgpin -pin VDDPST -inst * -verbose
+#globalNetConnect VSSPST -type pgpin -pin VSSPST -inst * -verbose
+#globalNetConnect POC    -type pgpin -pin POC    -inst * -verbose
 
 # Create PG pins (temporary hardcoded) so that GDS export creates text for LVS in Calibre.
 
 add_gui_text -label "VDDPST:" -pt {1090  770} -layer CUSTOM_BRG_LVS_M6 -height 5
 add_gui_text -label "VDD:"    -pt { 750 2090} -layer CUSTOM_BRG_LVS_M6 -height 5
 add_gui_text -label "VSS:"    -pt { 850 2090} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label "VDD:"    -pt {  40  550} -layer CUSTOM_BRG_LVS_M6 -height 5
+add_gui_text -label "VSS:"    -pt {  40  450} -layer CUSTOM_BRG_LVS_M6 -height 5
 add_gui_text -label "VSSPST:" -pt {1090 1070} -layer CUSTOM_BRG_LVS_M6 -height 5
 add_gui_text -label "POC:"    -pt {1018 1300} -layer CUSTOM_BRG_LVS_M3 -height 5
 
@@ -58,20 +62,24 @@ addRing -nets {VDD VSS} -type core_rings -follow core   \
         -offset $p_ring_spacing                         \
         -extend_corner {tl tr bl br lt lb rt rb}
 
-# Connect the ring to the IO pads
+# Connect the ring to the IO pads (~ANA cells only!)
 
 setViaGenMode -reset
 setViaGenMode -viarule_preference default \
               -optimize_cross_via true
 
-sroute                                  \
- -allowJogging 0                        \
- -connect padPin                        \
- -allowLayerChange 1                    \
- -layerChangeRange { M1 M6 }            \
- -nets { VDD VSS }                      \
- -padPinLayerRange { M1 M2 }            \
- -padPinPortConnect { allPort allGeom } \
+ sroute                                          \
+ -inst { vdd_acore_0_iocell vdd_acore_1_iocell   \
+         vdd_acore_2_iocell vdd_acore_3_iocell   \
+         vss_acore_0_iocell vss_acore_1_iocell   \
+         vss_acore_2_iocell vss_acore_3_iocell } \
+ -allowJogging 0                                 \
+ -connect padPin                                 \
+ -allowLayerChange 1                             \
+ -layerChangeRange { M1 M6 }                     \
+ -nets { VDD VSS }                               \
+ -padPinLayerRange { M1 M2 }                     \
+ -padPinPortConnect { allPort allGeom }          \
  -padPinTarget { ring }
 
 #-------------------------------------------------------------------------
