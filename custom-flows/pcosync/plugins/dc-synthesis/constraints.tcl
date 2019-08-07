@@ -2,7 +2,7 @@
 # Design Constraints File
 #=========================================================================
 
-# Create the clocks
+# Create main clocks
 
 set core1_clk_name core1_clk
 set core2_clk_name core2_clk
@@ -22,7 +22,25 @@ create_clock -name $pco_clk_name   -period $pco_clk_period   [get_ports clkpco_i
 create_clock -name $spi_clk_name   -period $spi_clk_period   [get_ports spiclk_io]
 create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload_io]
 
-# Declare these clocks to be asynchronous
+# Create generated clocks
+
+create_generated_clock -name clkpgen_gated -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clk1_io] \
+                       -source [get_pins clkgate_pgen/clock_out] \
+                       -master_clock $core1_clk_name
+create_generated_clock -name clkpco_gated -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clkpco_io] \
+                       -source [get_pins clkgate_pco/clock_out] \
+                       -master_clock $pco_clk_name
+create_generated_clock -name clkctrl_gated -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clkpco_io] \
+                       -source [get_pins clkgate_ctrl/clock_out] \
+                       -master_clock $pco_clk_name
+
+# Declare main clocks to be asynchronous
 #
 # Note that this disables all timing checks between groups. Make sure this
 # is what you want!
