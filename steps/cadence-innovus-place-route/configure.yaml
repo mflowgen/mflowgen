@@ -26,6 +26,7 @@ outputs:
   - design.pt.sdc
   - design.sdf
   - design.virtuoso.v
+  - design.spef.gz
 
 #-------------------------------------------------------------------------
 # Commands
@@ -46,6 +47,7 @@ commands:
   - ln -sf ../results/*.pt.sdc design.pt.sdc
   - ln -sf ../results/*.sdf    design.sdf
   - ln -sf ../results/*.virtuoso.v  design.virtuoso.v
+  - ln -sf ../typical.spef.gz  design.spef.gz
 
 #-------------------------------------------------------------------------
 # Debug
