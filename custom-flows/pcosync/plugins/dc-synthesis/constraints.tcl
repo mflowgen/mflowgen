@@ -24,6 +24,16 @@ create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload_
 
 # Create generated clocks
 
+create_generated_clock -name clk1_gated -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clk1_io] \
+                       -source [get_pins clkgate_spcore1/clock_out] \
+                       -master_clock $core1_clk_name
+create_generated_clock -name clk2_gated -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clk2_io] \
+                       -source [get_pins clkgate_spcore2/clock_out] \
+                       -master_clock $core2_clk_name
 create_generated_clock -name clkpgen_gated -divide_by 1 \
                        -combinational -add \
                        [get_ports clk1_io] \
