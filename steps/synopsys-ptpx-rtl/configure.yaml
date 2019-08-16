@@ -1,0 +1,16 @@
+name: synopsys-ptpx-rtl
+
+inputs:
+  - adk
+  - design.vcs.v
+  - design.spef.gz
+  - design.pt.sdc
+  - run.saif
+  - design.namemap
+
+commands:
+  - pt_shell -file pt_px.tcl
+
+parameters:
+  clock_period: 1.0
+  design_name: undefined
