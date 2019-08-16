@@ -74,6 +74,7 @@ mkdir -p outputs && cd outputs
 
 ln -sf ../results/*.mapped.v design.v
 ln -sf ../results/*.mapped.sdc design.sdc
+ln -sf ../reports/*.namemap design.namemap
 
 cd ..
 

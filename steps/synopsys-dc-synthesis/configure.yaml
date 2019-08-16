@@ -1,7 +1,7 @@
 #=========================================================================
 # Synopsys DC Synthesis
 #=========================================================================
-# Author : Christopher Torng
+# Author : Christopher Torng, Yanghui Ou
 # Date   : June 7, 2019
 #
 
@@ -14,10 +14,12 @@ name: synopsys-dc-synthesis
 inputs:
   - adk
   - design.v
+  - run.saif
 
 outputs:
   - design.v
   - design.sdc
+  - design.namemap
 
 #-------------------------------------------------------------------------
 # Commands
@@ -25,7 +27,6 @@ outputs:
 
 commands:
   - bash run.sh
-
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------

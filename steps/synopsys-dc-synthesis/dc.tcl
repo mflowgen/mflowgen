@@ -59,6 +59,7 @@ if {[file exists [which $dc_pre_synthesis_plugin]]} {
 # Set up variables for this specific ASIC design kit
 
 set SYNOPSYS_TOOL "dc-syn"
+set dc_design_name  $::env(design_name)
 source -echo -verbose $dc_adk_tcl
 
 # Multicore support -- watch how many licenses we have!
@@ -94,9 +95,9 @@ set_app_var link_library       [join "
                                "]
 
 
-# Shady Agwa May 10, 2019
 # SAIF mapping.
-#saif_map -start
+                               #
+saif_map -start
 
 # Create Milkyway library
 #
@@ -409,9 +410,11 @@ if {!([info exists DC_SKIP_OPTIMIZE_NETLIST] && $DC_SKIP_OPTIMIZE_NETLIST)} {
 check_design -summary
 check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 
-# Shady Agwa May 10, 2019
 # Write the .namemap file for the Energy analysis
-#saif_map -create_map -input "reports/rtl-sim/run.saif" -source_instance ${dc_ptpx_uut}
+
+if {[file exists "inputs/run.saif" ]} {
+  saif_map -create_map -input "inputs/run.saif" -source_instance ${dc_design_name}
+}
 
 #-------------------------------------------------------------------------
 # Write out the design
