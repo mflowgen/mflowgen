@@ -59,8 +59,8 @@ import sys
 
 class ArgumentParserWithCustomError(argparse.ArgumentParser):
   def error( self, msg = "" ):
-    if ( msg ): print("\n ERROR: %s" % msg)
-    print("")
+    if ( msg ): print( "\n ERROR: %s" % msg )
+    print()
     file = open( sys.argv[0] )
     for ( lineno, line ) in enumerate( file ):
       if ( line[0] != '#' ): sys.exit(msg != "")
@@ -872,18 +872,18 @@ def main():
 
   errors = set()
 
-  if opts.color: print(echo_green)
+  if opts.color: print( echo_green )
   for i in range( height ):
     for l in text:
       if l not in letters.keys():
         errors.add( 'Error: No data for character "%s"' % l )
         continue
-      print(letters[l][i], end=' ')
+      print( letters[l][i], end=' ' )
     print()
-  if opts.color: print(echo_nocolor)
+  if opts.color: print( echo_nocolor )
 
   for e in errors:
-    print(e)
+    print( e )
 
 main()
 

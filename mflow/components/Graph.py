@@ -79,9 +79,9 @@ class Graph( object ):
       for step_name, f_name in dangling:
         msg = 'Dangling input in step "{}": {}'
         msg = msg.format( step_name, f_name )
-        print(msg)
+        print( msg )
     else:
-      print('No dangling inputs in graph')
+      print( 'No dangling inputs in graph' )
 
   #-----------------------------------------------------------------------
   # Connect
