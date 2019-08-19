@@ -49,6 +49,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+from __future__ import print_function
 import argparse
 import sys
 
@@ -871,18 +872,18 @@ def main():
 
   errors = set()
 
-  if opts.color: print echo_green
-  for i in xrange( height ):
+  if opts.color: print(echo_green)
+  for i in range( height ):
     for l in text:
       if l not in letters.keys():
         errors.add( 'Error: No data for character "%s"' % l )
         continue
-      print letters[l][i],
-    print
-  if opts.color: print echo_nocolor
+      print(letters[l][i], end=' ')
+    print()
+  if opts.color: print(echo_nocolor)
 
   for e in errors:
-    print e
+    print(e)
 
 main()
 

@@ -13,10 +13,10 @@ import yaml
 
 from ..utils import get_top_dir
 
-class Step( object ):
+class Step ( object ):
 
   def __new__( cls, *args, **kwargs ):
-    inst = super( Step, cls ).__new__( cls, *args, **kwargs )
+    inst = super().__new__( cls )
     inst._config = {}
     return inst
 

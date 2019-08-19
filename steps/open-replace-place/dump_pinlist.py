@@ -12,6 +12,7 @@
 # Date   : June 19, 2019
 #
 
+from __future__ import print_function
 import argparse
 import re
 import sys
@@ -91,7 +92,7 @@ def main():
     if tokens[1].startswith('[') and tokens[1].endswith(']'):
       indices = tokens[1].strip('[]').split(':')
       indices = sorted( indices )
-      for i in xrange( int(indices[0]), int(indices[1])+1 ):
+      for i in range( int(indices[0]), int(indices[1])+1 ):
         ports_bitblasted.append( _p + '[' + str(i) + ']' )
 
     # If not, just put the port in the ports list

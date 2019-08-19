@@ -24,6 +24,7 @@
 # Date   : June 2, 2019
 #
 
+from __future__ import print_function
 import datetime as dt
 import os
 
@@ -72,9 +73,9 @@ for d in steps:
 # Report runtimes
 #-------------------------------------------------------------------------
 
-print '-'*80
-print 'Runtimes'
-print '-'*80
+print('-'*80)
+print('Runtimes')
+print('-'*80)
 
 def print_time( step, runtime_seconds, step_finished=True ):
 
@@ -89,13 +90,13 @@ def print_time( step, runtime_seconds, step_finished=True ):
   m_str = str( m ) + ' min' if m > 0 else ''
   s_str = str( s ) + ' sec'
 
-  print template_str.format(
+  print(template_str.format(
     step = step,
     h    = h_str,
     m    = m_str,
     s    = s_str,
     tag  = '' if step_finished else ' <-- in progress',
-  )
+  ))
 
 for step in sorted( runtimes.keys() ):
   step_finished   = finished[step]
@@ -107,7 +108,7 @@ for step in sorted( runtimes.keys() ):
 runtime_seconds = \
   sum( runtimes.values(), dt.timedelta() ).total_seconds()
 
-print '-'*80
+print('-'*80)
 print_time( 'Total', runtime_seconds, True )
 
 
