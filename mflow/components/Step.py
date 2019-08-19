@@ -13,18 +13,15 @@ import yaml
 
 from ..utils import get_top_dir
 
-class Step( object ):
-
-  def __new__( cls, *args, **kwargs ):
-    inst = super( Step, cls ).__new__( cls, *args, **kwargs )
-    inst._config = {}
-    return inst
+class Step ( object ):
 
   def __init__( s, step_path, default=False ):
 
     # Get the YAML file path
     #
     # If this is a default step, then we use the top-level steps directory
+
+    s._config = {}
 
     if default:
       yaml_path = '/'.join([
@@ -42,7 +39,11 @@ class Step( object ):
     # Read the YAML data
 
     with open( yaml_path, 'r' ) as fd:
-      data = yaml.load( fd )
+      try:
+        data = yaml.load( fd, Loader=yaml.FullLoader )
+      except AttributeError:
+        # PyYAML for python2 does not have FullLoader
+        data = yaml.load( fd )
 
     # Check that this is a valid step configuration
 

@@ -100,7 +100,7 @@ class BuildOrchestrator( object ):
       params          = s.g.get_step( step_name ).params()
       params_str      = 'export {}={}'
       params_commands = \
-        [ params_str.format(k,v) for k, v in params.iteritems() ]
+        [ params_str.format(k,v) for k, v in params.items() ]
 
       pre = [
         'date +%Y-%m%d-%H%M-%S > .time_start', # starting timestamp
@@ -219,12 +219,12 @@ class BuildOrchestrator( object ):
 
     # Dump parameterized YAMLs for each step to the metadata directory
 
-    for step_name, build_dir in s.build_dirs.iteritems():
+    for step_name, build_dir in s.build_dirs.items():
       s.dump_yamls( step_name, build_dir )
 
     # Dump commands for each step to the metadata directory
 
-    for step_name, build_dir in s.build_dirs.iteritems():
+    for step_name, build_dir in s.build_dirs.items():
       step          = s.g.get_step( step_name )
       step_commands = step.get_commands()
       if step_commands:
@@ -232,7 +232,7 @@ class BuildOrchestrator( object ):
 
     # Dump debug commands for each step to the metadata directory
 
-    for step_name, build_dir in s.build_dirs.iteritems():
+    for step_name, build_dir in s.build_dirs.items():
       step           = s.g.get_step( step_name )
       debug_commands = step.get_debug_commands()
       if debug_commands:

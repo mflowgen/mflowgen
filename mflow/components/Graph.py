@@ -7,18 +7,17 @@
 # Date   : June 2, 2019
 #
 
+from __future__ import print_function
 from .Edge import Edge
 from .Step import Step
 
 from ..utils import get_top_dir
 
 class Graph( object ):
-
-  def __new__( cls, *args, **kwargs ):
-    inst = super( Graph, cls ).__new__( cls, *args, **kwargs )
-    inst._edges = {}
-    inst._steps = {}
-    return inst
+  
+  def __init__( s ):
+    s._edges = {}
+    s._steps = {}
 
   #-----------------------------------------------------------------------
   # API to help build the graph interactively
@@ -80,9 +79,9 @@ class Graph( object ):
       for step_name, f_name in dangling:
         msg = 'Dangling input in step "{}": {}'
         msg = msg.format( step_name, f_name )
-        print msg
+        print( msg )
     else:
-      print 'No dangling inputs in graph'
+      print( 'No dangling inputs in graph' )
 
   #-----------------------------------------------------------------------
   # Connect
@@ -355,7 +354,7 @@ ranksep=0.8;
     # Make a deep copy of the edges (destructive algorithm)
 
     edges_deep_copy = {}
-    for step_name, elist in s._edges.iteritems():
+    for step_name, elist in s._edges.items():
       edges_deep_copy[ step_name ] = list(elist)
     edges = edges_deep_copy
 
@@ -374,7 +373,7 @@ ranksep=0.8;
       steps = steps_with_deps
 
       keys_to_delete = []
-      for step_name, elist in edges.iteritems():
+      for step_name, elist in edges.items():
         idx_to_delete = []
         for i, e in enumerate( elist ):
           if e.get_src()[0] in order:

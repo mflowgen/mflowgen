@@ -1,3 +1,4 @@
+from __future__ import print_function
 # pins.py
 #
 # Slightly modified from the OpenRoad utilities repo
