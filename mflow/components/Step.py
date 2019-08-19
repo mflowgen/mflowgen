@@ -15,16 +15,13 @@ from ..utils import get_top_dir
 
 class Step ( object ):
 
-  def __new__( cls, *args, **kwargs ):
-    inst = super().__new__( cls )
-    inst._config = {}
-    return inst
-
   def __init__( s, step_path, default=False ):
 
     # Get the YAML file path
     #
     # If this is a default step, then we use the top-level steps directory
+
+    s._config = {}
 
     if default:
       yaml_path = '/'.join([

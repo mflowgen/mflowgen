@@ -14,12 +14,10 @@ from .Step import Step
 from ..utils import get_top_dir
 
 class Graph( object ):
-
-  def __new__( cls, *args, **kwargs ):
-    inst = super().__new__( cls )
-    inst._edges = {}
-    inst._steps = {}
-    return inst
+  
+  def __init__( s ):
+    s._edges = {}
+    s._steps = {}
 
   #-----------------------------------------------------------------------
   # API to help build the graph interactively
