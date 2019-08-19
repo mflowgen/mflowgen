@@ -39,7 +39,11 @@ class Step ( object ):
     # Read the YAML data
 
     with open( yaml_path, 'r' ) as fd:
-      data = yaml.load( fd )
+      try:
+        data = yaml.load( fd, Loader=yaml.FullLoader )
+      except AttributeError:
+        # PyYAML for python2 does not have FullLoader
+        data = yaml.load( fd )
 
     # Check that this is a valid step configuration
 
