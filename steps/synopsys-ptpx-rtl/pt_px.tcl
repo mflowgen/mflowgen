@@ -36,6 +36,6 @@ read_sdc inputs/design.pt.sdc > ${pt_reports}/${pt_design_name}.sdc.rpt
 
 update_power > ${pt_reports}/${pt_design_name}.update.rpt
 report_switching_activity > ${pt_reports}/${pt_design_name}.sw.rpt 
-report_power -nosplit > ${pt_reports}/signoff.pwr.rpt
-report_power -nosplit -hierarchy > ${pt_reports}/${pt_design_name}.pwr.hier.rpt
+report_power -nosplit  -verbose > ${pt_reports}/signoff.pwr.rpt
+report_power -nosplit -hierarchy -verbose > ${pt_reports}/${pt_design_name}.pwr.hier.rpt
 exit
