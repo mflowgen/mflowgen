@@ -82,9 +82,9 @@ def print_time( step, runtime_seconds, step_finished=True ):
   template_str = \
     '{step: <35} -- {h: >7} {m: >6} {s: >6} {tag}'
 
-  h = int( runtime_seconds / 60 / 60 )
-  m = int( runtime_seconds / 60 )
-  s = int( runtime_seconds % 60 )
+  h = int( ( runtime_seconds / 60 ) / 60 )
+  m = int( ( runtime_seconds / 60 ) % 60 )
+  s = int(   runtime_seconds % 60        )
 
   h_str = str( h ) + ' hr'  if h > 0 else ''
   m_str = str( m ) + ' min' if m > 0 else ''
