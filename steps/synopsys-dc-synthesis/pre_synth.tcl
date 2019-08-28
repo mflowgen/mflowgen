@@ -21,7 +21,7 @@ set dc_num_cores 16
 
 # Enable additional area optimizations (skip false = enable optimizations)
 
-set DC_SKIP_OPTIMIZE_NETLIST false
+set DC_SKIP_OPTIMIZE_NETLIST true
 
 # Enable clock-gating
 
