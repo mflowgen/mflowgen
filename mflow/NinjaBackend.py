@@ -365,10 +365,18 @@ class NinjaBackend( object ):
     s.w.comment( 'Clean' )
     s.w.newline()
 
-    dirs    = [ './' + d for d in s.build_dirs.values() ]
-    command = 'rm -rf ' + ' '.join( sorted( dirs ) )
+    dirs    = sorted( [ './' + d for d in s.build_dirs.values() ] )
+    command = 'rm -rf ' + ' '.join( dirs )
 
-    ninja_clean( s.w, command )
+    ninja_clean( s.w, name='clean', command=command )
+
+    # Clean subtargets (e.g., clean-0, clean-1)
+
+    for d in dirs:
+      idx     = d.split('-')[0].lstrip('./')
+      name    = 'clean-' + idx
+      command = 'rm -rf ' + d
+      ninja_clean( s.w, name=name, command=command )
 
     # Runtime target
 

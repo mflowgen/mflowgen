@@ -258,18 +258,18 @@ def ninja_common_rules( w ):
 # - w : instance of ninja_syntax Writer
 #
 
-def ninja_clean( w, command ):
+def ninja_clean( w, name, command ):
 
   w.rule(
-    name        = 'clean',
-    description = 'clean: Clean all build directories',
+    name        = name,
+    description = name + ': Clean build directories',
     command     = command,
   )
   w.newline()
 
   w.build(
-    outputs = 'clean',
-    rule    = 'clean',
+    outputs = name,
+    rule    = name,
   )
   w.newline()
 

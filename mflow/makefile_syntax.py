@@ -351,11 +351,11 @@ endef
 # - w : instance of Writer
 #
 
-def make_clean( w, command ):
+def make_clean( w, name, command ):
 
-  template_str  = '.PHONY: clean\n'
+  template_str  = '.PHONY: ' + name + '\n'
   template_str += '\n'
-  template_str += 'clean:\n'
+  template_str += name + ':\n'
   template_str += '	{command}\n'
 
   w.write( template_str.format( command=command ) )
