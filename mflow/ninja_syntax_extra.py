@@ -273,6 +273,56 @@ def ninja_clean( w, name, command ):
   )
   w.newline()
 
+# ninja_diff
+#
+# Write out rules for diffs
+#
+# - w : instance of Writer
+#
+
+def ninja_diff( w, name, src, dst ):
+
+  exclude_files = [
+    'configure.yaml',
+    '.time_end',
+    '.time_start',
+    'run-step.*',
+    '.stamp',
+    'inputs',
+    'outputs',
+  ]
+
+  command = ' '.join( [
+    # Newline
+    'echo &&',
+    # Diff the src and dst
+    'diff -r -u --minimal',
+    # Exclude build-system specific files
+    '--exclude={' + ','.join( exclude_files ) + '}',
+    src,
+    dst,
+    '|',
+    # Try to portably colorize the outputs with grep
+    "grep --color=always -e '^-.*' -e '$$' -e 'Only in " + src + ".*'",
+    '|',
+    "GREP_COLOR='01;32' grep --color=always -e '^+.*' -e '$$' -e 'Only in " + dst + ".*'",
+    # Newline
+    '&& echo',
+    # Ignore any issues
+    '|| true',
+  ] )
+
+  w.rule(
+    name    = name,
+    command = command,
+  )
+  w.newline()
+
+  w.build(
+    outputs = name,
+    rule    = name,
+  )
+  w.newline()
 
 # ninja_runtimes
 #
@@ -315,6 +365,8 @@ def ninja_list( w, steps, debug_targets ):
     '"runtimes -- Print runtimes for each step"',
     '"graph    -- Generate a PDF of the step dependency graph"',
     '"clean    -- Remove all build directories"',
+    '"clean-N  -- Clean build N"',
+    '"diff-N   -- Diff build N"',
   ]
 
   commands = [

@@ -15,6 +15,7 @@ from .ninja_syntax import Writer as NinjaWriter
 from .ninja_syntax_extra import ninja_cpdir, ninja_symlink
 from .ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
 from .ninja_syntax_extra import ninja_common_rules, ninja_clean
+from .ninja_syntax_extra import ninja_diff
 from .ninja_syntax_extra import ninja_runtimes, ninja_list, ninja_graph
 
 class NinjaBackend( object ):
@@ -30,9 +31,10 @@ class NinjaBackend( object ):
 
   # save
 
-  def save( s, order, build_dirs ):
+  def save( s, order, build_dirs, step_dirs ):
     s.order      = order
     s.build_dirs = build_dirs
+    s.step_dirs  = step_dirs
 
   # gen_header
 
@@ -369,6 +371,18 @@ class NinjaBackend( object ):
     command = 'rm -rf ' + ' '.join( dirs )
 
     ninja_clean( s.w, name='clean', command=command )
+
+    # Diff target
+
+    s.w.comment( 'Diff' )
+    s.w.newline()
+
+    for step_name in s.order:
+      src     = s.step_dirs[ step_name ]
+      dst     = s.build_dirs[ step_name ]
+      idx     = dst.split('-')[0].lstrip('./')
+      name    = 'diff-' + idx
+      ninja_diff( s.w, name=name, src=src, dst=dst )
 
     # Clean subtargets (e.g., clean-0, clean-1)
 

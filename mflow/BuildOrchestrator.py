@@ -35,6 +35,7 @@ class BuildOrchestrator( object ):
 
     s.build_dirs = {}
     s.build_ids  = {}
+    s.step_dirs  = {}
 
     # Hidden metadata directory that saves parameterized YAMLs and
     # commands for each step
@@ -209,13 +210,14 @@ class BuildOrchestrator( object ):
 
     s.g.expand_params()
 
-    # Determine the build order, unique build directories, and build IDs
+    # Determine build order, unique build directories, build IDs, step dir
 
     s.order = s.g.topological_sort()
 
     for i, step_name in enumerate( s.order ):
       s.build_dirs [ step_name ] = str(i) + '-' + step_name
       s.build_ids  [ step_name ] = str(i)
+      s.step_dirs  [ step_name ] = s.g.get_step( step_name ).get_dir()
 
     # Dump parameterized YAMLs for each step to the metadata directory
 
@@ -336,7 +338,7 @@ class BuildOrchestrator( object ):
 
     # Pass useful data to the backend writer
 
-    s.w.save( s.order, s.build_dirs )
+    s.w.save( s.order, s.build_dirs, s.step_dirs )
 
     # Backend writer prologue
 
@@ -355,10 +357,10 @@ class BuildOrchestrator( object ):
       build_dir = s.build_dirs[ step_name ]
       build_id  = s.build_ids[ step_name ]
 
-      s.build_system_rules[step_name] = {}
-      s.build_system_deps [step_name] = {}
+      s.build_system_rules[ step_name ] = {}
+      s.build_system_deps[ step_name ]  = {}
 
-      backend_outputs[step_name] = {}
+      backend_outputs[ step_name ] = {}
 
       # Use the backend writer to generate the step header
 
@@ -372,7 +374,7 @@ class BuildOrchestrator( object ):
 
       # Make the directory dependent on all source files
 
-      step_template_dir = step.get_dir()
+      step_template_dir = s.step_dirs[ step_name ]
       deps              = []
       #deps              = get_files_in_dir( step_template_dir )
 

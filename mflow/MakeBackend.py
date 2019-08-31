@@ -15,6 +15,7 @@ from .makefile_syntax import Writer as MakeWriter
 from .makefile_syntax import make_cpdir, make_symlink
 from .makefile_syntax import make_execute, make_stamp, make_alias
 from .makefile_syntax import make_common_rules, make_clean
+from .makefile_syntax import make_diff
 from .makefile_syntax import make_runtimes, make_list, make_graph
 
 class MakeBackend( object ):
@@ -30,9 +31,10 @@ class MakeBackend( object ):
 
   # save
 
-  def save( s, order, build_dirs ):
+  def save( s, order, build_dirs, step_dirs ):
     s.order      = order
     s.build_dirs = build_dirs
+    s.step_dirs  = step_dirs
 
   # gen_header
 
@@ -375,6 +377,18 @@ class MakeBackend( object ):
       name    = 'clean-' + idx
       command = 'rm -rf ' + d
       make_clean( s.w, name=name, command=command )
+
+    # Diff target
+
+    s.w.comment( 'Diff' )
+    s.w.newline()
+
+    for step_name in s.order:
+      src     = s.step_dirs[ step_name ]
+      dst     = s.build_dirs[ step_name ]
+      idx     = dst.split('-')[0].lstrip('./')
+      name    = 'diff-' + idx
+      make_diff( s.w, name=name, src=src, dst=dst )
 
     # Runtime target
 
