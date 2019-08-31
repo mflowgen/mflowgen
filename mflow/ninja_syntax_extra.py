@@ -39,7 +39,8 @@ def ninja_cpdir( w, dst, src, deps=None, parameterize=None ):
 
   w.build(
     outputs   = target,
-    implicit  = [ src ] + deps,
+    #implicit  = [ src ] + deps,
+    implicit  = deps,
     rule      = rule,
     variables = { 'dst'   : dst,
                   'src'   : src,

@@ -72,7 +72,7 @@ def make_cpdir( w, dst, src, deps=None, parameterize=None ):
   # There may be many deps, so generate them on separate lines
 
   if deps:
-    deps = [ src ] + deps
+    #deps = [ src ] + deps
     deps = [ d for d in deps if ':' not in d ] # ignore colon files
 
   if deps == None:

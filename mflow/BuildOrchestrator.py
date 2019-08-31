@@ -373,7 +373,8 @@ class BuildOrchestrator( object ):
       # Make the directory dependent on all source files
 
       step_template_dir = step.get_dir()
-      deps              = get_files_in_dir( step_template_dir )
+      deps              = []
+      #deps              = get_files_in_dir( step_template_dir )
 
       # Remove any broken symlinks from the dependency list
 
