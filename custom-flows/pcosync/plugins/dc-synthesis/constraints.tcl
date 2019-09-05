@@ -22,51 +22,59 @@ create_clock -name $pco_clk_name   -period $pco_clk_period   [get_ports clkpco_i
 create_clock -name $spi_clk_name   -period $spi_clk_period   [get_ports spiclk_io]
 create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload_io]
 
-# Create generated clocks
+# Create per-module gated clocks
 
-create_generated_clock -name clk1_gated -divide_by 1 \
+set core1_clk_gated_name ${core1_clk_name}_gated
+set core2_clk_gated_name ${core2_clk_name}_gated
+set pco_clk_gated_name   ${pco_clk_name}_gated
+set ctrl_clk_gated_name  ${pco_clk_name}_ctrl_gated
+set pgen_clk_gated_name  ${core1_clk_name}_pgen_gated
+
+create_generated_clock -name $core1_clk_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clk1_io] \
                        -source [get_pins clkgate_spcore1/clock_out] \
                        -master_clock $core1_clk_name
-create_generated_clock -name clk2_gated -divide_by 1 \
+create_generated_clock -name $core2_clk_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clk2_io] \
                        -source [get_pins clkgate_spcore2/clock_out] \
                        -master_clock $core2_clk_name
-create_generated_clock -name clkpgen_gated -divide_by 1 \
-                       -combinational -add \
-                       [get_ports clk1_io] \
-                       -source [get_pins clkgate_pgen/clock_out] \
-                       -master_clock $core1_clk_name
-create_generated_clock -name clkpco_gated -divide_by 1 \
+create_generated_clock -name $pco_clk_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clkpco_io] \
                        -source [get_pins clkgate_pco/clock_out] \
                        -master_clock $pco_clk_name
-create_generated_clock -name clkctrl_gated -divide_by 1 \
+create_generated_clock -name $ctrl_clk_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clkpco_io] \
                        -source [get_pins clkgate_ctrl/clock_out] \
                        -master_clock $pco_clk_name
+create_generated_clock -name $pgen_clk_gated_name -divide_by 1 \
+                       -combinational -add \
+                       [get_ports clk1_io] \
+                       -source [get_pins clkgate_pgen/clock_out] \
+                       -master_clock $core1_clk_name
 
 # Declare main clocks to be asynchronous
-#
-# Note that this disables all timing checks between groups. Make sure this
-# is what you want!
-
+# Doing so disables all timing checks between groups (set_false_path)
+# Make sure this is desired and custom CDC path constraints are provided
 # For this design, note that core1_clk is used for output paths, so we are
 # in fact ignoring paths from pco outputs to pads. Be careful!
 
+# Use wildcard to group gated clocks with their respective masters
+# Using -filter example (old): -group [get_clocks -filter "name == $core1_clk_name || name == $core2_clk_name"] \
 set_clock_groups -asynchronous \
-  -group [get_clocks -filter "name == $core1_clk_name || name == $core2_clk_name"] \
-  -group $pco_clk_name \
-  -group $spi_clk_name \
-  -group $spi_load_name
+                 -group [get_clocks ${core1_clk_name}*] \
+                 -group [get_clocks ${core2_clk_name}*] \
+                 -group [get_clocks ${pco_clk_name}*] \
+                 -group $spi_clk_name \
+                 -group $spi_load_name
 
-set_clock_groups -logically_exclusive \
-  -group $core1_clk_name \
-  -group $core2_clk_name
+# The below is a subset of -asynchronous relevant for Signal Integrity (SI) only, so skip!
+#set_clock_groups -logically_exclusive \
+#  -group $core1_clk_name \
+#  -group $core2_clk_name
 
 # Set clock uncertainty
 
@@ -84,9 +92,9 @@ set_clock_groups -logically_exclusive \
 
 # Just set 1 ns clock uncertainty since the clock cycle is so long
 
-set_clock_uncertainty 1   [get_clocks $core1_clk_name]
-set_clock_uncertainty 1   [get_clocks $core2_clk_name]
-set_clock_uncertainty 0.5 [get_clocks $pco_clk_name]
+set_clock_uncertainty 1   [get_clocks ${core1_clk_name}*]
+set_clock_uncertainty 1   [get_clocks ${core2_clk_name}*]
+set_clock_uncertainty 0.5 [get_clocks ${pco_clk_name}*]
 set_clock_uncertainty 1   [get_clocks $spi_clk_name]
 set_clock_uncertainty 1   [get_clocks $spi_load_name]
 
