@@ -63,7 +63,11 @@ def main():
   # Configure YAML
 
   with open( 'configure.yaml', 'r' ) as fd:
-    data_cfg = yaml.load( fd )['parameters']
+    try:
+      data_cfg = yaml.load( fd, Loader=yaml.FullLoader )['parameters']
+    except AttributeError:
+      # PyYAML for python2 does not have FullLoader
+      data_cfg = yaml.load( fd )['parameters']
 
   data.update( data_cfg )
 
