@@ -15,3 +15,6 @@
 
 report_ports > $vars(rpt_dir)/$vars(step).ports.rpt
 
+#set_dont_touch on pgen trigger logic
+set_dont_touch [get_cells pulsegen1/pulsegen_trigger1]
+

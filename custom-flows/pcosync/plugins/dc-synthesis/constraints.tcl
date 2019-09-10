@@ -2,6 +2,9 @@
 # Design Constraints File
 #=========================================================================
 
+# This file is based on detailed knowledge of the CDC paths in the design
+# All critical crossings are handled manually with shadow clocks (_cdc)
+
 # Create main clocks
 
 set core1_clk_name core1_clk
@@ -11,10 +14,10 @@ set spi_clk_name   spi_clk
 set spi_load_name  spi_load
 
 set core1_clk_period 100
-set core2_clk_period 100
+set core2_clk_period $core1_clk_period
 set pco_clk_period   50
-set spi_clk_period   100
-set spi_load_period  100
+set spi_clk_period   1000
+set spi_load_period  $spi_clk_period
 
 create_clock -name $core1_clk_name -period $core1_clk_period [get_ports clk1_io]
 create_clock -name $core2_clk_name -period $core2_clk_period [get_ports clk2_io]
@@ -24,11 +27,11 @@ create_clock -name $spi_load_name  -period $spi_load_period  [get_ports spiload_
 
 # Create per-module gated clocks
 
-set core1_clk_gated_name ${core1_clk_name}_gated
-set core2_clk_gated_name ${core2_clk_name}_gated
-set pco_clk_gated_name   ${pco_clk_name}_gated
-set ctrl_clk_gated_name  ${pco_clk_name}_ctrl_gated
-set pgen_clk_gated_name  ${core1_clk_name}_pgen_gated
+set core1_clk_gated_name      ${core1_clk_name}_gated
+set core2_clk_gated_name      ${core2_clk_name}_gated
+set pco_clk_gated_name        ${pco_clk_name}_gated
+set pco_clk_ctrl_gated_name   ${pco_clk_name}_ctrl_gated
+set core1_clk_pgen_gated_name ${core1_clk_name}_pgen_gated
 
 create_generated_clock -name $core1_clk_gated_name -divide_by 1 \
                        -combinational -add \
@@ -45,12 +48,12 @@ create_generated_clock -name $pco_clk_gated_name -divide_by 1 \
                        [get_ports clkpco_io] \
                        -source [get_pins clkgate_pco/clock_out] \
                        -master_clock $pco_clk_name
-create_generated_clock -name $ctrl_clk_gated_name -divide_by 1 \
+create_generated_clock -name $pco_clk_ctrl_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clkpco_io] \
                        -source [get_pins clkgate_ctrl/clock_out] \
                        -master_clock $pco_clk_name
-create_generated_clock -name $pgen_clk_gated_name -divide_by 1 \
+create_generated_clock -name $core1_clk_pgen_gated_name -divide_by 1 \
                        -combinational -add \
                        [get_ports clk1_io] \
                        -source [get_pins clkgate_pgen/clock_out] \
@@ -59,11 +62,10 @@ create_generated_clock -name $pgen_clk_gated_name -divide_by 1 \
 # Declare main clocks to be asynchronous
 # Doing so disables all timing checks between groups (set_false_path)
 # Make sure this is desired and custom CDC path constraints are provided
-# For this design, note that core1_clk is used for output paths, so we are
-# in fact ignoring paths from pco outputs to pads. Be careful!
 
 # Use wildcard to group gated clocks with their respective masters
-# Using -filter example (old): -group [get_clocks -filter "name == $core1_clk_name || name == $core2_clk_name"] \
+# Using -filter example (old): -group [get_clocks -filter "name == $core1_clk_name || name == $core2_clk_name"]
+
 set_clock_groups -asynchronous \
                  -group [get_clocks ${core1_clk_name}*] \
                  -group [get_clocks ${core2_clk_name}*] \
@@ -71,10 +73,11 @@ set_clock_groups -asynchronous \
                  -group $spi_clk_name \
                  -group $spi_load_name
 
-# The below is a subset of -asynchronous relevant for Signal Integrity (SI) only, so skip!
+# The below is a subset of -asynchronous, relevant for Signal Integrity (SI) only, so skip!
+
 #set_clock_groups -logically_exclusive \
-#  -group $core1_clk_name \
-#  -group $core2_clk_name
+#                 -group $core1_clk_name \
+#                 -group $core2_clk_name
 
 # Set clock uncertainty
 
@@ -101,39 +104,48 @@ set_clock_uncertainty 1   [get_clocks $spi_load_name]
 #-------------------------------------------------------------------------
 # Clock domain crossings
 #-------------------------------------------------------------------------
+
 # Check clock domain crossings using Paul Zimmer's "No Man's Land:
-# Constraining async clock domain crossings" article from 2013 on handling
-# them.
+# Constraining async clock domain crossings" article from 2013 on handling them.
 
 # Create shadow clocks for cdc checking
+# Use only clocks (gated or not) that drive cdc flops
+# Any crossings need their own shadows. Be careful!
 
-create_clock -add -name ${core1_clk_name}_cdc -period $core1_clk_period [get_ports clk1_io]
-create_clock -add -name ${core2_clk_name}_cdc -period $core2_clk_period [get_ports clk2_io]
-create_clock -add -name ${pco_clk_name}_cdc   -period $pco_clk_period   [get_ports clkpco_io]
-create_clock -add -name ${spi_clk_name}_cdc   -period $spi_clk_period   [get_ports spiclk_io]
-create_clock -add -name ${spi_load_name}_cdc  -period $spi_load_period  [get_ports spiload_io]
+create_clock -add -name ${core1_clk_name}_cdc             -period $core1_clk_period [get_ports clk1_io]
+create_clock -add -name ${core2_clk_name}_cdc             -period $core2_clk_period [get_ports clk2_io]
+#create_clock -add -name ${pco_clk_name}_cdc   -period $pco_clk_period   [get_ports clkpco_io]
+create_clock -add -name ${core1_clk_gated_name}_cdc       -period $core1_clk_period [get_pins clkgate_spcore1/clock_out]
+create_clock -add -name ${core2_clk_gated_name}_cdc       -period $core2_clk_period [get_pins clkgate_spcore2/clock_out]
+create_clock -add -name ${pco_clk_gated_name}_cdc         -period $pco_clk_period   [get_pins clkgate_pco/clock_out]
+create_clock -add -name ${pco_clk_ctrl_gated_name}_cdc    -period $pco_clk_period   [get_pins clkgate_ctrl/clock_out]
+create_clock -add -name ${core1_clk_pgen_gated_name}_cdc  -period $core1_clk_period [get_pins clkgate_pgen/clock_out]
+create_clock -add -name ${spi_clk_name}_cdc               -period $spi_clk_period   [get_ports spiclk_io]
+create_clock -add -name ${spi_load_name}_cdc              -period $spi_load_period  [get_ports spiload_io]
 
 # Clean up and remove the auto-generated path groups for each of these
 
 remove_path_group ${core1_clk_name}_cdc
 remove_path_group ${core2_clk_name}_cdc
-remove_path_group ${pco_clk_name}_cdc
+#remove_path_group ${pco_clk_name}_cdc
+remove_path_group ${core1_clk_gated_name}_cdc
+remove_path_group ${core2_clk_gated_name}_cdc
+remove_path_group ${pco_clk_gated_name}_cdc
+remove_path_group ${pco_clk_ctrl_gated_name}_cdc
+remove_path_group ${core1_clk_pgen_gated_name}_cdc
 remove_path_group ${spi_clk_name}_cdc
 remove_path_group ${spi_load_name}_cdc
 
 # Create new path groups for the CDCs we care about
-#
-# For some reason the commands don't work with variables... so we have to
-# hardcode the clock names
 
-group_path -name cores_to_pco -from {core1_clk_cdc core2_clk_cdc} -to ${pco_clk_name}_cdc
-group_path -name pco_to_cores -from ${pco_clk_name}_cdc -to {core1_clk_cdc core2_clk_cdc}
+group_path -name cores_to_pco -from [list ${core1_clk_name}*_cdc ${core2_clk_name}*_cdc] -to [list ${pco_clk_name}*_cdc]
+group_path -name pco_to_cores -from [list ${pco_clk_name}*_cdc] -to [list ${core1_clk_name}*_cdc ${core2_clk_name}*_cdc]
 
-group_path -name core1_to_core2 -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc
-group_path -name core2_to_core1 -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc
+group_path -name core1_to_core2 -from ${core1_clk_gated_name}_cdc -to ${core2_clk_gated_name}_cdc
+group_path -name core2_to_core1 -from ${core2_clk_gated_name}_cdc -to ${core1_clk_gated_name}_cdc
 
 group_path -name spi_to_spiload -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc
-group_path -name spiload_to_chip -from ${spi_load_name}_cdc -to {core1_clk_cdc core2_clk_cdc pco_clk_cdc}
+group_path -name spiload_to_chip -from ${spi_load_name}_cdc -to [list ${core1_clk_name}*_cdc ${core2_clk_name}*_cdc ${pco_clk_name}*_cdc]
 
 # Make sure cdc clocks aren't propagated
 
@@ -148,97 +160,135 @@ foreach_in_collection cdcclk [get_clocks *_cdc] {
 # Make cdc clocks physically exclusive from all other clocks
 
 set_clock_groups -physically_exclusive \
-  -group [remove_from_collection [get_clocks *] [get_clocks *_cdc]] \
-  -group [get_clocks *_cdc]
+                 -group [remove_from_collection [get_clocks *] [get_clocks *_cdc]] \
+                 -group [get_clocks *_cdc]
 
+#-------------------------------------------------------------------------
 # Constraints
-#
-#
-#                     Constraint (ns)
-# From      To        Hold      Setup
+#-------------------------------------------------------------------------
+
+# The constraint table is organized by clock gated design units and spi.
+# List of gated clock domains: core1, core2, pco, ctrl, pgen, spiclk, spiload
+# Ctirical design paths that hould have sharp transition and short delay:
+# 1) core1/core2 to pco (ORed to 1-bit data)
+# -> combinational paths are false paths
+# 2) pco to pgen (1-bit data) + set_dont_touch on pgen trigger logic
+# -> also duplicate set_dont_touch in post_init.tcl
+# 3) ctrl to core1/core2  (2x 1-bit data)
+# Non-critical design paths:
+# 1) core to core -> 1/4 $core1_clk_period max delay
+# 2) spiclk to spiload -> 1/2 $spi_clk_period max delay
+# 3) spiload to <other> -> 1/2 $spi_clk_period max delay
+
+set critical_path_delay 2
+
 # ----------------------------------------------------
-# core1     core2     0.0       10.0
-# core1     pco       0.0       10.0
-# core1     spi       -- false path --
+#                     Constraint (ns)
+# From      To        Hold       Setup
+# ----------------------------------------------------
+# core1     core2     0.0         25.0
+# core1     pco       0.0         $var   <-- sharp transition + false path on combinational
+# core1     ctrl      -- false path --
+# core1     pgen      -- same clock --
+# core1     spiclk    -- false path --
 # core1     spiload   -- false path --
 #
-# core2     core1     0.0       10.0
-# core2     pco       0.0       10.0
-# core2     spi       -- false path --
+# core2     core1     0.0         25.0
+# core2     pco       0.0         $var   <-- sharp transition + false path on combinational
+# core2     ctrl      -- false path --
+# core2     pgen      -- false path --
+# core2     spiclk    -- false path --
 # core2     spiload   -- false path --
 #
-# pco       core1     0.0       10.0
-# pco       core2     0.0       10.0
-# pco       spi       -- false path --
+# pco       core1     -- false path --
+# pco       core2     -- false path --
+# pco       ctrl      -- same clock --
+# pco       pgen      0.0         $var   <-- sharp transition + false path on combinational + don't touch
+# pco       spiclk    -- false path --
 # pco       spiload   -- false path --
 #
-# spi       core1     -- false path --
-# spi       core2     -- false path --
-# spi       pco       -- false path --
-# spi       spiload   0.0       40.0    <-- don't care
+# ctrl      core1     0.0         $var   <-- sharp transition (gated and ungated clocks)
+# ctrl      core2     0.0         $var   <-- sharp transition (gated and ungated clocks)
+# ctrl      pco       -- same clock --
+# ctrl      pgen      -- false path --
+# ctrl      spiclk    -- false path --
+# ctrl      spiload   -- false path --
 #
-# spiload   core1     0.0       40.0    <-- don't care
-# spiload   core2     0.0       40.0    <-- don't care
-# spiload   pco       0.0       40.0    <-- don't care
-# spiload   spi       -- false path --
+# pgen      core1     -- same clock --
+# pgen      core2     -- false path --
+# pgen      pco       -- false path --
+# pgen      ctrl      -- false path --
+# pgen      spiclk    -- false path --
+# pgen      spiload   -- false path --
+#
+# spiclk    spiload   0.0        500.0   <-- don't care
+# spiclk    <other>   -- false path --
+#
+# spiload   spiclk    -- false path --
+# spiload   <other>   0.0        500.0   <-- don't care
+# ----------------------------------------------------
 
-# Constrain paths from core 1
+# Constrain paths from core1
 
-set_min_delay -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc 0.0
-set_max_delay -from ${core1_clk_name}_cdc -to ${core2_clk_name}_cdc 10.0
+set_min_delay  -from ${core1_clk_gated_name}_cdc -to ${core2_clk_gated_name}_cdc 0.0
+set_max_delay  -from ${core1_clk_gated_name}_cdc -to ${core2_clk_gated_name}_cdc 25.0
 
-set_min_delay -from ${core1_clk_name}_cdc -to ${pco_clk_name}_cdc 0.0
-set_max_delay -from ${core1_clk_name}_cdc -to ${pco_clk_name}_cdc 10.0
+set_min_delay  -from ${core1_clk_gated_name}_cdc -to ${pco_clk_gated_name}_cdc 0.0
+set_max_delay  -from ${core1_clk_gated_name}_cdc -to ${pco_clk_gated_name}_cdc $critical_path_delay
 
-set_false_path -from ${core1_clk_name}_cdc -to ${spi_clk_name}_cdc
-set_false_path -from ${core1_clk_name}_cdc -to ${spi_load_name}_cdc
+set_false_path -from ${core1_clk_gated_name}_cdc -through spcore1/vpeak_out_comb -to ${pco_clk_gated_name}_cdc
 
-# Constrain paths from core 2
+# Constrain paths from core2
 
-set_min_delay -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc 0.0
-set_max_delay -from ${core2_clk_name}_cdc -to ${core1_clk_name}_cdc 10.0
+set_min_delay  -from ${core2_clk_gated_name}_cdc -to ${core1_clk_gated_name}_cdc 0.0
+set_max_delay  -from ${core2_clk_gated_name}_cdc -to ${core1_clk_gated_name}_cdc 25.0
 
-set_min_delay -from ${core2_clk_name}_cdc -to ${pco_clk_name}_cdc 0.0
-set_max_delay -from ${core2_clk_name}_cdc -to ${pco_clk_name}_cdc 10.0
+set_min_delay  -from ${core2_clk_gated_name}_cdc -to ${pco_clk_gated_name}_cdc 0.0
+set_max_delay  -from ${core2_clk_gated_name}_cdc -to ${pco_clk_gated_name}_cdc $critical_path_delay
 
-set_false_path -from ${core2_clk_name}_cdc -to ${spi_clk_name}_cdc
-set_false_path -from ${core2_clk_name}_cdc -to ${spi_load_name}_cdc
+set_false_path -from ${core2_clk_gated_name}_cdc -through spcore2/vpeak_out_comb -to ${pco_clk_gated_name}_cdc
 
 # Constrain paths from pco
 
-set_min_delay -from ${pco_clk_name}_cdc -to ${core1_clk_name}_cdc 0.0
-set_max_delay -from ${pco_clk_name}_cdc -to ${core1_clk_name}_cdc 10.0
+set_min_delay  -from ${pco_clk_gated_name}_cdc -to ${core1_clk_pgen_gated_name}_cdc 0.0
+set_max_delay  -from ${pco_clk_gated_name}_cdc -to ${core1_clk_pgen_gated_name}_cdc $critical_path_delay
 
-set_min_delay -from ${pco_clk_name}_cdc -to ${core2_clk_name}_cdc 0.0
-set_max_delay -from ${pco_clk_name}_cdc -to ${core2_clk_name}_cdc 10.0
+set_false_path -from ${pco_clk_gated_name}_cdc -through pco1/pco_pulse_out_comb -to ${core1_clk_pgen_gated_name}_cdc
 
-set_false_path -from ${pco_clk_name}_cdc -to ${spi_clk_name}_cdc
-set_false_path -from ${pco_clk_name}_cdc -to ${spi_load_name}_cdc
+#set_dont_touch [get_cells pulsegen1/pulsegen_trigger1]
+
+# Constrain paths from ctrl
+
+set_min_delay -from ${pco_clk_ctrl_gated_name}_cdc -to [list ${core1_clk_name}*_cdc] 0.0
+set_max_delay -from ${pco_clk_ctrl_gated_name}_cdc -to [list ${core1_clk_name}*_cdc] $critical_path_delay
+
+set_min_delay -from ${pco_clk_ctrl_gated_name}_cdc -to [list ${core2_clk_name}*_cdc] 0.0
+set_max_delay -from ${pco_clk_ctrl_gated_name}_cdc -to [list ${core2_clk_name}*_cdc] $critical_path_delay
 
 # Constrain paths from spiclk
 
-set_false_path -from ${spi_clk_name}_cdc -to ${core1_clk_name}_cdc
-set_false_path -from ${spi_clk_name}_cdc -to ${core2_clk_name}_cdc
-set_false_path -from ${spi_clk_name}_cdc -to ${pco_clk_name}_cdc
-
 set_min_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 0.0
-set_max_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 40.0
+set_max_delay -from ${spi_clk_name}_cdc -to ${spi_load_name}_cdc 500.0
 
 # Constrain paths from spiload
 
-set_min_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_name}_cdc 40.0
+set_min_delay -from ${spi_load_name}_cdc -to ${core1_clk_gated_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_gated_name}_cdc 500.0
 
-set_min_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${core2_clk_name}_cdc 40.0
+set_min_delay -from ${spi_load_name}_cdc -to ${core2_clk_gated_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core2_clk_gated_name}_cdc 500.0
 
-set_min_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 0.0
-set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_name}_cdc 40.0
+set_min_delay -from ${spi_load_name}_cdc -to ${pco_clk_gated_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_gated_name}_cdc 500.0
 
-set_false_path -from ${spi_load_name}_cdc -to ${spi_clk_name}_cdc
+set_min_delay -from ${spi_load_name}_cdc -to ${pco_clk_ctrl_gated_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${pco_clk_ctrl_gated_name}_cdc 500.0
 
-# Make sure these delay constraints have priority. The chip will not work if
-# these are not honored.
+set_min_delay -from ${spi_load_name}_cdc -to ${core1_clk_pgen_gated_name}_cdc 0.0
+set_max_delay -from ${spi_load_name}_cdc -to ${core1_clk_pgen_gated_name}_cdc 500.0
+
+# Make sure these delay constraints have priority.
+# The chip will not work if these are not honored.
 
 set_cost_priority {min_delay max_delay}
 
@@ -250,7 +300,7 @@ set_cost_priority {min_delay max_delay}
 #
 # 1. CDC paths between clocks (i.e., "get_timing -from clk1 ... -to clk2 ...")
 # 2. Warnings in check_timing report (e.g., unconstrained paths)
-# 2. Can a different cost function do better?
+# 3. Can a different cost function do better?
 
 # FIXME: apply data checks for I and Q
 
@@ -270,40 +320,45 @@ set_max_transition 1 ${dc_design_name}
 #
 # Delay
 #
-# - ADC inputs have 1/8 core clk period to propagate to regs
-# - SPI Din / debug inputs both have 1/8 clk period as well
+# - ADC inputs have 1/8 core clk period to propagate to regs (somewhat arbitrary)
+# - SPI Din / debug inputs both have 1/8 clk period as well (somewhat arbitrary)
+
+# Defined assumed drive strength to IO cell input ports from the outside world
 
 set_input_transition 1 [all_inputs]
 
-# ADC input constraints
+# ADC input constraints.
+# Input delay is the time from a rising lcock edge to when the input appears at the input port (pad)
+# Input delay of 0 means 100% of clock cycle is avaliable to the tool (7/8 = 12.5 %)
+# Any clock could be used for delay reference. Clocks 1 and 2 are both used for redundancy.
 
-set ADC_input_ports \
-  [filter_collection [all_inputs] -regexp {name=~ ADC.*}]
-
-set ADC_input_delay [expr $core1_clk_period/8]
+set ADC_input_ports [filter_collection [all_inputs] -regexp {name=~ ADC.*}]
+set ADC_input_delay [expr 3*$core1_clk_period/4]
 
 set_input_delay -clock $core1_clk_name            $ADC_input_delay $ADC_input_ports
 set_input_delay -clock $core2_clk_name -add_delay $ADC_input_delay $ADC_input_ports
 
 # SPI Din / debug input constraints
 
-set spidin_input_delay [expr $spi_clk_period/8]
+set spidin_input_delay [expr 3*$spi_clk_period/4]
 
 set_input_delay -clock $spi_clk_name $spidin_input_delay spidin_io
 
-set debug_input_delay [expr $pco_clk_period/4]
+set debug_input_delay [expr 3*$pco_clk_period/4]
 
 set_input_delay -clock $pco_clk_name $debug_input_delay debug_in_io
 
-# Outputs
+# Outputs (for completion and to avoid tool warnings, not really needed)
 #
 # - Drive 12 pF
 # - Must meet 6ns slew (slow due to pads)
-# - Have 1/4 pco clk period to propagate to output ports
+# - Have 1/4 pco clk period to propagate to output ports (arbitrary)
 
 set_load -pin_load 12 [all_outputs]
 
 set_max_transition 6 [all_outputs]
+
+# I'm going to take this long outside of the block, ~ 1/4 left for internal propagation
 
 set outmux_output_delay [expr 3*$pco_clk_period/4]
 
@@ -325,12 +380,13 @@ set_input_delay -clock $core1_clk_name            $reset_input_delay $reset_port
 set_input_delay -clock $core2_clk_name -add_delay $reset_input_delay $reset_port
 set_input_delay -clock $pco_clk_name   -add_delay $reset_input_delay $reset_port
 
-# Special constraints
+## Special constraints (probably not needed and/or redundant)
+##
+## set min/max delay apply after set input delay constraint
+## Try to make ADC inputs all arrive at registers at similar times
 #
-# Try to make ADC inputs all arrive at registers at similar times
-
-set_min_delay -from [get_ports ADC*] 11.5; # Restrict arrival between
-set_max_delay -from [get_ports ADC*] 15.0; # 11.5 ns to 15.0 ns
+#set_min_delay -from [get_ports ADC*] 11.5; # Restrict arrival between
+#set_max_delay -from [get_ports ADC*] 15.0; # 11.5 ns to 15.0 ns
 
 # The debug_in has a feedthrough path that goes straight out to an output
 # pad. Mark it as a false path.
