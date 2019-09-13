@@ -8,11 +8,6 @@
 
 dc_exec='dc_shell-xg-t -64bit -topographical_mode'
 
-# Extract params from the configure YAML
-
-python dump-parameters.py
-source ./params.sh
-
 # Build directories
 
 rm -rf ./logs
@@ -83,5 +78,20 @@ cd ..
 grep --color "^Error" logs/dc.log || true
 grep --color -B 3 "*** Presto compilation terminated" logs/dc.log || true
 grep --color "unresolved references." logs/dc.log || true
+
+# ELAB-405
+#
+# When using a Verilog generation tool, there may be a
+# generation/translation mistake that defines a net twice. This will give
+# a message like this:
+#
+#     Warning:  ./inputs/design.v:2473: Net mul__recv__msg__opd_b[0] or a
+#     directly connected net may be driven by more than one process or block.
+#     (ELAB-405)
+#
+# This is usually a bad sign..
+#
+
+grep --color "ELAB-405" logs/dc.log || true
 
 

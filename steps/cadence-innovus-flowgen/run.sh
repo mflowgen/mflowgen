@@ -6,11 +6,6 @@
 # Date   : June 2, 2019
 #
 
-# Extract params from the configure YAML
-
-python dump-parameters.py
-source ./params.sh
-
 # Generate the Innovus foundation flow scripts
 
 innovus -64 -no_gui -no_logv -batch -execute "writeFlowTemplate"

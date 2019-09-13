@@ -174,6 +174,20 @@ class BuildOrchestrator( object ):
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
 
+      # Params
+
+      params          = s.g.get_step( step_name ).params()
+      params_str      = 'export {}={}'
+      params_commands = \
+        [ params_str.format(k,v) for k, v in params.items() ]
+
+      fd.write( '# Pre\n' )
+      fd.write( '\n' )
+      for c in params_commands:
+        fd.write( c )
+        fd.write( '\n' )
+      fd.write( '\n' )
+
       # Commands
 
       fd.write( '# Debug\n' )

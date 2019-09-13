@@ -42,7 +42,5 @@ parameters:
 debug:
   - export DC_EXIT_AFTER_SETUP=1
   - ln -sf results/*.mapped.ddc debug.ddc
-  - python dump-parameters.py
-  - source ./params.sh
   - design_vision-xg -topographical -x "source dc.tcl; read_ddc debug.ddc"
 
