@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #=========================================================================
-# configure.py
+# configure
 #=========================================================================
 #
 #  -h --help     Display this message
@@ -76,11 +76,17 @@ def main():
   elif opts.backend == 'ninja':
     backend_cls = NinjaBackend
 
-  # Generate the ninja build
+  # Generate the build files (e.g., Makefile)
 
   g = setup_graph()
   b = BuildOrchestrator( g, backend_cls )
   b.build()
+
+  # Done
+
+  list_cmd  = opts.backend + " list"
+
+  print( "Targets: run \"" + list_cmd + "\"" )
 
 main()
 

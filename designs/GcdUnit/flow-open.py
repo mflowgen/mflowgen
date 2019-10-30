@@ -29,7 +29,7 @@ def setup_graph():
   #-----------------------------------------------------------------------
 
   adk_name = 'freepdk-45nm'
-  adk_view = 'stdview'
+  adk_view = 'view-tiny'
 
   parameters = {
     'design_name'  : 'GcdUnit',
@@ -48,26 +48,17 @@ def setup_graph():
   # Import steps
   #-----------------------------------------------------------------------
 
-  # ADK as a step
+  this_dir = os.path.dirname( os.path.abspath( __file__ ) )
+
+  # ADK step
 
   adk = g.get_adk_step()
 
   # Custom steps
-  #
-  # - rtl
-  #
-
-  this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
   rtl = Step( this_dir + '/rtl' )
 
   # Default steps
-  #
-  # - info
-  # - synthesis
-  # - place
-  # - route
-  #
 
   info    = Step( 'info',                 default=True )
   yosys   = Step( 'open-yosys-synthesis', default=True )

@@ -360,19 +360,19 @@ def ninja_list( w, steps, debug_targets ):
   steps_str = \
     [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( steps ) ]
 
-  special = [
+  generic = [
     '"list     -- List all targets"',
     '"runtimes -- Print runtimes for each step"',
     '"graph    -- Generate a PDF of the step dependency graph"',
     '"clean    -- Remove all build directories"',
-    '"clean-N  -- Clean build N"',
-    '"diff-N   -- Diff build N"',
+    '"clean-N  -- Clean target N"',
+    '"diff-N   -- Diff target N"',
   ]
 
   commands = [
     'echo',
-    'echo Special Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( special ),
+    'echo Generic Targets\: && echo && ' + \
+      'printf " - %s\\n" ' + ' '.join( generic ),
     'echo',
     'echo Targets\: && echo && ' + \
       'printf " - %s\\n" ' + ' '.join( steps_str ),
