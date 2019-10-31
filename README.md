@@ -43,7 +43,7 @@ open 45nm ASIC design kit:
 
     % cd $TOP
     % mkdir build && cd build
-    % ../configure.py
+    % ../configure
 
 You can show information about the currently configured flow fairly
 easily:

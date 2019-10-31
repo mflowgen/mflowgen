@@ -1,0 +1,52 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : October 30, 2019
+#
+
+name: cadence-innovus-postroute
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
+  - adk
+  - design.sdc
+  - route.enc.dat
+  - route.enc
+
+outputs:
+  - postroute.enc.dat
+  - postroute.enc
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - ln -sf inputs/innovus-foundation-flow
+  - mkdir -p checkpoints
+  - cd checkpoints && ln -sf ../inputs/route.enc* . && cd ..
+  - innovus -overwrite -64 -nowin
+    -init innovus-foundation-flow/INNOVUS/run_postroute.tcl
+    -log run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/postroute.enc.dat
+  - ln -sf ../checkpoints/postroute.enc
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - export STEP=postroute
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
+

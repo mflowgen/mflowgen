@@ -1,0 +1,52 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : October 30, 2019
+#
+
+name: cadence-innovus-place
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
+  - adk
+  - design.sdc
+  - init.enc.dat
+  - init.enc
+
+outputs:
+  - place.enc.dat
+  - place.enc
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - ln -sf inputs/innovus-foundation-flow
+  - mkdir -p checkpoints
+  - cd checkpoints && ln -sf ../inputs/init.enc* . && cd ..
+  - innovus -overwrite -64 -nowin
+    -init innovus-foundation-flow/INNOVUS/run_place.tcl
+    -log run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/place.enc.dat
+  - ln -sf ../checkpoints/place.enc
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - export STEP=place
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
+

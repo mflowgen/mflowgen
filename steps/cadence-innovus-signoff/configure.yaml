@@ -1,0 +1,64 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : October 30, 2019
+#
+
+name: cadence-innovus-signoff
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
+  - adk
+  - design.sdc
+  - postroute.enc.dat
+  - postroute.enc
+
+outputs:
+  - design.gds.gz
+  - design.lvs.v
+  - design.vcs.v
+  - design.lef
+  - design.pt.sdc
+  - design.sdf
+  - design.virtuoso.v
+  - design.spef.gz
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - ln -sf inputs/innovus-foundation-flow
+  - mkdir -p checkpoints
+  - cd checkpoints && ln -sf ../inputs/postroute.enc* . && cd ..
+  - innovus -overwrite -64 -nowin
+    -init innovus-foundation-flow/INNOVUS/run_signoff.tcl
+    -log run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../typical.spef.gz  design.spef.gz
+  - ln -sf ../results/*.gds.gz design.gds.gz
+  - ln -sf ../results/*.lvs.v  design.lvs.v
+  - ln -sf ../results/*.vcs.v  design.vcs.v
+  - ln -sf ../results/*.lef    design.lef
+  - ln -sf ../results/*.pt.sdc design.pt.sdc
+  - ln -sf ../results/*.sdf    design.sdf
+  - ln -sf ../results/*.virtuoso.v design.virtuoso.v
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - export STEP=signoff
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
+

@@ -1,40 +1,52 @@
 #=========================================================================
-# ASIC Design Kit -- FreePDK45 + NanGate Open Cell Library
+# Cadence Innovus
 #=========================================================================
 # Author : Christopher Torng
-# Date   : June 7, 2019
+# Date   : October 30, 2019
 #
 
-name: freepdk-45nm
+name: cadence-innovus-cts
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
-outputs:
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
   - adk
+  - design.sdc
+  - place.enc.dat
+  - place.enc
+
+outputs:
+  - cts.enc.dat
+  - cts.enc
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # If standard view is selected, download the full pkg (~17MB)
-  - if [[ x{adk_view} == xview-standard ]]; then
-      cd pkgs/ && wget http://www.csl.cornell.edu/~ctorng/dropbox/pkg-freepdk45-nangate.tar.gz && tar xzvf pkg-freepdk45-nangate.tar.gz && cd ..;
-      mkdir -p view-standard && cd view-standard;
-      cp -rf ../pkgs/pkg-freepdk45-nangate/* .;
-      cd ..;
-    fi
-  # Set up the outputs
-  - mkdir -p outputs && cd outputs
-  - ln -sf ../{adk_view} adk
+  - ln -sf inputs/innovus-foundation-flow
+  - mkdir -p checkpoints
+  - cd checkpoints && ln -sf ../inputs/place.enc* . && cd ..
+  - innovus -overwrite -64 -nowin
+    -init innovus-foundation-flow/INNOVUS/run_cts.tcl
+    -log run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/cts.enc.dat
+  - ln -sf ../checkpoints/cts.enc
 
 #-------------------------------------------------------------------------
-# Parameters
+# Debug
 #-------------------------------------------------------------------------
 
-parameters:
-  adk: freepdk-45nm
-  adk_view: view-tiny
+debug:
+  - export STEP=cts
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
 
