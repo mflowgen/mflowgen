@@ -61,6 +61,7 @@ def setup_graph():
   # Default steps
 
   info         = Step( 'info',                         default=True )
+  constraints  = Step( 'constraints',                  default=True )
   dc           = Step( 'synopsys-dc-synthesis',        default=True )
   iflow        = Step( 'cadence-innovus-flowgen',      default=True )
   iplugins     = Step( 'cadence-innovus-plugins',      default=True )
@@ -79,6 +80,7 @@ def setup_graph():
   adk.update_params( parameters )
   info.update_params( parameters )
   dc.update_params( parameters )
+  constraints.update_params( parameters )
   iflow.update_params( parameters )
 
   #-----------------------------------------------------------------------
@@ -87,6 +89,7 @@ def setup_graph():
 
   g.add_step( info         )
   g.add_step( rtl          )
+  g.add_step( constraints  )
   g.add_step( dc           )
   g.add_step( iflow        )
   g.add_step( iplugins     )
@@ -114,7 +117,8 @@ def setup_graph():
   g.connect_by_name( adk,      postroute    )
   g.connect_by_name( adk,      signoff      )
 
-  g.connect_by_name( rtl,      dc           )
+  g.connect_by_name( rtl,         dc        )
+  g.connect_by_name( constraints, dc        )
 
   g.connect_by_name( dc,       iflow        )
   g.connect_by_name( dc,       init         )

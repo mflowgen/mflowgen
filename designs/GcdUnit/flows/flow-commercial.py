@@ -60,11 +60,12 @@ def setup_graph():
 
   # Default steps
 
-  info       = Step( 'info',                        default=True )
-  dc         = Step( 'synopsys-dc-synthesis',       default=True )
-  iflow      = Step( 'cadence-innovus-flowgen',     default=True )
-  iplugins   = Step( 'cadence-innovus-plugins',     default=True )
-  placeroute = Step( 'cadence-innovus-place-route', default=True )
+  info        = Step( 'info',                        default=True )
+  constraints = Step( 'constraints',                 default=True )
+  dc          = Step( 'synopsys-dc-synthesis',       default=True )
+  iflow       = Step( 'cadence-innovus-flowgen',     default=True )
+  iplugins    = Step( 'cadence-innovus-plugins',     default=True )
+  placeroute  = Step( 'cadence-innovus-place-route', default=True )
 
   #-----------------------------------------------------------------------
   # Parameterize
@@ -72,6 +73,7 @@ def setup_graph():
 
   adk.update_params( parameters )
   info.update_params( parameters )
+  constraints.update_params (parameters )
   dc.update_params( parameters )
   iflow.update_params( parameters )
 
@@ -79,12 +81,13 @@ def setup_graph():
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info       )
-  g.add_step( rtl        )
-  g.add_step( dc         )
-  g.add_step( iflow      )
-  g.add_step( iplugins   )
-  g.add_step( placeroute )
+  g.add_step( info        )
+  g.add_step( rtl         )
+  g.add_step( constraints )
+  g.add_step( dc          )
+  g.add_step( iflow       )
+  g.add_step( iplugins    )
+  g.add_step( placeroute  )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -92,8 +95,9 @@ def setup_graph():
 
   # Connect by name
 
-  g.connect_by_name( rtl,      dc )
-  g.connect_by_name( adk,      dc )
+  g.connect_by_name( rtl,         dc )
+  g.connect_by_name( adk,         dc )
+  g.connect_by_name( constraints, dc )
 
   g.connect_by_name( adk,      iflow )
   g.connect_by_name( dc,       iflow )
