@@ -19,6 +19,7 @@
 
 set dc_design_name              $::env(design_name)
 set dc_clock_period             $::env(clock_period)
+set dc_flatten_effort           $::env(flatten_effort)
 
 #-------------------------------------------------------------------------
 # Inputs
