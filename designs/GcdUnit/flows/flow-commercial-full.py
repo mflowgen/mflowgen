@@ -118,7 +118,7 @@ def setup_graph():
   g.connect_by_name( adk,      signoff      )
 
   g.connect_by_name( rtl,         dc        )
-  g.connect_by_name( constraints, dc
+  g.connect_by_name( constraints, dc        )
 
   g.connect_by_name( dc,       iflow        )
   g.connect_by_name( dc,       init         )
