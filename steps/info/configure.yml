@@ -1,16 +1,33 @@
+#=========================================================================
+# Info
+#=========================================================================
+# Author : Christopher Torng
+# Date   : June 18, 2019
+#
+
 name: info
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
 
 commands:
   - echo "Design name      -- {design_name}"
   - echo "Clock period     -- {clock_period}"
   - echo "ADK              -- {adk}"
+  - echo "ADK view         -- {adk_view}"
   - echo
   - echo "Constructed from -- {construct_path}"
   - echo
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
 
 parameters:
   design_name: undefined
   clock_period: 0
   construct_path: undefined
   adk: undefined
+  adk_view: undefined
 
