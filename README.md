@@ -7,10 +7,12 @@ mflow is a lightweight modular build-system generator for ASIC
 design-space exploration built around sandboxed and modular steps.
 
 mflow allows you to programmatically define and parameterize a graph
-of steps (i.e., sandboxes that are running anything you like) with
-well-defined inputs and outputs. Build system files
-(e.g., make, ninja) are then generated which shuttle files between
-sandboxes before running them.
+of steps (i.e., sandboxes that run anything you like) with
+well-defined inputs and outputs. Build system files (e.g., make,
+ninja) are then generated which shuttle files between sandboxes
+before running them.
+
+<img width='350px' src='docs/example-graph.jpg'>
 
 Key features and design philosophies:
 
@@ -21,15 +23,14 @@ Key features and design philosophies:
   better maintainability and access control.
 
 - **Sandboxed and modular steps** -- Traditional ASIC flows are
-  composed of many steps executing with implied file and path
-  dependencies. The resulting flow is rigid with low reusability
-  across designs and technology nodes while also being confusing and
-  monolithic. Sandboxing each step encourages reuse of the same
-  scripts across many projects.
+  composed of many steps executing with fixed path dependencies. The
+  resulting flows have low reusability across designs and technology
+  nodes and can be confusing and monolithic. Sandboxing each step
+  encourages reuse of the same scripts across many projects.
 
 - **Programmatically defined build-system generator**: A
   Python-based scripting interface and a simple graph API allows
-  flexible connecting and disconnecting of edges as well as
+  flexibly connecting and disconnecting of edges as well as
   insertion and removal of steps. A simple graph can be specified
   for a quick synthesis and place-and-route spin, or a more complex
   graph can be built for a more aggressive chip tapeout.
@@ -43,9 +44,10 @@ Key features and design philosophies:
 - **Complete freedom in defining what steps do** -- Aside from
   exposing precisely what the inputs and outputs are, no other
   restrictions are placed on what steps do. A step can be as simple
-  as hello world (one line), it may conduct an analysis pass and
-  report gate count, or it can transform the netlist for consumption
-  by other tools.
+  as hello world (one line). A step may conduct an analysis pass and
+  report a gate count. A step may also transform the netlist for
+  consumption by other tools. A step can even instantiate a subgraph
+  to implement a hierarchical flow.
 
 mflow ships with a limited set of ASIC flow scripts for both
 open-source and commercial tools including synthesis (e.g., Synopsys
@@ -83,8 +85,8 @@ Clone the repo:
     % cd alloy-asic
     % TOP=$PWD
 
-Configure for the default design (i.e., GcdUnit) with the default
-open-source 45nm ADK and open-source ASIC toolflow. **Note**: To use
+Configure for the example design (i.e., GcdUnit) with the default
+open-source 45nm ADK and open-source ASIC toolflow. **Note**: To try
 the commercial toolflow, open `designs/GcdUnit/.mflow.yml` and
 select `construct-commercial.py` instead of `construct-open.py`.
 
@@ -106,9 +108,12 @@ list` for the build target name.
     % make open-yosys-synthesis
     % cat *-open-yosys-synthesis/outputs/synth.stats.txt
 
-Here is the yosys output
+You can also run steps using the number from `make list`:
 
-    13. Printing statistics.
+    % make list      # <-- 3 : open-yosys-synthesis
+    % make 3
+
+The yosys area report will look something like this:
 
     === GcdUnit ===
 
