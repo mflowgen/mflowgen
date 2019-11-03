@@ -310,7 +310,7 @@ def make_common_rules( w ):
 define cpdir
 	rm -rf ./$1
 	cp -aL $2 $1 || true
-	chmod +w -R $1
+	chmod -R +w $1
 	touch $3
 endef
 
@@ -321,7 +321,7 @@ endef
 define cpdir-and-parameterize
 	rm -rf ./$1
 	cp -aL $2 $1 || true
-	chmod +w -R $1
+	chmod -R +w $1
 	cp .mflow/$1/configure.yml $1
 	touch $3
 endef
@@ -374,7 +374,7 @@ def make_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'run-step.*',
+    'mflow-run.*',
     '.stamp',
     'inputs',
     'outputs',

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #=========================================================================
-# setup_graph.py
+# construct.py
 #=========================================================================
 # Example for creating a graph for a peanut and butter jelly sandwich
 #
@@ -11,16 +11,9 @@
 import os
 import sys
 
-if __name__ == '__main__':
-  sys.path.append( '../..' )
-
 from mflow.components import Graph, Step
 
-#-------------------------------------------------------------------------
-# setup_graph
-#-------------------------------------------------------------------------
-
-def setup_graph():
+def construct():
 
   # Four steps to make a peanut butter and jelly sandwich
 
@@ -89,5 +82,5 @@ def setup_graph():
   return g
 
 if __name__ == '__main__':
-  setup_graph()
+  construct()
 

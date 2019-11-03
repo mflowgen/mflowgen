@@ -14,7 +14,7 @@ from .Step import Step
 from ..utils import get_top_dir
 
 class Graph( object ):
-  
+
   def __init__( s ):
     s._edges = {}
     s._steps = {}

@@ -1,13 +1,16 @@
 name: info
 
 commands:
-  - echo "Design name  -- {design_name}"
-  - echo "Clock period -- {clock_period}"
-  - echo "ADK          -- {adk}"
+  - echo "Design name      -- {design_name}"
+  - echo "Clock period     -- {clock_period}"
+  - echo "ADK              -- {adk}"
+  - echo
+  - echo "Constructed from -- {construct_path}"
   - echo
 
 parameters:
   design_name: undefined
   clock_period: 0
+  construct_path: undefined
   adk: undefined
 

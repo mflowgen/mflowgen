@@ -213,7 +213,7 @@ def ninja_common_rules( w ):
     description = 'cpdir: Copying $src to $dst',
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst || true && ' +
-                  'chmod +w -R $dst && ' +
+                  'chmod -R +w $dst && ' +
                   'touch $stamp',
   )
   w.newline()
@@ -227,7 +227,7 @@ def ninja_common_rules( w ):
     description = 'cpdir-and-parameterize: Copying $src to $dst',
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst || true && ' +
-                  'chmod +w -R $dst && ' +
+                  'chmod -R +w $dst && ' +
                   'cp .mflow/$dst/configure.yml $dst && ' +
                   'touch $stamp',
   )
@@ -286,7 +286,7 @@ def ninja_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'run-step.*',
+    'mflow-run.*',
     '.stamp',
     'inputs',
     'outputs',

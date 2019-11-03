@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #=========================================================================
-# setup_graph.py
+# construct.py
 #=========================================================================
 # Demo with 16-bit GcdUnit
 #
@@ -11,16 +11,9 @@
 import os
 import sys
 
-if __name__ == '__main__':
-  sys.path.append( '../..' )
-
 from mflow.components import Graph, Step
 
-#-------------------------------------------------------------------------
-# setup_graph
-#-------------------------------------------------------------------------
-
-def setup_graph():
+def construct():
 
   g = Graph()
 
@@ -32,10 +25,11 @@ def setup_graph():
   adk_view = 'view-standard'
 
   parameters = {
-    'design_name'  : 'GcdUnit',
-    'clock_period' : 2.0,
-    'adk'          : adk_name,
-    'adk_view'     : adk_view,
+    'construct_path' : __file__,
+    'design_name'    : 'GcdUnit',
+    'clock_period'   : 2.0,
+    'adk'            : adk_name,
+    'adk_view'       : adk_view,
   }
 
   #-----------------------------------------------------------------------
@@ -45,7 +39,7 @@ def setup_graph():
   g.set_adk( adk_name )
 
   #-----------------------------------------------------------------------
-  # Import steps
+  # Create steps
   #-----------------------------------------------------------------------
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
@@ -153,6 +147,6 @@ def setup_graph():
 
 
 if __name__ == '__main__':
-  g = setup_graph()
+  g = construct()
 #  g.plot()
 
