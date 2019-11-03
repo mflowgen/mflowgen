@@ -16,7 +16,8 @@ from .makefile_syntax import make_cpdir, make_symlink
 from .makefile_syntax import make_execute, make_stamp, make_alias
 from .makefile_syntax import make_common_rules, make_clean
 from .makefile_syntax import make_diff
-from .makefile_syntax import make_runtimes, make_list, make_graph
+from .makefile_syntax import make_runtimes, make_list
+from .makefile_syntax import make_graph, make_status
 
 class MakeBackend( object ):
 
@@ -410,5 +411,12 @@ class MakeBackend( object ):
     s.w.newline()
 
     make_graph( s.w )
+
+    # Status target
+
+    s.w.comment( 'Status' )
+    s.w.newline()
+
+    make_status( s.w, s.build_dirs.values() )
 
 

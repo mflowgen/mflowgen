@@ -16,7 +16,8 @@ from .ninja_syntax_extra import ninja_cpdir, ninja_symlink
 from .ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
 from .ninja_syntax_extra import ninja_common_rules, ninja_clean
 from .ninja_syntax_extra import ninja_diff
-from .ninja_syntax_extra import ninja_runtimes, ninja_list, ninja_graph
+from .ninja_syntax_extra import ninja_runtimes, ninja_list
+from .ninja_syntax_extra import ninja_graph, ninja_status
 
 class NinjaBackend( object ):
 
@@ -412,5 +413,13 @@ class NinjaBackend( object ):
     s.w.newline()
 
     ninja_graph( s.w )
+
+    # Status target
+
+    s.w.comment( 'Status' )
+    s.w.newline()
+
+    ninja_status( s.w, s.build_dirs.values() )
+
 
 

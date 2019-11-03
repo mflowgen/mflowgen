@@ -361,7 +361,8 @@ def ninja_list( w, steps, debug_targets ):
     [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( steps ) ]
 
   generic = [
-    '"list     -- List all targets"',
+    '"list     -- List all steps"',
+    '"status   -- Print build status for each step"',
     '"runtimes -- Print runtimes for each step"',
     '"graph    -- Generate a PDF of the step dependency graph"',
     '"clean    -- Remove all build directories"',
@@ -462,6 +463,32 @@ def ninja_graph_detailed( w, build_dirs ):
   w.build(
     outputs = 'graph',
     rule    = 'graph',
+  )
+  w.newline()
+
+# ninja_status
+#
+# Write out rules for printing build status
+#
+# - w : instance of ninja_syntax Writer
+# - steps : list of step names to print status for
+#
+
+def ninja_status( w, steps ):
+
+  steps_comma_separated = ','.join( steps )
+
+  w.rule(
+    name        = 'status',
+    description = 'status: Listing status for each step',
+    command     = 'python ' + get_top_dir() + '/utils/status.py -s ' \
+                                            + steps_comma_separated,
+  )
+  w.newline()
+
+  w.build(
+    outputs = 'status',
+    rule    = 'status',
   )
   w.newline()
 
