@@ -74,20 +74,10 @@ def main():
   else:
     assert False, 'Cannot get status from build tool ' + opts.backend
 
-  # Sort the ordered steps by number so that:
-  #
-  #     "2-bar,3-foo,1-rofl"
-  #
-  # becomes:
-  #
-  #     [ 1-rofl, 2-bar, 3-foo ]
-  #
-
-  steps = opts.steps.split(',')
-  steps = sorted( steps, key=lambda(x):x.split('-')[0] )
-
   # Identify steps that must be rebuilt (i.e., check if the dry run
   # commands show that the output stamps need to be updated)
+
+  steps = opts.steps.split(',')
 
   echo_green   = '\033[92m'
   echo_red     = '\033[91m'
@@ -131,7 +121,8 @@ def main():
 
   template_str = ' - {status} -> {number:2} : {name}'
 
-  for step, status in sorted( status.items() ):
+  for step, status in sorted( status.items(), # sort in numerical order
+                              key=lambda(x): int(x[0].split('-')[0]) ):
     tokens = step.split('-')
     d = {
       'status' : status,
