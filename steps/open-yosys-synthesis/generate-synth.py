@@ -7,7 +7,7 @@
 #
 # The variables are read from:
 #
-# - configure.yaml
+# - configure.yml
 # - adk.tcl
 #
 # The ADK tcl specifies some of the cells we need (e.g., tie high / low).
@@ -62,7 +62,7 @@ def main():
 
   # Configure YAML
 
-  with open( 'configure.yaml', 'r' ) as fd:
+  with open( 'configure.yml', 'r' ) as fd:
     try:
       data_cfg = yaml.load( fd, Loader=yaml.FullLoader )['parameters']
     except AttributeError:

@@ -228,7 +228,7 @@ def ninja_common_rules( w ):
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst || true && ' +
                   'chmod +w -R $dst && ' +
-                  'cp .mflow/$dst/configure.yaml $dst && ' +
+                  'cp .mflow/$dst/configure.yml $dst && ' +
                   'touch $stamp',
   )
   w.newline()
@@ -283,7 +283,7 @@ def ninja_clean( w, name, command ):
 def ninja_diff( w, name, src, dst ):
 
   exclude_files = [
-    'configure.yaml',
+    'configure.yml',
     '.time_end',
     '.time_start',
     'run-step.*',

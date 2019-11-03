@@ -28,12 +28,12 @@ class Step ( object ):
         get_top_dir(),
         'steps',
         step_path,
-        'configure.yaml'
+        'configure.yml'
       ])
     else:
       yaml_path = '/'.join([
         step_path,
-        'configure.yaml'
+        'configure.yml'
       ])
 
     # Read the YAML data

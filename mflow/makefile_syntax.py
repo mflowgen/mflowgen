@@ -322,7 +322,7 @@ define cpdir-and-parameterize
 	rm -rf ./$1
 	cp -aL $2 $1 || true
 	chmod +w -R $1
-	cp .mflow/$1/configure.yaml $1
+	cp .mflow/$1/configure.yml $1
 	touch $3
 endef
 
@@ -371,7 +371,7 @@ def make_clean( w, name, command ):
 def make_diff( w, name, src, dst ):
 
   exclude_files = [
-    'configure.yaml',
+    'configure.yml',
     '.time_end',
     '.time_start',
     'run-step.*',
