@@ -9,8 +9,8 @@ design-space exploration built around sandboxed and modular steps.
 mflow allows you to programmatically define and parameterize a graph
 of steps (i.e., sandboxes that run anything you like) with
 well-defined inputs and outputs. Build system files (e.g., make,
-ninja) are then generated which shuttle files between sandboxes
-before running them.
+ninja) are then generated which shuttle files between steps before
+running them.
 
 <img width='350px' src='docs/example-graph.jpg'>
 
@@ -25,8 +25,10 @@ Key features and design philosophies:
 - **Sandboxed and modular steps** -- Traditional ASIC flows are
   composed of many steps executing with fixed path dependencies. The
   resulting flows have low reusability across designs and technology
-  nodes and can be confusing and monolithic. Sandboxing each step
-  encourages reuse of the same scripts across many projects.
+  nodes and can be confusing and monolithic. In contrast,
+  _modularity_ encourages reuse of the same scripts across many
+  projects, while _sandboxing_ makes the role of each step easy to
+  understand (i.e., take these inputs and generate those outputs).
 
 - **Programmatically defined build-system generator**: A
   Python-based scripting interface and a simple graph API allows
@@ -161,19 +163,22 @@ Organization
 --------------------------------------------------------------------------
 
 The repository is organized at the top level with directories for
-the ADKs, the design source code, steps, utility scripts:
+the ADKs, designs, and steps (and utility scripts):
 
 ```
 alloy-asic/
 │
 ├── adks/      -- Each subdirectory is an ADK
 ├── designs/   -- Each subdirectory is a design (can be a cloned repo)
-│                   with build graph, RTL, and any design-specific steps
 ├── steps/     -- Collection of generic steps
+│
 │── mflow/     -- Source files for the build system generator
 │── utils/     -- Helper scripts
 └── configure  -- Config script to select a design
 ```
+
+Designs include the graph specification, the source code, and any
+design-specific steps.
 
 New designs are meant to be cloned into (or symlinked into) the
 designs subdirectory for easy access when configuring with `--design`.
@@ -351,4 +356,14 @@ many projects.
 
 More details to come...
 
+<!--
 
+--------------------------------------------------------------------------
+Feature in Detail: A focus on hardware design-space exploration
+--------------------------------------------------------------------------
+
+Physical design-space exploration often involves micro-decisions (what is the impact of sweeping
+
+More details to come...
+
+-->

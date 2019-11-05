@@ -263,7 +263,7 @@ ranksep=0.8;
 
     node_template = \
       '{dot_id} [ fontsize=24, width=2, penwidth=2, shape=Mrecord, ' + \
-                 'label="{{ {i} | {name} | {o} }}", color=black ];'
+                 'label="{{ {i} | \\n{name}\\n\\n | {o} }}", color=black ];'
 
     edge_template = \
       '{src_dot_id}:{src_port_id}:s -> {dst_dot_id}:{dst_port_id}:n ' + \
