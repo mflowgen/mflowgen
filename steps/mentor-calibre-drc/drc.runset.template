@@ -1,0 +1,12 @@
+*drcRulesFile: inputs/adk/calibre-drc-block.rule
+*drcRunDir: ./
+*drcLayoutPaths: inputs/design.gds
+*drcLayoutPrimary: ${design_name}
+*drcResultsFile: drc.results
+*drcSummaryFile: drc.summary
+*cmnShowOptions: 1
+*cmnTranscriptFile: drc.log
+*cmnTranscriptEchoToFile: 1
+*drcIncludeCmdsType: SVRF
+*cmnRunMT: 1
+*cmnRunHyper: 1
