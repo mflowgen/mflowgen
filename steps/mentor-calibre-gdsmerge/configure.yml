@@ -1,0 +1,50 @@
+#=========================================================================
+# Mentor Calibre GDS Merge
+#=========================================================================
+# Author : Christopher Torng
+# Date   : November 5, 2019
+#
+
+name: mentor-calibre-gdsmerge
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - design.gds.gz
+  - adk
+
+outputs:
+  - design.gds.gz
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+
+commands:
+  - set -x
+  - calibredrv -a layout filemerge \
+               -indir inputs \
+               -in inputs/adk/stdcells.gds \
+               -topcell {design_name} \
+               -out design.gds > merge.log 2>&1
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../design.gds
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - calibredrv -m design.gds \
+               -l inputs/adk/calibre.layerprops
+
