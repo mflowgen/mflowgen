@@ -70,6 +70,8 @@ def main():
 
   if opts.backend == 'make':
     text  = subprocess.check_output([ 'make', '-n' ])
+    # Convert ascii byte array to string.
+    text = "".join(map(chr, text))
     lines = text.split('\n')
   else:
     assert False, 'Cannot get status from build tool ' + opts.backend
@@ -122,7 +124,7 @@ def main():
   template_str = ' - {status} -> {number:2} : {name}'
 
   for step, status in sorted( status.items(), # sort in numerical order
-                              key=lambda(x): int(x[0].split('-')[0]) ):
+                              key=lambda x: int(x[0].split('-')[0]) ):
     tokens = step.split('-')
     d = {
       'status' : status,
