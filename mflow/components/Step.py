@@ -48,6 +48,7 @@ class Step ( object ):
     # Check that this is a valid step configuration
 
     assert 'name' in data.keys(), \
+      'Step -- ' \
       'Step YAML must have a "name" field: {}'.format( yaml_path )
 
     # Remove empty inputs and outputs
@@ -65,8 +66,8 @@ class Step ( object ):
     if 'outputs' in data.keys():
       for idx, o in enumerate( data['outputs'] ):
         if type(o) == dict:
-          assert len( o.keys()   ) == 1, 'Invalid output'
-          assert len( o.values() ) == 1, 'Invalid output'
+          assert len( o.keys()   ) == 1, 'Step -- Invalid output'
+          assert len( o.values() ) == 1, 'Step -- Invalid output'
 
     # If commands are empty, replace with 'pass'
 
@@ -84,7 +85,7 @@ class Step ( object ):
     #
 
     assert type( data['commands'] ) == list, \
-      'Step YAML "commands" must be a list: {}'.format( yaml_path )
+      'Step -- YAML "commands" must be a list: {}'.format( yaml_path )
 
     for i, c in enumerate( data['commands'] ):
       if type( c ) == bool:
@@ -150,9 +151,9 @@ class Step ( object ):
   def get_input_handle( s, f ):
 
     assert s._config['inputs'], \
-      'This step has no inputs'
+      'get_input_handle -- This step has no inputs'
     assert f in s._config['inputs'], \
-      'No input "%s" found in the step' % f
+      'get_input_handle -- No input "%s" found in the step' % f
 
     handle = ( s._config['name'], 'inputs', f )
 
@@ -161,12 +162,12 @@ class Step ( object ):
   def get_output_handle( s, f ):
 
     assert s._config['outputs'], \
-      'This step has no outputs'
+      'get_output_handle -- This step has no outputs'
 
     outputs = s.all_outputs()
 
     assert f in outputs, \
-      'No output "%s" found in the step' % f
+      'get_output_handle -- No output "%s" found in the step' % f
 
     handle = ( s._config['name'], 'outputs', f )
 
@@ -209,24 +210,30 @@ class Step ( object ):
 
   def set_param( s, param, value ):
     assert 'parameters' in s._config.keys(), \
+      'set_param -- ' \
       'No parameter "%s" in step "%s"' % ( param, s.get_name() )
     assert param in s._config['parameters'].keys(), \
+      'set_param -- ' \
       'No parameter "%s" in step "%s" (options: %s)' % \
         ( param, s.get_name(), s._config['parameters'].keys() )
     s._config['parameters'][param] = value
 
   def get_param( s, param ):
     assert 'parameters' in s._config.keys(), \
+      'get_param -- ' \
       'No parameter "%s" in step "%s"' % ( param, s.get_name() )
     assert param in s._config['parameters'].keys(), \
+      'get_param -- ' \
       'No parameter "%s" in step "%s" (options: %s)' % \
         ( param, s.get_name(), s._config['parameters'].keys() )
     return s._config['parameters'][param]
 
   def update_params( s, params ):
     assert type(params) == dict, \
+      'update_param -- ' \
       'Expecting argument of type dictionary to update parameters'
     assert 'parameters' in s._config.keys(), \
+      'update_param -- ' \
       'No parameters in step "%s"' % s.get_name()
     # Only update parameters that were defined in the configuration YAML
     for p in params.keys():
@@ -257,6 +264,7 @@ class Step ( object ):
           s._config['outputs'][idx] = output
         else:
           assert False, \
+            'expand_params -- ' \
             'Unrecognized type %s in output "%s"' % ( type(o), o )
 
     # Expand commands
@@ -300,6 +308,7 @@ class Step ( object ):
           s._config['outputs'][idx] = output
         else:
           assert False, \
+            'escape_dollars -- ' \
             'Unrecognized type %s in output "%s"' % ( type(o), o )
 
     # Escape commands

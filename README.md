@@ -35,7 +35,8 @@ Key features and design philosophies:
   flexibly connecting and disconnecting of edges as well as
   insertion and removal of steps. A simple graph can be specified
   for a quick synthesis and place-and-route spin, or a more complex
-  graph can be built for a more aggressive chip tapeout.
+  graph can be built for a more aggressive chip tapeout (reusing
+  many of the same steps).
 
 - **A focus on hardware design-space exploration** -- Steps can be
   parameterized to quickly spin out parallel builds for small

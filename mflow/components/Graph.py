@@ -16,8 +16,9 @@ from ..utils import get_top_dir
 class Graph( object ):
 
   def __init__( s ):
-    s._edges = {}
-    s._steps = {}
+    s._edges_i = {}
+    s._edges_o = {}
+    s._steps   = {}
 
   #-----------------------------------------------------------------------
   # API to help build the graph interactively
@@ -40,7 +41,8 @@ class Graph( object ):
   def add_step( s, step ):
     key = step.get_name()
     assert key not in s._steps.keys(), \
-      'Duplicate step! If this is intentional, first change the step name'
+      'add_step -- Duplicate step!' \
+      'If this is intentional, first change the step name'
     s._steps[ key ] = step
 
   def get_step( s, step_name ):
@@ -49,12 +51,18 @@ class Graph( object ):
   def all_steps( s ):
     return s._steps.keys()
 
-  # Edges
+  # Edges -- incoming and outgoing adjacency lists
 
-  def get_edges( s, step_name ):
-    if step_name in s._edges.keys():
-      return s._edges[ step_name ]
-    else:
+  def get_edges_i( s, step_name ):
+    try:
+      return s._edges_i[ step_name ]
+    except KeyError:
+      return []
+
+  def get_edges_o( s, step_name ):
+    try:
+      return s._edges_o[ step_name ]
+    except KeyError:
       return []
 
   # Quality-of-life utility function
@@ -65,7 +73,7 @@ class Graph( object ):
 
     for step_name in s.all_steps():
 
-      incoming_edges        = s.get_edges( step_name )
+      incoming_edges        = s.get_edges_i( step_name )
       incoming_edge_f_names = [ e.get_dst()[1] for e in incoming_edges ]
 
       inputs = s.get_step( step_name ).all_inputs()
@@ -95,23 +103,28 @@ class Graph( object ):
     r_step_name, r_direction, r_handle_name = r_handle
 
     if l_direction == 'inputs':
-      assert r_direction == 'outputs', 'Must connect an input to an output'
+      assert r_direction == 'outputs', \
+        'connect -- Must connect an input to an output'
       src_handle = r_handle
       dst_handle = l_handle
     elif r_direction == 'inputs':
-      assert l_direction == 'outputs', 'Must connect an input to an output'
+      assert l_direction == 'outputs', \
+        'connect -- Must connect an input to an output'
       src_handle = l_handle
       dst_handle = r_handle
     else:
-      assert False, 'Must connect an input to an output'
+      assert False, \
+        'connect -- Must connect an input to an output'
 
     # Create an edge from src to dst
 
     src_step_name, src_direction, src_f = src_handle
     dst_step_name, dst_direction, dst_f = dst_handle
 
-    if dst_step_name not in s._edges.keys():
-      s._edges[ dst_step_name ] = []
+    if dst_step_name not in s._edges_i.keys():
+      s._edges_i[ dst_step_name ] = []
+    if src_step_name not in s._edges_o.keys():
+      s._edges_o[ src_step_name ] = []
 
     src = ( src_step_name, src_f )
     dst = ( dst_step_name, dst_f )
@@ -119,7 +132,8 @@ class Graph( object ):
 
     # Add this edge to tracking
 
-    s._edges[ dst_step_name ].append( e )
+    s._edges_i[ dst_step_name ].append( e )
+    s._edges_o[ src_step_name ].append( e )
 
   def connect_by_name( s, src, dst ):
 
@@ -129,11 +143,19 @@ class Graph( object ):
       src_step = s.get_step( src )
     else:
       src_step = src
+    src_step_name = src_step.get_name()
+    assert src_step_name in s.all_steps(), \
+      'connect_by_name -- ' \
+      'Step "{}" not found in graph'.format( src_step_name )
 
     if type( dst ) != Step:
       dst_step = s.get_step( dst )
     else:
       dst_step = dst
+    dst_step_name = dst_step.get_name()
+    assert dst_step_name in s.all_steps(), \
+      'connect_by_name -- ' \
+      'Step "{}" not found in graph'.format( dst_step_name )
 
     # Find same-name matches between the src output and dst input
 
@@ -167,40 +189,53 @@ class Graph( object ):
   #
   # For example, for a graph like this:
   #
-  #     +-----+    +-----------+
-  #     | foo | -> |    bar    |
-  #     |     |    | ( p = 1 ) |
-  #     +-----+    +-----------+
+  #     +-----+    +-----------+    +-----------+
+  #     | foo | -> |    bar    | -> |    baz    |
+  #     |     |    | ( p = 1 ) |    |           |
+  #     +-----+    +-----------+    +-----------+
   #
   # this call:
   #
   #     s.param_space( 'bar', 'p', [ 1, 2, 3 ] )
   #
-  # will morph the graph like this:
+  # will be transformed into a graph like this:
   #
-  #                 +-----------+
-  #             +-> |    bar    |
-  #             |   | ( p = 1 ) |
-  #             |   +-----------+
-  #     +-----+ |   +-----------+
-  #     | foo | --> |    bar    |
-  #     |     | |   | ( p = 2 ) |
-  #     +-----+ |   +-----------+
-  #             |   +-----------+
-  #             +-> |    bar    |
-  #                 | ( p = 3 ) |
-  #                 +-----------+
+  #                 +-----------+    +-----------+
+  #             +-> |  bar-p-1  | -> |  baz-p-1  |
+  #             |   | ( p = 1 ) |    |           |
+  #             |   +-----------+    +-----------+
+  #     +-----+ |   +-----------+    +-----------+
+  #     | foo | --> |  bar-p-2  | -> |  baz-p-2  |
+  #     |     | |   | ( p = 2 ) |    |           |
+  #     +-----+ |   +-----------+    +-----------+
+  #             |   +-----------+    +-----------+
+  #             +-> |  bar-p-3  | -> |  baz-p-3  |
+  #                 | ( p = 3 ) |    |           |
+  #                 +-----------+    +-----------+
+  #
+  # Returns a list of (parameterized) steps (i.e., 'bar-p-1', 'bar-p-2',
+  # and 'bar-p-3').
   #
 
   def param_space( s, step, param_name, param_space ):
 
-    step_name = step.get_name()
+    # Get the step name (in case the user provided a step object instead)
+
+    if type( step ) != str:
+      step_name = step.get_name()
+    else:
+      step_name = step
+      step      = s.get_step( step_name )
+
+    assert step_name in s.all_steps(), \
+      'param_space -- ' \
+      'Step "{}" not found in graph'.format( step_name )
 
     # Remove the step and its incoming edges from the graph
 
     del( s._steps[ step_name ] )
-    elist = s._edges[ step_name ]
-    del( s._edges[ step_name ] )
+
+    elist_i = s._param_space_helper_remove_incoming_edges( step_name )
 
     # Now spin out new copies of the step across the parameter space
 
@@ -211,14 +246,100 @@ class Graph( object ):
       p_step.set_param( param_name, p )
       p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
       s.add_step( p_step )
-      for e in elist:
+      for e in elist_i:
         src_step_name, src_f = e.get_src()
         dst_step_name, dst_f = e.get_dst()
         src_step = s.get_step( src_step_name )
         s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
       new_steps.append( p_step )
 
+    # Get the steps that directly depended on this step
+
+    dep_steps = s._param_space_helper_get_dependent_steps( step_name )
+
+    # For each dependent step, replicate and connect to the new steps
+
+    for dep_step in dep_steps:
+      s._param_space_helper( step        = dep_step,
+                             old_src     = step,
+                             new_srcs    = new_steps,
+                             param_name  = param_name,
+                             param_space = param_space )
+
     return new_steps
+
+  def _param_space_helper( s, step, old_src, new_srcs, param_name,
+                                                       param_space ):
+
+    step_name = step.get_name()
+
+    # Remove the step and its incoming edges from the graph
+
+    del( s._steps[ step_name ] )
+
+    elist_i = s._param_space_helper_remove_incoming_edges( step_name )
+
+    # Now spin out new copies of the step + attach them to new srcs
+
+    new_steps = []
+
+    for i, p in enumerate( param_space ):
+      p_step = step.clone()
+      p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
+      s.add_step( p_step )
+      for e in elist_i:
+        src_step_name, src_f = e.get_src()
+        dst_step_name, dst_f = e.get_dst()
+        if src_step_name == old_src.get_name():
+          src_step = new_srcs[i]
+        else:
+          src_step = s.get_step( src_step_name )
+        s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
+      new_steps.append( p_step )
+
+    # Get the steps that directly depended on this step
+
+    dep_steps = s._param_space_helper_get_dependent_steps( step_name )
+
+    # For each dependent step, replicate and connect to the new steps
+
+    for dep_step in dep_steps:
+      s._param_space_helper( step        = dep_step,
+                             old_src     = step,
+                             new_srcs    = new_steps,
+                             param_name  = param_name,
+                             param_space = param_space )
+
+    return new_steps
+
+  def _param_space_helper_remove_incoming_edges( s, step_name ):
+
+    try:
+      elist_i = s._edges_i[ step_name ]
+      del( s._edges_i[ step_name ] ) # Delete edges in incoming edge list
+      for e in elist_i: # Also delete these edges in outgoing edge lists
+        src_step_name, src_f = e.get_src()
+        src_elist_o = s._edges_o[src_step_name]
+        del( src_elist_o[ src_elist_o.index( e ) ] )
+    except KeyError:
+      elist_i = []
+
+    return elist_i
+
+  def _param_space_helper_get_dependent_steps( s, step_name ):
+
+    dep_steps = set()
+
+    try:
+      elist_o = s._edges_o[ step_name ]
+    except KeyError:
+      elist_o = []
+
+    for e in elist_o:
+      dst_step_name, dst_f = e.get_dst()
+      dep_steps.add( s.get_step( dst_step_name ) )
+
+    return dep_steps
 
   #-----------------------------------------------------------------------
   # Ninja helpers
@@ -321,7 +442,7 @@ ranksep=0.8;
 
     dot_edges = []
 
-    for elist in s._edges.values():
+    for elist in s._edges_i.values():
       for e in elist:
         src_step_name, src_f = e.get_src()
         dst_step_name, dst_f = e.get_dst()
@@ -354,7 +475,7 @@ ranksep=0.8;
     # Make a deep copy of the edges (destructive algorithm)
 
     edges_deep_copy = {}
-    for step_name, elist in s._edges.items():
+    for step_name, elist in s._edges_i.items():
       edges_deep_copy[ step_name ] = list(elist)
     edges = edges_deep_copy
 

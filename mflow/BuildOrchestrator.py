@@ -422,7 +422,7 @@ class BuildOrchestrator( object ):
 
       extra_deps = set()
 
-      for edge in s.g.get_edges( step_name ):
+      for edge in s.g.get_edges_i( step_name ):
         src_step_name, src_f = edge.get_src()
         for o in backend_outputs[src_step_name]['alias']:
           extra_deps.add( o )
@@ -442,7 +442,7 @@ class BuildOrchestrator( object ):
 
       s.build_system_deps[step_name]['directory'] = set()
 
-      for edge in s.g.get_edges( step_name ):
+      for edge in s.g.get_edges_i( step_name ):
         src_step_name, src_f = edge.get_src()
         s.build_system_deps[step_name]['directory'].add(
           ( src_step_name, 'alias' )
@@ -469,7 +469,7 @@ class BuildOrchestrator( object ):
 
       backend_outputs[step_name]['collect-inputs'] = []
 
-      for edge in s.g.get_edges( step_name ):
+      for edge in s.g.get_edges_i( step_name ):
 
         src_step_name, src_f = edge.get_src()
         dst_step_name, dst_f = edge.get_dst()
