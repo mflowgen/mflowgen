@@ -71,7 +71,8 @@ def main():
   if opts.backend == 'make':
     text  = subprocess.check_output([ 'make', '-n' ])
     # Convert ascii byte array to string.
-    text = "".join(map(chr, text))
+    if type( text ) != str:
+      text = ''.join( map( chr, text ) )
     lines = text.split('\n')
   else:
     assert False, 'Cannot get status from build tool ' + opts.backend
