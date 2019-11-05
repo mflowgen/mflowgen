@@ -36,7 +36,7 @@ Key features and design philosophies:
   insertion and removal of steps. A simple graph can be specified
   for a quick synthesis and place-and-route spin, or a more complex
   graph can be built for a more aggressive chip tapeout (reusing
-  many of the same steps).
+  many of the same steps from before).
 
 - **A focus on hardware design-space exploration** -- Steps can be
   parameterized to quickly spin out parallel builds for small
@@ -190,18 +190,21 @@ Feature in Detail: Process and Technology Independence
 
 The ASIC Design Kit (ADK) is a standard interface to all process
 technology libraries and variables used across all ASIC scripts in
-the tool flow. The ADK interface should remain constant regardless
-of where the actual packages and IP libraries are downloaded and how
+the tool flow. The ADK interface remains constant regardless of
+where the actual packages and IP libraries are downloaded and how
 they are organized. The ADK may include process technology files,
 physical IP libraries (e.g., IO cells, standard cells, memory
 compilers), as well as physical verification decks (e.g., Calibre
 DRC/LVS).
 
-In the provided open-source 45nm ADK, all kits and libraries are
-placed into the directory `adks/freepdk-45nm/pkgs` in a relatively
-unorganized manner (just untar them). We create new ADK "views" into
-these packages for different purposes by making subdirectories
-containing consistently named symlinks to vendor files.
+mflow ships with an open-source 45nm ADK assembled from FreePDK45
+version 1.4 and the NanGate Open Cell Library. We place all kits and
+libraries into the directory `adks/freepdk-45nm/pkgs` in a
+relatively unorganized manner (just untar them). We then create
+different "views" into these packages for different purposes (e.g.,
+front-end only, targeting open-source toolchains, targeting
+commercial toolchains) by creating subdirectories with different
+sets of symlinks to the vendor files.
 
 Here is the "view-tiny" interface to the 45nm ADK containing only
 the files needed by the open-source ASIC flow tools:
@@ -219,15 +222,15 @@ stdcells.lib                -- Standard cell library typical Liberty
 stdcells.v                  -- Standard cell library Verilog
 ```
 
-**Note**: The ADK variables setup script is sourced by every ASIC
-tool and specifies high-level ADK-specific information (e.g., the
-list of filler cells, min/max routing metal layers, etc.).
+**Note**: The `adk.tcl` encapsulates the ADK interface for
+variables. Any information specific to this ADK goes here (e.g., the
+list of filler cells, min/max routing metal layers).
 
 The "view-standard" interface for the same 45nm ADK has more entries
-and targets commercial ASIC flow tools. This is downloaded at
-runtime from online to conserve repository space. This interface is
-useful for architectural design-space exploration of block-level
-designs:
+and targets commercial ASIC flow tools. This interface is useful for
+architectural design-space exploration of block-level designs. Note
+that we conserve repository space by downloading this view from
+online at build time:
 
 ```
 adk.tcl                     -- ADK variables setup script
@@ -254,7 +257,7 @@ calibre-lvs.rule            -- Calibre LVS ruledeck
 ```
 
 Here is a more complete and general-purpose ADK interface that might
-target a chip tapeout (**ADK files not included**):
+target a chip tapeout (**files not included**):
 
 ```
 adk.tcl                     -- ADK-specific setup script
@@ -316,26 +319,26 @@ stdcells-wc.db              -- Standard cell library worst-case DB
 stdcells-wc.lib             -- Standard cell library worst-case Liberty
 ```
 
-Our default flow assumes that the adk.tcl defines the following
-variables (example values are given), which are used in the listed
-steps and plugins:
+The ADK interface for variables in the `adk.tcl` includes the
+following (with example values given), and examples of steps that
+use these variables are listed in the comment:
 
 ```
 set ADK_PROCESS                     28           # steps/innovus-flowsetup
 set ADK_MIN_ROUTING_LAYER_DC        M2           # steps/dc-synthesis
 set ADK_MAX_ROUTING_LAYER_DC        M7           # steps/dc-synthesis
 set ADK_MAX_ROUTING_LAYER_INNOVUS   7            # steps/innovus-flowsetup
-set ADK_POWER_MESH_BOT_LAYER        8            # plugins/innovus
-set ADK_POWER_MESH_TOP_LAYER        9            # plugins/innovus
-set ADK_DRIVING_CELL                (cell-name)  # plugins/dc-synthesis
-set ADK_TYPICAL_ON_CHIP_LOAD        0.005        # plugins/dc-synthesis
+set ADK_POWER_MESH_BOT_LAYER        8            # steps/innovus-plugins
+set ADK_POWER_MESH_TOP_LAYER        9            # steps/innovus-plugins
+set ADK_DRIVING_CELL                (cell-name)  # steps/constraints
+set ADK_TYPICAL_ON_CHIP_LOAD        0.005        # steps/constraints
 set ADK_FILLER_CELLS                (list)       # steps/innovus-flowsetup
 set ADK_TIE_CELLS                   (list)       # steps/innovus-flowsetup
 set ADK_WELL_TAP_CELL               (cell-name)  # steps/innovus-flowsetup
 set ADK_END_CAP_CELL                (cell-name)  # steps/innovus-flowsetup
 set ADK_ANTENNA_CELL                (cell-name)  # steps/innovus-flowsetup
-set ADK_LVS_EXCLUDE_CELL_LIST       ""           # plugins/innovus
-set ADK_VIRTUOSO_EXCLUDE_CELL_LIST  ""           # plugins/innovus
+set ADK_LVS_EXCLUDE_CELL_LIST       ""           # steps/innovus-plugins
+set ADK_VIRTUOSO_EXCLUDE_CELL_LIST  ""           # steps/innovus-plugins
 ```
 
 --------------------------------------------------------------------------
@@ -344,13 +347,13 @@ Feature in Detail: Sandboxed and Modular Steps
 
 A key philosophy of mflow is to avoid rigidly structured ASIC flows
 that cannot be repurposed and to instead break the ASIC flow into
-modular steps that can be re-assembled into different flows.
-Specifically, instead of having ASIC steps that directly feed into
-the next steps, we design each step in modular fashion with an
-"inputs" directory for inputs and an "outputs" directory for
+modular steps that can be re-assembled into different flows with
+high reuse. Specifically, instead of having ASIC steps that directly
+feed into the next steps, we design each step in modular fashion
+with an "inputs" directory for inputs and an "outputs" directory for
 outputs. The build system runs each step in its sandbox, generating
-outputs. Then, the build system handles the edges of the graph by
-moving files between sandboxes.
+the outputs. Then, the build system handles the edges of the graph
+by moving files between sandboxes.
 
 Sandboxing each step encourages reuse of the same scripts across
 many projects.
