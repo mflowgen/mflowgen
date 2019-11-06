@@ -54,10 +54,10 @@ def get_files_in_dir( p ):
 # - p : path to a file or directory
 #
 
-def stamp( p ):
+def stamp( p, stamp='.stamp.' ):
   p_dirname  = os.path.dirname( p )
   p_basename = os.path.basename( p )
-  p_stamp    = '.stamp.' + p_basename
+  p_stamp    = stamp + p_basename
   if p_dirname : return p_dirname + '/' + p_stamp
   else         : return p_stamp
 

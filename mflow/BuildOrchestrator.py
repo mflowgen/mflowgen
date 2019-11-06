@@ -518,6 +518,9 @@ class BuildOrchestrator( object ):
 
       if not outputs:
         outputs = [ build_dir + '/execute-phony' ]
+        phony   = True
+      else:
+        phony   = False
 
       commands = ' && '.join([
         # Step banner in big letters
@@ -543,6 +546,7 @@ class BuildOrchestrator( object ):
         'outputs' : outputs,
         'command' : commands,
         'deps'    : [],
+        'phony'   : phony,
       }
 
       # Pull in any backend dependencies

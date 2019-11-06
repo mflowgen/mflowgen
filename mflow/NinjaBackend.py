@@ -165,7 +165,8 @@ class NinjaBackend( object ):
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_execute( s, outputs, command, deps, extra_deps ):
+  def gen_step_execute( s, outputs, command, deps, extra_deps,
+                                                     phony=False ):
 
     all_deps = deps + extra_deps
 

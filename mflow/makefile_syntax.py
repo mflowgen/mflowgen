@@ -173,14 +173,16 @@ def make_symlink( w, dst, src, deps=None, src_is_symlink=False ):
 #
 # Runs the execute rule
 #
-# - w       : instance of Writer
-# - outputs : outputs of the execute rule
-# - rule    : name of the execute rule
-# - command : string, command for the rule
-# - deps    : additional dependencies
+# - w            : instance of Writer
+# - outputs      : outputs of the execute rule
+# - rule         : name of the execute rule
+# - command      : string, command for the rule
+# - deps         : additional dependencies
+# - touch_target : should we touch the target?
 #
 
-def make_execute( w, outputs, rule, command, deps=None ):
+def make_execute( w, outputs, rule, command, deps=None,
+                                             touch_target=True ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
@@ -195,19 +197,11 @@ def make_execute( w, outputs, rule, command, deps=None ):
   w.write( rule_def )
   w.newline()
 
-  # Notes
-  #
-  # The `+ touch $@` is added at the end to fix an issue with `make -t`
-  # not touching directories that are out of date and just printing `make:
-  # touch: open: mydirectory: Is a directory`. However, a manual touch
-  # with the touch program (not through make) still works. The make
-  # documentation says that any line with a '+' is always run regardless
-  # of `-t`, so we just put a manual touch to make sure that `make -t`
-  # does what we expect even if the target is a directory.
-
   template_str  = '{output}: {deps}\n'
   template_str += '	$(call {rule})\n'
-  template_str += '	+ touch $@ || true\n'
+
+  if touch_target:
+    template_str += '	touch $@\n'
 
   if deps:
     deps = ' '.join( deps )
@@ -224,6 +218,8 @@ def make_execute( w, outputs, rule, command, deps=None ):
   )
   w.newline()
 
+  # Make all other outputs just depend on the first output
+
   template_str = '{output}: {deps}\n'
 
   if len( outputs ) > 1:
@@ -237,12 +233,13 @@ def make_execute( w, outputs, rule, command, deps=None ):
 #
 # Stamps the given file with a '.stamp.' prefix
 #
-# - w       : instance of Writer
-# - f       : file to stamp
-# - deps    : additional dependencies
+# - w        : instance of Writer
+# - f        : file to stamp
+# - deps     : additional dependencies
+# - f_is_dep : should the file to be stamped also be a dependency?
 #
 
-def make_stamp( w, f, deps=None ):
+def make_stamp( w, f, deps=None, f_is_dep=True ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
@@ -254,8 +251,10 @@ def make_stamp( w, f, deps=None ):
   template_str  = '{target}: {deps}\n'
   template_str += '	$(call {rule},{stamp})\n'
 
-  if deps:
+  if deps and f_is_dep:
     deps = ' '.join( [ f ] + deps )
+  else:
+    deps = ' '.join( deps )
 
   if deps == None:
     deps = ''

@@ -19,6 +19,8 @@ from .makefile_syntax import make_diff
 from .makefile_syntax import make_runtimes, make_list
 from .makefile_syntax import make_graph, make_status
 
+from .utils           import stamp
+
 class MakeBackend( object ):
 
   def __init__( s ):
@@ -174,7 +176,8 @@ class MakeBackend( object ):
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_execute( s, outputs, command, deps, extra_deps ):
+  def gen_step_execute( s, outputs, command, deps, extra_deps,
+                                                     phony=False ):
 
     all_deps = deps + extra_deps
 
@@ -188,6 +191,10 @@ class MakeBackend( object ):
     rule = build_dir + '-commands-rule'
     rule = rule.replace( '-', '_' )
 
+    # Stamp all outputs from execute
+
+    outputs = [ stamp( o, '.execstamp.' ) for o in outputs ]
+
     # Update timestamps for pre-existing outputs so timestamp-based
     # dependency checking works
 
@@ -197,11 +204,12 @@ class MakeBackend( object ):
     # Rules
 
     targets = make_execute(
-      w       = s.w,
-      outputs = outputs,
-      rule    = rule,
-      command = command,
-      deps    = all_deps,
+      w            = s.w,
+      outputs      = outputs,
+      rule         = rule,
+      command      = command,
+      deps         = all_deps,
+      touch_target = not phony,
     )
 
     return targets
@@ -258,12 +266,18 @@ class MakeBackend( object ):
 
     all_deps = deps + extra_deps
 
+    # Note: Because the execute outputs are all stamped with
+    # '.execstamp.', we should not depend on the file 'f' here. We should
+    # only depend on the stamped 'f', which we expect to come through in
+    # the list of extra_deps. So we set 'f_is_dep' to False.
+
     # Rules
 
     target = make_stamp(
-      w    = s.w,
-      f    = f,
-      deps = all_deps,
+      w        = s.w,
+      f        = f,
+      deps     = all_deps,
+      f_is_dep = False,
     )
 
     return [ target ]
@@ -339,10 +353,11 @@ class MakeBackend( object ):
     debug_rule = debug_rule.replace( '-', '_' )
 
     make_execute(
-      w       = s.w,
-      outputs = outputs,
-      rule    = debug_rule,
-      command = command,
+      w            = s.w,
+      outputs      = outputs,
+      rule         = debug_rule,
+      command      = command,
+      touch_target = False,
     )
 
     # Track debug targets for list command
