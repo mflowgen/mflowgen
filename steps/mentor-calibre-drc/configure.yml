@@ -18,18 +18,17 @@ inputs:
 outputs:
   - drc.results
   - drc.summary
-  - drc.log
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
-
 commands:
-  - mkdir -p logs
-  - mkdir -p reports
   - envsubst < drc.runset.template > drc.runset
   - calibre -gui -drc -batch -runset drc.runset
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../drc.results
+  - ln -sf ../drc.summary
 
 #-------------------------------------------------------------------------
 # Parameters

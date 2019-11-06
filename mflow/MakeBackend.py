@@ -57,12 +57,12 @@ class MakeBackend( object ):
 
     make_common_rules( s.w )
 
-    # Default target
+    # Default target -- build everything
 
     s.w.comment( 'Default' )
     s.w.newline()
 
-    s.w.default( s.order[-1] )
+    s.w.default( ' '.join( s.order ) )
     s.w.newline()
 
   # gen_step_header

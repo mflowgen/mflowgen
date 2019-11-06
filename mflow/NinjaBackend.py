@@ -355,12 +355,12 @@ class NinjaBackend( object ):
     s.w.comment( '-'*72 )
     s.w.newline()
 
-    # Default target
+    # Default target -- build everything
 
     s.w.comment( 'Default' )
     s.w.newline()
 
-    s.w.default( s.order[-1] )
+    s.w.default( ' '.join( s.order ) )
     s.w.newline()
 
     # Clean target

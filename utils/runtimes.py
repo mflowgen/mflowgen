@@ -98,7 +98,8 @@ def print_time( step, runtime_seconds, step_finished=True ):
     tag  = '' if step_finished else ' <-- in progress',
   ))
 
-for step in sorted( runtimes.keys() ):
+for step in sorted( runtimes.keys(), # sort in numerical order
+                    key=lambda x: int(x.split('-')[0]) ):
   step_finished   = finished[step]
   runtime_seconds = runtimes[step].total_seconds()
   print_time( step, runtime_seconds, step_finished )

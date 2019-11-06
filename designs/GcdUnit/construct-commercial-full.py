@@ -100,6 +100,9 @@ def construct():
   g.add_step( route        )
   g.add_step( postroute    )
   g.add_step( signoff      )
+  g.add_step( gdsmerge     )
+  g.add_step( drc          )
+  g.add_step( lvs          )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
