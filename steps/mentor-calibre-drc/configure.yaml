@@ -12,7 +12,7 @@ name: mentor-calibre-drc
 #-------------------------------------------------------------------------
 
 inputs:
-  - design.gds
+  - design_merged.gds
   - adk
 
 outputs:
@@ -43,7 +43,7 @@ parameters:
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m inputs/design.gds \
+  - calibredrv -m inputs/design_merged.gds \
                -l inputs/adk/calibre.layerprops \
                -rve -drc drc.results
 

@@ -1,6 +1,6 @@
 *drcRulesFile: inputs/adk/calibre-drc-block.rule
 *drcRunDir: ./
-*drcLayoutPaths: inputs/design.gds
+*drcLayoutPaths: inputs/design_merged.gds
 *drcLayoutPrimary: ${design_name}
 *drcResultsFile: drc.results
 *drcSummaryFile: drc.summary

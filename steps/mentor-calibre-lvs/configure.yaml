@@ -12,7 +12,7 @@ name: mentor-calibre-lvs
 #-------------------------------------------------------------------------
 
 inputs:
-  - design.gds
+  - design_merged.gds
   - design.lvs.v
   - adk
 
@@ -41,7 +41,7 @@ parameters:
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m inputs/design.gds \
+  - calibredrv -m inputs/design_merged.gds \
                -l inputs/adk/calibre.layerprops \
                -rve -lvs svdb
 

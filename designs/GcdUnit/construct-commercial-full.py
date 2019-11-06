@@ -66,6 +66,9 @@ def construct():
   route        = Step( 'cadence-innovus-route',        default=True )
   postroute    = Step( 'cadence-innovus-postroute',    default=True )
   signoff      = Step( 'cadence-innovus-signoff',      default=True )
+  gdsmerge     = Step( 'mentor-calibre-gdsmerge',      default=True )
+  drc          = Step( 'mentor-calibre-drc',           default=True )
+  lvs          = Step( 'mentor-calibre-lvs',           default=True )
 
   #-----------------------------------------------------------------------
   # Parameterize
@@ -76,6 +79,9 @@ def construct():
   dc.update_params( parameters )
   constraints.update_params( parameters )
   iflow.update_params( parameters )
+  gdsmerge.update_params( parameters )
+  drc.update_params( parameters )
+  lvs.update_params( parameters )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -110,6 +116,9 @@ def construct():
   g.connect_by_name( adk,      route        )
   g.connect_by_name( adk,      postroute    )
   g.connect_by_name( adk,      signoff      )
+  g.connect_by_name( adk,      gdsmerge     )
+  g.connect_by_name( adk,      drc          )
+  g.connect_by_name( adk,      lvs          )
 
   g.connect_by_name( rtl,         dc        )
   g.connect_by_name( constraints, dc        )
@@ -142,6 +151,13 @@ def construct():
   g.connect_by_name( postcts_hold, route        )
   g.connect_by_name( route,        postroute    )
   g.connect_by_name( postroute,    signoff      )
+ 
+  g.connect_by_name( signoff, gdsmerge )
+
+  g.connect_by_name( signoff,  drc )
+  g.connect_by_name( gdsmerge, drc )
+  g.connect_by_name( signoff,  lvs )
+  g.connect_by_name( gdsmerge, lvs )
 
   return g
 
