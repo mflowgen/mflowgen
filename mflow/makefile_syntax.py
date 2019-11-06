@@ -207,7 +207,7 @@ def make_execute( w, outputs, rule, command, deps=None ):
 
   template_str  = '{output}: {deps}\n'
   template_str += '	$(call {rule})\n'
-  template_str += '	+ touch $@\n'
+  template_str += '	+ touch $@ || true\n'
 
   if deps:
     deps = ' '.join( deps )
