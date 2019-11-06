@@ -60,6 +60,9 @@ def construct():
   iflow       = Step( 'cadence-innovus-flowgen',     default=True )
   iplugins    = Step( 'cadence-innovus-plugins',     default=True )
   placeroute  = Step( 'cadence-innovus-place-route', default=True )
+  gdsmerge    = Step( 'mentor-calibre-gdsmerge', default=True )
+  drc         = Step( 'mentor-calibre-drc', default=True )
+  lvs         = Step( 'mentor-calibre-lvs', default=True )
 
   #-----------------------------------------------------------------------
   # Parameterize
@@ -70,6 +73,9 @@ def construct():
   constraints.update_params (parameters )
   dc.update_params( parameters )
   iflow.update_params( parameters )
+  drc.update_params( parameters )
+  lvs.update_params( parameters )
+  gdsmerge.update_params( parameters )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -82,6 +88,9 @@ def construct():
   g.add_step( iflow       )
   g.add_step( iplugins    )
   g.add_step( placeroute  )
+  g.add_step( gdsmerge    )
+  g.add_step( drc         )
+  g.add_step( lvs         )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -101,6 +110,18 @@ def construct():
   g.connect_by_name( dc,       placeroute )
   g.connect_by_name( iflow,    placeroute )
   g.connect_by_name( iplugins, placeroute )
+
+  g.connect_by_name( adk       , drc )
+  g.connect_by_name( placeroute, drc )
+
+  g.connect_by_name( adk       , lvs )
+  g.connect_by_name( placeroute, lvs )
+
+  g.connect_by_name( adk, gdsmerge)
+  g.connect_by_name( placeroute, gdsmerge)
+
+  g.connect_by_name( gdsmerge, drc )
+  g.connect_by_name( gdsmerge, lvs )
 
   return g
 
