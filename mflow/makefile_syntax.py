@@ -220,7 +220,7 @@ def make_execute( w, outputs, rule, command, deps=None,
 
   # Make all other outputs just depend on the first output
 
-  template_str = '{output}: {deps}\n'
+  template_str = '{output}: {deps}\n' + '	touch $@\n'
 
   if len( outputs ) > 1:
     for output in outputs[1:]:
