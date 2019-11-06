@@ -16,7 +16,7 @@ inputs:
   - adk
 
 outputs:
-  - design.gds.gz
+  - design_merged.gds
 
 #-------------------------------------------------------------------------
 # Commands
@@ -29,9 +29,9 @@ commands:
                -indir inputs \
                -in inputs/adk/stdcells.gds \
                -topcell {design_name} \
-               -out design.gds > merge.log 2>&1
+               -out design_merged.gds > merge.log 2>&1
   - mkdir -p outputs && cd outputs
-  - ln -sf ../design.gds
+  - ln -sf ../design_merged.gds
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -45,6 +45,6 @@ parameters:
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m design.gds \
+  - calibredrv -m design_merged.gds \
                -l inputs/adk/calibre.layerprops
 
