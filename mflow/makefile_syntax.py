@@ -195,8 +195,19 @@ def make_execute( w, outputs, rule, command, deps=None ):
   w.write( rule_def )
   w.newline()
 
+  # Notes
+  #
+  # The `+ touch $@` is added at the end to fix an issue with `make -t`
+  # not touching directories that are out of date and just printing `make:
+  # touch: open: mydirectory: Is a directory`. However, a manual touch
+  # with the touch program (not through make) still works. The make
+  # documentation says that any line with a '+' is always run regardless
+  # of `-t`, so we just put a manual touch to make sure that `make -t`
+  # does what we expect even if the target is a directory.
+
   template_str  = '{output}: {deps}\n'
   template_str += '	$(call {rule})\n'
+  template_str += '	+ touch $@\n'
 
   if deps:
     deps = ' '.join( deps )
