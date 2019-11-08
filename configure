@@ -116,9 +116,11 @@ def main():
 
   # Done
 
-  list_target = opts.backend + " list"
+  list_target   = opts.backend + " list"
+  status_target = opts.backend + " status"
 
-  print( "Targets: run \"" + list_target + "\"" )
+  print( "Targets: run \"" + list_target   + "\" and \""
+                           + status_target + "\"" )
 
 
 main()

@@ -19,6 +19,8 @@ inputs:
   - design.sdc
 
 outputs:
+  - signoff.enc.dat
+  - signoff.enc
   - design.gds.gz
   - design.lvs.v
   - design.vcs.v
@@ -40,14 +42,16 @@ commands:
 
   # Outputs
   - cd outputs
-  - ln -sf ../results/*.gds.gz design.gds.gz
-  - ln -sf ../results/*.lvs.v  design.lvs.v
-  - ln -sf ../results/*.vcs.v  design.vcs.v
-  - ln -sf ../results/*.lef    design.lef
-  - ln -sf ../results/*.pt.sdc design.pt.sdc
-  - ln -sf ../results/*.sdf    design.sdf
-  - ln -sf ../results/*.virtuoso.v  design.virtuoso.v
-  - ln -sf ../typical.spef.gz  design.spef.gz
+  - ln -sf ../checkpoints/signoff.enc.dat
+  - ln -sf ../checkpoints/signoff.enc
+  - ln -sf ../typical.spef.gz      design.spef.gz
+  - ln -sf ../results/*.gds.gz     design.gds.gz
+  - ln -sf ../results/*.lvs.v      design.lvs.v
+  - ln -sf ../results/*.vcs.v      design.vcs.v
+  - ln -sf ../results/*.lef        design.lef
+  - ln -sf ../results/*.pt.sdc     design.pt.sdc
+  - ln -sf ../results/*.sdf        design.sdf
+  - ln -sf ../results/*.virtuoso.v design.virtuoso.v
 
 #-------------------------------------------------------------------------
 # Debug

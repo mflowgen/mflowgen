@@ -50,21 +50,22 @@ def construct():
 
   # Default steps
 
-  info         = Step( 'info',                         default=True )
-  constraints  = Step( 'constraints',                  default=True )
-  dc           = Step( 'synopsys-dc-synthesis',        default=True )
-  iflow        = Step( 'cadence-innovus-flowgen',      default=True )
-  iplugins     = Step( 'cadence-innovus-plugins',      default=True )
-  init         = Step( 'cadence-innovus-init',         default=True )
-  place        = Step( 'cadence-innovus-place',        default=True )
-  cts          = Step( 'cadence-innovus-cts',          default=True )
-  postcts_hold = Step( 'cadence-innovus-postcts_hold', default=True )
-  route        = Step( 'cadence-innovus-route',        default=True )
-  postroute    = Step( 'cadence-innovus-postroute',    default=True )
-  signoff      = Step( 'cadence-innovus-signoff',      default=True )
-  gdsmerge     = Step( 'mentor-calibre-gdsmerge',      default=True )
-  drc          = Step( 'mentor-calibre-drc',           default=True )
-  lvs          = Step( 'mentor-calibre-lvs',           default=True )
+  info         = Step( 'info',                          default=True )
+  constraints  = Step( 'constraints',                   default=True )
+  dc           = Step( 'synopsys-dc-synthesis',         default=True )
+  iflow        = Step( 'cadence-innovus-flowgen',       default=True )
+  iplugins     = Step( 'cadence-innovus-plugins',       default=True )
+  init         = Step( 'cadence-innovus-init',          default=True )
+  place        = Step( 'cadence-innovus-place',         default=True )
+  cts          = Step( 'cadence-innovus-cts',           default=True )
+  postcts_hold = Step( 'cadence-innovus-postcts_hold',  default=True )
+  route        = Step( 'cadence-innovus-route',         default=True )
+  postroute    = Step( 'cadence-innovus-postroute',     default=True )
+  signoff      = Step( 'cadence-innovus-signoff',       default=True )
+  gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
+  drc          = Step( 'mentor-calibre-drc',            default=True )
+  lvs          = Step( 'mentor-calibre-lvs',            default=True )
+  debugdrc     = Step( 'cadence-innovus-debug-calibre', default=True )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -86,6 +87,7 @@ def construct():
   g.add_step( gdsmerge     )
   g.add_step( drc          )
   g.add_step( lvs          )
+  g.add_step( debugdrc     )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -144,6 +146,14 @@ def construct():
   g.connect_by_name( gdsmerge, drc )
   g.connect_by_name( signoff,  lvs )
   g.connect_by_name( gdsmerge, lvs )
+
+  g.connect_by_name( adk,      debugdrc )
+  g.connect_by_name( dc,       debugdrc )
+  g.connect_by_name( iflow,    debugdrc )
+  g.connect_by_name( iplugins, debugdrc )
+  g.connect_by_name( signoff,  debugdrc )
+  g.connect_by_name( drc,      debugdrc )
+  g.connect_by_name( lvs,      debugdrc )
 
   #-----------------------------------------------------------------------
   # Parameterize

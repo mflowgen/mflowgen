@@ -164,12 +164,12 @@ class BuildOrchestrator( object ):
 
     gen = os.path.abspath( __file__ ).rstrip('c')
 
-    with open( inner_dir + '/debug-step.sh', 'w' ) as fd:
+    with open( inner_dir + '/mflow-debug.sh', 'w' ) as fd:
 
       # Header
 
       fd.write( '#' + '='*73 + '\n' )
-      fd.write( '# debug-step.sh\n' )
+      fd.write( '# mflow-debug.sh\n' )
       fd.write( '#' + '='*73 + '\n' )
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
@@ -760,9 +760,9 @@ class BuildOrchestrator( object ):
 
         commands = ' && '.join([
           'cp -f ' + s.metadata_dir + '/' + build_dir \
-                   + '/debug-step.sh ' + build_dir,
+                   + '/mflow-debug.sh ' + build_dir,
           'cd ' + build_dir,
-          'sh debug-step.sh 2>&1 | tee debug-step.log'
+          'sh mflow-debug.sh 2>&1 | tee mflow-debug.log'
         ])
 
         # Rule

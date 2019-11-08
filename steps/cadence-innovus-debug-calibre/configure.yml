@@ -1,0 +1,38 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : November 8, 2019
+#
+
+name: cadence-innovus-debug-calibre
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - innovus-plugins
+  - adk
+  - signoff.enc.dat
+  - signoff.enc
+  - drc.results
+  - lvs.results
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # Set up innovus debug view
+  - ln -sf inputs/innovus-foundation-flow
+  - mkdir -p checkpoints
+  - cd checkpoints && ln -sf ../inputs/signoff.enc* . && cd ..
+  # Open innovus debug view
+  - export STEP=signoff
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
+    -log debug.log
+
+
