@@ -6,7 +6,7 @@
 # Date   : June 2, 2019
 #
 
-dc_exec='dc_shell-xg-t -64bit -topographical_mode'
+dc_exec='dc_shell-xg-t -64bit'
 
 # Build directories
 
@@ -61,7 +61,13 @@ cp -srf $PWD/inputs/adk/alib/* alib || true
 
 # Run the synthesis script
 
-$dc_exec -f dc.tcl -output_log_file logs/dc.log
+if [ "x$topographical" == "xTrue" ]; then
+  opt_topographical='-topographical_mode'
+else
+  opt_topographical=
+fi
+
+$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log
 
 # Set up the outputs
 

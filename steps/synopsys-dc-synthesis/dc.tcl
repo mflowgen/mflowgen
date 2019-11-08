@@ -59,7 +59,6 @@ if {[file exists [which $dc_pre_synthesis_plugin]]} {
 # Set up variables for this specific ASIC design kit
 
 set SYNOPSYS_TOOL "dc-syn"
-set dc_design_name  $::env(design_name)
 source -echo -verbose $dc_adk_tcl
 
 # Multicore support -- watch how many licenses we have!
@@ -132,12 +131,14 @@ open_mw_lib $milkyway_library
 
 # Set up TLU plus (if the files exist)
 
-if {[file exists [which $dc_tluplus_max]]} {
-  set_tlu_plus_files -max_tluplus  $dc_tluplus_max \
-                     -min_tluplus  $dc_tluplus_min \
-                     -tech2itf_map $dc_tluplus_map
+if { $dc_topographical == True } {
+  if {[file exists [which $dc_tluplus_max]]} {
+    set_tlu_plus_files -max_tluplus  $dc_tluplus_max \
+                       -min_tluplus  $dc_tluplus_min \
+                       -tech2itf_map $dc_tluplus_map
 
-  check_tlu_plus_files
+    check_tlu_plus_files
+  }
 }
 
 # Avoiding X-propagation for synchronous reset DFFs
@@ -292,10 +293,12 @@ group_path -name FEEDTHROUGH \
 #
 # Set the minimum and maximum routing layers used in DC topographical mode
 
-set_ignored_layers -min_routing_layer $ADK_MIN_ROUTING_LAYER_DC
-set_ignored_layers -max_routing_layer $ADK_MAX_ROUTING_LAYER_DC
+if { $dc_topographical == True } {
+  set_ignored_layers -min_routing_layer $ADK_MIN_ROUTING_LAYER_DC
+  set_ignored_layers -max_routing_layer $ADK_MAX_ROUTING_LAYER_DC
 
-report_ignored_layers
+  report_ignored_layers
+}
 
 #-------------------------------------------------------------------------
 # Additional options
@@ -464,7 +467,9 @@ write             \
 
 # Floorplan
 
-write_floorplan -all ${dc_results_dir}/${dc_design_name}.mapped.fp
+if { $dc_topographical == True } {
+  write_floorplan -all ${dc_results_dir}/${dc_design_name}.mapped.fp
+}
 
 # Parasitics
 

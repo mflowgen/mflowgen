@@ -37,6 +37,7 @@ parameters:
   clock_period: 1.0
   design_name: undefined
   flatten_effort: 0
+  topographical: True
 
 #-------------------------------------------------------------------------
 # Debug

@@ -30,6 +30,7 @@ def construct():
     'clock_period'   : 2.0,
     'adk'            : adk_name,
     'adk_view'       : adk_view,
+    'topographical'  : True,
   }
 
   #-----------------------------------------------------------------------
