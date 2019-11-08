@@ -50,32 +50,32 @@ def construct():
 
   # Default steps
 
-  info        = Step( 'info',                          default=True )
-  constraints = Step( 'constraints',                   default=True )
-  dc          = Step( 'synopsys-dc-synthesis',         default=True )
-  iflow       = Step( 'cadence-innovus-flowgen',       default=True )
-  iplugins    = Step( 'cadence-innovus-plugins',       default=True )
-  placeroute  = Step( 'cadence-innovus-place-route',   default=True )
-  gdsmerge    = Step( 'mentor-calibre-gdsmerge',       default=True )
-  drc         = Step( 'mentor-calibre-drc',            default=True )
-  lvs         = Step( 'mentor-calibre-lvs',            default=True )
-  debugdrc    = Step( 'cadence-innovus-debug-calibre', default=True )
+  info         = Step( 'info',                          default=True )
+  constraints  = Step( 'constraints',                   default=True )
+  dc           = Step( 'synopsys-dc-synthesis',         default=True )
+  iflow        = Step( 'cadence-innovus-flowgen',       default=True )
+  iplugins     = Step( 'cadence-innovus-plugins',       default=True )
+  placeroute   = Step( 'cadence-innovus-place-route',   default=True )
+  gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
+  drc          = Step( 'mentor-calibre-drc',            default=True )
+  lvs          = Step( 'mentor-calibre-lvs',            default=True )
+  debugcalibre = Step( 'cadence-innovus-debug-calibre', default=True )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info        )
-  g.add_step( rtl         )
-  g.add_step( constraints )
-  g.add_step( dc          )
-  g.add_step( iflow       )
-  g.add_step( iplugins    )
-  g.add_step( placeroute  )
-  g.add_step( gdsmerge    )
-  g.add_step( drc         )
-  g.add_step( lvs         )
-  g.add_step( debugdrc    )
+  g.add_step( info         )
+  g.add_step( rtl          )
+  g.add_step( constraints  )
+  g.add_step( dc           )
+  g.add_step( iflow        )
+  g.add_step( iplugins     )
+  g.add_step( placeroute   )
+  g.add_step( gdsmerge     )
+  g.add_step( drc          )
+  g.add_step( lvs          )
+  g.add_step( debugcalibre )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -108,13 +108,13 @@ def construct():
   g.connect_by_name( gdsmerge, drc )
   g.connect_by_name( gdsmerge, lvs )
 
-  g.connect_by_name( adk,        debugdrc )
-  g.connect_by_name( dc,         debugdrc )
-  g.connect_by_name( iflow,      debugdrc )
-  g.connect_by_name( iplugins,   debugdrc )
-  g.connect_by_name( placeroute, debugdrc )
-  g.connect_by_name( drc,        debugdrc )
-  g.connect_by_name( lvs,        debugdrc )
+  g.connect_by_name( adk,        debugcalibre )
+  g.connect_by_name( dc,         debugcalibre )
+  g.connect_by_name( iflow,      debugcalibre )
+  g.connect_by_name( iplugins,   debugcalibre )
+  g.connect_by_name( placeroute, debugcalibre )
+  g.connect_by_name( drc,        debugcalibre )
+  g.connect_by_name( lvs,        debugcalibre )
 
   #-----------------------------------------------------------------------
   # Parameterize

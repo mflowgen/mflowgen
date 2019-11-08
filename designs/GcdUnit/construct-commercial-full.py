@@ -65,7 +65,7 @@ def construct():
   gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
   drc          = Step( 'mentor-calibre-drc',            default=True )
   lvs          = Step( 'mentor-calibre-lvs',            default=True )
-  debugdrc     = Step( 'cadence-innovus-debug-calibre', default=True )
+  debugcalibre = Step( 'cadence-innovus-debug-calibre', default=True )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -87,7 +87,7 @@ def construct():
   g.add_step( gdsmerge     )
   g.add_step( drc          )
   g.add_step( lvs          )
-  g.add_step( debugdrc     )
+  g.add_step( debugcalibre )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -147,13 +147,13 @@ def construct():
   g.connect_by_name( signoff,  lvs )
   g.connect_by_name( gdsmerge, lvs )
 
-  g.connect_by_name( adk,      debugdrc )
-  g.connect_by_name( dc,       debugdrc )
-  g.connect_by_name( iflow,    debugdrc )
-  g.connect_by_name( iplugins, debugdrc )
-  g.connect_by_name( signoff,  debugdrc )
-  g.connect_by_name( drc,      debugdrc )
-  g.connect_by_name( lvs,      debugdrc )
+  g.connect_by_name( adk,      debugcalibre )
+  g.connect_by_name( dc,       debugcalibre )
+  g.connect_by_name( iflow,    debugcalibre )
+  g.connect_by_name( iplugins, debugcalibre )
+  g.connect_by_name( signoff,  debugcalibre )
+  g.connect_by_name( drc,      debugcalibre )
+  g.connect_by_name( lvs,      debugcalibre )
 
   #-----------------------------------------------------------------------
   # Parameterize
