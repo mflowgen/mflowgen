@@ -34,19 +34,14 @@ def construct():
   }
 
   #-----------------------------------------------------------------------
-  # ADK
-  #-----------------------------------------------------------------------
-
-  g.set_adk( adk_name )
-
-  #-----------------------------------------------------------------------
-  # Create steps
+  # Create nodes
   #-----------------------------------------------------------------------
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
   # ADK step
 
+  g.set_adk( adk_name )
   adk = g.get_adk_step()
 
   # Custom steps
@@ -70,19 +65,6 @@ def construct():
   gdsmerge     = Step( 'mentor-calibre-gdsmerge',      default=True )
   drc          = Step( 'mentor-calibre-drc',           default=True )
   lvs          = Step( 'mentor-calibre-lvs',           default=True )
-
-  #-----------------------------------------------------------------------
-  # Parameterize
-  #-----------------------------------------------------------------------
-
-  adk.update_params( parameters )
-  info.update_params( parameters )
-  dc.update_params( parameters )
-  constraints.update_params( parameters )
-  iflow.update_params( parameters )
-  gdsmerge.update_params( parameters )
-  drc.update_params( parameters )
-  lvs.update_params( parameters )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -155,13 +137,19 @@ def construct():
   g.connect_by_name( postcts_hold, route        )
   g.connect_by_name( route,        postroute    )
   g.connect_by_name( postroute,    signoff      )
- 
+
   g.connect_by_name( signoff, gdsmerge )
 
   g.connect_by_name( signoff,  drc )
   g.connect_by_name( gdsmerge, drc )
   g.connect_by_name( signoff,  lvs )
   g.connect_by_name( gdsmerge, lvs )
+
+  #-----------------------------------------------------------------------
+  # Parameterize
+  #-----------------------------------------------------------------------
+
+  g.update_params( parameters )
 
   return g
 

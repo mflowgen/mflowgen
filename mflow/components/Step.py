@@ -232,13 +232,13 @@ class Step ( object ):
     assert type(params) == dict, \
       'update_param -- ' \
       'Expecting argument of type dictionary to update parameters'
-    assert 'parameters' in s._config.keys(), \
-      'update_param -- ' \
-      'No parameters in step "%s"' % s.get_name()
     # Only update parameters that were defined in the configuration YAML
-    for p in params.keys():
-      if p in s._config['parameters'].keys():
-        s._config['parameters'][p] = params[p]
+    try:
+      for p in params.keys():
+        if p in s._config['parameters'].keys():
+          s._config['parameters'][p] = params[p]
+    except KeyError:
+      pass
 
   def params( s ):
     if 'parameters' not in s._config.keys():

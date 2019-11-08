@@ -175,6 +175,10 @@ class Graph( object ):
   # Parameter system
   #-----------------------------------------------------------------------
 
+  def update_params( s, params ):
+    for step_name in s.all_steps():
+      s.get_step( step_name ).update_params( params )
+
   def expand_params( s ):
     for step_name in s.all_steps():
       s.get_step( step_name ).expand_params()

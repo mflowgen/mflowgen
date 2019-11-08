@@ -33,19 +33,14 @@ def construct():
   }
 
   #-----------------------------------------------------------------------
-  # ADK
-  #-----------------------------------------------------------------------
-
-  g.set_adk( adk_name )
-
-  #-----------------------------------------------------------------------
-  # Create steps
+  # Create nodes
   #-----------------------------------------------------------------------
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
   # ADK step
 
+  g.set_adk( adk_name )
   adk = g.get_adk_step()
 
   # Custom steps
@@ -56,20 +51,9 @@ def construct():
 
   info    = Step( 'info',                 default=True )
   yosys   = Step( 'open-yosys-synthesis', default=True )
-#  replace = Step( 'open-replace-place',   default=True )
+  #replace = Step( 'open-replace-place',   default=True )
   graywolf = Step( 'open-graywolf-place', default=True )
   qrouter  = Step( 'open-qrouter-route',  default=True )
-
-  #-----------------------------------------------------------------------
-  # Parameterize
-  #-----------------------------------------------------------------------
-
-  adk.update_params( parameters )
-  yosys.update_params( parameters )
-  info.update_params( parameters )
-#  replace.update_params( parameters )
-  graywolf.update_params( parameters )
-  qrouter.update_params( parameters )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -78,7 +62,7 @@ def construct():
   g.add_step( info     )
   g.add_step( rtl      )
   g.add_step( yosys    )
-#  g.add_step( replace  )
+  #g.add_step( replace  )
   g.add_step( graywolf )
   g.add_step( qrouter  )
 
@@ -89,14 +73,20 @@ def construct():
   g.connect_by_name( rtl, yosys )
   g.connect_by_name( adk, yosys )
 
-#  g.connect_by_name( adk,   replace )
-#  g.connect_by_name( yosys, replace )
+  #g.connect_by_name( adk,   replace )
+  #g.connect_by_name( yosys, replace )
   g.connect_by_name( adk,   graywolf )
   g.connect_by_name( yosys, graywolf )
 
   g.connect_by_name( adk,      qrouter )
-#  g.connect_by_name( replace,  qrouter )
+  #g.connect_by_name( replace,  qrouter )
   g.connect_by_name( graywolf, qrouter )
+
+  #-----------------------------------------------------------------------
+  # Parameterize
+  #-----------------------------------------------------------------------
+
+  g.update_params( parameters )
 
   return g
 
