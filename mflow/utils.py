@@ -21,7 +21,7 @@ import os
 # - relative : boolean, return relative path to current working directory
 #
 
-def get_top_dir( flag='.ALLOY_ASIC_TOP', relative=True ):
+def get_top_dir( flag='.MFLOW_TOP', relative=True ):
   tmp = os.getcwd()
   while tmp != '/':
     tmp = os.path.dirname( tmp )

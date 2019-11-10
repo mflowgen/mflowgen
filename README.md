@@ -3,8 +3,9 @@ mflow
 
 **Author**: Christopher Torng (clt67@cornell.edu)
 
-mflow is a lightweight modular build-system generator for ASIC
-design-space exploration built around sandboxed and modular steps.
+mflow is a lightweight modular build-system generator for ASIC and
+FPGA design-space exploration built around sandboxed and modular
+steps.
 
 mflow allows you to programmatically define and parameterize a graph
 of steps (i.e., sandboxes that run anything you like) with
@@ -84,8 +85,8 @@ the open-source tools are available.
 
 Clone the repo:
 
-    % git clone https://github.com/cornell-brg/alloy-asic
-    % cd alloy-asic
+    % git clone https://github.com/cornell-brg/mflow
+    % cd mflow
     % TOP=$PWD
 
 Configure for the example design (i.e., GcdUnit) with the default
@@ -167,7 +168,7 @@ The repository is organized at the top level with directories for
 the ADKs, designs, and steps (and utility scripts):
 
 ```
-alloy-asic/
+mflow/
 │
 ├── adks/      -- Each subdirectory is an ADK
 ├── designs/   -- Each subdirectory is a design (can be a cloned repo)
@@ -408,6 +409,4 @@ design flow in a very simple manner:
 This can be useful for "micro" physical design-space exploration
 (e.g., impact of slightly different floorplans, sweeps of clock
 target and optimization flags).
-
-More details to come...
 
