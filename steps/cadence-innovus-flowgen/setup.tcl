@@ -122,16 +122,19 @@ set vars(lef_files) [join "
 # RC Corners
 #-------------------------------------------------------------------------
 
-set vars(rc_corners)              "typical"
+set vars(rc_corners) ""
 
-set vars(typical,cap_table)       $vars(adk_dir)/rtk-typical.captable
-set vars(typical,T)               25
+if {[file exists $vars(adk_dir)/rtk-typical.captable]} {
+  lappend vars(rc_corners)        "typical"
+  set vars(typical,cap_table)     $vars(adk_dir)/rtk-typical.captable
+  set vars(typical,T)             25
+}
 
 # RC best corner
 
 if {[file exists $vars(adk_dir)/rtk-rcbest.captable]} {
   set vars(rcbest,cap_table)      $vars(adk_dir)/rtk-rcbest.captable
-  set vars(rcbest,T)              25
+  #set vars(rcbest,T)              25
   lappend vars(rc_corners)        "rcbest"
 }
 
@@ -139,7 +142,7 @@ if {[file exists $vars(adk_dir)/rtk-rcbest.captable]} {
 
 if {[file exists $vars(adk_dir)/rtk-rcworst.captable]} {
   set vars(rcworst,cap_table)     $vars(adk_dir)/rtk-rcworst.captable
-  set vars(rcworst,T)             25
+  #set vars(rcworst,T)             25
   lappend vars(rc_corners)        "rcworst"
 }
 
@@ -148,11 +151,29 @@ if {[file exists $vars(adk_dir)/rtk-rcworst.captable]} {
 set captable_only_mode false
 
 if {[file exists $vars(adk_dir)/pdk-typical-qrcTechFile]} {
-  set vars(typical,qx_tech_file)  $vars(adk_dir)/pdk-typical-qrcTechFile
-  set vars(rcbest,qx_tech_file)   $vars(adk_dir)/pdk-rcbest-qrcTechFile
-  set vars(rcworst,qx_tech_file)  $vars(adk_dir)/pdk-rcworst-qrcTechFile
+  set vars(typical,qx_tech_file)    $vars(adk_dir)/pdk-typical-qrcTechFile
+  set vars(typical,T)               25
+  if {"typical" ni $vars(rc_corners)} {
+    lappend vars(rc_corners)        "typical"
+  }
 } else {
   set captable_only_mode true
+}
+
+if {[file exists $vars(adk_dir)/pdk-rcbest-qrcTechFile]} {
+  set vars(rcbest,qx_tech_file)     $vars(adk_dir)/pdk-rcbest-qrcTechFile
+  #set vars(rcbest,T)                25
+  if {"rcbest" ni $vars(rc_corners)} {
+    lappend vars(rc_corners)        "rcbest"
+  }
+}
+
+if {[file exists $vars(adk_dir)/pdk-rcworst-qrcTechFile]} {
+  set vars(rcworst,qx_tech_file)    $vars(adk_dir)/pdk-rcworst-qrcTechFile
+  #set vars(rcworst,T)               25
+  if {"rcworst" ni $vars(rc_corners)} {
+    lappend vars(rc_corners)        "rcworst"
+  }
 }
 
 #-------------------------------------------------------------------------
