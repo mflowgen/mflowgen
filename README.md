@@ -1,13 +1,13 @@
-mflow
+mflowgen
 ==========================================================================
 
 **Author**: Christopher Torng (clt67@cornell.edu)
 
-mflow is a lightweight modular build-system generator for ASIC and
-FPGA design-space exploration built around sandboxed and modular
-steps.
+mflowgen is a lightweight modular flow specification and build-system
+generator for ASIC and FPGA design-space exploration built around
+sandboxed and modular steps.
 
-mflow allows you to programmatically define and parameterize a graph
+mflowgen allows you to programmatically define and parameterize a graph
 of steps (i.e., sandboxes that run anything you like) with
 well-defined inputs and outputs. Build system files (e.g., make,
 ninja) are then generated which shuttle files between steps before
@@ -33,7 +33,7 @@ Key features and design philosophies:
 
 - **Programmatically defined build-system generator**: A
   Python-based scripting interface and a simple graph API allows
-  flexibly connecting and disconnecting of edges as well as
+  flexible connection and disconnection of edges as well as
   insertion and removal of steps. A simple graph can be specified
   for a quick synthesis and place-and-route spin, or a more complex
   graph can be built for a more aggressive chip tapeout (reusing
@@ -53,7 +53,7 @@ Key features and design philosophies:
   consumption by other tools. A step can even instantiate a subgraph
   to implement a hierarchical flow.
 
-mflow ships with a limited set of ASIC flow scripts for both
+mflowgen ships with a limited set of ASIC flow scripts for both
 open-source and commercial tools including synthesis (e.g., Synopsys
 DC, yosys), place and route (e.g., Cadence Innovus Foundation Flow,
 RePlAce, graywolf, qrouter), and signoff (e.g., Synopsys PTPX). In
@@ -65,7 +65,7 @@ Library.
 License
 --------------------------------------------------------------------------
 
-mflow is offered under the terms of the Open Source Initiative BSD
+mflowgen is offered under the terms of the Open Source Initiative BSD
 3-Clause License. More information about this license can be found
 here:
 
@@ -85,8 +85,8 @@ the open-source tools are available.
 
 Clone the repo:
 
-    % git clone https://github.com/cornell-brg/mflow
-    % cd mflow
+    % git clone https://github.com/cornell-brg/mflowgen
+    % cd mflowgen
     % TOP=$PWD
 
 Configure for the example design (i.e., GcdUnit) with the default
@@ -168,7 +168,7 @@ The repository is organized at the top level with directories for
 the ADKs, designs, and steps (and utility scripts):
 
 ```
-mflow/
+mflowgen/
 │
 ├── adks/      -- Each subdirectory is an ADK
 ├── designs/   -- Each subdirectory is a design (can be a cloned repo)
@@ -198,7 +198,7 @@ physical IP libraries (e.g., IO cells, standard cells, memory
 compilers), as well as physical verification decks (e.g., Calibre
 DRC/LVS).
 
-mflow ships with an open-source 45nm ADK assembled from FreePDK45
+mflowgen ships with an open-source 45nm ADK assembled from FreePDK45
 version 1.4 and the NanGate Open Cell Library. We place all kits and
 libraries into the directory `adks/freepdk-45nm/pkgs` in a
 relatively unorganized manner (just untar them). We then create
@@ -346,7 +346,7 @@ set ADK_VIRTUOSO_EXCLUDE_CELL_LIST  ""           # steps/innovus-plugins
 Feature in Detail: Sandboxed and Modular Steps
 --------------------------------------------------------------------------
 
-A key philosophy of mflow is to avoid rigidly structured ASIC flows
+A key philosophy of mflowgen is to avoid rigidly structured ASIC flows
 that cannot be repurposed and to instead break the ASIC flow into
 modular steps that can be re-assembled into different flows with
 high reuse. Specifically, instead of having ASIC steps that directly
@@ -373,14 +373,14 @@ challenging because ASIC tools work extensively with files, making
 an already challenging problem more difficult due to additional file
 management for many slightly different builds.
 
-mflow supports both parameterization and parallel expansion across a
+mflowgen supports both parameterization and parallel expansion across a
 parameter space.
 
 For example, suppose we would like to sweep the `clock_period` parameter in the `open-yosys-synthesis` step in this graph:
 
 <img height='300px' src='docs/example-params-1.jpg'>
 
-The mflow Python API `param_space()` expands the node for each
+The mflowgen Python API `param_space()` expands the node for each
 parameter value in the list:
 
 ```
@@ -396,7 +396,7 @@ slightly different builds:
 
 The three builds can be run in parallel and the results compared.
 All file management is handled cleanly by the build system (which
-mflow generates from the graph).
+mflowgen generates from the graph).
 
 Note that because parameters are passed as environment variables,
 parameter sweeping can be flexibly applied across the physical
@@ -404,7 +404,7 @@ design flow in a very simple manner:
 
 1. Replace some code with a variable anywhere in your scripts
 2. Identify this variable as a parameter (i.e., in the step's `configure.yml`)
-3. Use the `param_space()` mflow API to perform a sweep of that variable
+3. Use the `param_space()` mflowgen API to perform a sweep of that variable
 
 This can be useful for "micro" physical design-space exploration
 (e.g., impact of slightly different floorplans, sweeps of clock
