@@ -247,6 +247,7 @@ class MakeBackend( object ):
       dst  = dst,
       src  = src,
       deps = all_deps,
+      ignore_src_dep = True, # the only dep here comes through all_deps
     )
 
     return [ target ]

@@ -227,7 +227,7 @@ def ninja_common_rules( w ):
     command     = 'rm -rf ./$dst && ' +
                   'cp -aL $src $dst || true && ' +
                   'chmod -R +w $dst && ' +
-                  'cp .mflow/$dst/configure.yml $dst && ' +
+                  'cp .mflowgen/$dst/configure.yml $dst && ' +
                   'touch $stamp',
   )
   w.newline()
@@ -242,7 +242,8 @@ def ninja_common_rules( w ):
     command     = 'rm -rf ./$dst && ' +
                   'mkdir -p $dst && ' +
                   'cd $dst && ln -sf ../$src/* . && cd .. && ' +
-                  'rm $dst/configure.yml && cp .mflow/$dst/configure.yml $dst && ' +
+                  'rm $dst/configure.yml && ' +
+                  'cp .mflowgen/$dst/configure.yml $dst && ' +
                   'touch $stamp',
   )
   w.newline()
@@ -300,7 +301,8 @@ def ninja_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'mflow-run.*',
+    'mflowgen-run.*',
+    'mflowgen-debug.*',
     '.stamp',
     'inputs',
     'outputs',
@@ -421,7 +423,7 @@ def ninja_list( w, steps, debug_targets ):
 
 def ninja_graph( w ):
 
-  command = 'dot -Tpdf .mflow/graph.dot > graph.pdf'
+  command = 'dot -Tpdf .mflowgen/graph.dot > graph.pdf'
 
   w.rule(
     name        = 'graph',

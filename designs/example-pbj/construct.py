@@ -11,7 +11,7 @@
 import os
 import sys
 
-from mflow.components import Graph, Step
+from mflowgen.components import Graph, Step
 
 def construct():
 

@@ -91,7 +91,7 @@ Clone the repo:
 
 Configure for the example design (i.e., GcdUnit) with the default
 open-source 45nm ADK and open-source ASIC toolflow. **Note**: To try
-the commercial toolflow, open `designs/GcdUnit/.mflow.yml` and
+the commercial toolflow, open `designs/GcdUnit/.mflowgen.yml` and
 select `construct-commercial.py` instead of `construct-open.py`.
 
     % cd $TOP
@@ -174,7 +174,7 @@ mflowgen/
 ├── designs/   -- Each subdirectory is a design (can be a cloned repo)
 ├── steps/     -- Collection of generic steps
 │
-│── mflow/     -- Source files for the build system generator
+│── mflowgen/  -- Source files for the build system generator
 │── utils/     -- Helper scripts
 └── configure  -- Config script to select a design
 ```

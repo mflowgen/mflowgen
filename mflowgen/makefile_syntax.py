@@ -110,9 +110,11 @@ def make_cpdir( w, dst, src, deps=None, sandbox=True ):
 # - src  : path to source file/directory
 # - deps : additional dependencies
 # - src_is_symlink : boolean, flag if source is a symlink (and has stamp)
+# - ignore_src_dep : boolean, does not include src in deps if True
 #
 
-def make_symlink( w, dst, src, deps=None, src_is_symlink=False ):
+def make_symlink( w, dst, src, deps=None, src_is_symlink=False,
+                                          ignore_src_dep=False ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
@@ -148,8 +150,11 @@ def make_symlink( w, dst, src, deps=None, src_is_symlink=False ):
 
   target = dst_stamp
 
-  if deps:
-    deps = ' '.join( [ inputs ] + deps )
+  if not ignore_src_dep:
+    deps.append( inputs )
+    deps = ' '.join( deps )
+  else:
+    deps = ' '.join( deps )
 
   if deps == None:
     deps = ''
@@ -331,7 +336,7 @@ define cpdir-and-parameterize
 	rm -rf ./$1
 	cp -aL $2 $1 || true
 	chmod -R +w $1
-	cp .mflow/$1/configure.yml $1
+	cp .mflowgen/$1/configure.yml $1
 	touch $3
 endef
 
@@ -343,7 +348,7 @@ define mkdir-and-symlink
 	rm -rf ./$1
 	mkdir -p $1
 	cd $1 && ln -sf ../$2/* . && cd ..
-	rm $1/configure.yml && cp .mflow/$1/configure.yml $1
+	rm $1/configure.yml && cp .mflowgen/$1/configure.yml $1
 	touch $3
 endef
 
@@ -395,7 +400,8 @@ def make_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'mflow-run.*',
+    'mflowgen-run.*',
+    'mflowgen-debug.*',
     '.stamp',
     'inputs',
     'outputs',
@@ -504,7 +510,7 @@ def make_list( w, steps, debug_targets ):
 
 def make_graph( w ):
 
-  command = 'dot -Tpdf .mflow/graph.dot > graph.pdf'
+  command = 'dot -Tpdf .mflowgen/graph.dot > graph.pdf'
 
   template_str  = '.PHONY: graph\n'
   template_str += '\n'

@@ -18,8 +18,8 @@ import os
 import sys
 import yaml
 
-from mflow import BuildOrchestrator
-from mflow import MakeBackend, NinjaBackend
+from mflowgen import BuildOrchestrator
+from mflowgen import MakeBackend, NinjaBackend
 
 #-------------------------------------------------------------------------
 # Command line processing
@@ -59,9 +59,9 @@ def main():
     raise ValueError(
       'Directory not found at path "{}"'.format( opts.design ) )
 
-  # Read the .mflow.yml metadata in the design directory
+  # Read the .mflowgen.yml metadata in the design directory
 
-  yaml_path = opts.design + '/.mflow.yml'
+  yaml_path = opts.design + '/.mflowgen.yml'
   yaml_path = os.path.abspath( yaml_path )
 
   with open( yaml_path, 'r' ) as fd:

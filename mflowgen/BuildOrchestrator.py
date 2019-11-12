@@ -40,7 +40,7 @@ class BuildOrchestrator( object ):
     # Hidden metadata directory that saves parameterized YAMLs and
     # commands for each step
 
-    s.metadata_dir = '.mflow'
+    s.metadata_dir = '.mflowgen'
 
     if os.path.exists( s.metadata_dir ):
       shutil.rmtree( s.metadata_dir )
@@ -82,12 +82,12 @@ class BuildOrchestrator( object ):
 
     gen = os.path.abspath( __file__ ).rstrip('c')
 
-    with open( inner_dir + '/mflow-run.sh', 'w' ) as fd:
+    with open( inner_dir + '/mflowgen-run.sh', 'w' ) as fd:
 
       # Header
 
       fd.write( '#' + '='*73 + '\n' )
-      fd.write( '# mflow-run.sh\n' )
+      fd.write( '# mflowgen-run.sh\n' )
       fd.write( '#' + '='*73 + '\n' )
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
@@ -164,12 +164,12 @@ class BuildOrchestrator( object ):
 
     gen = os.path.abspath( __file__ ).rstrip('c')
 
-    with open( inner_dir + '/mflow-debug.sh', 'w' ) as fd:
+    with open( inner_dir + '/mflowgen-debug.sh', 'w' ) as fd:
 
       # Header
 
       fd.write( '#' + '='*73 + '\n' )
-      fd.write( '# mflow-debug.sh\n' )
+      fd.write( '# mflowgen-debug.sh\n' )
       fd.write( '#' + '='*73 + '\n' )
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
@@ -531,10 +531,10 @@ class BuildOrchestrator( object ):
         'python ' + get_top_dir() + '/utils/letters.py -c -t ' + step_name,
         # Copy the command script to the build_dir
         'cp -f ' + s.metadata_dir + '/' + build_dir \
-                 + '/mflow-run.sh ' + build_dir,
+                 + '/mflowgen-run.sh ' + build_dir,
         'cd ' + build_dir,
         # Run the commands
-        'sh mflow-run.sh 2>&1 | tee mflow-run.log',
+        'sh mflowgen-run.sh 2>&1 | tee mflowgen-run.log',
         # Return to top so backends can assume we never changed directory
         'cd ..',
       ])
@@ -764,9 +764,9 @@ class BuildOrchestrator( object ):
 
         commands = ' && '.join([
           'cp -f ' + s.metadata_dir + '/' + build_dir \
-                   + '/mflow-debug.sh ' + build_dir,
+                   + '/mflowgen-debug.sh ' + build_dir,
           'cd ' + build_dir,
-          'sh mflow-debug.sh 2>&1 | tee mflow-debug.log'
+          'sh mflowgen-debug.sh 2>&1 | tee mflowgen-debug.log'
         ])
 
         # Rule
