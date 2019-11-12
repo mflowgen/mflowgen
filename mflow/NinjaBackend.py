@@ -82,24 +82,25 @@ class NinjaBackend( object ):
   # - Copy the {src} to the {dst}
   # - Parameterize using the saved YAML in the metadata directory
   # - This rule depends on {deps}
+  # - {sandbox} True (copies src dir), False (symlinks src contents)
   #
   # Expected return
   #
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_directory( s, dst, src, deps, parameterize, extra_deps ):
+  def gen_step_directory( s, dst, src, deps, extra_deps, sandbox ):
 
     all_deps = deps + extra_deps
 
     # Rules
 
     target = ninja_cpdir(
-      w    = s.w,
-      dst  = dst,
-      src  = src,
-      deps = all_deps,
-      parameterize = parameterize,
+      w       = s.w,
+      dst     = dst,
+      src     = src,
+      deps    = all_deps,
+      sandbox = sandbox,
     )
     s.w.newline()
 

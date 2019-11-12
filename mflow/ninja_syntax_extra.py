@@ -19,21 +19,22 @@ from .utils import stamp, get_top_dir
 #
 # Copies a directory and handles stamping
 #
-# - w    : instance of ninja_syntax Writer
-# - dst  : path to copied directory
-# - src  : path to source directory
-# - deps : list, additional dependencies for ninja build
+# - w       : instance of ninja_syntax Writer
+# - dst     : path to copied directory
+# - src     : path to source directory
+# - deps    : list, additional dependencies for ninja build
+# - sandbox : bool, True (copies src dir), False (symlinks src contents)
 #
 
-def ninja_cpdir( w, dst, src, deps=None, parameterize=None ):
+def ninja_cpdir( w, dst, src, deps=None, sandbox=True ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
 
-  if parameterize:
+  if sandbox:
     rule = 'cpdir-and-parameterize'
   else:
-    rule = 'cpdir'
+    rule = 'mkdir-and-symlink'
 
   target = dst + '/.stamp'
 
@@ -80,8 +81,6 @@ def ninja_symlink( w, dst, src, deps=None, src_is_symlink=False ):
   # Depend on src stamp if src is also a symlink
 
   if src_is_symlink:
-    src_dir   = os.path.dirname( src )
-    src_base  = os.path.basename( src )
     src_stamp = stamp( src )
     inputs    = src_stamp
   else:
@@ -229,6 +228,21 @@ def ninja_common_rules( w ):
                   'cp -aL $src $dst || true && ' +
                   'chmod -R +w $dst && ' +
                   'cp .mflow/$dst/configure.yml $dst && ' +
+                  'touch $stamp',
+  )
+  w.newline()
+
+  # mkdir-and-symlink
+  #
+  # Shadows the source directory contents with symlinks
+
+  w.rule(
+    name        = 'mkdir-and-symlink',
+    description = 'mkdir-and-symlink: Shadowing $src to $dst',
+    command     = 'rm -rf ./$dst && ' +
+                  'mkdir -p $dst && ' +
+                  'cd $dst && ln -sf ../$src/* . && cd .. && ' +
+                  'rm $dst/configure.yml && cp .mflow/$dst/configure.yml $dst && ' +
                   'touch $stamp',
   )
   w.newline()

@@ -459,4 +459,16 @@ class Step ( object ):
     with open( build_dir + '/' + s.yaml_name, 'w' ) as fd:
       yaml.dump( s._config, fd, default_flow_style=False )
 
+  # The sandbox flag will copy the source step directory if true (default)
+  # or symlink the source files into the build directory if false
+
+  def set_sandbox( s, val ):
+    s._config['sandbox'] = val
+
+  def get_sandbox( s ):
+    try:
+      return s._config['sandbox']
+    except KeyError:
+      return True
+
 

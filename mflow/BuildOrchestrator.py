@@ -403,19 +403,23 @@ class BuildOrchestrator( object ):
           pass
       deps = deps_filtered
 
+      # Check if we are going to sandbox this step or symlink it
+
+      sandbox = step.get_sandbox()
+
       # Rule
       #
       # - Remove the {dst}
       # - Copy the {src} to the {dst}
-      # - Parameterize using the saved YAML in the metadata directory
       # - This rule depends on {deps}
+      # - {sandbox} True (copies src dir), False (symlinks src contents)
       #
 
       rule = {
-        'dst'          : build_dir,
-        'src'          : step_template_dir,
-        'deps'         : deps,
-        'parameterize' : True,
+        'dst'     : build_dir,
+        'src'     : step_template_dir,
+        'deps'    : deps,
+        'sandbox' : sandbox,
       }
 
       # Pull in any backend dependencies

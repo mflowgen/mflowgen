@@ -47,13 +47,14 @@ class Writer( object ):
 #
 # Copies a directory and handles stamping
 #
-# - w    : instance of Writer
-# - dst  : path to copied directory
-# - src  : path to source directory
-# - deps : list, additional dependencies
+# - w       : instance of Writer
+# - dst     : path to copied directory
+# - src     : path to source directory
+# - deps    : list, additional dependencies
+# - sandbox : bool, True (copies src dir), False (symlinks src contents)
 #
 
-def make_cpdir( w, dst, src, deps=None, parameterize=None ):
+def make_cpdir( w, dst, src, deps=None, sandbox=True ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
@@ -62,10 +63,10 @@ def make_cpdir( w, dst, src, deps=None, parameterize=None ):
   # $2 -- src
   # $3 -- stamp
 
-  if parameterize:
+  if sandbox:
     rule = 'cpdir-and-parameterize'
   else:
-    rule = 'cpdir'
+    rule = 'mkdir-and-symlink'
 
   target = dst + '/.stamp'
 
@@ -138,8 +139,6 @@ def make_symlink( w, dst, src, deps=None, src_is_symlink=False ):
   # Depend on src stamp if src is also a symlink
 
   if src_is_symlink:
-    src_dir   = os.path.dirname( src )
-    src_base  = os.path.basename( src )
     src_stamp = stamp( src )
     inputs    = src_stamp
   else:
@@ -333,6 +332,18 @@ define cpdir-and-parameterize
 	cp -aL $2 $1 || true
 	chmod -R +w $1
 	cp .mflow/$1/configure.yml $1
+	touch $3
+endef
+
+# $1 -- $dst
+# $2 -- $src
+# $3 -- $stamp
+
+define mkdir-and-symlink
+	rm -rf ./$1
+	mkdir -p $1
+	cd $1 && ln -sf ../$2/* . && cd ..
+	rm $1/configure.yml && cp .mflow/$1/configure.yml $1
 	touch $3
 endef
 

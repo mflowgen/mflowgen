@@ -27,3 +27,8 @@ __pycache__/
 
 *.backup
 
+# mflowgen
+
+*.stamp.*
+*.execstamp.*
+
