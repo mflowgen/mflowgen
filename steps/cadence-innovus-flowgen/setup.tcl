@@ -153,7 +153,7 @@ set captable_only_mode false
 if {[file exists $vars(adk_dir)/pdk-typical-qrcTechFile]} {
   set vars(typical,qx_tech_file)    $vars(adk_dir)/pdk-typical-qrcTechFile
   set vars(typical,T)               25
-  if {"typical" ni $vars(rc_corners)} {
+  if {[lsearch -exact $vars(rc_corners) "typical"] == -1} {
     lappend vars(rc_corners)        "typical"
   }
 } else {
@@ -163,7 +163,7 @@ if {[file exists $vars(adk_dir)/pdk-typical-qrcTechFile]} {
 if {[file exists $vars(adk_dir)/pdk-rcbest-qrcTechFile]} {
   set vars(rcbest,qx_tech_file)     $vars(adk_dir)/pdk-rcbest-qrcTechFile
   #set vars(rcbest,T)                25
-  if {"rcbest" ni $vars(rc_corners)} {
+  if {[lsearch -exact $vars(rc_corners) "rcbest"] == -1} {
     lappend vars(rc_corners)        "rcbest"
   }
 }
@@ -171,7 +171,7 @@ if {[file exists $vars(adk_dir)/pdk-rcbest-qrcTechFile]} {
 if {[file exists $vars(adk_dir)/pdk-rcworst-qrcTechFile]} {
   set vars(rcworst,qx_tech_file)    $vars(adk_dir)/pdk-rcworst-qrcTechFile
   #set vars(rcworst,T)               25
-  if {"rcworst" ni $vars(rc_corners)} {
+  if {[lsearch -exact $vars(rc_corners) "rcworst"] == -1} {
     lappend vars(rc_corners)        "rcworst"
   }
 }
