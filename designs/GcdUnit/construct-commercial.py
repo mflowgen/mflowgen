@@ -56,6 +56,7 @@ def construct():
   iflow        = Step( 'cadence-innovus-flowgen',       default=True )
   iplugins     = Step( 'cadence-innovus-plugins',       default=True )
   placeroute   = Step( 'cadence-innovus-place-route',   default=True )
+  genlibdb     = Step( 'synopsys-ptpx-genlibdb',        default=True )
   gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
   drc          = Step( 'mentor-calibre-drc',            default=True )
   lvs          = Step( 'mentor-calibre-lvs',            default=True )
@@ -72,6 +73,7 @@ def construct():
   g.add_step( iflow        )
   g.add_step( iplugins     )
   g.add_step( placeroute   )
+  g.add_step( genlibdb     )
   g.add_step( gdsmerge     )
   g.add_step( drc          )
   g.add_step( lvs          )
@@ -95,6 +97,9 @@ def construct():
   g.connect_by_name( dc,       placeroute )
   g.connect_by_name( iflow,    placeroute )
   g.connect_by_name( iplugins, placeroute )
+
+  g.connect_by_name( placeroute, genlibdb )
+  g.connect_by_name( adk,        genlibdb )
 
   g.connect_by_name( adk       , drc )
   g.connect_by_name( placeroute, drc )
