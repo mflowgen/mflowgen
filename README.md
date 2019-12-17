@@ -28,8 +28,9 @@ Key features and design philosophies:
   resulting flows have low reusability across designs and technology
   nodes and can be confusing and monolithic. In contrast,
   _modularity_ encourages reuse of the same scripts across many
-  projects, while _sandboxing_ makes the role of each step easy to
-  understand (i.e., take these inputs and generate those outputs).
+  projects, while _sandboxing_ makes each step self-contained and
+  also makes the role of each step easy to understand (i.e., take
+  these inputs and generate those outputs).
 
 - **Programmatically defined build-system generator**: A
   Python-based scripting interface and a simple graph API allows

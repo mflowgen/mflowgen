@@ -104,7 +104,8 @@ class BuildOrchestrator( object ):
         [ params_str.format(k,v) for k, v in params.items() ]
 
       pre = [
-        'date +%Y-%m%d-%H%M-%S > .time_start', # starting timestamp
+        'rm -f .time_end',                     # clear end timestamp
+        'date +%Y-%m%d-%H%M-%S > .time_start', # start timestamp
       ]
 
       pre = pre + params_commands
@@ -133,7 +134,7 @@ class BuildOrchestrator( object ):
       #
 
       post = [
-        'date +%Y-%m%d-%H%M-%S > .time_end', # ending timestamp
+        'date +%Y-%m%d-%H%M-%S > .time_end', # end timestamp
       ]
 
       fd.write( '# Post\n' )

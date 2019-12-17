@@ -198,6 +198,14 @@ class Step ( object ):
       [ s.get_output_handle( name ) for name in outputs ]
     return output_handles
 
+  # API to extend inputs and outputs
+
+  def extend_inputs( s, new_list ):
+    s._config['inputs'].extend( new_list )
+
+  def extend_outputs( s, new_list ):
+    s._config['outputs'].extend( new_list )
+
   #-----------------------------------------------------------------------
   # Parameter system
   #-----------------------------------------------------------------------
