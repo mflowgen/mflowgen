@@ -242,6 +242,29 @@ class Graph( object ):
     elist_i = s._param_space_helper_remove_incoming_edges( step_name )
 
     # Now spin out new copies of the step across the parameter space
+    #
+    # Start from this:
+    #
+    #     +-----+    +-----------+    +-----------+
+    #     | foo | -> |    bar    | -> |    baz    |
+    #     |     |    |           |    |           |
+    #     +-----+    +-----------+    +-----------+
+    #
+    # End like this:
+    #
+    #                 +-----------+
+    #             +-> |  bar-p-1  |
+    #             |   | ( p = 1 ) |        +-----------+
+    #             |   +-----------+     -- |    baz    |
+    #     +-----+ |   +-----------+        |           |
+    #     | foo | --> |  bar-p-2  |        +-----------+
+    #     |     | |   | ( p = 2 ) |
+    #     +-----+ |   +-----------+
+    #             |   +-----------+
+    #             +-> |  bar-p-3  |
+    #                 | ( p = 3 ) |
+    #                 +-----------+
+    #
 
     new_steps = []
 
@@ -257,25 +280,94 @@ class Graph( object ):
         s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
       new_steps.append( p_step )
 
-    # Get the steps that directly depended on this step
+    # Build a dict to map (removed) base steps to their expanded steps
+
+    new_src_map = { step_name : new_steps }
+
+    # Recurse on downstream nodes
+    #
+    # We traverse down the graph in _topological_ sort order to handle
+    # cases where downstream nodes depend on multiple previous nodes. For
+    # example:
+    #
+    #         +---+    +---+    +---+
+    #         | A | -> | B | -> | C |
+    #         +---+    +---+    +---+
+    #           |               ^
+    #            \_____________/
+    #
+    # On each node expansion, we are breaking the incoming edges of that
+    # node, removing the node from the graph, stamping out three
+    # parameterized versions of the node, and reconnecting the incoming
+    # edges.
+    #
+    # The natural expansion order is A, B, C (i.e., topological sort
+    # order). If we use non-topological sort order, then the solution is
+    # less clean.
+    #
 
     dep_steps = s._param_space_helper_get_dependent_steps( step_name )
+    dep_steps = s.topological_sort( seed_steps=dep_steps )
 
-    # For each dependent step, replicate and connect to the new steps
+    # For each dependent step, replicate and connect to the graph
+
+    visited = set()
 
     for dep_step in dep_steps:
-      s._param_space_helper( step        = dep_step,
-                             old_src     = step,
-                             new_srcs    = new_steps,
+      s._param_space_helper( step_name   = dep_step,
+                             new_src_map = new_src_map,
+                             visited     = visited,
                              param_name  = param_name,
                              param_space = param_space )
 
     return new_steps
 
-  def _param_space_helper( s, step, old_src, new_srcs, param_name,
-                                                       param_space ):
+  # _param_space_helper
+  #
+  # Take the dependent step (i.e., baz), replicate the step across the
+  # parameter space, and then connect to the frontier of new_srcs (i.e.,
+  # bar-p-1, bar-p-2, bar-p-3).
+  #
+  # Start from this:
+  #
+  #                 +-----------+
+  #             +-> |  bar-p-1  |
+  #             |   | ( p = 1 ) |        +-----------+
+  #             |   +-----------+     -- |    baz    |
+  #     +-----+ |   +-----------+        |           |
+  #     | foo | --> |  bar-p-2  |        +-----------+
+  #     |     | |   | ( p = 2 ) |
+  #     +-----+ |   +-----------+
+  #             |   +-----------+
+  #             +-> |  bar-p-3  |
+  #                 | ( p = 3 ) |
+  #                 +-----------+
+  #
+  # End like this:
+  #
+  #                 +-----------+    +-----------+
+  #             +-> |  bar-p-1  | -> |  baz-p-1  |
+  #             |   | ( p = 1 ) |    |           |
+  #             |   +-----------+    +-----------+
+  #     +-----+ |   +-----------+    +-----------+
+  #     | foo | --> |  bar-p-2  | -> |  baz-p-2  |
+  #     |     | |   | ( p = 2 ) |    |           |
+  #     +-----+ |   +-----------+    +-----------+
+  #             |   +-----------+    +-----------+
+  #             +-> |  bar-p-3  | -> |  baz-p-3  |
+  #                 | ( p = 3 ) |    |           |
+  #                 +-----------+    +-----------+
+  #
 
-    step_name = step.get_name()
+  def _param_space_helper( s, step_name, new_src_map, visited,
+                                         param_name,  param_space ):
+
+    if step_name in visited:
+      return
+    else:
+      visited.add( step_name )
+
+    step = s.get_step( step_name )
 
     # Remove the step and its incoming edges from the graph
 
@@ -294,23 +386,28 @@ class Graph( object ):
       for e in elist_i:
         src_step_name, src_f = e.get_src()
         dst_step_name, dst_f = e.get_dst()
-        if src_step_name == old_src.get_name():
-          src_step = new_srcs[i]
+        if src_step_name in new_src_map.keys():
+          src_step = new_src_map[src_step_name][i]
         else:
           src_step = s.get_step( src_step_name )
         s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
       new_steps.append( p_step )
 
-    # Get the steps that directly depended on this step
+    # Build a dict to map (removed) base steps to their expanded steps
+
+    new_src_map.update( { step_name : new_steps } )
+
+    # Recurse on downstream nodes
 
     dep_steps = s._param_space_helper_get_dependent_steps( step_name )
+    dep_steps = s.topological_sort( seed_steps=dep_steps )
 
     # For each dependent step, replicate and connect to the new steps
 
     for dep_step in dep_steps:
-      s._param_space_helper( step        = dep_step,
-                             old_src     = step,
-                             new_srcs    = new_steps,
+      s._param_space_helper( step_name   = dep_step,
+                             new_src_map = new_src_map,
+                             visited     = visited,
                              param_name  = param_name,
                              param_space = param_space )
 
@@ -341,7 +438,7 @@ class Graph( object ):
 
     for e in elist_o:
       dst_step_name, dst_f = e.get_dst()
-      dep_steps.add( s.get_step( dst_step_name ) )
+      dep_steps.add( dst_step_name )
 
     return dep_steps
 
@@ -472,7 +569,7 @@ ranksep=0.8;
   # Graph traversal order
   #-----------------------------------------------------------------------
 
-  def topological_sort( s ):
+  def topological_sort( s, seed_steps=False ):
 
     order = []
 
@@ -483,9 +580,30 @@ ranksep=0.8;
       edges_deep_copy[ step_name ] = list(elist)
     edges = edges_deep_copy
 
-    # Consider all steps in the graph
+    # Consider all steps in the graph, or if there are seed steps then
+    # only consider that subgraph (with incoming dangling edges removed)
 
-    steps = set( s.all_steps() )
+    if type( seed_steps ) != set:
+      steps = set( s.all_steps() )
+    else:
+      steps = set( seed_steps )
+      # Delete any edges directed to nodes not in the subgraph
+      for k in edges.keys():
+        if k not in seed_steps:
+          del( edges[k] )
+      # Delete any incoming edges from src nodes not in the subgraph
+      keys_to_delete = []
+      for step_name, elist in edges.items():
+        idx_to_delete = []
+        for i, e in enumerate( elist ):
+          if e.get_src()[0] not in seed_steps:
+            idx_to_delete.append( i )
+        for i in reversed( idx_to_delete ):
+          del( elist[i] )
+        if elist == []:
+          keys_to_delete.append( step_name )
+      for k in keys_to_delete:
+        del( edges[k] )
 
     # Topological sort
 
@@ -493,6 +611,10 @@ ranksep=0.8;
 
       steps_with_deps    = set( edges.keys() )
       steps_without_deps = steps.difference( steps_with_deps )
+
+      assert steps_without_deps, \
+        'topological_sort -- Could not find a valid sort for ' \
+        '{}'.format( steps )
 
       order.extend( steps_without_deps )
       steps = steps_with_deps

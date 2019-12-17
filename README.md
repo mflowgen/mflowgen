@@ -407,7 +407,7 @@ design flow in a very simple manner:
 2. Identify this variable as a parameter (i.e., in the step's `configure.yml`)
 3. Use the `param_space()` mflowgen API to perform a sweep of that variable
 
-This can be useful for "micro" physical design-space exploration
-(e.g., impact of slightly different floorplans, sweeps of clock
-target and optimization flags).
+This can be useful for automating large design-space exploration
+sweeps (e.g., different clock targets for designs with different
+port widths, bitwidths, floorplan margins).
 
