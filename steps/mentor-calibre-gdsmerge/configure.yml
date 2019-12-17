@@ -25,6 +25,8 @@ outputs:
 
 commands:
   - set -x
+  # For some reason, Calibre requires this directory to exist
+  - mkdir -p $HOME/.calibrewb_workspace/tmp
   - calibredrv -a layout filemerge \
                -indir inputs \
                -in inputs/adk/stdcells.gds \
