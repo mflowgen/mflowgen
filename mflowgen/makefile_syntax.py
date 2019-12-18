@@ -459,14 +459,14 @@ def make_runtimes( w ):
 # Write out rule to list all steps
 #
 # - w             : instance of Writer
-# - steps         : list of steps
-# - debug_targets : list of debug targets
+# - order         : list of steps in order
+# - debug_targets : dict of debug targets with key (id) and value (target)
 #
 
-def make_list( w, steps, debug_targets ):
+def make_list( w, order, debug_targets ):
 
   steps_str = \
-    [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( steps ) ]
+    [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( order ) ]
 
   generic = [
     '"list     -- List all steps"',
@@ -477,6 +477,10 @@ def make_list( w, steps, debug_targets ):
     '"clean-N  -- Clean target N"',
     '"diff-N   -- Diff target N"',
   ]
+
+  debug_str = \
+    [ '"debug-{: <2} : {}"'.format(i,tup) \
+      for i, tup in sorted( debug_targets.items(), key=lambda(x):int(x[0]) ) ]
 
   template_str  = '.PHONY: list\n'
   template_str += '\n'
@@ -492,7 +496,7 @@ def make_list( w, steps, debug_targets ):
       'printf " - %s\\n" ' + ' '.join( steps_str ),
     'echo',
     'echo Debug Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( debug_targets ),
+      'printf " - %s\\n" ' + ' '.join( debug_str ),
     'echo',
   ]
 

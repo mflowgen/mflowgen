@@ -25,7 +25,7 @@ class NinjaBackend( object ):
     s.fd = open( 'build.ninja', 'w' )
     s.w = NinjaWriter( s.fd )
     # Track debug targets for list command
-    s.debug_targets = []
+    s.debug_targets = {}
 
   def __del__( s ):
     s.fd.close()
@@ -172,7 +172,7 @@ class NinjaBackend( object ):
     all_deps = deps + extra_deps
 
     # Extract the build directory from the command so we can create a
-    # unique ninja rule name
+    # unique rule name
 
     tokens    = command.split()
     cd_idx    = tokens.index( 'cd' )
@@ -312,30 +312,24 @@ class NinjaBackend( object ):
   # Expected semantics
   #
   # - Run the {command}
-  # - Generate the {outputs}
+  # - Generate the {target}
+  # - Use {build_id} to guarantee uniqueness
   #
   # Expected return
   #
   # - None
   #
 
-  def gen_step_debug( s, outputs, command ):
-
-    # Extract the build directory from the command so we can create a
-    # unique ninja rule name
-
-    tokens    = command.split()
-    cd_idx    = tokens.index( 'cd' )
-    build_dir = tokens[ cd_idx + 1 ]
+  def gen_step_debug( s, target, command, build_id ):
 
     # Rules
 
-    debug_rule = build_dir + '-debug-rule'
+    debug_rule = build_id + '-debug-rule'
     debug_rule = debug_rule.replace( '-', '_' )
 
     ninja_execute(
       w       = s.w,
-      outputs = outputs,
+      outputs = [ target ],
       rule    = debug_rule,
       command = command,
       pool    = 'console',
@@ -343,7 +337,7 @@ class NinjaBackend( object ):
 
     # Track debug targets for list command
 
-    s.debug_targets.extend( outputs )
+    s.debug_targets.update( { build_id : target } )
 
   # gen_epilogue
   #
@@ -407,7 +401,7 @@ class NinjaBackend( object ):
     s.w.comment( 'List' )
     s.w.newline()
 
-    ninja_list( s.w, s.order, sorted(s.debug_targets) )
+    ninja_list( s.w, s.order, s.debug_targets )
 
     # Graph target
 

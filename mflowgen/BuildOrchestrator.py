@@ -773,17 +773,35 @@ class BuildOrchestrator( object ):
         # Rule
         #
         # - Run the {command}
-        # - Generate the {outputs}
+        # - Generate the {target}
+        # - Use {build_id} to guarantee uniqueness
         #
 
+        debug_target = 'debug-' + step_name
+
         rule = {
-          'outputs' : [ 'debug-' + step_name ],
-          'command' : commands,
+          'target'   : debug_target,
+          'command'  : commands,
+          'build_id' : build_id,
         }
 
         s.w.gen_step_debug( **rule )
 
         s.build_system_rules[step_name]['debug'] = [ rule ]
+
+        # Rule
+        #
+        # - Create an alias called {alias} for this step
+        # - This rule depends on {deps}
+        #
+
+        rule = {
+          'alias'      : 'debug-' + build_id,
+          'deps'       : [ debug_target ],
+          'extra_deps' : [],
+        }
+
+        s.w.gen_step_alias( **rule )
 
       else:
 
