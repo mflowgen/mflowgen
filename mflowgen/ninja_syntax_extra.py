@@ -377,13 +377,13 @@ def ninja_list( w, order, debug_targets ):
     [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( order ) ]
 
   generic = [
-    '"list     -- List all steps"',
-    '"status   -- Print build status for each step"',
-    '"runtimes -- Print runtimes for each step"',
-    '"graph    -- Generate a PDF of the step dependency graph"',
-    '"clean    -- Remove all build directories"',
-    '"clean-N  -- Clean target N"',
-    '"diff-N   -- Diff target N"',
+    '"list      -- List all steps"',
+    '"status    -- Print build status for each step"',
+    '"runtimes  -- Print runtimes for each step"',
+    '"graph     -- Generate a PDF of the step dependency graph"',
+    '"clean-all -- Remove all build directories"',
+    '"clean-N   -- Clean target N"',
+    '"diff-N    -- Diff target N"',
   ]
 
   debug_str = \

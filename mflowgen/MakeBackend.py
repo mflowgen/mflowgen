@@ -380,7 +380,7 @@ class MakeBackend( object ):
     dirs    = sorted( [ './' + d for d in s.build_dirs.values() ] )
     command = 'rm -rf ' + ' '.join( dirs )
 
-    make_clean( s.w, name='clean', command=command )
+    make_clean( s.w, name='clean-all', command=command )
 
     # Clean subtargets (e.g., clean-0, clean-1)
 

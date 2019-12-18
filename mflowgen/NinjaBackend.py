@@ -367,7 +367,7 @@ class NinjaBackend( object ):
     dirs    = sorted( [ './' + d for d in s.build_dirs.values() ] )
     command = 'rm -rf ' + ' '.join( dirs )
 
-    ninja_clean( s.w, name='clean', command=command )
+    ninja_clean( s.w, name='clean-all', command=command )
 
     # Diff target
 
