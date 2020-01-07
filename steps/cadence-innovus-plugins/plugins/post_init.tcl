@@ -51,6 +51,24 @@ set icgs     [filter_collection [all_registers] "is_integrated_clock_gating_cell
 set regs     [remove_from_collection [all_registers -edge_triggered] $icgs]
 set allregs  [all_registers]
 
+# Create collection for all macros
+
+set blocks      [ dbGet top.insts.cell.baseClass block -p2 ]
+set macro_refs  [ list ]
+set macros      [ list ]
+
+foreach b $blocks {
+  set cell    [ dbGet $b.cell ]
+  set isBlock [ dbIsCellBlock $cell ]
+  set isPhys  [ dbGet $b.isPhysOnly ]
+  # Return all blocks that are _not_ physical-only (e.g., filter out IO bondpads)
+  if { [ expr $isBlock && ! $isPhys ] } {
+    puts [ dbGet $b.name ]
+    lappend macro_refs $b
+    lappend macros     [ dbGet $b.name ]
+  }
+}
+
 # Group paths
 
 group_path -name In2Reg  -from $inputs  -to $allregs
@@ -60,9 +78,14 @@ group_path -name In2Out  -from $inputs  -to $outputs
 group_path -name Reg2Reg     -from $regs    -to $regs
 group_path -name Reg2ClkGate -from $allregs -to $icgs
 
+group_path -name All2Macro -to   $macros
+group_path -name Macro2All -from $macros
+
 # High-effort path groups
 
-setPathGroupOptions Reg2Reg -effortLevel high
+foreach group { Reg2Reg All2Macro Macro2All } {
+  setPathGroupOptions $group -effortLevel high
+}
 
 #-------------------------------------------------------------------------
 # Report timing -- hold
