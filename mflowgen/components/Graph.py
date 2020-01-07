@@ -382,6 +382,10 @@ class Graph( object ):
     for i, p in enumerate( param_space ):
       p_step = step.clone()
       p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
+      try:
+        p_step.set_param(param_name, p)
+      except AssertionError:
+        pass
       s.add_step( p_step )
       for e in elist_i:
         src_step_name, src_f = e.get_src()
