@@ -57,15 +57,21 @@ set blocks      [ dbGet top.insts.cell.baseClass block -p2 ]
 set macro_refs  [ list ]
 set macros      [ list ]
 
-foreach b $blocks {
-  set cell    [ dbGet $b.cell ]
-  set isBlock [ dbIsCellBlock $cell ]
-  set isPhys  [ dbGet $b.isPhysOnly ]
-  # Return all blocks that are _not_ physical-only (e.g., filter out IO bondpads)
-  if { [ expr $isBlock && ! $isPhys ] } {
-    puts [ dbGet $b.name ]
-    lappend macro_refs $b
-    lappend macros     [ dbGet $b.name ]
+# If the list of blocks is non-empty, filter out non-physical blocks
+
+set blocks_exist  [ expr [ lindex $blocks 0 ] != 0 ]
+
+if { $blocks_exist } {
+  foreach b $blocks {
+    set cell    [ dbGet $b.cell ]
+    set isBlock [ dbIsCellBlock $cell ]
+    set isPhys  [ dbGet $b.isPhysOnly ]
+    # Return all blocks that are _not_ physical-only (e.g., filter out IO bondpads)
+    if { [ expr $isBlock && ! $isPhys ] } {
+      puts [ dbGet $b.name ]
+      lappend macro_refs $b
+      lappend macros     [ dbGet $b.name ]
+    }
   }
 }
 
