@@ -13,7 +13,7 @@ well-defined inputs and outputs. Build system files (e.g., make,
 ninja) are then generated which shuttle files between steps before
 running them.
 
-<img width='350px' src='docs/example-graph.jpg'>
+<img width='350px' src='docs/_static/images/example-graph.jpg'>
 
 Key features and design philosophies:
 
@@ -379,7 +379,7 @@ parameter space.
 
 For example, suppose we would like to sweep the `clock_period` parameter in the `open-yosys-synthesis` step in this graph:
 
-<img height='300px' src='docs/example-params-1.jpg'>
+<img height='300px' src='docs/_static/images/example-params-1.jpg'>
 
 The mflowgen Python API `param_space()` expands the node for each
 parameter value in the list:
@@ -393,7 +393,7 @@ parameter value in the list:
 The expansion propagates to all downstream nodes, resulting in three
 slightly different builds:
 
-<img height='300px' src='docs/example-params-2.jpg'>
+<img height='300px' src='docs/_static/images/example-params-2.jpg'>
 
 The three builds can be run in parallel and the results compared.
 All file management is handled cleanly by the build system (which
