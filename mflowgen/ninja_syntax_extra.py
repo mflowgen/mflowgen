@@ -388,7 +388,7 @@ def ninja_list( w, order, debug_targets ):
 
   debug_str = \
     [ '"debug-{: <2} : {}"'.format(i,tup) \
-      for i, tup in sorted( debug_targets.items(), key=lambda(x):int(x[0]) ) ]
+      for i, tup in sorted( debug_targets.items(), key=lambda x:int(x[0]) ) ]
 
   commands = [
     'echo',
