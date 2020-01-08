@@ -217,14 +217,18 @@ class Step ( object ):
     return s._config['name']
 
   def set_param( s, param, value ):
-    assert 'parameters' in s._config.keys(), \
-      'set_param -- ' \
-      'No parameter "%s" in step "%s"' % ( param, s.get_name() )
-    assert param in s._config['parameters'].keys(), \
-      'set_param -- ' \
-      'No parameter "%s" in step "%s" (options: %s)' % \
-        ( param, s.get_name(), s._config['parameters'].keys() )
-    s._config['parameters'][param] = value
+    try:
+      step_params = s._config['parameters']
+    except KeyError:
+      raise KeyError( 'set_param -- ' \
+        'No parameter "%s" in step "%s"' % ( param, s.get_name() ) )
+    try:
+      step_params[param]
+      step_params[param] = value
+    except KeyError:
+      raise KeyError( 'set_param -- ' \
+        'No parameter "%s" in step "%s" (available parameters: %s)' % \
+          ( param, s.get_name(), step_params.keys() ) )
 
   def get_param( s, param ):
     assert 'parameters' in s._config.keys(), \
