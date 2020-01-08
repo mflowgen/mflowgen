@@ -2,7 +2,6 @@
 #=========================================================================
 # Graph.py
 #=========================================================================
-#
 # Author : Christopher Torng
 # Date   : June 2, 2019
 #
@@ -17,8 +16,10 @@ from .Step import Step
 from ..utils import get_top_dir
 
 class Graph( object ):
+  """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
 
   def __init__( s ):
+
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
@@ -43,12 +44,16 @@ class Graph( object ):
   #-----------------------------------------------------------------------
 
   # set_adk
-  #
-  # Search the paths in "s.sys_path" for ADKs (analagous to python
-  # sys.path)
-  #
 
   def set_adk( s, adk ):
+    """Sets the ASIC design kit.
+
+    Searches the paths in "Graph.sys_path" for ADKs (analagous to python
+    sys.path).
+
+    Args:
+      adk: A string representing the subdirectory name of the ADK
+    """
 
     # Search for adk steps
 
@@ -69,19 +74,40 @@ class Graph( object ):
 
     s.add_step( s.adk_step )
 
+  # get_adk_step
+
   def get_adk_step( s ):
+    """Gets the Step object representing the ASIC design kit.
+
+    Returns:
+      The Step object that was constructed from the currently set ADK.
+    """
     return s.adk_step
 
-  # Steps
+  # add_step
 
   def add_step( s, step ):
+    """Adds a Step to the graph as a node.
+
+    The name of the new Step cannot conflict with any steps that already
+    exist in the graph. This method fails an assertion if given a
+    duplicate step name.
+
+    Args:
+      step: A Step object
+    """
     key = step.get_name()
     assert key not in s._steps.keys(), \
-      'add_step -- Duplicate step!' \
-      'If this is intentional, first change the step name'
+      'add_step -- Duplicate step "{}", ' \
+      'if this is intentional, first change the step name'.format( key )
     s._steps[ key ] = step
 
   def get_step( s, step_name ):
+    """Gets the Step object with the given name.
+
+    Args:
+      step_name: A string representing the name of the step from :py:meth:`Step.get_name`
+    """
     return s._steps[ step_name ]
 
   def all_steps( s ):
@@ -212,6 +238,15 @@ class Graph( object ):
   #-----------------------------------------------------------------------
 
   def update_params( s, params ):
+    """Updates parameters for all steps in the graph.
+
+    Calls :py:meth:`Step.update_params` for each step in the graph with the
+    given parameter dictionary.
+
+    Args:
+      params: A dict of parameter names (strings) and values
+    """
+
     for step_name in s.all_steps():
       s.get_step( step_name ).update_params( params )
 
@@ -224,40 +259,49 @@ class Graph( object ):
   #-----------------------------------------------------------------------
 
   # param_space
-  #
-  # Spins out new copies of the step across the parameter space.
-  #
-  # For example, for a graph like this:
-  #
-  #     +-----+    +-----------+    +-----------+
-  #     | foo | -> |    bar    | -> |    baz    |
-  #     |     |    | ( p = 1 ) |    |           |
-  #     +-----+    +-----------+    +-----------+
-  #
-  # this call:
-  #
-  #     s.param_space( 'bar', 'p', [ 1, 2, 3 ] )
-  #
-  # will be transformed into a graph like this:
-  #
-  #                 +-----------+    +-----------+
-  #             +-> |  bar-p-1  | -> |  baz-p-1  |
-  #             |   | ( p = 1 ) |    |           |
-  #             |   +-----------+    +-----------+
-  #     +-----+ |   +-----------+    +-----------+
-  #     | foo | --> |  bar-p-2  | -> |  baz-p-2  |
-  #     |     | |   | ( p = 2 ) |    |           |
-  #     +-----+ |   +-----------+    +-----------+
-  #             |   +-----------+    +-----------+
-  #             +-> |  bar-p-3  | -> |  baz-p-3  |
-  #                 | ( p = 3 ) |    |           |
-  #                 +-----------+    +-----------+
-  #
-  # Returns a list of (parameterized) steps (i.e., 'bar-p-1', 'bar-p-2',
-  # and 'bar-p-3').
-  #
 
   def param_space( s, step, param_name, param_space ):
+    """Spins out new copies of the step across the parameter space.
+
+    For example, for a graph like this::
+
+        +-----+    +-----------+    +-----------+
+        | foo | -> |    bar    | -> |    baz    |
+        |     |    | ( p = 1 ) |    |           |
+        +-----+    +-----------+    +-----------+
+
+    this call:
+
+    .. code-block:: python
+
+        g = Graph()
+        (...)
+        g.param_space( 'bar', 'p', [ 1, 2, 3 ] )
+
+    will be transformed into a graph like this::
+
+                    +-----------+    +-----------+
+                +-> |  bar-p-1  | -> |  baz-p-1  |
+                |   | ( p = 1 ) |    |           |
+                |   +-----------+    +-----------+
+        +-----+ |   +-----------+    +-----------+
+        | foo | --> |  bar-p-2  | -> |  baz-p-2  |
+        |     | |   | ( p = 2 ) |    |           |
+        +-----+ |   +-----------+    +-----------+
+                |   +-----------+    +-----------+
+                +-> |  bar-p-3  | -> |  baz-p-3  |
+                    | ( p = 3 ) |    |           |
+                    +-----------+    +-----------+
+
+    Args:
+      step        : A string for the step name targeted for expansion
+      param_name  : A string for the parameter name
+      param_space : A list of parameter values to expand to
+
+    Returns:
+      A list of (parameterized) steps (i.e., 'bar-p-1', 'bar-p-2', and
+      'bar-p-3').
+    """
 
     # Get the step name (in case the user provided a step object instead)
 

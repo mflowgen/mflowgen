@@ -1,9 +1,10 @@
 mflowgen
 ==========================================================================
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest/?badge=latest)
 
 **Author**: Christopher Torng (clt67@cornell.edu)
 
-mflowgen is a lightweight modular flow specification and build-system
+mflowgen is a modular flow specification and build-system
 generator for ASIC and FPGA design-space exploration built around
 sandboxed and modular steps.
 
@@ -18,7 +19,7 @@ running them.
 Key features and design philosophies:
 
 - **Process and technology independence** -- Process technology
-  libraries and variables are abstracted and separated from
+  libraries and variables can be abstracted and separated from
   physical design scripts. Specifically, a single node called the
   ASIC design kit (ADK) captures this material in one place for
   better maintainability and access control.
@@ -34,33 +35,37 @@ Key features and design philosophies:
 
 - **Programmatically defined build-system generator**: A
   Python-based scripting interface and a simple graph API allows
-  flexible connection and disconnection of edges as well as
-  insertion and removal of steps. A simple graph can be specified
-  for a quick synthesis and place-and-route spin, or a more complex
-  graph can be built for a more aggressive chip tapeout (reusing
-  many of the same steps from before).
+  flexible connection and disconnection of edges, insertion and
+  removal of steps, and parameter space expansions. A simple graph
+  can be specified for a quick synthesis and place-and-route spin,
+  or a more complex graph can be built for a more aggressive chip
+  tapeout (reusing many of the same steps from before).
 
-- **A focus on hardware design-space exploration** -- Steps can be
-  parameterized to quickly spin out parallel builds for small
-  physical-design decision points (e.g., different floorplan
-  margins, different clock targets). Dependent files are shuttled to
-  each sandbox as needed.
+- **A focus on hardware design-space exploration** -- Parameter
+  expansion can be applied to steps to quickly spin out parallel
+  builds for design-space exploration at both smaller scales with a
+  single parameter (e.g., sweeping clock targets) as well as at
+  larger scales with multiple parameters (e.g., to characterize the
+  area-energy tradeoff space of a new architectural widget with
+  different knobs). Dependent files are shuttled to each sandbox
+  as needed.
 
 - **Complete freedom in defining what steps do** -- Aside from
   exposing precisely what the inputs and outputs are, no other
-  restrictions are placed on what steps do. A step can be as simple
-  as hello world (one line). A step may conduct an analysis pass and
-  report a gate count. A step may also transform the netlist for
-  consumption by other tools. A step can even instantiate a subgraph
-  to implement a hierarchical flow.
+  restrictions are placed on what steps do and a step can be as
+  simple as hello world (one line). A step may conduct an analysis
+  pass and report a gate count. A step can also apply a transform
+  pass to a netlist before passing it to other tools. In addition, a
+  step can even instantiate a subgraph to implement a hierarchical
+  flow.
 
 mflowgen ships with a limited set of ASIC flow scripts for both
 open-source and commercial tools including synthesis (e.g., Synopsys
 DC, yosys), place and route (e.g., Cadence Innovus Foundation Flow,
-RePlAce, graywolf, qrouter), and signoff (e.g., Synopsys PTPX). In
-addition, we include an open-source 45nm ASIC design kit (ADK)
-assembled from FreePDK45 version 1.4 and the NanGate Open Cell
-Library.
+RePlAce, graywolf, qrouter), and signoff (e.g., Synopsys PTPX,
+Mentor Calibre). In addition, we include an open-source 45nm ASIC design
+kit (ADK) assembled from FreePDK45 version 1.4 and the NanGate Open
+Cell Library.
 
 --------------------------------------------------------------------------
 License
@@ -77,7 +82,7 @@ here:
 Quick Start
 --------------------------------------------------------------------------
 
-This repo includes a small Verilog design that computes a greater
+This repo includes a small Verilog design that computes a greatest
 common divisor function. You can use this design to demo the ASIC
 flow with open-source tools. This section steps through how to clone
 the repo and push this design through synthesis, place, and route
@@ -88,12 +93,19 @@ Clone the repo:
 
     % git clone https://github.com/cornell-brg/mflowgen
     % cd mflowgen
-    % TOP=$PWD
+    % TOP=${PWD}
 
-Configure for the example design (i.e., GcdUnit) with the default
-open-source 45nm ADK and open-source ASIC toolflow. **Note**: To try
-the commercial toolflow, open `designs/GcdUnit/.mflowgen.yml` and
-select `construct-commercial.py` instead of `construct-open.py`.
+The example design is a greatest-common divisor circuit in RTL. We
+have created three demo graphs for this design in
+`$TOP/designs/GcdUnit`: (1) `construct-open.py` uses an open-source
+45nm ASIC toolflow based on FreePDK45 and the NanGate Open Cell
+Library; (2) `construct-commercial.py` uses a commercial toolflow
+based on Synopsys, Cadence, and Mentor tools; and (3)
+`construct-commercial-full.py` expands this commercial toolflow for
+greater observability.  **Note**: To try different graphs, open
+`$TOP/designs/GcdUnit/.mflowgen.yml` and specify one of the three
+choices. The remainder of this quickstart will assume you have
+modified this file to choose the open-source toolflow.
 
     % cd $TOP
     % mkdir build && cd build
@@ -152,14 +164,14 @@ The yosys area report will look something like this:
 
        Chip area for this module: 932.330000
 
+Report runtimes to check how long each step has taken:
+
+    % make runtimes
+
 Then run place-and-route (requires graywolf and qrouter):
 
     % make open-graywolf-place
     % make open-qrouter-route
-
-Report runtimes to check how long each step took:
-
-    % make runtimes
 
 --------------------------------------------------------------------------
 Organization
@@ -171,11 +183,11 @@ the ADKs, designs, and steps (and utility scripts):
 ```
 mflowgen/
 │
-├── adks/      -- Each subdirectory is an ADK
-├── designs/   -- Each subdirectory is a design (can be a cloned repo)
+├── adks/      -- Each subdirectory is for an ADK
+├── designs/   -- Each subdirectory is for a design (can be a cloned repo)
 ├── steps/     -- Collection of generic steps
 │
-│── mflowgen/  -- Source files for the build system generator
+│── mflowgen/  -- Source files for the mflowgen Python API
 │── utils/     -- Helper scripts
 └── configure  -- Config script to select a design
 ```
@@ -407,7 +419,6 @@ design flow in a very simple manner:
 2. Identify this variable as a parameter (i.e., in the step's `configure.yml`)
 3. Use the `param_space()` mflowgen API to perform a sweep of that variable
 
-This can be useful for automating large design-space exploration
-sweeps (e.g., different clock targets for designs with different
-port widths, bitwidths, floorplan margins).
+This can be useful for automating design-space exploration sweeps
+involving one parameter or multiple parameters.
 
