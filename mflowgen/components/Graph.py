@@ -382,9 +382,11 @@ class Graph( object ):
     for i, p in enumerate( param_space ):
       p_step = step.clone()
       p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
+      # Propagate the new parameter value to downstream nodes
       try:
-        p_step.set_param(param_name, p)
-      except AssertionError:
+        p_step.set_param( param_name, p )
+      # If the parameter cannot be accessed, do nothing to the parameter
+      except KeyError:
         pass
       s.add_step( p_step )
       for e in elist_i:
