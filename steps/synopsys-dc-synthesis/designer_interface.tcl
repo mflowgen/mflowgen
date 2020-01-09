@@ -45,7 +45,10 @@ set adk_dir                     inputs/adk
 #                                  extra3.db
 #                                "]
 
-set dc_extra_link_libraries     [glob -nocomplain inputs/*.db]
+set dc_extra_link_libraries     [join "
+                                    [glob -nocomplain inputs/*.db]
+                                    [glob -nocomplain inputs/adk/*.db]
+                                "]
 
 #-------------------------------------------------------------------------
 # Interface to the ASIC design kit
