@@ -38,6 +38,7 @@ parameters:
   design_name: undefined
   flatten_effort: 0
   topographical: True
+  nthreads: 16  # multithreading available to the tool
 
 #-------------------------------------------------------------------------
 # Debug

@@ -6,5 +6,5 @@
 # Author : Christopher Torng
 # Date   : March 26, 2018
 
-source $vars(dbs_dir)/$vars(step).enc
+source inputs/design.enc
 

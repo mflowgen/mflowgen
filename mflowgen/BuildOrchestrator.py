@@ -533,6 +533,10 @@ class BuildOrchestrator( object ):
         # Copy the command script to the build_dir
         'cp -f ' + s.metadata_dir + '/' + build_dir \
                  + '/mflowgen-run.sh ' + build_dir,
+        # Copy the debug script to the build_dir if it exists
+        'cp -f ' + s.metadata_dir + '/' + build_dir \
+                 + '/mflowgen-debug.sh ' + build_dir
+                 + ' 2> /dev/null || true',
         'cd ' + build_dir,
         # Run the commands
         'sh mflowgen-run.sh 2>&1 | tee mflowgen-run.log',
@@ -764,8 +768,6 @@ class BuildOrchestrator( object ):
       if debug_commands:
 
         commands = ' && '.join([
-          'cp -f ' + s.metadata_dir + '/' + build_dir \
-                   + '/mflowgen-debug.sh ' + build_dir,
           'cd ' + build_dir,
           'sh mflowgen-debug.sh 2>&1 | tee mflowgen-debug.log'
         ])

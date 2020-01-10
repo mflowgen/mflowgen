@@ -15,8 +15,8 @@ inputs:
   - innovus-foundation-flow
   - innovus-plugins
   - adk
-  - signoff.enc.dat
-  - signoff.enc
+  - design.enc.dat
+  - design.enc
   - drc.results
   - lvs.results
 
@@ -28,11 +28,8 @@ commands:
   # Set up innovus debug view
   - ln -sf inputs/innovus-foundation-flow
   - mkdir -p checkpoints
-  - cd checkpoints && ln -sf ../inputs/signoff.enc* . && cd ..
+  - cd checkpoints && ln -sf ../inputs/design.enc* . && cd ..
   # Open innovus debug view
-  - export STEP=signoff
-  - innovus -overwrite -64
-    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
-    -log debug.log
+  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
 
 

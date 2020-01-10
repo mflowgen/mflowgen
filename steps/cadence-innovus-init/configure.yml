@@ -19,8 +19,8 @@ inputs:
   - design.sdc
 
 outputs:
-  - init.enc.dat
-  - init.enc
+  - design.enc.dat
+  - design.enc
 
 #-------------------------------------------------------------------------
 # Commands
@@ -34,16 +34,13 @@ commands:
 
   # Outputs
   - cd outputs
-  - ln -sf ../checkpoints/init.enc.dat
-  - ln -sf ../checkpoints/init.enc
+  - ln -sf ../checkpoints/design.enc.dat
+  - ln -sf ../checkpoints/design.enc
 
 #-------------------------------------------------------------------------
 # Debug
 #-------------------------------------------------------------------------
 
 debug:
-  - export STEP=init
-  - innovus -overwrite -64
-    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
-    -log debug.log
+  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
 

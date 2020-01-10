@@ -19,5 +19,5 @@
 # Author : Christopher Torng
 # Date   : March 26, 2018
 
-saveDesign $vars(dbs_dir)/$vars(step).enc -relativePath
+saveDesign $vars(dbs_dir)/design.enc -relativePath
 

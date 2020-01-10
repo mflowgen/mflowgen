@@ -19,8 +19,8 @@ inputs:
   - design.sdc
 
 outputs:
-  - signoff.enc.dat
-  - signoff.enc
+  - design.enc.dat
+  - design.enc
   - design.gds.gz
   - design.lvs.v
   - design.vcs.v
@@ -42,8 +42,8 @@ commands:
 
   # Outputs
   - cd outputs
-  - ln -sf ../checkpoints/signoff.enc.dat
-  - ln -sf ../checkpoints/signoff.enc
+  - ln -sf ../checkpoints/design.enc.dat
+  - ln -sf ../checkpoints/design.enc
   - ln -sf ../typical.spef.gz      design.spef.gz
   - ln -sf ../results/*.gds.gz     design.gds.gz
   - ln -sf ../results/*.lvs.v      design.lvs.v
@@ -58,8 +58,5 @@ commands:
 #-------------------------------------------------------------------------
 
 debug:
-  - export STEP=signoff
-  - innovus -overwrite -64
-    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
-    -log debug.log
+  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
 

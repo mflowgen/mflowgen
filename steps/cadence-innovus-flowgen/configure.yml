@@ -5,7 +5,7 @@
 # Date   : June 7, 2019
 #
 
-name: cadence-innovus-flowsetup
+name: cadence-innovus-flowgen
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
@@ -33,4 +33,5 @@ commands:
 
 parameters:
   design_name: design
+  nthreads: 16  # multithreading available to the tool
 
