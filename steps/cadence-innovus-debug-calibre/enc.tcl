@@ -27,7 +27,7 @@ proc load_calibre {} {
   # the string on the '/' character, remove the last two elements, and
   # join the string back with the '/' character to get CALIBRE_HOME.
 
-  if {![info exists $env(CALIBRE_HOME)] || $env(CALIBRE_HOME)==""} {
+  if {![info exists env(CALIBRE_HOME)] || $env(CALIBRE_HOME)==""} {
 
     if {![file exists [exec which calibre]]} {
       puts "Tool calibre not found. Calibre interface NOT loaded."
