@@ -240,17 +240,37 @@ class Step ( object ):
         ( param, s.get_name(), s._config['parameters'].keys() )
     return s._config['parameters'][param]
 
-  def update_params( s, params ):
+  # update_params
+  #
+  # Take the {params} dict and update the params of this step. If
+  # {allow_new} is true, then params that are not yet defined are also
+  # added to this step, otherwise only params that are already defined are
+  # updated.
+  #
+
+  def update_params( s, params, allow_new=False ):
     assert type(params) == dict, \
       'update_param -- ' \
       'Expecting argument of type dictionary to update parameters'
+
+    # Update all parameters and add new parameters
+
+    if allow_new:
+      try:
+        s._config['parameters']
+      except KeyError:
+        s._config['parameters'] = {}
+      s._config['parameters'].update( params )
+
     # Only update parameters that were defined in the configuration YAML
-    try:
-      for p in params.keys():
-        if p in s._config['parameters'].keys():
-          s._config['parameters'][p] = params[p]
-    except KeyError:
-      pass
+
+    else:
+      try:
+        for p in params.keys():
+          if p in s._config['parameters'].keys():
+            s._config['parameters'][p] = params[p]
+      except KeyError:
+        pass
 
   def params( s ):
     if 'parameters' not in s._config.keys():

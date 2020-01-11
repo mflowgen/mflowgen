@@ -8,7 +8,7 @@
 
 # Number of cores for multicore optimization
 
-set dc_num_cores 16
+set dc_num_cores $env(nthreads)
 
 # Add more link libraries (e.g., IO cells, hierarchical blocks)
 

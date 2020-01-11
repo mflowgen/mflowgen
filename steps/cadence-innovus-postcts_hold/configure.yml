@@ -16,12 +16,12 @@ inputs:
   - innovus-plugins
   - adk
   - design.sdc
-  - cts.enc.dat
-  - cts.enc
+  - design.enc.dat
+  - design.enc
 
 outputs:
-  - postcts_hold.enc.dat
-  - postcts_hold.enc
+  - design.enc.dat
+  - design.enc
 
 #-------------------------------------------------------------------------
 # Commands
@@ -29,24 +29,19 @@ outputs:
 
 commands:
   - ln -sf inputs/innovus-foundation-flow
-  - mkdir -p checkpoints
-  - cd checkpoints && ln -sf ../inputs/cts.enc* . && cd ..
   - innovus -overwrite -64 -nowin
     -init innovus-foundation-flow/INNOVUS/run_postcts_hold.tcl
     -log run.log
 
   # Outputs
   - cd outputs
-  - ln -sf ../checkpoints/postcts_hold.enc.dat
-  - ln -sf ../checkpoints/postcts_hold.enc
+  - ln -sf ../checkpoints/design.enc.dat
+  - ln -sf ../checkpoints/design.enc
 
 #-------------------------------------------------------------------------
 # Debug
 #-------------------------------------------------------------------------
 
 debug:
-  - export STEP=postcts_hold
-  - innovus -overwrite -64
-    -init innovus-foundation-flow/INNOVUS/run_debug.tcl
-    -log debug.log
+  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
 

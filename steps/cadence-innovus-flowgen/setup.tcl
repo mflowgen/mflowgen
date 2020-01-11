@@ -356,13 +356,13 @@ set vars(route,save_design,replace_tcl)           $vars(plug_dir)/save_design.tc
 set vars(postroute,save_design,replace_tcl)       $vars(plug_dir)/save_design.tcl
 set vars(signoff,save_design,replace_tcl)         $vars(plug_dir)/save_design.tcl
 
-#set vars(init,restore_design,replace_tcl)         $vars(plug_dir)/restore_design.tcl
-#set vars(place,restore_design,replace_tcl)        $vars(plug_dir)/restore_design.tcl
-#set vars(cts,restore_design,replace_tcl)          $vars(plug_dir)/restore_design.tcl
-#set vars(postcts_hold,restore_design,replace_tcl) $vars(plug_dir)/restore_design.tcl
-#set vars(route,restore_design,replace_tcl)        $vars(plug_dir)/restore_design.tcl
-#set vars(postroute,restore_design,replace_tcl)    $vars(plug_dir)/restore_design.tcl
-#set vars(signoff,restore_design,replace_tcl)      $vars(plug_dir)/restore_design.tcl
+set vars(init,restore_design,replace_tcl)         $vars(plug_dir)/restore_design.tcl
+set vars(place,restore_design,replace_tcl)        $vars(plug_dir)/restore_design.tcl
+set vars(cts,restore_design,replace_tcl)          $vars(plug_dir)/restore_design.tcl
+set vars(postcts_hold,restore_design,replace_tcl) $vars(plug_dir)/restore_design.tcl
+set vars(route,restore_design,replace_tcl)        $vars(plug_dir)/restore_design.tcl
+set vars(postroute,restore_design,replace_tcl)    $vars(plug_dir)/restore_design.tcl
+set vars(signoff,restore_design,replace_tcl)      $vars(plug_dir)/restore_design.tcl
 
 # Floorplanning tcl
 
@@ -473,7 +473,7 @@ set vars(signoff,verify_metal_density,skip) true
 
 # Multithreading (and maybe distributed processing)
 
-set vars(local_cpus) 16
+set vars(local_cpus) $::env(nthreads)
 
 # Hold fixing
 #
