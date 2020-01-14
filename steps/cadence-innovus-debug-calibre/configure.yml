@@ -13,10 +13,8 @@ name: cadence-innovus-debug-calibre
 
 inputs:
   - innovus-foundation-flow
-  - innovus-plugins
   - adk
-  - design.enc.dat
-  - design.enc
+  - design.checkpoint
   - drc.results
   - lvs.results
 
@@ -28,8 +26,9 @@ commands:
   # Set up innovus debug view
   - ln -sf inputs/innovus-foundation-flow
   - mkdir -p checkpoints
-  - cd checkpoints && ln -sf ../inputs/design.enc* . && cd ..
+  - cd checkpoints && ln -sf ../inputs/design.checkpoint && cd ..
   # Open innovus debug view
-  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
-
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
 

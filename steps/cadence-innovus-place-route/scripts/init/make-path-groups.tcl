@@ -1,0 +1,1 @@
+../../../cadence-innovus-init/scripts/make-path-groups.tcl

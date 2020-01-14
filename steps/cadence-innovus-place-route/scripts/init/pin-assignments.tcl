@@ -1,0 +1,1 @@
+../../../cadence-innovus-init/scripts/pin-assignments.tcl

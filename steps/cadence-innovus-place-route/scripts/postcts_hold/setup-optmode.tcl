@@ -1,0 +1,1 @@
+../../../cadence-innovus-postcts_hold/scripts/setup-optmode.tcl

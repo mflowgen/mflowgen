@@ -1,0 +1,1 @@
+../../../cadence-innovus-signoff/scripts/main.tcl

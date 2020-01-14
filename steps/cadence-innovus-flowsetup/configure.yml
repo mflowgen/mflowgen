@@ -1,0 +1,38 @@
+#=========================================================================
+# Cadence Innovus Foundation Flow Generator
+#=========================================================================
+# Author : Christopher Torng
+# Date   : June 7, 2019
+#
+
+name: cadence-innovus-flowsetup
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - design.v
+  - design.sdc
+  - adk
+
+outputs:
+  - innovus-foundation-flow
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - source ./run.sh
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: design
+  nthreads: 16        # multithreading available to the tool
+  express_flow: False # enable express flow
+
+

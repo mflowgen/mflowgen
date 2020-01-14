@@ -13,14 +13,12 @@ name: cadence-innovus-place-route
 
 inputs:
   - innovus-foundation-flow
-  - innovus-plugins
   - adk
   - design.v
   - design.sdc
 
 outputs:
-  - design.enc.dat
-  - design.enc
+  - design.checkpoint
   - design.gds.gz
   - design.lvs.v
   - design.vcs.v
@@ -36,14 +34,11 @@ outputs:
 
 commands:
   - ln -sf inputs/innovus-foundation-flow
-  - innovus -overwrite -64 -nowin
-    -init innovus-foundation-flow/INNOVUS/run_simple.tcl
-    -log run.log
+  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
 
   # Outputs
   - cd outputs
-  - ln -sf ../checkpoints/design.enc.dat
-  - ln -sf ../checkpoints/design.enc
+  - ln -sf ../checkpoints/design.checkpoint
   - ln -sf ../typical.spef.gz      design.spef.gz
   - ln -sf ../results/*.gds.gz     design.gds.gz
   - ln -sf ../results/*.lvs.v      design.lvs.v
@@ -58,5 +53,7 @@ commands:
 #-------------------------------------------------------------------------
 
 debug:
-  - innovus -overwrite -64 -init run_debug.tcl -log debug.log
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
 

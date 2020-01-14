@@ -1,0 +1,1 @@
+../../../cadence-innovus-place/scripts/main.tcl

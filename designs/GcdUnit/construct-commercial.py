@@ -53,8 +53,7 @@ def construct():
   info         = Step( 'info',                          default=True )
   constraints  = Step( 'constraints',                   default=True )
   dc           = Step( 'synopsys-dc-synthesis',         default=True )
-  iflow        = Step( 'cadence-innovus-flowgen',       default=True )
-  iplugins     = Step( 'cadence-innovus-plugins',       default=True )
+  iflow        = Step( 'cadence-innovus-flowsetup',     default=True )
   placeroute   = Step( 'cadence-innovus-place-route',   default=True )
   genlibdb     = Step( 'synopsys-ptpx-genlibdb',        default=True )
   gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
@@ -71,7 +70,6 @@ def construct():
   g.add_step( constraints  )
   g.add_step( dc           )
   g.add_step( iflow        )
-  g.add_step( iplugins     )
   g.add_step( placeroute   )
   g.add_step( genlibdb     )
   g.add_step( gdsmerge     )
@@ -85,41 +83,38 @@ def construct():
 
   # Connect by name
 
-  g.connect_by_name( rtl,         dc )
-  g.connect_by_name( adk,         dc )
-  g.connect_by_name( constraints, dc )
+  g.connect_by_name( rtl,         dc           )
+  g.connect_by_name( adk,         dc           )
+  g.connect_by_name( constraints, dc           )
 
-  g.connect_by_name( adk,      iflow )
-  g.connect_by_name( dc,       iflow )
-  g.connect_by_name( iplugins, iflow )
+  g.connect_by_name( adk,         iflow        )
+  g.connect_by_name( dc,          iflow        )
 
-  g.connect_by_name( adk,      placeroute )
-  g.connect_by_name( dc,       placeroute )
-  g.connect_by_name( iflow,    placeroute )
-  g.connect_by_name( iplugins, placeroute )
+  g.connect_by_name( adk,         placeroute   )
+  g.connect_by_name( dc,          placeroute   )
+  g.connect_by_name( iflow,       placeroute   )
 
-  g.connect_by_name( placeroute, genlibdb )
-  g.connect_by_name( adk,        genlibdb )
+  g.connect_by_name( placeroute,  genlibdb     )
+  g.connect_by_name( adk,         genlibdb     )
 
-  g.connect_by_name( adk       , drc )
-  g.connect_by_name( placeroute, drc )
+  g.connect_by_name( adk,         drc          )
+  g.connect_by_name( placeroute,  drc          )
 
-  g.connect_by_name( adk       , lvs )
-  g.connect_by_name( placeroute, lvs )
+  g.connect_by_name( adk,         lvs          )
+  g.connect_by_name( placeroute,  lvs          )
 
-  g.connect_by_name( adk,        gdsmerge )
-  g.connect_by_name( placeroute, gdsmerge )
+  g.connect_by_name( adk,         gdsmerge     )
+  g.connect_by_name( placeroute,  gdsmerge     )
 
-  g.connect_by_name( gdsmerge, drc )
-  g.connect_by_name( gdsmerge, lvs )
+  g.connect_by_name( gdsmerge,    drc          )
+  g.connect_by_name( gdsmerge,    lvs          )
 
-  g.connect_by_name( adk,        debugcalibre )
-  g.connect_by_name( dc,         debugcalibre )
-  g.connect_by_name( iflow,      debugcalibre )
-  g.connect_by_name( iplugins,   debugcalibre )
-  g.connect_by_name( placeroute, debugcalibre )
-  g.connect_by_name( drc,        debugcalibre )
-  g.connect_by_name( lvs,        debugcalibre )
+  g.connect_by_name( adk,         debugcalibre )
+  g.connect_by_name( dc,          debugcalibre )
+  g.connect_by_name( iflow,       debugcalibre )
+  g.connect_by_name( placeroute,  debugcalibre )
+  g.connect_by_name( drc,         debugcalibre )
+  g.connect_by_name( lvs,         debugcalibre )
 
   #-----------------------------------------------------------------------
   # Parameterize
