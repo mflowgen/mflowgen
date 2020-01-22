@@ -26,11 +26,19 @@ set M2_direction [dbGet [dbGet head.layers.name 2 -p].direction]
 if { $M2_direction == "Vertical" } {
   # Vertical M2 -- Use single power mesh strategy
   puts "Info: Using coarse-only power mesh because M2 is vertical"
-  source -verbose scripts/power-strategy-singlemesh.tcl
+  if {[ file exists inputs/power-strategy-singlemesh.tcl ]} {
+    source -verbose inputs/power-strategy-singlemesh.tcl
+  } else {
+    source -verbose scripts/power-strategy-singlemesh.tcl
+  }
 } else {
   # Horizontal M2 -- Use dual power mesh strategy
   puts "Info: Using fine+coarse power mesh because M2 is horizontal"
-  source -verbose scripts/power-strategy-dualmesh.tcl
+  if {[ file exists inputs/power-strategy-dualmesh.tcl ]} {
+    source -verbose inputs/power-strategy-dualmesh.tcl
+  } else {
+    source -verbose scripts/power-strategy-dualmesh.tcl
+  }
 }
 
 
