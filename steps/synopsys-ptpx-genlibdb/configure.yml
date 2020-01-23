@@ -23,7 +23,7 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - pt_shell -file ptpx.tcl
+  - pt_shell -file START.tcl
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.db  design.db
   - ln -sf ../*.lib design.lib
@@ -34,5 +34,5 @@ commands:
 
 parameters:
   design_name: undefined
-
+  order:
 
