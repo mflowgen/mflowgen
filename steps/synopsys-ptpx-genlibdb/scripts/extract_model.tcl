@@ -20,5 +20,3 @@ file rename -force ${ptpx_design_name}_lib.db ${ptpx_design_name}.db
 
 write_interface_timing ${ptpx_design_name}_etm_netlist_interface_timing.report
 
-exit
-
