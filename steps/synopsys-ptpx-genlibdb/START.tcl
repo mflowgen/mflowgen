@@ -33,6 +33,7 @@ if {[ info exists env(order) ] && $::env(order) != "None" } {
 } else {
   # Default order of scripts
   set order "
+    read_design.tcl
     ptpx.tcl
   "
 }
