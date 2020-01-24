@@ -34,7 +34,7 @@ if {[ info exists env(order) ] && $::env(order) != "None" } {
   # Default order of scripts
   set order "
     read_design.tcl
-    ptpx.tcl
+    extract_model.tcl
   "
 }
 
