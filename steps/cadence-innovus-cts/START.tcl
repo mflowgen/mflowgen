@@ -73,6 +73,7 @@ foreach tcl $order {
 # Save a new checkpoint and clean up
 
 source innovus-foundation-flow/custom-scripts/save-design.tcl
-source innovus-foundation-flow/custom-scripts/cleanup-session.tcl
+
+exit
 
 
