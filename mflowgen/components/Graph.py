@@ -8,6 +8,9 @@
 #
 
 from __future__ import print_function
+
+import os
+
 from .Edge import Edge
 from .Step import Step
 
@@ -20,21 +23,54 @@ class Graph( object ):
     s._edges_o = {}
     s._steps   = {}
 
+    # System paths to search for ADKs (i.e., analogous to python sys.path)
+    #
+    # The contents of the environment variable "MFLOWGEN_PATH" are
+    # appended to sys path (i.e., analagous to how PYTHONPATH works)
+    #
+
+    s.sys_path = [
+      get_top_dir() + '/adks',
+    ]
+
+    try:
+      s.sys_path.extend( os.environ['MFLOWGEN_PATH'].split(':') )
+    except KeyError:
+      pass
+
   #-----------------------------------------------------------------------
   # API to help build the graph interactively
   #-----------------------------------------------------------------------
 
-  # ADKs
+  # set_adk
+  #
+  # Search the paths in "s.sys_path" for ADKs (analagous to python
+  # sys.path)
+  #
 
-  def set_adk( s, adk, default=True ):
-    if default:
-      s.adk = Step( get_top_dir() + '/adks/' + adk, default=False )
-    else:
-      s.adk = Step( adk, default=False )
-    s.add_step( s.adk )
+  def set_adk( s, adk ):
+
+    # Search for adk steps
+
+    for p in s.sys_path:
+      adk_path = p + '/' + adk
+      try:
+        s.adk_step = Step( adk_path, default=False )
+      except:
+        pass
+
+    try:
+      s.adk_step
+    except AttributeError:
+      raise OSError( 'Could not find adk "{}" in system paths: {}'.format(
+        adk, s.sys_path ) )
+
+    # Add the adk step to the graph
+
+    s.add_step( s.adk_step )
 
   def get_adk_step( s ):
-    return s.adk
+    return s.adk_step
 
   # Steps
 
