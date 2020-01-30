@@ -1,0 +1,41 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : January 22, 2020
+#
+
+name: cadence-innovus-place-route-simple
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.v
+  - design.sdc
+
+outputs:
+  - design.lvs.v
+  - design.gds.gz
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - innovus -overwrite -64 -nowin -init innovus.tcl
+
+  # Outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../post-pnr.v   design.lvs.v
+  - ln -sf ../post-pnr.gds design.gds.gz
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
