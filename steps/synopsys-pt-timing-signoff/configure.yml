@@ -15,9 +15,9 @@ name: synopsys-pt-timing-signoff
 # These will be added as inputs in construct.py.
 inputs:
   - adk
-  - design.v
-  - design.sdc
-  - design.spef
+  - design.vcs.v
+  - design.pt.sdc
+  - design.spef.gz
 
 outputs:
   - design.sdf
