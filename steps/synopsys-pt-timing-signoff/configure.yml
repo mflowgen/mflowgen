@@ -11,6 +11,8 @@ name: synopsys-pt-timing-signoff
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
+# We will also get SPEF files for any blocks in the design.
+# These will be added as inputs in construct.py.
 inputs:
   - adk
   - design.v
