@@ -1,0 +1,40 @@
+#=========================================================================
+# Synopsys PT Timing Signoff
+#=========================================================================
+# Author : Alex Carsello
+# Date   : January 31, 2020
+#
+
+name: synopsys-pt-timing-signoff
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+# We will also get SPEF files for any blocks in the design.
+# These will be added as inputs in construct.py.
+inputs:
+  - adk
+  - design.vcs.v
+  - design.pt.sdc
+  - design.spef.gz
+
+outputs:
+  - design.sdf
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - pt_shell -file pt.tcl
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../design.sdf design.sdf
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
