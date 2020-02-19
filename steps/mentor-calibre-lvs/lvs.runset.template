@@ -1,4 +1,6 @@
 *lvsRulesFile: inputs/adk/calibre-lvs.rule
+*lvsIncludeFiles: inputs/*.svrf
+*lvsIncludeCmdsType: SVRF
 *lvsRunDir: ./
 *lvsLayoutPaths: inputs/design_merged.gds
 *lvsLayoutPrimary: ${design_name}
