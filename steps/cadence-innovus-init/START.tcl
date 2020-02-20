@@ -37,6 +37,7 @@ source innovus-foundation-flow/custom-scripts/setup-session.tcl
 #-------------------------------------------------------------------------
 
 # Order is a comma-separated string containing scripts to run
+
 set order [split $::env(order) ","]
 
 # Run the scripts in order (inputs take priority)
