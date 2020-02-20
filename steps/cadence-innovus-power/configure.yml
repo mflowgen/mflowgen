@@ -38,6 +38,8 @@ commands:
 
 parameters:
   order:
+    - globalnetconnect.tcl
+    - main.tcl
 
 #-------------------------------------------------------------------------
 # Debug

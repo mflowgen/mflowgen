@@ -53,6 +53,9 @@ commands:
 
 parameters:
   order:
+    - main.tcl
+    - generate-results.tcl
+    - reporting.tcl
 
 #-------------------------------------------------------------------------
 # Debug

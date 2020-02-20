@@ -37,6 +37,8 @@ commands:
 
 parameters:
   order:
+    - setup-optmode.tcl
+    - main.tcl
 
 #-------------------------------------------------------------------------
 # Debug

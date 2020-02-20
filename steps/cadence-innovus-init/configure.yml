@@ -38,6 +38,12 @@ commands:
 
 parameters:
   order:
+    - main.tcl
+    - quality-of-life.tcl
+    - floorplan.tcl
+    - pin-assignments.tcl
+    - make-path-groups.tcl
+    - reporting.tcl
 
 #-------------------------------------------------------------------------
 # Debug

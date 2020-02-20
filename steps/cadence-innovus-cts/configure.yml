@@ -38,6 +38,9 @@ commands:
 
 parameters:
   order:
+    - setup-ccopt.tcl
+    - main.tcl
+    - reporting.tcl
 
 #-------------------------------------------------------------------------
 # Debug
