@@ -38,6 +38,10 @@ commands:
 
 parameters:
   order:
+    - setup-cellpad.tcl
+    - main.tcl
+    - clean-cellpad.tcl
+    - reporting.tcl
 
 #-------------------------------------------------------------------------
 # Debug

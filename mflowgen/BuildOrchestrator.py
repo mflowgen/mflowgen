@@ -100,8 +100,13 @@ class BuildOrchestrator( object ):
 
       params          = s.g.get_step( step_name ).params()
       params_str      = 'export {}={}'
-      params_commands = \
-        [ params_str.format(k,v) for k, v in params.items() ]
+      params_commands = []
+      for k, v in params.items():
+        if type(v) is list: # can't export a list in bash, so need to serialize it
+          serialized_value = ",".join(v)
+          params_commands.append( params_str.format(k,serialized_value) )
+        else:
+          params_commands.append( params_str.format(k,v) )
 
       pre = [
         'rm -f .time_end',                     # clear end timestamp
@@ -179,8 +184,13 @@ class BuildOrchestrator( object ):
 
       params          = s.g.get_step( step_name ).params()
       params_str      = 'export {}={}'
-      params_commands = \
-        [ params_str.format(k,v) for k, v in params.items() ]
+      params_commands = []
+      for k, v in params.items():
+        if type(v) is list: # can't export a list in bash, so need to serialize it
+          serialized_value = ",".join(v)
+          params_commands.append( params_str.format(k,serialized_value) )
+        else:
+          params_commands.append( params_str.format(k,v) )
 
       fd.write( '# Pre\n' )
       fd.write( '\n' )
