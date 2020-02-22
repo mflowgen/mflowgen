@@ -1,4 +1,6 @@
 *lvsRulesFile: inputs/adk/calibre-lvs.rule
+*lvsIncludeFiles: inputs/*.svrf
+*lvsIncludeCmdsType: SVRF
 *lvsRunDir: ./
 *lvsLayoutPaths: inputs/design_merged.gds
 *lvsLayoutPrimary: ${design_name}
@@ -17,5 +19,5 @@
 *cmnTranscriptEchoToFile: 1
 *cmnRunMT: 1
 *cmnRunHyper: 1
-*cmnV2LVS_SPICEIncFiles: inputs/adk/stdcells.cdl
+*cmnV2LVS_SPICEIncFiles: inputs/adk/stdcells.cdl inputs/*.spi
 *cmnV2LVS_UseRangeMode: 1
