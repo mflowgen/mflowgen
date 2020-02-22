@@ -19,7 +19,7 @@ inputs:
 
 outputs:
   - lvs.report
-  - design.spi
+  - design.schematic.spi
 
 #-------------------------------------------------------------------------
 # Commands
@@ -31,7 +31,7 @@ commands:
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report
-  - ln -sf ../_design.lvs.v.sp design.spi
+  - ln -sf ../_design.lvs.v.sp design.schematic.spi
 
 #-------------------------------------------------------------------------
 # Parameters
