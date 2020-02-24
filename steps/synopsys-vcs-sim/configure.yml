@@ -24,7 +24,7 @@ outputs:
 
 commands:
   - |
-    vcs -R -sverilog -top $design_name \
+    vcs -R -sverilog -top $testbench_name \
         inputs/*.v inputs/*.sv \
         inputs/adk/stdcells.v \
         -timescale=1ns/1ps \
