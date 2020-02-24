@@ -25,7 +25,7 @@ outputs:
 commands:
   - |
     vcs -R -sverilog -top $design_name \
-        *.v *.sv \
+        inputs/*.v inputs/*.sv \
         inputs/adk/stdcells.v \
         -timescale=1ns/1ps \
         +vcs+dumpvars+outputs/design.vpd \
