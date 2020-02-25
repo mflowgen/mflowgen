@@ -18,7 +18,7 @@ for f in inputs/*.sv; do
 done
 
 if [ -f "inputs/design.args" ]; then
-    ARGS="$ARGS -f inputs/design.args"
+    ARGS="$ARGS -file inputs/design.args"
 fi
 
 (
