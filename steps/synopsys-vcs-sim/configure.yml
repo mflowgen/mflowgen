@@ -23,13 +23,7 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - |
-    vcs -R -sverilog -top $testbench_name \
-        inputs/*.v inputs/*.sv \
-        inputs/adk/stdcells.v \
-        -timescale=1ns/1ps \
-        +vcs+dumpvars+outputs/design.vpd \
-        $(cat inputs/design.args 2>/dev/null || true)
+  - ./run.sh
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -37,4 +31,4 @@ commands:
 
 parameters:
   clock_period: 1.0
-  testbench_name: undefined
+  testbench_name: tb
