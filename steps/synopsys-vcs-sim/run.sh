@@ -21,4 +21,7 @@ if [ -f "inputs/design.args" ]; then
     ARGS="$ARGS -f inputs/design.args"
 fi
 
-vcs $ARGS
+(
+    set -x;
+    vcs $ARGS
+)
