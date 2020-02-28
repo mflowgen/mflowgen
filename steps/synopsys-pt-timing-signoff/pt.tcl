@@ -4,6 +4,8 @@ source -echo -verbose scripts/read_design.tcl
 # Doing so may cause script to fail.
 set sdir "." 
 
+set report_default_significant_digits 3
+
 ##################################################################
 #    Constraint Analysis Section
 ##################################################################
