@@ -49,6 +49,37 @@ commands:
   - ln -sf ../results/*.virtuoso.v design.virtuoso.v
 
 #-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  order:
+    - init/main.tcl
+    - init/quality-of-life.tcl
+    - init/floorplan.tcl
+    - init/pin-assignments.tcl
+    - init/make-path-groups.tcl
+    - init/reporting.tcl
+    - power/globalnetconnect.tcl
+    - power/main.tcl
+    - place/setup-cellpad.tcl
+    - place/main.tcl
+    - place/clean-cellpad.tcl
+    - place/reporting.tcl
+    - cts/setup-ccopt.tcl
+    - cts/main.tcl
+    - cts/reporting.tcl
+    - postcts_hold/setup-optmode.tcl
+    - postcts_hold/main.tcl
+    - route/main.tcl
+    - postroute/setup-optmode.tcl
+    - postroute/main.tcl
+    - postroute_hold/main.tcl
+    - signoff/main.tcl
+    - signoff/generate-results.tcl
+    - signoff/reporting.tcl
+
+#-------------------------------------------------------------------------
 # Debug
 #-------------------------------------------------------------------------
 

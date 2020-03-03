@@ -1,0 +1,50 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Christopher Torng
+# Date   : October 30, 2019
+#
+
+name: cadence-innovus-postroute_hold
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - innovus-foundation-flow
+  - adk
+  - design.checkpoint
+
+outputs:
+  - design.checkpoint
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - ln -sf inputs/innovus-foundation-flow
+  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
+
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/design.checkpoint
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  order:
+    - main.tcl
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
+

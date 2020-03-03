@@ -29,7 +29,7 @@
 #-------------------------------------------------------------------------
 # Restore from checkpoint and set up variables
 
-#source innovus-foundation-flow/custom-scripts/restore-design.tcl
+source innovus-foundation-flow/custom-scripts/restore-design.tcl
 source innovus-foundation-flow/custom-scripts/setup-session.tcl
 
 #-------------------------------------------------------------------------
