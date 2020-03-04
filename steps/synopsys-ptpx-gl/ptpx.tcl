@@ -57,11 +57,6 @@ current_design $ptpx_design_name
 
 link_design
 
-# Read in the SDC and parasitics
-
-read_sdc -echo $ptpx_sdc
-read_parasitics -format spef $ptpx_spef
-
 # Read in switching activity
 
 report_activity_file_check $ptpx_saif -strip_path $ptpx_strip_path \
@@ -69,17 +64,22 @@ report_activity_file_check $ptpx_saif -strip_path $ptpx_strip_path \
 
 read_saif $ptpx_saif -strip_path $ptpx_strip_path
 
-# Checks
+# Read in the SDC and parasitics
+
+read_sdc -echo $ptpx_sdc
+read_parasitics -format spef $ptpx_spef
 
 check_constraints -verbose \
   > reports/$ptpx_design_name.checkconstraints.rpt
 
-check_power \
-  > reports/$ptpx_design_name.checkpower.rpt
-
 #-------------------------------------------------------------------------
 # Power analysis
 #-------------------------------------------------------------------------
+
+update_timing -full
+
+check_power \
+  > reports/$ptpx_design_name.checkpower.rpt
 
 update_power
 

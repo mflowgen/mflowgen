@@ -25,8 +25,8 @@ inputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - mkdir -p reports
-  - pt_shell -f ptpx.tcl
+  - mkdir -p reports logs
+  - pt_shell -f ptpx.tcl | tee logs/pt.log
 
 #-------------------------------------------------------------------------
 # Parameters
