@@ -2436,6 +2436,10 @@ module FA_X1 (A, B, CI, CO, S);
 
 endmodule
 
+module WELLTAP_X1 ();
+
+endmodule
+
 module FILLCELL_X1 ();
 
 endmodule

@@ -413,21 +413,26 @@ set vars(tie_cells,max_fanout)   8
 
 set vars(filler_cells)           $ADK_FILLER_CELLS
 
-# Welltaps (if they exist)
+# Welltaps and End Caps
+#
+# - Commented this section out
+#
+# Well taps are now explicitly handled by the user in the init step, since
+# the foundation flow does not nicely support the many special ways each
+# technology requires these cells to be placed (e.g., different cells
+# along top, bottom, edges).
 
-if { $ADK_WELL_TAP_CELL != "" } {
-  set vars(welltaps)               $ADK_WELL_TAP_CELL
-  set vars(welltaps,checkerboard)  true
-  set vars(welltaps,verify_rule)   60
-  set vars(welltaps,cell_interval) 120
-}
-
-# Endcaps (if they exist)
-
-if { $ADK_END_CAP_CELL != "" } {
-  set vars(pre_endcap)             $ADK_END_CAP_CELL
-  set vars(post_endcap)            $ADK_END_CAP_CELL
-}
+# if { $ADK_WELL_TAP_CELL != "" } {
+#   set vars(welltaps)               $ADK_WELL_TAP_CELL
+#   set vars(welltaps,checkerboard)  true
+#   set vars(welltaps,verify_rule)   60
+#   set vars(welltaps,cell_interval) 120
+# }
+#
+# if { $ADK_END_CAP_CELL != "" } {
+#   set vars(pre_endcap)             $ADK_END_CAP_CELL
+#   set vars(post_endcap)            $ADK_END_CAP_CELL
+# }
 
 # Antenna
 

@@ -94,9 +94,11 @@ set ADK_TIE_CELLS \
 # ADK_WELL_TAP_CELL
 #-------------------------------------------------------------------------
 # This list should specify the well tap cell if the stdcells in the
-# library do not already include taps.
+# library do not already include taps. The interval is the DRC rule for
+# the required spacing between tap cells.
 
-set ADK_WELL_TAP_CELL ""
+set ADK_WELL_TAP_CELL     "WELLTAP_X1"
+set ADK_WELL_TAP_INTERVAL 120
 
 #-------------------------------------------------------------------------
 # ADK_END_CAP_CELL
@@ -128,7 +130,8 @@ set ADK_ANTENNA_CELL "ANTENNA_X1"
 # difficult to deal with.
 
 set ADK_LVS_EXCLUDE_CELL_LIST \
-  "FILL*"
+  "FILL* \
+  WELLTAP*"
 
 #-------------------------------------------------------------------------
 # ADK_VIRTUOSO_EXCLUDE_CELL_LIST (OPTIONAL)
@@ -144,7 +147,8 @@ set ADK_LVS_EXCLUDE_CELL_LIST \
 # simulations will just run more slowly.
 
 set ADK_VIRTUOSO_EXCLUDE_CELL_LIST \
-  "FILL*"
+  "FILL* \
+  WELLTAP*"
 
 #-------------------------------------------------------------------------
 # Support for open-source tools

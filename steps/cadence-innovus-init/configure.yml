@@ -41,6 +41,7 @@ parameters:
     - main.tcl
     - quality-of-life.tcl
     - floorplan.tcl
+    - add-endcaps-welltaps.tcl
     - pin-assignments.tcl
     - make-path-groups.tcl
     - reporting.tcl
