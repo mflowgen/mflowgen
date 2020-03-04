@@ -67,10 +67,14 @@ read_saif $ptpx_saif -strip_path $ptpx_strip_path
 # Read in the SDC and parasitics
 
 read_sdc -echo $ptpx_sdc
-read_parasitics -format spef $ptpx_spef
 
 check_constraints -verbose \
   > reports/$ptpx_design_name.checkconstraints.rpt
+
+read_parasitics -format spef $ptpx_spef
+
+report_annotated_parasitics -check \
+  > reports/$ptpx_design_name.parasitics.rpt
 
 #-------------------------------------------------------------------------
 # Power analysis
