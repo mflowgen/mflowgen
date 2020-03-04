@@ -23,7 +23,7 @@
 # Source the designer interface script, which sets up ASIC design kit
 # variables and inputs.
 
-source -echo -verbose designer_interface.tcl
+source -echo -verbose designer-interface.tcl
 
 #-------------------------------------------------------------------------
 # Setup

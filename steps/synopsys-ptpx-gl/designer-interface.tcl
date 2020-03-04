@@ -34,11 +34,11 @@ set ptpx_saif               inputs/run.saif
 
 # The strip path must be defined!
 #
-#   export strip_path = th/design_foo
+#   export strip_path = th/dut
 #
 # There must _not_ be any quotes, or read_saif will fail. This fails:
 #
-#   export strip_path = "th/design_foo"
+#   export strip_path = "th/dut"
 #
 
 set ptpx_strip_path         $::env(strip_path)

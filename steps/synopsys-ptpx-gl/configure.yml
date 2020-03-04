@@ -33,7 +33,6 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  clock_period: 1.0
   design_name: undefined
   strip_path: th/dut
 
