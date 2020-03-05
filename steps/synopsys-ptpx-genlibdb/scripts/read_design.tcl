@@ -14,7 +14,7 @@ source -echo -verbose designer_interface.tcl
 
 set_app_var search_path      ". $ptpx_additional_search_path $search_path"
 set_app_var target_library   $ptpx_target_libraries
-set_app_var link_library     "* $ptpx_target_libraries"
+set_app_var link_library     "* $ptpx_target_libraries $ptpx_extra_link_libraries"
 
 #-------------------------------------------------------------------------
 # Read design
