@@ -68,7 +68,7 @@ kit (ADK) assembled from FreePDK45 version 1.4 and the NanGate Open
 Cell Library.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents
 
    quick-start

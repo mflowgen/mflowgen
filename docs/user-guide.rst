@@ -6,4 +6,5 @@ User Guide
    :caption: Contents:
 
    ug-cli
+   ug-clone-step
 

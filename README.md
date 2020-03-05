@@ -1,6 +1,6 @@
 mflowgen
 ==========================================================================
-[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest)
 
 **Author**: Christopher Torng (clt67@cornell.edu)
 

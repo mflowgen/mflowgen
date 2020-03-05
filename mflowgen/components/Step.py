@@ -201,9 +201,17 @@ class Step ( object ):
   # API to extend inputs and outputs
 
   def extend_inputs( s, new_list ):
+    try:
+      s._config['inputs']
+    except KeyError:
+      s._config['inputs'] = []
     s._config['inputs'].extend( new_list )
 
   def extend_outputs( s, new_list ):
+    try:
+      s._config['outputs']
+    except KeyError:
+      s._config['outputs'] = []
     s._config['outputs'].extend( new_list )
 
   #-----------------------------------------------------------------------
