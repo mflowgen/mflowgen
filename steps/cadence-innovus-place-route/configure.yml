@@ -57,6 +57,7 @@ parameters:
     - init/main.tcl
     - init/quality-of-life.tcl
     - init/floorplan.tcl
+    - init/add-endcaps-welltaps.tcl
     - init/pin-assignments.tcl
     - init/make-path-groups.tcl
     - init/reporting.tcl
