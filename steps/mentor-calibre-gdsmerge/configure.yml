@@ -29,7 +29,7 @@ commands:
   # Use calibredrv to merge gds files
   - calibredrv -a layout filemerge \
                -indir inputs \
-               -in inputs/adk/stdcells.gds \
+               -indir inputs/adk \
                -topcell {design_name} \
                -out design_merged.gds 2>&1 | tee merge.log
   - mkdir -p outputs && cd outputs
