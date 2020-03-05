@@ -26,10 +26,13 @@ outputs:
 commands:
   # For some reason, Calibre requires this directory to exist
   - mkdir -p $HOME/.calibrewb_workspace/tmp
+  # Glob for all gds files in adk
+  # Done manually because -indir inputs/adk did not work on Calibre 17
+  - ins=""; for f in inputs/adk/*.gds*; do ins="$ins -in $f"; done
   # Use calibredrv to merge gds files
   - calibredrv -a layout filemerge \
                -indir inputs \
-               -in inputs/adk/*.gds* \
+               $ins
                -topcell {design_name} \
                -out design_merged.gds 2>&1 | tee merge.log
   - mkdir -p outputs && cd outputs
