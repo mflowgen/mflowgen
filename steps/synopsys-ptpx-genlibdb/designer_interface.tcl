@@ -17,6 +17,7 @@
 
 set ptpx_additional_search_path   inputs/adk
 set ptpx_target_libraries         inputs/adk/stdcells.db
+set ptpx_extra_link_libraries     [glob -nocomplain inputs/*.db]
 
 #-------------------------------------------------------------------------
 # Interface to the build system
