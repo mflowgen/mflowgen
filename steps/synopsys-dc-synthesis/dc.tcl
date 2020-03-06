@@ -245,13 +245,6 @@ write -hierarchy -format ddc \
 write -hierarchy -format verilog \
       -output ${dc_results_dir}/${dc_design_name}.elab.v
 
-# SAIF name mapping
-
-#if { ${VINAME} != "NONE" } {
-#  saif_map -create_map -source_instance ${VINAME} -input rtl-sim.saif
-#}
-# saif_map -rtl_summary -missing_rtl -report
-
 #-------------------------------------------------------------------------
 # Apply design constraints
 #-------------------------------------------------------------------------
@@ -488,13 +481,6 @@ set_app_var write_sdc_output_net_resistance false
 
 write_sdc -nosplit ${dc_results_dir}/${dc_design_name}.mapped.sdc
 
-# If SAIF is used, write out SAIF name mapping file for PrimeTime-PX
-
-#if { ${VINAME} != "NONE" } {
-#  saif_map -type ptpx -write_map \
-#    ${dc_results_dir}/${dc_design_name}.mapped.saif.namemap
-#}
-
 #-------------------------------------------------------------------------
 # Final reports
 #-------------------------------------------------------------------------
@@ -573,8 +559,6 @@ if {[file exists "inputs/run.saif" ]} {
   report_saif -hier -annotated_flag -rtl_saif > ${dc_reports_dir}/${dc_design_name}.mapped.saif.rpt
 }
 
-# read_saif -auto_map_names -input ${dc_design_name}.saif \
-#   -instance < DESIGN_INSTANCE > -verbose
 saif_map -type ptpx -write_map ${dc_reports_dir}/${dc_design_name}.namemap
 
 report_power \
