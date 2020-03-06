@@ -36,6 +36,7 @@ commands:
 parameters:
   clock_period: 1.0
   design_name: undefined
+  saif_instance: undefined
   flatten_effort: 0
   topographical: True
   nthreads: 16  # multithreading available to the tool
