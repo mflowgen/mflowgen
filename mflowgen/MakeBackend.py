@@ -382,8 +382,8 @@ class MakeBackend( object ):
     s.w.newline()
 
     command = \
-      '@find . ! -name .mflowgen ! -name Makefile' \
-      ' -depth 1 -exec rm -rf {} +'
+      '@find . -maxdepth 1 ! -name .mflowgen ! -name Makefile' \
+      ' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
     make_clean( s.w, name='clean-all', command=command )
 
