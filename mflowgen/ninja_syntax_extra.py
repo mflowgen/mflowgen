@@ -383,6 +383,7 @@ def ninja_list( w, order, debug_targets ):
     '"graph     -- Generate a PDF of the step dependency graph"',
     '"clean-all -- Remove all build directories"',
     '"clean-N   -- Clean target N"',
+    '"info-N    -- Print configured info for step N"',
     '"diff-N    -- Diff target N"',
   ]
 
@@ -512,4 +513,36 @@ def ninja_status( w, steps ):
   )
   w.newline()
 
+# ninja_info
+#
+# Write out rules for printing step info
+#
+# - w         : instance of Writer
+# - build_dir : build_dir for this info target
+#
+
+def ninja_info( w, build_dir ):
+
+  build_id      = build_dir.split('-')[0]              # <- first number
+  step_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
+  target        = 'info-' + build_id
+
+  command = 'python ' + get_top_dir() + '/utils/letters.py' \
+      + ' -c -t ' + step_name
+
+  command = command + ' && python ' + get_top_dir() + '/utils/info.py' \
+      + ' -y .mflowgen/' + build_dir + '/configure.yml'
+
+  w.rule(
+    name        = target,
+    description = 'List info for the step',
+    command     = command
+  )
+  w.newline()
+
+  w.build(
+    outputs = target,
+    rule    = target,
+  )
+  w.newline()
 

@@ -116,10 +116,6 @@ class Step ( object ):
             f = o.values()[0]
             data['outputs'][idx] = { os.path.basename( f ) : f }
 
-    # Save the config
-
-    s._config.update( data )
-
     # Save additional metadata aside from the YAML data
     #
     # - Step directory -- we copy this when we instance a step in a build
@@ -129,7 +125,11 @@ class Step ( object ):
     s.step_dir = \
       os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
 
-    s.yaml_name = os.path.basename( yaml_path )
+    data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
+
+    # Save the config
+
+    s._config.update( data )
 
   #-----------------------------------------------------------------------
   # Clone
@@ -139,7 +139,6 @@ class Step ( object ):
     new_step = Step.__new__( Step )
     new_step._config = copy.deepcopy( s._config )
     new_step.step_dir  = s.step_dir
-    new_step.yaml_name = s.yaml_name
     return new_step
 
   #-----------------------------------------------------------------------
@@ -496,7 +495,7 @@ class Step ( object ):
       return []
 
   def dump_yaml( s, build_dir ):
-    with open( build_dir + '/' + s.yaml_name, 'w' ) as fd:
+    with open( build_dir + '/configure.yml', 'w' ) as fd:
       yaml.dump( s._config, fd, default_flow_style=False )
 
   # The sandbox flag will copy the source step directory if true (default)

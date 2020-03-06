@@ -17,7 +17,7 @@ from .makefile_syntax import make_execute, make_stamp, make_alias
 from .makefile_syntax import make_common_rules, make_clean
 from .makefile_syntax import make_diff
 from .makefile_syntax import make_runtimes, make_list
-from .makefile_syntax import make_graph, make_status
+from .makefile_syntax import make_graph, make_status, make_info
 
 from .utils           import stamp
 
@@ -407,6 +407,14 @@ class MakeBackend( object ):
       idx     = dst.split('-')[0].lstrip('./')
       name    = 'diff-' + idx
       make_diff( s.w, name=name, src=src, dst=dst )
+
+    # Info target
+
+    s.w.comment( 'Info' )
+    s.w.newline()
+
+    for step_name in s.order:
+      make_info( s.w, build_dir=s.build_dirs[ step_name ] )
 
     # Runtime target
 

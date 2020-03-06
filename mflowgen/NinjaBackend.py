@@ -17,7 +17,7 @@ from .ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
 from .ninja_syntax_extra import ninja_common_rules, ninja_clean
 from .ninja_syntax_extra import ninja_diff
 from .ninja_syntax_extra import ninja_runtimes, ninja_list
-from .ninja_syntax_extra import ninja_graph, ninja_status
+from .ninja_syntax_extra import ninja_graph, ninja_status, ninja_info
 
 class NinjaBackend( object ):
 
@@ -394,6 +394,14 @@ class NinjaBackend( object ):
       name    = 'clean-' + idx
       command = 'rm -rf ' + d
       ninja_clean( s.w, name=name, command=command )
+
+    # Info target
+
+    s.w.comment( 'Info' )
+    s.w.newline()
+
+    for step_name in s.order:
+      ninja_info( s.w, build_dir=s.build_dirs[ step_name ] )
 
     # Runtime target
 
