@@ -416,7 +416,7 @@ check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 # Write the .namemap file for the Energy analysis
 
 if {[file exists "inputs/run.saif" ]} {
-  saif_map -create_map -input "inputs/run.saif" -source_instance ${dc_design_name}
+  saif_map -create_map -input "inputs/run.saif" -source_instance ${dc_saif_instance}
 }
 
 #-------------------------------------------------------------------------
