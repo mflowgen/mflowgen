@@ -568,6 +568,10 @@ report_resources \
 # Report power
 #
 # Use SAIF file for power analysis
+if {[file exists "inputs/run.saif" ]} {
+  read_saif -map_names -input "inputs/run.saif" -instance_name $dc_saif_instance -verbose
+  report_saif -hier -annotated_flag -rtl_saif > ${dc_reports_dir}/${dc_design_name}.mapped.saif.rpt
+}
 
 # read_saif -auto_map_names -input ${dc_design_name}.saif \
 #   -instance < DESIGN_INSTANCE > -verbose
