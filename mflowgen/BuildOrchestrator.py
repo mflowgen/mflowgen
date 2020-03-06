@@ -247,6 +247,11 @@ class BuildOrchestrator( object ):
       s.build_ids  [ step_name ] = str(i)
       s.step_dirs  [ step_name ] = s.g.get_step( step_name ).get_dir()
 
+    # Dump metadata about build vars and local connectivity to all steps
+
+    s.g.dump_metadata_to_steps( build_dirs = s.build_dirs,
+                                build_ids  = s.build_ids  )
+
     # Dump parameterized YAMLs for each step to the metadata directory
 
     for step_name, build_dir in s.build_dirs.items():

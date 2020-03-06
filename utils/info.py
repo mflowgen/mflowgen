@@ -4,21 +4,53 @@
 #=========================================================================
 # Reads the configure.yml of an mflowgen step and pretty prints content.
 #
-# For example, the synthesis node might look like this:
+#  -h --help     Display this message
+#  -v --verbose  Verbose mode
+#  -y --config   Path to the step configure.yml to parse
+#     --simple   Simpler visualization without connectivity info
 #
-#            |       |             |               |
-#            v       v             v               v
+# Author : Christopher Torng
+# Date   : March 5, 2020
+#
+
+#-------------------------------------------------------------------------
+# Output formatting
+#-------------------------------------------------------------------------
+# The synthesis node might look like this with connectivity shown,
+# parameters, flags, and source directory:
+#
+#            + 1-freepdk-45nm
+#            + adk
+#            |
+#            |       + 3-rtl
+#            |       + design.v
+#            |       |
+#            |       |              + 2-constraints
+#            |       |              + constraints.tcl
+#            |       |              |
+#            V       V              V
 #         +---------------------------------------------+
 #         | adk | design.v | constraints.tcl | run.saif |
 #         +---------------------------------------------+
 #         |                                             |
-#         |           synopsys-dc-synthesis             |
+#         |           4-synopsys-dc-synthesis           |
 #         |                                             |
 #         +---------------------------------------------+
-#         |  design.v  |  design.sdc  | design.namemap  |
+#         | design.v | design.sdc | design.namemap      |
 #         +---------------------------------------------+
-#              |           |              |
-#              v           v              v
+#              |           |
+#              |           V
+#              |           + 5-cadence-innovus-flowsetup
+#              |           + design.sdc
+#              |           +
+#              |           + 6-cadence-innovus-place-route
+#              |           + design.sdc
+#              V
+#              + 5-cadence-innovus-flowsetup
+#              + design.v
+#              +
+#              + 6-cadence-innovus-place-route
+#              + design.v
 #
 #     Parameters
 #
@@ -36,14 +68,21 @@
 #
 #     - /path/to/synopsys-dc-synthesis
 #
-# This output is meant to look like the graph.
+# With the --simple flag, the node might look like this:
 #
-#  -h --help     Display this message
-#  -v --verbose  Verbose mode
-#  -y --config   Path to the step configure.yml to parse
-#
-# Author : Christopher Torng
-# Date   : March 5, 2020
+#            |       |              |
+#            V       V              V
+#         +---------------------------------------------+
+#         | adk | design.v | constraints.tcl | run.saif |
+#         +---------------------------------------------+
+#         |                                             |
+#         |           4-synopsys-dc-synthesis           |
+#         |                                             |
+#         +---------------------------------------------+
+#         | design.v | design.sdc | design.namemap      |
+#         +---------------------------------------------+
+#              |           |
+#              V           V
 #
 
 from __future__ import print_function
@@ -70,6 +109,7 @@ def parse_cmdline():
   p.add_argument( "-v", "--verbose", action="store_true" )
   p.add_argument( "-h", "--help",    action="store_true" )
   p.add_argument( "-y", "--config",  required=True       )
+  p.add_argument(       "--simple",  action="store_true" )
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -95,7 +135,7 @@ def main():
   # Graph Visual
   #-----------------------------------------------------------------------
 
-  name = data['name']
+  name = data['build_dir']
 
   # Grab the inputs and outputs
 
@@ -108,6 +148,44 @@ def main():
     outputs = data['outputs']
   except KeyError:
     outputs = []
+
+  # Grab the edges, which should be in this format
+  #
+  #  edges_i:
+  #    adk:
+  #    - f: adk
+  #      step: 1-freepdk-45nm
+  #    constraints.tcl:
+  #    - f: constraints.tcl
+  #      step: 2-constraints
+  #    design.v:
+  #    - f: design.v
+  #      step: 3-rtl
+  #  edges_o:
+  #    design.sdc:
+  #    - f: design.sdc
+  #      step: 5-cadence-innovus-flowsetup
+  #    - f: design.sdc
+  #      step: 6-cadence-innovus-place-route
+  #    design.v:
+  #    - f: design.v
+  #      step: 5-cadence-innovus-flowsetup
+  #    - f: design.v
+  #      step: 6-cadence-innovus-place-route
+  #
+
+  try:
+    edges_i  = data['edges_i']
+  except KeyError:
+    edges_i = {}
+
+  try:
+    edges_o  = data['edges_o']
+  except KeyError:
+    edges_o = {}
+
+  n_inputs  = len( inputs  )
+  n_outputs = len( outputs )
 
   # Start drawing ASCII
   #
@@ -149,7 +227,7 @@ def main():
   outputs_str = recenter( outputs_str, n_chars )
   name_str    = recenter( name_str,    n_chars )
 
-  # Arrows
+  # arrowify
   #
   # Turn this:
   #
@@ -172,10 +250,169 @@ def main():
     arrows_str = ' '.join( arrows )
     return arrows_str
 
-  input_arrows_1_str  = arrowify( inputs_str ).replace('V','|')
-  input_arrows_2_str  = arrowify( inputs_str )
-  output_arrows_1_str = arrowify( outputs_str ).replace('V','|')
-  output_arrows_2_str = arrowify( outputs_str )
+  # Generate input and output arrows
+  #
+  # If the "simple" flag was given, just draw arrows for each port::
+  #
+  #            |                |                    |
+  #            v                v                    v
+  #
+  # otherwise try to also add connectivity information:
+  #
+  #            + 7-baz-step
+  #            + baz.txt
+  #            |
+  #            |                + 3-bar-step
+  #            |                + bar.txt
+  #            |                |
+  #            |                |                    + 4-foo-step
+  #            |                |                    + foo.txt
+  #            |                |                    |
+  #            V                V                    V
+  #     +-----------------------------------------------+
+  #     |                   step                        |
+  #     +-----------------------------------------------+
+  #              |           |
+  #              |           V
+  #              |           + 5-foofoo
+  #              |           + foofoo.gds
+  #              |           +
+  #              |           + 6-bazbaz
+  #              |           + bazbaz.gds
+  #              V
+  #              + 7-barbar
+  #              + barbar.v
+  #
+  # The high level approach to building these strings is to use Python
+  # string replace() with a max_count argument. The i'th input draws i-1
+  # pipe symbols, a single plus sign, and then has text. We want the
+  # output strings to replace from the right, but the replace() method
+  # only takes a positive max_count. To get around this, for the i'th
+  # output from the right, we reverse the string, replace the i with empty
+  # space, replace a single plus sign, and then replace the rest with pipe
+  # symbols before un-reversing the string and adding text.
+  #
+
+  input_arrows  = []
+  output_arrows = []
+
+  # Build the rows of arrows for the inputs and outputs
+  #
+  #            v                v                    v
+  #
+
+  arrows_i = arrowify( inputs_str  )
+  arrows_o = arrowify( outputs_str )
+
+  # Simple visualization
+
+  if opts.simple:
+    input_arrows.append( arrowify( inputs_str ).replace('V','|') )
+    input_arrows.append( arrowify( inputs_str ) )
+    output_arrows.append( arrowify( outputs_str ).replace('V','|') )
+    output_arrows.append( arrowify( outputs_str ) )
+
+  # Better visualization
+
+  else:
+
+    # Get a list of edges sorted in the order of the inputs and outputs
+
+    edges_i_items = \
+      sorted( edges_i.items(), key = lambda x: inputs.index(x[0]) )
+
+    edges_o_items = \
+      sorted( edges_o.items(), key = lambda x: outputs.index(x[0]) )
+
+    # Build a list of bools for whether edges exist for each input/output
+
+    edges_i_f = [ _[0] for _ in edges_i_items ]
+    edges_o_f = [ _[0] for _ in edges_o_items ]
+
+    # Mark which incoming edges exist
+
+    exists_i = [ True if i in edges_i_f else False for i in inputs  ]
+
+    exists_str = arrows_i
+    for exists in exists_i:
+      if exists : exists_str = exists_str.replace( 'V', 'x', 1 )
+      else      : exists_str = exists_str.replace( 'V', ' ', 1 )
+
+    # For the i'th incoming existing edge, replace the first i characters
+    # with pipe symbols and the next one with a '+' sign. Then generate
+    # the strings for printing. The i=2 strings will look like this:
+    #
+    #     |       |             + 4-cadence-innovus-place-route
+    #     |       |             + constraints.tcl
+    #     |       |             |
+    #
+
+    nth_input = 0
+    for input_, steps in edges_i_items:
+      l = exists_str.replace( 'x', '|', nth_input ).replace( 'x', '+', 1 )
+      index = l.index( '+' )
+      plus_line_str = l[:index] + '+'
+      pipe_line_str = l[:index] + '|'
+      for s in steps:
+        input_arrows.append( plus_line_str + ' ' + s['step'] )
+        input_arrows.append( plus_line_str + ' ' + s['f']    )
+        input_arrows.append( pipe_line_str                   )
+      nth_input += 1
+
+    last_row = exists_str.replace( 'x', 'V' )
+    input_arrows.append( last_row )
+
+    # Mark which outgoing edges exist. Reverse the arrows string and the
+    # list of existence booleans so we can later call string replace with
+    # a positive max_count.
+
+    exists_o = [ True if o in edges_o_f else False for o in outputs ]
+
+    exists_str = arrows_o[::-1]
+    for exists in exists_o[::-1]:
+      if exists : exists_str = exists_str.replace( 'V', 'x', 1 )
+      else      : exists_str = exists_str.replace( 'V', ' ', 1 )
+
+    # Do nearly the same thing as before, but there may be more than one
+    # output.
+    #
+    # For the i'th outgoing existing edge, replace the first i characters
+    # with space, the next one with a '+' sign, and the remaining with
+    # pipe symbols. Then generate the strings for printing. The i=2
+    # strings will look like this:
+    #
+    #     |           |              |
+    #     |           |              v
+    #     |           |              + 9-cadence-innovus-place-route
+    #     |           |              + design.namemap
+    #     |           |              +
+    #     |           |              + 10-cadence-innovus-place-route
+    #     |           |              + design.namemap
+    #     |           |
+    #
+
+    first_row = exists_str.replace( 'x', '|' )[::-1]
+    output_arrows.append( first_row )
+
+    nth_output = 0
+    for output, steps in edges_o_items[::-1]:
+      l = exists_str.replace( 'x', ' ', nth_output )
+      l = l.replace( 'x', '+', 1 )
+      l = l.replace( 'x', '|' )
+      l = l[::-1] # undo the reversal so we can write next to the '+'
+      index = l.index( '+' )
+      plus_line_str  = l[:index] + '+'
+      arrow_line_str = l[:index] + 'V'
+      for j, s in enumerate( \
+                    sorted( steps, key=lambda x: \
+                      int(x['step'].split('-')[0]) ) ):
+        if j == 0:
+          output_arrows.append( arrow_line_str                )
+        else:
+          output_arrows.append( plus_line_str                 )
+        output_arrows.append( plus_line_str + ' ' + s['step'] )
+        output_arrows.append( plus_line_str + ' ' + s['f']    )
+      nth_output += 1
 
   # Lines
   #
@@ -188,8 +425,8 @@ def main():
   center_template_str = '{:^' + str(n_chars) + '}'
 
   print()
-  print( ' '*4 + input_arrows_1_str )
-  print( ' '*4 + input_arrows_2_str )
+  for _ in input_arrows:
+    print( ' '*4 + _ )
   print( ' '*4 + dash_line_str  )
   print( ' '*4 + center_template_str.format( inputs_str ) )
   print( ' '*4 + dash_line_str  )
@@ -199,8 +436,8 @@ def main():
   print( ' '*4 + dash_line_str  )
   print( ' '*4 + center_template_str.format( outputs_str ) )
   print( ' '*4 + dash_line_str  )
-  print( ' '*4 + output_arrows_1_str )
-  print( ' '*4 + output_arrows_2_str )
+  for _ in output_arrows:
+    print( ' '*4 + _ )
   print()
 
   #-----------------------------------------------------------------------

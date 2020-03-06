@@ -255,6 +255,50 @@ class Graph( object ):
       s.get_step( step_name ).expand_params()
 
   #-----------------------------------------------------------------------
+  # Metadata
+  #-----------------------------------------------------------------------
+
+  def dump_metadata_to_steps( s, build_dirs, build_ids ):
+
+    for step_name in s.all_steps():
+
+      edges_i = {}
+      edges_o = {}
+
+      try:
+        for e in s._edges_i[ step_name ]:
+          f = e.get_dst()[1]
+          edge = { 'f'    : e.get_src()[1],
+                   'step' : build_dirs[ e.get_src()[0] ] }
+          try:
+            edges_i[f].append( edge )
+          except KeyError:
+            edges_i[f] = [ edge ]
+      except KeyError:
+        pass
+
+      try:
+        for e in s._edges_o[ step_name ]:
+          f = e.get_src()[1]
+          edge = { 'f'    : e.get_dst()[1],
+                   'step' : build_dirs[ e.get_dst()[0] ] }
+          try:
+            edges_o[f].append( edge )
+          except KeyError:
+            edges_o[f] = [ edge ]
+      except KeyError:
+        pass
+
+      data = {
+        'build_dir' : build_dirs [ step_name ],
+        'build_id'  : build_ids  [ step_name ],
+        'edges_i'   : edges_i,
+        'edges_o'   : edges_o,
+      }
+
+      s.get_step( step_name ).update_metadata( data )
+
+  #-----------------------------------------------------------------------
   # Design-space exploration
   #-----------------------------------------------------------------------
 

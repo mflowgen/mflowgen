@@ -325,6 +325,18 @@ class Step ( object ):
         s._config['debug'][idx] = c.format( **s.params() )
 
   #-----------------------------------------------------------------------
+  # Metadata
+  #-----------------------------------------------------------------------
+
+  # update_metadata
+  #
+  # Updates the internal "s._config" dictionary with all contents of the
+  # input dictionary.
+
+  def update_metadata( s, data ):
+    s._config.update( data )
+
+  #-----------------------------------------------------------------------
   # Ninja helpers
   #-----------------------------------------------------------------------
 
