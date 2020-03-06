@@ -6,6 +6,7 @@
 #  -h --help     Display this message
 #  -v --verbose  Verbose mode
 #     --design   Name of the design
+#     --backend  Backend build system: make, ninja
 #
 # Author : Christopher Torng
 # Date   : June  2, 2019

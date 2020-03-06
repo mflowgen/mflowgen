@@ -202,6 +202,10 @@ class MakeBackend( object ):
     command = 'mkdir -p ' + build_dir + '/outputs && ' + \
               command + ' && touch -c ' + build_dir + '/outputs/*'
 
+    # Stamp the build directory
+
+    outputs.insert( 0, build_dir + '/.execstamp' )
+
     # Rules
 
     targets = make_execute(
@@ -377,13 +381,15 @@ class MakeBackend( object ):
     s.w.comment( 'Clean' )
     s.w.newline()
 
-    dirs    = sorted( [ './' + d for d in s.build_dirs.values() ] )
-    command = 'rm -rf ' + ' '.join( dirs )
+    command = \
+      '@find . ! -name .mflowgen ! -name Makefile' \
+      ' -depth 1 -exec rm -rf {} +'
 
     make_clean( s.w, name='clean-all', command=command )
 
     # Clean subtargets (e.g., clean-0, clean-1)
 
+    dirs = sorted( [ './' + d for d in s.build_dirs.values() ] )
     for d in dirs:
       idx     = d.split('-')[0].lstrip('./')
       name    = 'clean-' + idx

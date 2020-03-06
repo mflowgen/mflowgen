@@ -541,8 +541,8 @@ def make_status( w, steps ):
   template_str += 'status:\n'
   template_str += '	{command}\n'
 
-  command = '@python ' + get_top_dir() + '/utils/status.py -s ' \
-                                       + steps_comma_separated
+  command = '@python ' + get_top_dir() + '/utils/status.py' \
+            ' --backend make -s ' + steps_comma_separated
 
   w.write( template_str.format( command=command ) )
   w.newline()

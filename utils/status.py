@@ -69,13 +69,17 @@ def main():
   # Dump dry run commands from build tool
 
   if opts.backend == 'make':
-    text  = subprocess.check_output([ 'make', '-n' ])
-    # Convert ascii byte array to string.
-    if type( text ) != str:
-      text = ''.join( map( chr, text ) )
-    lines = text.split('\n')
+    text = subprocess.check_output([ 'make', '-n' ])
+  elif opts.backend == 'ninja':
+    text = subprocess.check_output([ 'ninja', '-nv' ])
   else:
     assert False, 'Cannot get status from build tool ' + opts.backend
+
+  # Convert ascii byte array to string.
+
+  if type( text ) != str:
+    text = ''.join( map( chr, text ) )
+  lines = text.split('\n')
 
   # Identify steps that must be rebuilt (i.e., check if the dry run
   # commands show that the output stamps need to be updated)
@@ -92,16 +96,16 @@ def main():
   status = { s: done_str for s in steps }
 
   for s in steps:
-    if any([ re.match( r'touch ' + s + '/outputs/.*stamp', l ) for l in lines ]):
+    if any([ re.match( r'.*touch ' + s + '/.execstamp', l ) for l in lines ]):
       status[s] = build_str
 
   # Get the upcoming build order (by filtering the dry run commands for
-  # commands that touch output stamps)
+  # commands that touch exec stamps)
 
   order = []
 
   for l in lines:
-    m = re.match( 'touch ([^/]+)/outputs/.*stamp', l )
+    m = re.match( '.*touch ([^/]+)/.execstamp', l )
     if m:
       s = m.group(1)
       if s not in order:

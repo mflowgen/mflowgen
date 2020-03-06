@@ -67,7 +67,7 @@ else
   opt_topographical=
 fi
 
-$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log
+$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log || exit 1
 
 # Set up the outputs
 

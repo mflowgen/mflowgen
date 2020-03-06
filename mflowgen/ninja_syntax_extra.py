@@ -501,8 +501,8 @@ def ninja_status( w, steps ):
   w.rule(
     name        = 'status',
     description = 'status: Listing status for each step',
-    command     = 'python ' + get_top_dir() + '/utils/status.py -s ' \
-                                            + steps_comma_separated,
+    command     = 'python ' + get_top_dir() + '/utils/status.py' \
+                  ' --backend ninja -s ' + steps_comma_separated
   )
   w.newline()
 

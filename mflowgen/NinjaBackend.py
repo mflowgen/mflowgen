@@ -188,6 +188,10 @@ class NinjaBackend( object ):
 
     command = command + ' && touch -c ' + build_dir + '/outputs/*'
 
+    # Stamp the build directory
+
+    command = command + ' && touch ' + build_dir + '/.execstamp'
+
     # Rules
 
     targets = ninja_execute(
@@ -364,8 +368,9 @@ class NinjaBackend( object ):
     s.w.comment( 'Clean' )
     s.w.newline()
 
-    dirs    = sorted( [ './' + d for d in s.build_dirs.values() ] )
-    command = 'rm -rf ' + ' '.join( dirs )
+    command = \
+      'find . ! -name .mflowgen ! -name build.ninja' \
+      ' -depth 1 -exec rm -rf {} +'
 
     ninja_clean( s.w, name='clean-all', command=command )
 
@@ -383,6 +388,7 @@ class NinjaBackend( object ):
 
     # Clean subtargets (e.g., clean-0, clean-1)
 
+    dirs = sorted( [ './' + d for d in s.build_dirs.values() ] )
     for d in dirs:
       idx     = d.split('-')[0].lstrip('./')
       name    = 'clean-' + idx

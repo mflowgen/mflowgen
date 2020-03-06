@@ -123,6 +123,9 @@ class BuildOrchestrator( object ):
       fd.write( '\n' )
 
       # Commands
+      #
+      # - The "exit 1" after the subshell propagates the error flag
+      #
 
       fd.write( '# Commands\n' )
       fd.write( '\n' )
@@ -130,7 +133,7 @@ class BuildOrchestrator( object ):
       for c in commands:
         fd.write( c )
         fd.write( '\n' )
-      fd.write( ')\n' )
+      fd.write( ') || exit 1\n' )
       fd.write( '\n' )
 
       # Post
@@ -537,16 +540,20 @@ class BuildOrchestrator( object ):
       else:
         phony   = False
 
+      debug_script = \
+        s.metadata_dir + '/' + build_dir + '/mflowgen-debug.sh'
+
       commands = ' && '.join([
+        # Set pipefail (works for ksh, zsh, bash) to propagate errors
+        'set -o pipefail',
         # Step banner in big letters
         'python ' + get_top_dir() + '/utils/letters.py -c -t ' + step_name,
         # Copy the command script to the build_dir
         'cp -f ' + s.metadata_dir + '/' + build_dir \
                  + '/mflowgen-run.sh ' + build_dir,
         # Copy the debug script to the build_dir if it exists
-        'cp -f ' + s.metadata_dir + '/' + build_dir \
-                 + '/mflowgen-debug.sh ' + build_dir
-                 + ' 2> /dev/null || true',
+        'if [[ -e ' + debug_script + ' ]]; then' \
+                    + ' cp -f ' + debug_script + ' ' + build_dir + '; fi',
         'cd ' + build_dir,
         # Run the commands
         'sh mflowgen-run.sh 2>&1 | tee mflowgen-run.log',
