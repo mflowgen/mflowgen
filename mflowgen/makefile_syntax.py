@@ -317,6 +317,8 @@ def make_common_rules( w ):
 
   w.write(
 '''
+SHELL=/usr/bin/env bash
+
 # $1 -- $dst
 # $2 -- $src
 # $3 -- $stamp
