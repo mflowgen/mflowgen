@@ -33,9 +33,9 @@ Here is the directory tree when this error occurred:
     │   ├── adk -> ../../1-freepdk-45nm/outputs/adk
     │   └── design.gds.gz -> ../../6-cadence-innovus-place-route/outputs/design.gds.gz
     ├── merge.log
-    ├── mflowgen-debug.sh
+    ├── mflowgen-debug
     ├── mflowgen-run.log
-    ├── mflowgen-run.sh
+    ├── mflowgen-run
     └── outputs
         └── design_merged.gds -> ../design_merged.gds
 

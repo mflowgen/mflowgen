@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# runtimes.py
+# runtimes
 #=========================================================================
 # Print runtimes for each build directory from the timestamps
 #

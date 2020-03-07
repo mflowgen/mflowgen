@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# info.py
+# info
 #=========================================================================
 # Reads the configure.yml of an mflowgen step and pretty prints content.
 #
@@ -454,7 +454,7 @@ def main():
     print( 'Parameters\n' )
     for k, v in data['parameters'].items():
       if type(v) == list:
-        print( '- ' + k )
+        print( '- ' + k + ':' )
         print_list( v )
       else:
         print( template_str.format( k, v ) )

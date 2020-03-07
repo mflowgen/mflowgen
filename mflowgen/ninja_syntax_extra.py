@@ -300,8 +300,8 @@ def ninja_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'mflowgen-run.*',
-    'mflowgen-debug.*',
+    'mflowgen-run*',
+    'mflowgen-debug',
     '.stamp',
     'inputs',
     'outputs',
@@ -351,7 +351,7 @@ def ninja_runtimes( w ):
   w.rule(
     name        = 'runtimes',
     description = 'runtimes: Listing runtimes for each step',
-    command     = get_top_dir() + '/utils/runtimes.py',
+    command     = get_top_dir() + '/utils/runtimes',
   )
   w.newline()
 
@@ -459,7 +459,7 @@ def ninja_graph_detailed( w, build_dirs ):
   build_dirs_commas = ','.join( build_dirs )
 
   python_graph_cmd = ' '.join([
-    get_top_dir() + '/utils/graph.py',
+    get_top_dir() + '/utils/graph',
     '-t ' + build_dirs_commas,
     '-g .graph.dot',
     '-o .graph.subgraph.dot',
@@ -500,7 +500,7 @@ def ninja_status( w, steps ):
   w.rule(
     name        = 'status',
     description = 'status: Listing status for each step',
-    command     = get_top_dir() + '/utils/status.py' \
+    command     = get_top_dir() + '/utils/status' \
                   ' --backend ninja -s ' + steps_comma_separated
   )
   w.newline()
@@ -525,10 +525,10 @@ def ninja_info( w, build_dir ):
   step_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
   target        = 'info-' + build_id
 
-  command = get_top_dir() + '/utils/letters.py' \
+  command = get_top_dir() + '/utils/letters' \
       + ' -c -t ' + step_name
 
-  command = command + ' && ' + get_top_dir() + '/utils/info.py' \
+  command = command + ' && ' + get_top_dir() + '/utils/info' \
       + ' -y .mflowgen/' + build_dir + '/configure.yml'
 
   w.rule(

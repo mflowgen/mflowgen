@@ -46,6 +46,11 @@ class BuildOrchestrator:
 
     os.mkdir( s.metadata_dir )
 
+    # Names for the generated run and debug scripts for each step
+
+    s.mflowgen_run   = 'mflowgen-run'
+    s.mflowgen_debug = 'mflowgen-debug'
+
   #-----------------------------------------------------------------------
   # dump_yamls
   #-----------------------------------------------------------------------
@@ -81,12 +86,19 @@ class BuildOrchestrator:
 
     gen = os.path.abspath( __file__ ).rstrip('c')
 
-    with open( inner_dir + '/mflowgen-run.sh', 'w' ) as fd:
+    with open( inner_dir + '/' + s.mflowgen_run, 'w' ) as fd:
+
+      # Shebang
+      #
+      # - Enforce bash since we will be exporting
+      # - Use error propagation flags so the build will stop for errors
+
+      fd.write( '#! /usr/bin/env bash -euo pipefail\n' )
 
       # Header
 
       fd.write( '#' + '='*73 + '\n' )
-      fd.write( '# mflowgen-run.sh\n' )
+      fd.write( '# ' + s.mflowgen_run + '\n' )
       fd.write( '#' + '='*73 + '\n' )
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
@@ -110,6 +122,7 @@ class BuildOrchestrator:
       pre = [
         'rm -f .time_end',                     # clear end timestamp
         'date +%Y-%m%d-%H%M-%S > .time_start', # start timestamp
+        'MFLOWGEN_STEP_HOME=$PWD',             # save build directory
       ]
 
       pre = pre + params_commands
@@ -122,17 +135,12 @@ class BuildOrchestrator:
       fd.write( '\n' )
 
       # Commands
-      #
-      # - The "exit 1" after the subshell propagates the error flag
-      #
 
       fd.write( '# Commands\n' )
       fd.write( '\n' )
-      fd.write( '(\n' )
       for c in commands:
         fd.write( c )
         fd.write( '\n' )
-      fd.write( ') || exit 1\n' )
       fd.write( '\n' )
 
       # Post
@@ -141,6 +149,7 @@ class BuildOrchestrator:
       #
 
       post = [
+        'cd $MFLOWGEN_STEP_HOME',            # return to known location
         'date +%Y-%m%d-%H%M-%S > .time_end', # end timestamp
       ]
 
@@ -172,12 +181,19 @@ class BuildOrchestrator:
 
     gen = os.path.abspath( __file__ ).rstrip('c')
 
-    with open( inner_dir + '/mflowgen-debug.sh', 'w' ) as fd:
+    with open( inner_dir + '/' + s.mflowgen_debug, 'w' ) as fd:
+
+      # Shebang
+      #
+      # - Enforce bash since we will be exporting
+      # - Use error propagation flags so the build will stop for errors
+
+      fd.write( '#! /usr/bin/env bash -euo pipefail\n' )
 
       # Header
 
       fd.write( '#' + '='*73 + '\n' )
-      fd.write( '# mflowgen-debug.sh\n' )
+      fd.write( '# ' + s.mflowgen_debug + '\n' )
       fd.write( '#' + '='*73 + '\n' )
       fd.write( '# Generator : ' + gen + '\n' )
       fd.write( '\n' )
@@ -544,23 +560,23 @@ class BuildOrchestrator:
       else:
         phony   = False
 
-      debug_script = \
-        s.metadata_dir + '/' + build_dir + '/mflowgen-debug.sh'
+      meta_build_dir = s.metadata_dir + '/' + build_dir
+      run_script     = meta_build_dir + '/' + s.mflowgen_run
+      debug_script   = meta_build_dir + '/' + s.mflowgen_debug
 
       commands = ' && '.join([
-        # Set pipefail (works for ksh, zsh, bash) to propagate errors
-        'set -o pipefail',
         # Step banner in big letters
-        get_top_dir() + '/utils/letters.py -c -t ' + step_name,
+        get_top_dir() + '/utils/letters -c -t ' + step_name,
         # Copy the command script to the build_dir
-        'cp -f ' + s.metadata_dir + '/' + build_dir \
-                 + '/mflowgen-run.sh ' + build_dir,
+        'chmod +x {}'.format( run_script ),
+        'cp -f {} {}'.format( run_script, build_dir ),
         # Copy the debug script to the build_dir if it exists
         'if [[ -e ' + debug_script + ' ]]; then' \
-                    + ' cp -f ' + debug_script + ' ' + build_dir + '; fi',
-        'cd ' + build_dir,
+            + ' chmod +x {} &&'.format( debug_script ) \
+            + ' cp -f {} {}; fi'.format( debug_script, build_dir ),
         # Run the commands
-        'sh mflowgen-run.sh 2>&1 | tee mflowgen-run.log',
+        'cd ' + build_dir,
+        './{x} 2>&1 | tee {x}.log || exit 1'.format( x=s.mflowgen_run ),
         # Return to top so backends can assume we never changed directory
         'cd ..',
       ])
@@ -790,7 +806,7 @@ class BuildOrchestrator:
 
         commands = ' && '.join([
           'cd ' + build_dir,
-          'sh mflowgen-debug.sh 2>&1 | tee mflowgen-debug.log'
+          './{x} 2>&1 | tee {x}.log'.format( x=s.mflowgen_debug )
         ])
 
         # Rule

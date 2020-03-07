@@ -316,7 +316,7 @@ def make_common_rules( w ):
 
   w.write(
 '''
-SHELL=/usr/bin/env bash
+SHELL=/usr/bin/env bash -euo pipefail
 
 # $1 -- $dst
 # $2 -- $src
@@ -401,8 +401,8 @@ def make_diff( w, name, src, dst ):
     'configure.yml',
     '.time_end',
     '.time_start',
-    'mflowgen-run.*',
-    'mflowgen-debug.*',
+    'mflowgen-run*',
+    'mflowgen-debug',
     '.stamp',
     'inputs',
     'outputs',
@@ -450,7 +450,7 @@ def make_runtimes( w ):
   template_str += 'runtimes:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/runtimes.py'
+  command = '@' + get_top_dir() + '/utils/runtimes'
 
   w.write( template_str.format( command=command ) )
   w.newline()
@@ -543,7 +543,7 @@ def make_status( w, steps ):
   template_str += 'status:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/status.py' \
+  command = '@' + get_top_dir() + '/utils/status' \
             ' --backend make -s ' + steps_comma_separated
 
   w.write( template_str.format( command=command ) )
@@ -568,10 +568,10 @@ def make_info( w, build_dir ):
   template_str += '{target}:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/letters.py' \
+  command = '@' + get_top_dir() + '/utils/letters' \
       + ' -c -t ' + step_name
 
-  command = command + ' && ' + get_top_dir() + '/utils/info.py' \
+  command = command + ' && ' + get_top_dir() + '/utils/info' \
       + ' -y .mflowgen/' + build_dir + '/configure.yml'
 
   w.write( template_str.format( target=target, command=command ) )

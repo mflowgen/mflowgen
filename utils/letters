@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# letters.py
+# letters
 #=========================================================================
 # Print big letters adapted from the 'Ivrit' font of the figlet package.
 #
