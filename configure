@@ -12,11 +12,14 @@
 # Date   : June  2, 2019
 #
 
-from __future__ import print_function
+import sys
+
+if sys.version_info < (3,0):
+  raise Exception( 'Must be using Python 3' )
+
 import argparse
 import importlib
 import os
-import sys
 import yaml
 
 from mflowgen import BuildOrchestrator
@@ -65,7 +68,7 @@ def main():
   yaml_path = opts.design + '/.mflowgen.yml'
   yaml_path = os.path.abspath( yaml_path )
 
-  with open( yaml_path, 'r' ) as fd:
+  with open( yaml_path ) as fd:
     try:
       data = yaml.load( fd, Loader=yaml.FullLoader )
     except AttributeError:
