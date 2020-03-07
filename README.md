@@ -1,6 +1,6 @@
 mflowgen
 ==========================================================================
-[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest)
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/cornell-brg/mflowgen.svg?branch=master)](https://travis-ci.com/cornell-brg/mflowgen)
 
 **Author**: Christopher Torng (clt67@cornell.edu)
 
@@ -66,6 +66,9 @@ RePlAce, graywolf, qrouter), and signoff (e.g., Synopsys PTPX,
 Mentor Calibre). In addition, we include an open-source 45nm ASIC design
 kit (ADK) assembled from FreePDK45 version 1.4 and the NanGate Open
 Cell Library.
+
+More info can be found in the
+[documentation](https://mflowgen.readthedocs.io/en/latest).
 
 --------------------------------------------------------------------------
 License
