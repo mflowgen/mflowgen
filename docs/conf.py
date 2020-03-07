@@ -17,6 +17,10 @@ import sys
 
 sys.path.insert(0, os.path.abspath('..'))
 
+# We have to import packages that our source code uses here
+
+autodoc_mock_imports = [ 'yaml' ]
+
 # -- Project information -----------------------------------------------------
 
 project = 'mflowgen'
