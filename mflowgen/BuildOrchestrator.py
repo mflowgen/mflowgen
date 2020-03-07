@@ -91,9 +91,10 @@ class BuildOrchestrator:
       # Shebang
       #
       # - Enforce bash since we will be exporting
-      # - Use error propagation flags so the build will stop for errors
+      # - Use error propagation flags so that builds will stop for errors
 
-      fd.write( '#! /usr/bin/env bash -euo pipefail\n' )
+      fd.write( '#! /usr/bin/env bash\n' )
+      fd.write( 'set -euo pipefail\n' )
 
       # Header
 
@@ -188,7 +189,8 @@ class BuildOrchestrator:
       # - Enforce bash since we will be exporting
       # - Use error propagation flags so the build will stop for errors
 
-      fd.write( '#! /usr/bin/env bash -euo pipefail\n' )
+      fd.write( '#! /usr/bin/env bash\n' )
+      fd.write( 'set -euo pipefail\n' )
 
       # Header
 
