@@ -90,14 +90,14 @@ print "hi" and execute future steps:
     run.sh: line 1: non_existent_command: command not found
     hi
 
-If instead the script exited with an error exit status like this:
+You can instead have the script exit with an error exit status like this:
 
 .. code:: bash
 
     % non_existent_command || exit 1
     % echo "hi"  # we never get here because we exit after the error
 
-Then you will see the error, the following commands will not run, and the
+You will see the error, but the following commands will not run, and the
 build will also stop:
 
 .. code::
@@ -108,7 +108,20 @@ build will also stop:
 
 There are many ways to propagate exit status properly in a shell script.
 We recommend explicitly controlling exits for errors on the commands you
-know are sensitive as shown above.
+know are sensitive as shown above. Because mflowgen run scripts have error
+checking flags enabled, we recommend sourcing scripts instead of calling
+them in a subshell:
+
+.. code::
+
+    name: synopsys-dc-synthesis
+
+    (...)
+
+    commands:
+      - bash   run.sh  # <-- not recommended.. you must propagate error
+                       #     exit status flags on your own
+      - source run.sh  # <-- we recommend to source in the existing shell
 
 Related options for bash are available to `exit on non-zero exit status
 <https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#The-Set-Builtin>`__

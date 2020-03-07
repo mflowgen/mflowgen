@@ -81,9 +81,11 @@ cd ../..
 # from any other directory.
 #
 
-grep $PWD innovus-foundation-flow -rl | xargs sed -i "s|$PWD|.|g" &> /dev/null
+grep $PWD innovus-foundation-flow -rl \
+  | xargs sed -i "s|$PWD|.|g" &> /dev/null || true
 cd -P .
-grep $PWD innovus-foundation-flow -rl | xargs sed -i "s|$PWD|.|g" &> /dev/null
+grep $PWD innovus-foundation-flow -rl \
+  | xargs sed -i "s|$PWD|.|g" &> /dev/null || true
 cd - > /dev/null
 
 # Remove $vars(config_files), which seems unnecessary and makes it easier
