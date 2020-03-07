@@ -1,6 +1,12 @@
 mflowgen
 ==========================================================================
 
+.. note::
+
+    We are currently in the process of updating this documentation. If
+    there is something you would like to see, please open an issue
+    on the mflowgen Github repo.
+
 mflowgen is a modular flow specification and build-system
 generator for ASIC and FPGA design-space exploration built around
 sandboxed and modular steps.
@@ -76,5 +82,6 @@ Cell Library.
    ref-graph-building-api
    ref-command-line-interface
    user-guide
+   faq
 
 
