@@ -21,7 +21,7 @@ from .makefile_syntax import make_graph, make_status, make_info
 
 from .utils           import stamp
 
-class MakeBackend( object ):
+class MakeBackend:
 
   def __init__( s ):
     s.fd = open( 'Makefile', 'w' )
@@ -383,7 +383,7 @@ class MakeBackend( object ):
 
     command = \
       '@find . -maxdepth 1 ! -name .mflowgen ! -name Makefile' \
-      ' ! -name \. ! -name \.\. -exec rm -rf {} +'
+      r' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
     make_clean( s.w, name='clean-all', command=command )
 

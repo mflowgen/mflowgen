@@ -24,7 +24,6 @@
 # Date   : June 2, 2019
 #
 
-from __future__ import print_function
 import datetime as dt
 import os
 
@@ -46,7 +45,7 @@ for d in steps:
   if not os.path.exists( start_f ):
     continue
 
-  with open( start_f, 'r' ) as fd:
+  with open( start_f ) as fd:
     start = fd.read().strip()
     start = dt.datetime.strptime( start, '%Y-%m%d-%H%M-%S' )
 
@@ -56,7 +55,7 @@ for d in steps:
 
   if os.path.exists( end_f ):
     step_finished = True
-    with open( end_f, 'r' ) as fd:
+    with open( end_f ) as fd:
       end = fd.read().strip()
       end = dt.datetime.strptime( end, '%Y-%m%d-%H%M-%S' )
 

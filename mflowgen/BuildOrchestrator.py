@@ -13,7 +13,7 @@ import shutil
 
 from .utils import *
 
-class BuildOrchestrator( object ):
+class BuildOrchestrator:
 
   def __init__( s, graph, backend_writer_cls ):
 

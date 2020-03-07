@@ -21,7 +21,6 @@
 # Date   : June 18, 2019
 #
 
-from __future__ import print_function
 import argparse
 import sys
 import yaml
@@ -62,7 +61,7 @@ def main():
 
   # Configure YAML
 
-  with open( 'configure.yml', 'r' ) as fd:
+  with open( 'configure.yml' ) as fd:
     try:
       data_cfg = yaml.load( fd, Loader=yaml.FullLoader )['parameters']
     except AttributeError:
@@ -92,7 +91,7 @@ def main():
   # - ADK_TYPICAL_ON_CHIP_LOAD -- typical on-chip load in lib units
   #
 
-  with open( 'inputs/adk/adk.tcl', 'r' ) as fd:
+  with open( 'inputs/adk/adk.tcl' ) as fd:
     adk_lines = fd.readlines()
 
   tie_hi_cell_line = [ l for l in adk_lines if 'set ADK_TIE_HI_CELL ' in l ]
@@ -156,7 +155,7 @@ def main():
   # Populate the synth script template
   #-----------------------------------------------------------------------
 
-  with open( 'synth.ys.template', 'r' ) as fd:
+  with open( 'synth.ys.template' ) as fd:
     template = fd.read()
 
   with open( 'synth.ys', 'w' ) as fd:

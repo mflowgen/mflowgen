@@ -17,7 +17,7 @@ from .utils import stamp, get_top_dir
 # Writer class
 #-------------------------------------------------------------------------
 
-class Writer( object ):
+class Writer:
 
   def __init__( s, output, width=78 ):
     s.output = output
@@ -489,16 +489,16 @@ def make_list( w, order, debug_targets ):
   template_str += '	{command}\n'
 
   commands = [
-    'echo',
-    'echo Generic Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( generic ),
-    'echo',
-    'echo Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( steps_str ),
-    'echo',
-    'echo Debug Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( debug_str ),
-    'echo',
+    r'echo',
+    r'echo Generic Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( generic ),
+    r'echo',
+    r'echo Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( steps_str ),
+    r'echo',
+    r'echo Debug Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( debug_str ),
+    r'echo',
   ]
 
   command = '@' + ' && '.join( commands )

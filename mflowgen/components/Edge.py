@@ -7,7 +7,7 @@
 # Date   : June 2, 2019
 #
 
-class Edge( object ):
+class Edge:
 
   def __init__( s, src, dst ):
     s.src = src

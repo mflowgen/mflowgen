@@ -9,7 +9,6 @@
 #
 
 import os
-import sys
 
 from mflowgen.components import Graph, Step
 

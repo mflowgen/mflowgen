@@ -85,9 +85,7 @@
 #              V           V
 #
 
-from __future__ import print_function
 import argparse
-import functools
 import sys
 import yaml
 
@@ -124,7 +122,7 @@ def main():
 
   # Read the configure.yml
 
-  with open( opts.config, 'r' ) as fd:
+  with open( opts.config ) as fd:
     try:
       data = yaml.load( fd, Loader=yaml.FullLoader )
     except AttributeError:

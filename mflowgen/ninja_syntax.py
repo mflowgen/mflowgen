@@ -17,7 +17,7 @@ import textwrap
 def escape_path(word):
     return word.replace('$ ', '$$ ').replace(' ', '$ ').replace(':', '$:')
 
-class Writer(object):
+class Writer:
     def __init__(self, output, width=78):
         self.output = output
         self.width = width

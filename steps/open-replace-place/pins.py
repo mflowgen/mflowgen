@@ -1,4 +1,3 @@
-from __future__ import print_function
 # pins.py
 #
 # Slightly modified from the OpenRoad utilities repo
@@ -6,7 +5,7 @@ from __future__ import print_function
 # - https://github.com/The-OpenROAD-Project/OpenROAD-Utilities
 #
 
-with open( 'design.diesize.sh', 'r' ) as fd:
+with open( 'design.diesize.sh' ) as fd:
   lines = fd.readlines()
 
 lx = 0
@@ -14,7 +13,7 @@ ly = 0
 ux = float( lines[0].split('=')[-1].strip() )
 uy = float( lines[1].split('=')[-1].strip() )
 
-f = open("design.pinlist.txt", "r")
+f = open( "design.pinlist.txt" )
 cont = f.read()
 f.close()
 

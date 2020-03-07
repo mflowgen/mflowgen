@@ -25,8 +25,8 @@ You can check the exit status like this:
     % echo $?
     127
 
-    % bash -c "echo 1 2 3"
-    1 2 3
+    % bash -c "echo abc"
+    abc
     % echo $?
     0
 
@@ -95,9 +95,10 @@ If instead the script exited with an error exit status like this:
 .. code:: bash
 
     % non_existent_command || exit 1
-    % echo "hi"  # we never get here because we exited after the error
+    % echo "hi"  # we never get here because we exit after the error
 
-Then you will see the error and the build will also stop:
+Then you will see the error, the following commands will not run, and the
+build will also stop:
 
 .. code::
 

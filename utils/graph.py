@@ -14,7 +14,6 @@
 # Date   : June 3, 2019
 #
 
-from __future__ import print_function
 import argparse
 import re
 import sys
@@ -87,7 +86,7 @@ def main():
   # Read the DOT graph
   #-----------------------------------------------------------------------
 
-  with open( opts.graph, 'r' ) as fd:
+  with open( opts.graph ) as fd:
     lines = fd.readlines()
 
   #-----------------------------------------------------------------------

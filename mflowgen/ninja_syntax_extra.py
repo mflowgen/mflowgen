@@ -392,16 +392,16 @@ def ninja_list( w, order, debug_targets ):
       for i, tup in sorted( debug_targets.items(), key=lambda x:int(x[0]) ) ]
 
   commands = [
-    'echo',
-    'echo Generic Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( generic ),
-    'echo',
-    'echo Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( steps_str ),
-    'echo',
-    'echo Debug Targets\: && echo && ' + \
-      'printf " - %s\\n" ' + ' '.join( debug_str ),
-    'echo',
+    r'echo',
+    r'echo Generic Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( generic ),
+    r'echo',
+    r'echo Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( steps_str ),
+    r'echo',
+    r'echo Debug Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( debug_str ),
+    r'echo',
   ]
 
   command = ' && '.join( commands )

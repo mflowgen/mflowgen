@@ -19,7 +19,7 @@ from .ninja_syntax_extra import ninja_diff
 from .ninja_syntax_extra import ninja_runtimes, ninja_list
 from .ninja_syntax_extra import ninja_graph, ninja_status, ninja_info
 
-class NinjaBackend( object ):
+class NinjaBackend:
 
   def __init__( s ):
     s.fd = open( 'build.ninja', 'w' )
@@ -370,7 +370,7 @@ class NinjaBackend( object ):
 
     command = \
       'find . -maxdepth 1 ! -name .mflowgen ! -name build.ninja' \
-      ' ! -name \. ! -name \.\. -exec rm -rf {} +'
+      r' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
     ninja_clean( s.w, name='clean-all', command=command )
 

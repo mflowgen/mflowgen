@@ -6,7 +6,6 @@
 # Date   : June 2, 2019
 #
 
-from __future__ import print_function
 
 import os
 
@@ -15,7 +14,7 @@ from .Step import Step
 
 from ..utils import get_top_dir
 
-class Graph( object ):
+class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
 
   def __init__( s ):

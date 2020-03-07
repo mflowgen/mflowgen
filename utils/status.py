@@ -29,7 +29,6 @@
 # Date   : November 3, 2019
 #
 
-from __future__ import print_function
 import argparse
 import re
 import subprocess

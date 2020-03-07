@@ -13,7 +13,7 @@ import yaml
 
 from ..utils import get_top_dir
 
-class Step ( object ):
+class Step:
 
   def __init__( s, step_path, default=False ):
 
@@ -38,7 +38,7 @@ class Step ( object ):
 
     # Read the YAML data
 
-    with open( yaml_path, 'r' ) as fd:
+    with open( yaml_path ) as fd:
       try:
         data = yaml.load( fd, Loader=yaml.FullLoader )
       except AttributeError:

@@ -15,7 +15,6 @@
 # Date   : June 19, 2019
 #
 
-from __future__ import print_function
 import argparse
 import math
 import re
@@ -58,7 +57,7 @@ def main():
   # tech lef site sizes.
   #
 
-  with open( 'inputs/adk/rtk-tech.lef', 'r' ) as fd:
+  with open( 'inputs/adk/rtk-tech.lef' ) as fd:
     lines = fd.readlines()
 
   # Expecting a site declaration that looks like this:
@@ -86,7 +85,7 @@ def main():
   # Read yosys stats
   #-----------------------------------------------------------------------
 
-  with open( 'inputs/synth.stats.txt', 'r' ) as fd:
+  with open( 'inputs/synth.stats.txt' ) as fd:
     lines = fd.readlines()
 
   area_line = [ l for l in lines if 'Chip area for module' in l ][0]

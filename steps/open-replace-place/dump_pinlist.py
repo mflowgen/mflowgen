@@ -12,7 +12,6 @@
 # Date   : June 19, 2019
 #
 
-from __future__ import print_function
 import argparse
 import re
 import sys
@@ -45,7 +44,7 @@ def parse_cmdline():
 def main():
   opts = parse_cmdline()
 
-  with open( 'inputs/design.v', 'r' ) as fd:
+  with open( 'inputs/design.v' ) as fd:
     lines = fd.readlines()
 
   # Get the ports
@@ -69,7 +68,7 @@ def main():
     # be one of these)
 
     # Escape backslashes and dollar signs for RE engine
-    _p = p.replace("\\", "\\\\").replace("$", "\$")
+    _p = p.replace("\\", "\\\\").replace("$", r"\$")
 
     i_lines = [ l for l in lines if re.search( r' input .*'  + _p, l ) ]
     o_lines = [ l for l in lines if re.search( r' output .*' + _p, l ) ]
