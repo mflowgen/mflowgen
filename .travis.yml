@@ -1,0 +1,51 @@
+#=========================================================================
+# .travis.yml
+#=========================================================================
+# Continuous integration with TravisCI
+
+language: python
+
+python:
+  - "3.7"
+
+#-------------------------------------------------------------------------
+# Install
+#-------------------------------------------------------------------------
+
+install:
+  - sudo apt-get install -y graphviz
+  - pip install --upgrade pip setuptools twine
+  - pip install --requirement requirements/ci.txt
+#  - pip install .
+  - pip list
+
+#-------------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------------
+
+script:
+  - autoflake --recursive --in-place --remove-duplicate-keys .
+  - pyupgrade --py3-only --keep-percent-format $(find . -name '*.py')
+  - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
+  - git diff --exit-code
+  - mkdir -p build && cd build
+
+  # Test that we can configure and run the common targets
+
+  - ../configure --design ../designs/GcdUnit
+  - make list
+  - make status
+  - make runtimes
+  - make graph
+  - make clean-all
+  - make info
+
+#  - py.test ../mflowgen/tests
+
+#-------------------------------------------------------------------------
+# After success
+#-------------------------------------------------------------------------
+
+after_success:
+  - echo done
+
