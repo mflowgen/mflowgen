@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 #=========================================================================
 # makefile_syntax.py
 #=========================================================================
@@ -451,7 +450,7 @@ def make_runtimes( w ):
   template_str += 'runtimes:\n'
   template_str += '	{command}\n'
 
-  command = '@python ' + get_top_dir() + '/utils/runtimes.py'
+  command = '@' + get_top_dir() + '/utils/runtimes.py'
 
   w.write( template_str.format( command=command ) )
   w.newline()
@@ -544,7 +543,7 @@ def make_status( w, steps ):
   template_str += 'status:\n'
   template_str += '	{command}\n'
 
-  command = '@python ' + get_top_dir() + '/utils/status.py' \
+  command = '@' + get_top_dir() + '/utils/status.py' \
             ' --backend make -s ' + steps_comma_separated
 
   w.write( template_str.format( command=command ) )
@@ -569,10 +568,10 @@ def make_info( w, build_dir ):
   template_str += '{target}:\n'
   template_str += '	{command}\n'
 
-  command = '@python ' + get_top_dir() + '/utils/letters.py' \
+  command = '@' + get_top_dir() + '/utils/letters.py' \
       + ' -c -t ' + step_name
 
-  command = command + ' && python ' + get_top_dir() + '/utils/info.py' \
+  command = command + ' && ' + get_top_dir() + '/utils/info.py' \
       + ' -y .mflowgen/' + build_dir + '/configure.yml'
 
   w.write( template_str.format( target=target, command=command ) )

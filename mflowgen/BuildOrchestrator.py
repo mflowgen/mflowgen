@@ -1,4 +1,3 @@
-#! /usr/bin/env python
 #=========================================================================
 # BuildOrchestrator.py
 #=========================================================================
@@ -552,7 +551,7 @@ class BuildOrchestrator:
         # Set pipefail (works for ksh, zsh, bash) to propagate errors
         'set -o pipefail',
         # Step banner in big letters
-        'python ' + get_top_dir() + '/utils/letters.py -c -t ' + step_name,
+        get_top_dir() + '/utils/letters.py -c -t ' + step_name,
         # Copy the command script to the build_dir
         'cp -f ' + s.metadata_dir + '/' + build_dir \
                  + '/mflowgen-run.sh ' + build_dir,
