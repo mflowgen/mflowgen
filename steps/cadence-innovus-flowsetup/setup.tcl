@@ -79,6 +79,7 @@ set vars(libs_typical,timing) [join "
                                 $vars(adk_dir)/stdcells.lib
                                 [glob -nocomplain $vars(adk_dir)/iocells.lib]
                                 [glob -nocomplain inputs/*tt*.lib]
+                                [glob -nocomplain inputs/*TT*.lib]
                               "]
 
 # The best case is:
@@ -92,6 +93,7 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
                                 $vars(adk_dir)/stdcells-bc.lib
                                 [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]
                                 [glob -nocomplain inputs/*ff*.lib]
+                                [glob -nocomplain inputs/*FF*.lib]
                               "]
   lappend vars(library_sets)  "libs_bc"
 }
@@ -107,6 +109,7 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
                                 $vars(adk_dir)/stdcells-wc.lib
                                 [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]
                                 [glob -nocomplain inputs/*ss*.lib]
+                                [glob -nocomplain inputs/*SS*.lib]
                               "]
   lappend vars(library_sets)  "libs_wc"
 }
