@@ -127,11 +127,11 @@ def main():
 
   template_str = ' - {status} -> {number:2} : {name}'
 
-  for step, status in sorted( status.items(), # sort in numerical order
+  for step, step_status in sorted( status.items(), # sort numerical order
                               key=lambda x: int(x[0].split('-')[0]) ):
     tokens = step.split('-')
     d = {
-      'status' : status,
+      'status' : step_status,
       'number' : tokens[0],
       'name'   : '-'.join(tokens[1:]),
     }

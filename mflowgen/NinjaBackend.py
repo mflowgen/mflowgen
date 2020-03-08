@@ -414,7 +414,7 @@ class NinjaBackend:
     s.w.comment( 'List' )
     s.w.newline()
 
-    ninja_list( s.w, s.order, s.debug_targets )
+    ninja_list( s.w, s.build_dirs, s.debug_targets )
 
     # Graph target
 

@@ -366,14 +366,32 @@ def ninja_runtimes( w ):
 # Write out ninja rule to list all steps
 #
 # - w             : instance of ninja_syntax Writer
-# - order         : list of steps in order
+# - build_dirs    : list of build directories
 # - debug_targets : dict of debug targets with key (id) and value (target)
 #
 
-def ninja_list( w, order, debug_targets ):
+def ninja_list( w, build_dirs, debug_targets ):
+
+  # Split the build ID and step name from the build_dir
+  #
+  # For example, this:
+  #
+  #     4-synopsys-dc-synthesis
+  #
+  # turns into this:
+  #
+  #     ( '4', 'synopsys-dc-synthesis' )
+  #
+
+  steps = []
+
+  for _ in sorted( build_dirs.values(), \
+                     key = lambda x: int(x.split('-')[0]) ):
+    tokens = _.split('-')
+    steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
 
   steps_str = \
-    [ '"{: >2} : {}"'.format(i,x) for i, x in enumerate( order ) ]
+    [ '"{: >2} : {}"'.format(x,y) for x, y in ( steps ) ]
 
   generic = [
     '"list      -- List all steps"',

@@ -1,7 +1,7 @@
 #=========================================================================
 # BuildOrchestrator.py
 #=========================================================================
-# Backend that generates ninja build files from a graph
+# Backend that generates build files from a graph
 #
 # Author : Christopher Torng
 # Date   : June 11, 2019
@@ -255,14 +255,20 @@ class BuildOrchestrator:
 
     s.g.expand_params()
 
-    # Determine build order, unique build directories, build IDs, step dir
+    # Determine build order
 
     s.order = s.g.topological_sort()
+
+    # Determine unique build IDs and build directories
 
     for i, step_name in enumerate( s.order ):
       s.build_dirs [ step_name ] = str(i) + '-' + step_name
       s.build_ids  [ step_name ] = str(i)
-      s.step_dirs  [ step_name ] = s.g.get_step( step_name ).get_dir()
+
+    # Get step directories
+
+    for step_name in s.order:
+      s.step_dirs[ step_name ] = s.g.get_step( step_name ).get_dir()
 
     # Dump metadata about build vars and local connectivity to all steps
 

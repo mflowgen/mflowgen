@@ -744,7 +744,7 @@ ranksep=0.8;
         'topological_sort -- Could not find a valid sort for ' \
         '{}'.format( steps )
 
-      order.extend( steps_without_deps )
+      order.extend( sorted( steps_without_deps ) ) # sort for determinacy
       steps = steps_with_deps
 
       keys_to_delete = []

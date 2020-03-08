@@ -427,7 +427,7 @@ class MakeBackend:
     s.w.comment( 'List' )
     s.w.newline()
 
-    make_list( s.w, s.order, s.debug_targets )
+    make_list( s.w, s.build_dirs, s.debug_targets )
 
     # Graph target
 
