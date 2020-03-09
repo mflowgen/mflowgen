@@ -211,6 +211,22 @@ class Step:
       s._config['outputs'] = []
     s._config['outputs'].extend( new_list )
 
+  # API to pre/post extend commands
+
+  def pre_extend_commands( s, new_list ):
+    try:
+      s._config['commands']
+    except KeyError:
+      s._config['commands'] = []
+    s._config['commands'][:0] = new_list
+
+  def extend_commands( s, new_list ):
+    try:
+      s._config['commands']
+    except KeyError:
+      s._config['commands'] = []
+    s._config['commands'].extend( new_list )
+
   #-----------------------------------------------------------------------
   # Parameter system
   #-----------------------------------------------------------------------
