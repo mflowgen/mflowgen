@@ -322,13 +322,14 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
           build_id  = m.group(1)
           step_name = m.group(2)
           if step_name in s.order: # only save if also in the new graph
-            existing_build_ids[ step_name ] = build_id
+            if build_id not in existing_build_ids.values(): # keep unique
+              existing_build_ids[ step_name ] = build_id
 
     return existing_build_ids
 
-  #---------------------------------------------------------------------
+  #-----------------------------------------------------------------------
   # Setup
-  #---------------------------------------------------------------------
+  #-----------------------------------------------------------------------
 
   def setup( s ):
 
