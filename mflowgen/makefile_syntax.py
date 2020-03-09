@@ -485,7 +485,7 @@ def make_list( w, build_dirs, debug_targets ):
     steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
 
   steps_str = \
-    [ '"{: >2} : {}"'.format(x,y) for x, y in ( steps ) ]
+    [ '"{: >3} : {}"'.format(x,y) for x, y in ( steps ) ]
 
   generic = [
     '"list      -- List all steps"',

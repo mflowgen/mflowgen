@@ -105,16 +105,18 @@ def main():
     raise ImportError( 'No module named construct in "{}"'.format(
                          construct_path ) )
 
-  # Select the backend build system
+  # Construct the graph
+
+  g = construct.construct()
+
+  # Generate the build files (e.g., Makefile) for the selected backend
+  # build system
 
   if opts.backend == 'make':
     backend_cls = MakeBackend
   elif opts.backend == 'ninja':
     backend_cls = NinjaBackend
 
-  # Generate the build files (e.g., Makefile)
-
-  g = construct.construct()
   b = BuildOrchestrator( g, backend_cls )
   b.build()
 
@@ -125,6 +127,7 @@ def main():
 
   print( "Targets: run \"" + list_target   + "\" and \""
                            + status_target + "\"" )
+  print()
 
 
 main()

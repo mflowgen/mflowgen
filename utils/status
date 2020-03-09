@@ -125,7 +125,7 @@ def main():
   print( 'Status:' )
   print()
 
-  template_str = ' - {status} -> {number:2} : {name}'
+  template_str = ' - {status} -> {number:3} : {name}'
 
   for step, step_status in sorted( status.items(), # sort numerical order
                               key=lambda x: int(x[0].split('-')[0]) ):

@@ -8,6 +8,7 @@
 #
 
 import os
+import re
 import shutil
 
 from .utils import *
@@ -241,6 +242,90 @@ class BuildOrchestrator:
   def dump_graphviz( s ):
     s.g.plot( dot_f = s.metadata_dir + '/graph.dot' )
 
+  #-----------------------------------------------------------------------
+  # set_unique_build_ids
+  #-----------------------------------------------------------------------
+
+  # set_unique_build_ids
+  #
+  # Builds a dictionary that numbers the steps with unique IDs.
+  #
+  # For example:
+  #
+  #     s.build_ids  = {
+  #       'step-foo': '1',
+  #       'step-bar': '2',
+  #       'step-baz': '3',
+  #     }
+  #
+  # Existing build directories claim their existing build ID with highest
+  # priority. Remaining steps are assigned a build ID in topological order
+  # counting up from 0 unless the ID is already claimed by an existing
+  # step.
+  #
+
+  def set_unique_build_ids( s ):
+
+    existing_build_ids = s._find_existing_build_ids()
+
+    # Print a help message
+
+    if existing_build_ids:
+
+      print( '''
+Found the following existing build directories. Their numbering will be
+preserved in the new graph, as will their build status (assuming the same
+graph connectivity). This prevents unnecessary rebuilds due solely to
+different numberings. This means that an existing step N will remain step
+N. For a completely clean build, run the "clean-all" target.\n''' )
+
+      for step_name, build_id in sorted( existing_build_ids.items(), \
+                                           key = lambda x: int(x[1]) ):
+        print( '- {: >3} : {}'.format( build_id , build_id+'-'+step_name ) )
+      print()
+
+    # Any existing steps get first claim on their existing build ids
+
+    s.build_ids = existing_build_ids
+
+    # Any remaining steps get a build id in topological sort order (while
+    # skipping any already-claimed build ids)
+
+    i = 0
+    for step_name in s.order:
+      # Skip steps that have already been assigned
+      if step_name in s.build_ids.keys():
+        continue
+      # Find an unclaimed build id
+      while str(i) in s.build_ids.values():
+        i += 1
+      s.build_ids[ step_name ] = str(i)
+      i += 1
+
+  # _find_existing_build_ids
+  #
+  # Search for existing build directories of the form "4-step-foo". The
+  # step name would be "step-foo" and this function would return the
+  # following build ID dictionary:
+  #
+  #     existing_build_ids  = { 'step-foo': '4' }
+  #
+
+  def _find_existing_build_ids( s ):
+
+    existing_build_ids = {}
+
+    for dir_name in os.listdir('.'): # search the current directory
+      if os.path.isdir( dir_name ):
+        m = re.match( r'(\d+)-(.*)', dir_name )
+        if m:
+          build_id  = m.group(1)
+          step_name = m.group(2)
+          if step_name in s.order: # only save if also in the new graph
+            existing_build_ids[ step_name ] = build_id
+
+    return existing_build_ids
+
   #---------------------------------------------------------------------
   # Setup
   #---------------------------------------------------------------------
@@ -261,9 +346,9 @@ class BuildOrchestrator:
 
     # Determine unique build IDs and build directories
 
-    for i, step_name in enumerate( s.order ):
-      s.build_dirs [ step_name ] = str(i) + '-' + step_name
-      s.build_ids  [ step_name ] = str(i)
+    s.set_unique_build_ids()
+    s.build_dirs = { step_name: build_id + '-' + step_name \
+                       for step_name, build_id in s.build_ids.items() }
 
     # Get step directories
 
