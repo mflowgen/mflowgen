@@ -7,4 +7,5 @@ User Guide
 
    ug-cli
    ug-clone-step
+   ug-adk-paths
 
