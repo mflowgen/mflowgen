@@ -521,6 +521,33 @@ class Step:
       return []
 
   def dump_yaml( s, build_dir ):
+
+    # Enable dumping multiline strings as block literals
+    #
+    # Block literals look like this:
+    #
+    #     foo: |
+    #       line 1
+    #       line 2
+    #       line 3
+    #
+    # The indentation of the first line is used as the common indentation
+    # for the entire block, so when read as a string it looks like this:
+    #
+    #     >>> line 1
+    #     >>> line 2
+    #     >>> line 3
+    #
+
+    def str_representer( dumper, data ):
+      tmp = { 'tag' : 'tag:yaml.org,2002:str', 'value' : data }
+      if len( data.splitlines() ) > 1:
+        tmp.update( { 'style' : '|' } )
+      return dumper.represent_scalar( **tmp )
+    yaml.add_representer( str, str_representer )
+
+    # Dump the content
+
     with open( build_dir + '/configure.yml', 'w' ) as fd:
       yaml.dump( s._config, fd, default_flow_style=False )
 

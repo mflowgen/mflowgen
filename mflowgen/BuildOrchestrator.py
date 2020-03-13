@@ -12,6 +12,7 @@ import re
 import shutil
 
 from .utils import *
+from .assertions import dump_assertion_check_scripts
 
 class BuildOrchestrator:
 
@@ -49,8 +50,10 @@ class BuildOrchestrator:
 
     # Names for the generated run and debug scripts for each step
 
-    s.mflowgen_run   = 'mflowgen-run'
-    s.mflowgen_debug = 'mflowgen-debug'
+    s.mflowgen_run      = 'mflowgen-run'
+    s.mflowgen_debug    = 'mflowgen-debug'
+    s.mflowgen_precond  = 'mflowgen-check-preconditions.py'
+    s.mflowgen_postcond = 'mflowgen-check-postconditions.py'
 
   #-----------------------------------------------------------------------
   # dump_yamls
@@ -382,6 +385,14 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       if debug_commands:
         s.dump_debug_commands( debug_commands, step_name, build_dir )
 
+    # Dump assertion check scripts for each step to the metadata directory
+
+    for step_name, build_dir in s.build_dirs.items():
+      inner_dir = s.metadata_dir + '/' + build_dir
+      if not os.path.exists( inner_dir ):
+        os.mkdir( inner_dir )
+      dump_assertion_check_scripts( step_name, inner_dir )
+
     # Dump graphviz dot file to the metadata directory
 
     s.dump_graphviz()
@@ -658,6 +669,9 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       run_script     = meta_build_dir + '/' + s.mflowgen_run
       debug_script   = meta_build_dir + '/' + s.mflowgen_debug
 
+      precond_script  = meta_build_dir + '/' + s.mflowgen_precond
+      postcond_script = meta_build_dir + '/' + s.mflowgen_postcond
+
       commands = ' && '.join([
         # Step banner in big letters
         get_top_dir() + '/utils/letters -c -t ' + step_name,
@@ -668,9 +682,24 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
         'if [[ -e ' + debug_script + ' ]]; then' \
             + ' chmod +x {} &&'.format( debug_script ) \
             + ' cp -f {} {}; fi'.format( debug_script, build_dir ),
-        # Run the commands
+        # Copy the precondition script to the build_dir if it exists
+        'if [[ -e ' + precond_script + ' ]]; then' \
+            + ' chmod +x {} &&'.format( precond_script ) \
+            + ' cp -f {} {}; fi'.format( precond_script, build_dir ),
+        # Copy the postcondition script to the build_dir if it exists
+        'if [[ -e ' + postcond_script + ' ]]; then' \
+            + ' chmod +x {} &&'.format( postcond_script ) \
+            + ' cp -f {} {}; fi'.format( postcond_script, build_dir ),
+        # Go into the build directory
         'cd ' + build_dir,
+        # Run the precondition checker
+        'if [[ -e ' + s.mflowgen_precond + ' ]]; then' \
+            + ' ./{x} || exit 1; fi'.format( x=s.mflowgen_precond ),
+        # Run the commands
         './{x} 2>&1 | tee {x}.log || exit 1'.format( x=s.mflowgen_run ),
+        # Run the postcondition checker
+        'if [[ -e ' + s.mflowgen_postcond + ' ]]; then' \
+            + ' ./{x} || exit 1; fi'.format( x=s.mflowgen_postcond ),
         # Return to top so backends can assume we never changed directory
         'cd ..',
       ])
