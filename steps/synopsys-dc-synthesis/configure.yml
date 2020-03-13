@@ -49,3 +49,35 @@ debug:
   - ln -sf results/*.mapped.ddc debug.ddc
   - design_vision-xg -topographical -x "source dc.tcl; read_ddc debug.ddc"
 
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'dc_shell-xg-t' )   # tool check for DC shell
+  - assert File( 'inputs/adk' )              # must exist
+  - assert File( 'inputs/design.v' )         # must exist
+  - assert File( 'inputs/constraints.tcl' )  # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.v' )        # must exist
+  - assert File( 'outputs/design.sdc' )      # must exist
+
+  # Basic error checking
+
+  - assert 'error' not in File( 'logs/dc.log' )
+  - assert 'Unresolved references' not in File( 'logs/dc.log' )
+  - assert 'Unable to resolve' not in File( 'logs/dc.log' )
+
+  # If GTECH is found, that means this design was not mapped to a
+  # technology library and is still in DC's generic representation
+
+  - assert 'GTECH' not in File( 'outputs/design.v' )
+
+  # Sanity check that there is a clock in the constraints
+
+  - assert 'create_clock' in File( 'outputs/design.sdc' )
+
+

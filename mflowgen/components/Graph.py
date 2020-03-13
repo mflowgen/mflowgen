@@ -5,7 +5,6 @@
 # Date   : June 2, 2019
 #
 
-
 import os
 
 from .Edge import Edge

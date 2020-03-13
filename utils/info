@@ -439,26 +439,66 @@ def main():
   print()
 
   #-----------------------------------------------------------------------
-  # Parameters
+  # Parameters and Assertions
   #-----------------------------------------------------------------------
 
-  def print_list( v ):
+  # print_list
+
+  def print_list( v, indent=0 ):
     for _ in v:
-      print( '  - ' + _ )
+      print( ' '*indent + '- ' + str(_) )
 
-  if 'parameters' in data.keys():
+  # print_list_section
+  #
+  # Prints something like:
+  #
+  #     Title
+  #
+  #       - foo
+  #       - bar
+  #       - baz
+  #
 
-    p_width      = max( [ len(p) for p in data['parameters'] ] )
-    template_str ='- {:' + str(p_width) + '} : {}'
+  def print_list_section( key ):
+    if key in data.keys():
+      title = key.capitalize()
+      print( title + '\n' )
+      print_list( data[key] )
+      print()
 
-    print( 'Parameters\n' )
-    for k, v in data['parameters'].items():
-      if type(v) == list:
-        print( '- ' + k + ':' )
-        print_list( v )
-      else:
-        print( template_str.format( k, v ) )
-    print()
+  # print_dict_section
+  #
+  # Prints something like:
+  #
+  #     Title
+  #
+  #     - foo : 1.0
+  #     - bar : 2.0
+  #     - baz :
+  #       - one
+  #       - two
+  #
+
+  def print_dict_section( key ):
+
+    if key in data.keys():
+
+      p_width      = max( [ len(p) for p in data[key] ] )
+      template_str ='- {:' + str(p_width) + '} : {}'
+
+      title = key.capitalize()
+      print( title + '\n' )
+      for k, v in data[key].items():
+        if type(v) == list:
+          print( '- ' + k + ':' )
+          print_list( v, indent=2 )
+        else:
+          print( template_str.format( k, v ) )
+      print()
+
+  print_dict_section( 'parameters'     )
+  print_list_section( 'preconditions'  )
+  print_list_section( 'postconditions' )
 
   #-----------------------------------------------------------------------
   # Flags
