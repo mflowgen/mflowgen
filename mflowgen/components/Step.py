@@ -227,6 +227,22 @@ class Step:
       s._config['commands'] = []
     s._config['commands'].extend( new_list )
 
+  # API to extend preconditions and postconditions
+
+  def extend_preconditions( s, new_list ):
+    try:
+      s._config['preconditions']
+    except KeyError:
+      s._config['preconditions'] = []
+    s._config['preconditions'].extend( new_list )
+
+  def extend_postconditions( s, new_list ):
+    try:
+      s._config['postconditions']
+    except KeyError:
+      s._config['postconditions'] = []
+    s._config['postconditions'].extend( new_list )
+
   #-----------------------------------------------------------------------
   # Parameter system
   #-----------------------------------------------------------------------
