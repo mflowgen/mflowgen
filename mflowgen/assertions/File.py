@@ -74,8 +74,7 @@ class File:
       with open( s.path ) as fd:
         s.lines = fd.readlines()
     # Yield line by line
-    for line in s.lines:
-      yield line
+    yield from s.lines
 
   # __str__
 

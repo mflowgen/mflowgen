@@ -3,5 +3,3 @@
 autoflake
 flake8
 pyupgrade
-pytest >= 4.4
-

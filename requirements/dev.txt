@@ -1,2 +1,3 @@
 pyyaml
 graphviz
+pytest >= 4.4

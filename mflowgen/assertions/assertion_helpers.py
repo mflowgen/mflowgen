@@ -76,9 +76,10 @@ def main():
     # - color=no : disable color so we can make our own color stand out
     #
 
-    status = pytest.main( [ '-q', '-rA',
-                            '--disable-warnings',
-                            '--tb=no', '--color=no', f ] )
+    pytest_args = [ '-q', '-rA', '--disable-warnings',
+                    '--tb=no', '--color=no', f ]
+    print( 'pytest ' + ' '.join( pytest_args ) )
+    status = pytest.main( pytest_args )
     exit_status.append( status )
     print()
 
@@ -166,7 +167,11 @@ def improve_assert_messages( entry ):
 def dump_assertion_check_scripts( step_name, dir_name ):
 
   with open( dir_name + '/configure.yml' ) as fd:
-    data = yaml.load( fd, Loader=yaml.FullLoader )
+    try:
+      data = yaml.load( fd, Loader=yaml.FullLoader )
+    except AttributeError:
+      # PyYAML for python2 does not have FullLoader
+      data = yaml.load( fd )
 
   # Look at both preconditions and postconditions
 
@@ -195,7 +200,18 @@ def dump_assertion_check_scripts( step_name, dir_name ):
 
       if type( entry ) == dict:
 
-        pyfile = "'{}'".format( entry['pytest'] )
+        try:
+          pyfile = "'{}'".format( entry['pytest'] )
+        except KeyError:
+          msg = '\nUnsupported assertion of type "dict" ' + \
+                'in step "{}". '.format( step_name ) + \
+                'If there is a colon in this assertion, you must ' + \
+                'put quotes around the entire string ' + \
+                'and properly escape the special characters inside ' + \
+                'with YAML syntax:\n\n- {}\n'.format( entry )
+          print( msg )
+          raise
+
         pyfiles.append( pyfile )
 
       # Otherwise, treat it as normal Python and wrap it up as a function

@@ -12,10 +12,10 @@ name: mentor-calibre-lvs
 #-------------------------------------------------------------------------
 
 inputs:
-  - rules.svrf
+  - adk
   - design_merged.gds
   - design.lvs.v
-  - adk
+  - rules.svrf
 
 outputs:
   - lvs.report
@@ -48,4 +48,16 @@ debug:
   - calibredrv -m inputs/design_merged.gds \
                -l inputs/adk/calibre.layerprops \
                -rve -lvs svdb
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'calibre' )
+  - assert File( 'inputs/adk' )
+  - assert File( 'inputs/design_merged.gds' )
+  - assert File( 'inputs/design.lvs.v' )
+
 
