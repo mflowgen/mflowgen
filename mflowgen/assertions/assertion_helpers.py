@@ -74,15 +74,15 @@ def main():
 
     # Options for short clean printout:
     #
-    # - q        : quiet and short
-    # - rA       : print one line per pass/fail test in the short test
-    #            :   summary info
-    # - tb=no    : disable traceback printout
-    # - color=no : disable color so we can make our own color stand out
+    # - q         : quiet and short
+    # - rA        : print one line per pass/fail test in the short test
+    #             :   summary info
+    # - tb=short  : shorter traceback printout
+    # - color=yes : color
     #
 
     pytest_args = [ '-q', '-rA', '--disable-warnings',
-                    '--tb=no', '--color=no', f ]
+                    '--tb=short', '--color=yes', f ]
     print( 'pytest ' + ' '.join( pytest_args ) )
     status = pytest.main( pytest_args )
     exit_status.append( status )
@@ -104,12 +104,25 @@ if __name__ == '__main__':
 
 template_pytest_str = '''
 def test_{name}():
-  try:
 {code}
-  except AssertionError as e:
-    e.args = ( RED + """ {code_oneline} """ + END, )
-    raise
 '''
+
+# Version with custom AssertionError handling
+#
+# In this version, the assertion error is replaced with the Python
+# statement that the user wrote (code_oneline). This helps because we are
+# generating the pytest functions, and the user does not know what
+# "test_5" does. The idea here is to make clear at least which test has
+# failed.
+
+# template_pytest_str = '''
+# def test_{name}():
+#   try:
+# {code}
+#   except AssertionError as e:
+#     e.args = ( RED + """ {code_oneline} """ + END, )
+#     raise
+# '''
 
 #-------------------------------------------------------------------------
 # Helper functions
@@ -248,12 +261,11 @@ def dump_assertion_check_scripts( step_name, dir_name ):
         func_name = str(i) + '_' + sanitize( entry[:nchars] )
 
         code         = indent(entry, 4)
-        code_oneline = '  ->  '.join( entry.splitlines() )
+        #code_oneline = '  ->  '.join( entry.splitlines() )
 
         tests_str += template_pytest_str.format(
             name         = func_name,
-            code         = code,
-            code_oneline = code_oneline )
+            code         = code )
 
     # Dump the pytest functions to file by filling in a template
 
