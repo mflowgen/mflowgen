@@ -50,3 +50,20 @@ debug:
     -init innovus-foundation-flow/custom-scripts/run-debug.tcl
     -log logs/debug.log
 
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'innovus' )                 # tool check
+  - assert File( 'inputs/innovus-foundation-flow' )  # must exist
+  - assert File( 'inputs/adk' )                      # must exist
+  - assert File( 'inputs/design.sdc' )               # must exist
+  - assert File( 'inputs/design.checkpoint' )        # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.checkpoint' )       # must exist
+
+

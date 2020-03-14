@@ -46,3 +46,14 @@ debug:
                -l inputs/adk/calibre.layerprops \
                -rve -drc drc.results
 
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'calibre' )
+  - assert File( 'inputs/adk' )
+  - assert File( 'inputs/design_merged.gds' )
+
+

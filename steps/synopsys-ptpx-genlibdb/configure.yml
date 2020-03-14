@@ -23,7 +23,8 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - pt_shell -file START.tcl
+  - mkdir -p logs
+  - pt_shell -file START.tcl -output_log_file logs/pt.log
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.db  design.db
   - ln -sf ../*.lib design.lib
@@ -35,4 +36,28 @@ commands:
 parameters:
   design_name: undefined
   order:
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'pt_shell' )        # tool check
+  - assert File( 'inputs/adk' )              # must exist
+  - assert File( 'inputs/design.vcs.v' )     # must exist
+  - assert File( 'inputs/design.spef.gz' )   # must exist
+  - assert File( 'inputs/design.pt.sdc' )    # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.lib' )      # must exist
+  - assert File( 'outputs/design.db' )       # must exist
+
+  # Basic error checking
+
+  - assert 'error' not in File( 'logs/pt.log' )
+  - assert 'Unresolved references' not in File( 'logs/pt.log' )
+  - assert 'Unable to resolve' not in File( 'logs/pt.log' )
+
 

@@ -497,8 +497,8 @@ def main():
       print()
 
   print_dict_section( 'parameters'     )
-  print_list_section( 'preconditions'  )
-  print_list_section( 'postconditions' )
+  #print_list_section( 'preconditions'  )
+  #print_list_section( 'postconditions' )
 
   #-----------------------------------------------------------------------
   # Flags

@@ -12,9 +12,9 @@ name: cadence-innovus-flowsetup
 #-------------------------------------------------------------------------
 
 inputs:
+  - adk
   - design.v
   - design.sdc
-  - adk
 
 outputs:
   - innovus-foundation-flow
@@ -34,5 +34,20 @@ parameters:
   design_name: design
   nthreads: 16        # multithreading available to the tool
   express_flow: False # enable express flow
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'innovus' )                 # tool check
+  - assert File( 'inputs/adk' )                      # must exist
+  - assert File( 'inputs/design.sdc' )               # must exist
+  - assert File( 'inputs/design.v' )                 # must exist
+
+postconditions:
+
+  - assert File( 'outputs/innovus-foundation-flow' ) # must exist
 
 

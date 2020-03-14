@@ -55,3 +55,35 @@ debug:
     -init innovus-foundation-flow/custom-scripts/run-debug.tcl
     -log logs/debug.log
 
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert shutil.which( 'innovus' )                 # tool check
+  - assert File( 'inputs/innovus-foundation-flow' )  # must exist
+  - assert File( 'inputs/adk' )                      # must exist
+  - assert File( 'inputs/design.v' )                 # must exist
+  - assert File( 'inputs/design.sdc' )               # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.checkpoint' )       # must exist
+
+  # Check for consistent library units for capacitance
+  #
+  #     **WARN: (IMPTS-17): Inconsistency detected in the capacitance
+  #     units specified among the timing libraries being used. Default
+  #     system capacitance unit of 1pF will be used. Use the
+  #     'setLibraryUnit' command to set a specific capacitance unit.
+  #
+  # If library units are mismatched, then unitless commands like
+  # "set_load" can be inconsistent across tools. Each tool seems to handle
+  # unit conflicts differently, so we assert here to catch these cases.
+
+  - assert 'Inconsistency detected in the capacitance units'
+      not in File( 'logs/run.log' )
+
+
+
