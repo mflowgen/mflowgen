@@ -287,6 +287,58 @@ class MakeBackend:
 
     return [ target ]
 
+  # gen_step_post_conditions_pre
+  #
+  # This runs at the very start of generating rules for post-conditions
+
+  def gen_step_post_conditions_pre( s ):
+
+    s.w.comment( 'post-conditions' )
+    s.w.newline()
+
+  # gen_step_post_conditions
+  #
+  # Expected semantics
+  #
+  # - Run the {command}
+  # - This rule depends on {deps}
+  #
+  # Expected return
+  #
+  # - Return a list that can pass to another backend call as extra_deps
+  #
+
+  def gen_step_post_conditions( s, command, deps, extra_deps ):
+
+    all_deps = deps + extra_deps
+
+    # Extract the build directory from the command so we can create a
+    # unique rule name
+
+    tokens    = command.split()
+    cd_idx    = tokens.index( 'cd' )
+    build_dir = tokens[ cd_idx + 1 ]
+
+    rule = build_dir + '-post-conditions-commands-rule'
+    rule = rule.replace( '-', '_' )
+
+    # Stamp the build directory
+
+    outputs = [ build_dir + '/.postconditions.stamp' ]
+
+    # Rules
+
+    targets = make_execute(
+      w            = s.w,
+      outputs      = outputs,
+      rule         = rule,
+      command      = command,
+      deps         = all_deps,
+      touch_target = True,
+    )
+
+    return targets
+
   # gen_step_alias_pre
   #
   # This runs at the very start of generating rules for aliases

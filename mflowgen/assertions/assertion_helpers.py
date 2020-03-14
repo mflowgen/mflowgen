@@ -19,7 +19,7 @@ import yaml
 template_pytest_file='''\
 #! /usr/bin/env python3
 #-------------------------------------------------------------------------
-# mflowgen-check-{stype}.py
+# mflowgen-check-{check_type}.py
 #-------------------------------------------------------------------------
 # Generated: {gen}
 
@@ -55,12 +55,17 @@ import shutil
 
 from mflowgen.assertions import File
 
-RED = '\033[31m'
-END = '\033[0m'
+RED   = '\033[31m'
+GREEN = '\033[92m'
+END   = '\033[0m'
 
 {tests}
 
 def main():
+
+  print()
+  print( GREEN + '    > Checking {check_type} for step "{step}"' + END )
+  print()
 
   files        = [ __file__, {pyfiles} ]
   exit_status  = []
@@ -186,6 +191,9 @@ def dump_assertion_check_scripts( step_name, dir_name ):
     except KeyError:
       continue
 
+    if not data[t]:
+      continue
+
     # Each entry in the list specifies Python statement(s) that represent
     # a single test. We aggregate all the tests into the "tests_str"
     # string and dump it into the script all at once. We also collect any
@@ -253,10 +261,11 @@ def dump_assertion_check_scripts( step_name, dir_name ):
 
     with open( fpath, 'w' ) as fd:
       fd.write( template_pytest_file.format(
-                  tests   = tests_str,
-                  stype   = t,
-                  gen     = os.path.abspath( __file__ ).rstrip('c'),
-                  pyfiles = ', '.join( pyfiles ) ) )
+                  step       = step_name,
+                  tests      = tests_str,
+                  check_type = t,
+                  gen        = os.path.abspath( __file__ ).rstrip('c'),
+                  pyfiles    = ', '.join( pyfiles ) ) )
 
     # Make it executable
 
