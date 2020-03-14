@@ -55,7 +55,7 @@ debug:
 
 preconditions:
 
-  - assert shutil.which( 'dc_shell-xg-t' )   # tool check
+  - assert Tool( 'dc_shell-xg-t' )           # tool check
   - assert File( 'inputs/adk' )              # must exist
   - assert File( 'inputs/design.v' )         # must exist
   - assert File( 'inputs/constraints.tcl' )  # must exist

@@ -55,7 +55,7 @@ debug:
 
 preconditions:
 
-  - assert shutil.which( 'calibre' )
+  - assert Tool( 'calibre' )
   - assert File( 'inputs/adk' )
   - assert File( 'inputs/design_merged.gds' )
   - assert File( 'inputs/design.lvs.v' )

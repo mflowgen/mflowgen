@@ -4,10 +4,15 @@ Assertions
 Similar to how assertions can catch runtime exceptions in software,
 mflowgen allows you to define Python snippets that assert preconditions
 and postconditions before and after steps to catch unexpected situations
-at build time. These snippets are collected and run with `pytest`_ to
-enable customization and user extensibility.
+at build time. Assertions are in Python to keep them concise and yet
+powerful. The assertions are collected and run with `pytest`_ to allow
+customization and user extensibility.
 
 .. _pytest: https://docs.pytest.org/en/latest
+
+.. My dream here is that as you guys run into stupid mistakes, you can
+.. STOP, think about an assertion to prevent it from happening ever again,
+.. and put that thing in.
 
 These assertions can be statically defined in a step configuration file or
 defined at graph construction time. For example, say we have a simple
@@ -18,7 +23,7 @@ synthesis node with a configuration like this:
     name: synopsys-dc-synthesis
 
     inputs:
-      - adk
+      - adk       # Technology files
       - design.v  # RTL
 
     outputs:
@@ -40,7 +45,7 @@ build will not continue.
 Similarly, after synthesis has completed we can assert that the gate-level
 netlist exists and that there were no issues resolving references (a
 common synthesis error that breaks the build). Again, the build would stop
-if the post-condition were to fail.
+if the postcondition were to fail.
 
 .. code:: python
 
@@ -53,48 +58,58 @@ you like to build your own assertions. For convenience, mflowgen natively
 provides a ``File`` class that overrides both boolean evaluation and
 containment, enabling the concise syntax you see here for checking whether
 or not a file exists as well as for using "in" and "not in" to search
-within a file.
-
-The ``shutil`` module is also available by default to allow you to quickly
-check whether tools exist:
+within a file. There is also a ``Tool`` class natively available that
+overrides boolean evaluation to concisely assert whether a tool exists or
+not.
 
 .. code:: python
 
-    >>> assert shutil.which( 'dc_shell-xg-t' )   # check for Design Compiler
+    preconditions:
+      - assert Tool( 'dc_shell-xg-t' )  # check for Design Compiler
 
-The ``File`` Class
+The ``File`` Class and ``Tool`` Class
 --------------------------------------------------------------------------
 
 The ``File`` class internally handles boolean evaluation simply by calling
 ``os.path.exists()``, so it can be used to check for existence of both
 files and directories.
 
-Additional API is available for case sensitivity (default is
-case-insensitive) and regular expression (default is disabled) search:
+Additional knobs are available to enable case sensitivity (default is
+case-insensitive) and regular expression search (default is disabled):
 
 .. code:: python
 
     >>> assert 'warning' in File( 'logs/dc.log', enable_case_sensitive = True )
     >>> assert 'warn.*'  in File( 'logs/dc.log', enable_regex          = True )
 
+The ``Tool`` class handles boolean evaluation using the ``shutil.which()``
+function from the shell utilities Python library. This is equivalent to
+running ``% which foo`` on the command line.
+
+.. code:: python
+
+    >>> assert Tool( 'dc_shell-xg-t' )  # This statement is roughly
+                                        # equivalent to this
+    % which dc_shell-xg-t               # shell statement
+
 Adding Assertions When Constructing Your Graph
 --------------------------------------------------------------------------
 
 The assertions defined in a step configuration file can be extended at
 graph construction time, meaning you can add your own design-specific
-assertions to each step. You can use the
+assertions in each step. You can use the
 :py:mod:`Step.extend_preconditions` and
-:py:mod:`Step.extend_postconditions` to extend either list.
+:py:mod:`Step.extend_postconditions` methods to extend either list.
 
 For example, say we wanted to add a check for clock-gating cells as a
-post-condition in our synthesis step. We can assert that this cell appears
+postcondition in our synthesis step. We can assert that this cell appears
 in the gate-level netlist like this:
 
 .. code:: python
 
     dc = Step( 'synopsys-dc-synthesis', default=True )
     dc.extend_postconditions([
-      '''assert 'CK_GATE' in File( 'outputs/design.v' )'''
+      "assert 'CKGATE' in File( 'outputs/design.v' )"
     ])
 
 Escaping Special Characters
@@ -102,9 +117,9 @@ Escaping Special Characters
 
 Certain characters are special in YAML syntax and must be escaped if you
 want to use them. For example, the following postcondition in the Mentor
-Calibre GDS merge step (i.e., "mentor-calibre-gdsmerge") asserts that
-duplicate module definitions are not reported (a dangerous warning that
-can corrupt your layout):
+Calibre GDS merge step (i.e., "mentor-calibre-gdsmerge") asserts that the
+report does not warn about duplicate module definitions (a dangerous
+warning that can corrupt your layout):
 
 .. code:: yaml
 
@@ -141,39 +156,101 @@ that preserves newline characters):
 
 Indentation matters in Python. Fortunately, YAML syntax uses the
 indentation of the first line after the ``|`` character to derive the
-indentation of all the following lines. So this entry represents correctly
-turns into the following Python code:
+indentation of all the following lines. So this entry correctly represents
+the following Python code:
 
 .. code:: python
 
     >>> import math
     >>> assert math.pi > 3.0
 
-The pytest function this generates looks like this:
+The pytest function that mflowgen generates looks like this:
 
 .. code:: python
 
-  def test_7_():
-    try:
-      import math
-      assert math.pi > 3.0
-    except AssertionError as e:
-      e.args = ( """ import math  ->  assert math.pi > 3.0 """, )
-      raise
+  def test_0_():
+    import math
+    assert math.pi > 3.0
 
 Note that if you write a multiline entry without the ``|`` marker, YAML
 will simply wrap the lines as if there were no newlines:
 
 .. code:: python
 
-  - import math
-    assert math.pi > 3.0
+  preconditions:
+    - import math
+      assert math.pi > 3.0
 
 This is read as a single string, which is not valid Python:
 
 .. code:: python
 
     >>> import math assert math.pi > 3.0
+
+Defining Python Helper Functions
+--------------------------------------------------------------------------
+
+You can provide your own Python helper functions to extract information
+about your build which you can use in assertions.
+
+For example, suppose we want to assert that synthesis has successfully
+clock-gated the majority of registers in the design. The clock-gating
+report looks like this:
+
+.. code::
+
+                       Clock Gating Summary
+    ------------------------------------------------------------
+    |    Number of Clock gating elements    |        2         |
+    |                                       |                  |
+    |    Number of Gated registers          |    32 (94.12%)   |
+    |                                       |                  |
+    |    Number of Ungated registers        |     2 (5.88%)    |
+    |                                       |                  |
+    |    Total number of registers          |       34         |
+    ------------------------------------------------------------
+
+You can write a Python helper function that extracts the 94.12% figure:
+
+.. code:: python
+
+    # assertion_helpers.py
+
+    # percent_clock_gated
+    #
+    # Reads the clock-gating report and returns a float representing the
+    # percentage of registers that are clock gated.
+    #
+
+    def percent_clock_gated():
+
+      # Read the clock-gating report
+
+      with open( glob('reports/*clock_gating.rpt')[0] ) as fd:
+        lines = fd.readlines()
+
+      # Get the line with the clock-gating percentage, which looks like this:
+
+      gate_line = [ l for l in lines if 'Number of Gated registers' in l ][0]
+
+      # Extract the percentage between parentheses
+
+      percentage = float( re.search( r'\((.*?)%\)', gate_line ).group(1) )/100
+
+      return percentage
+
+Then you can assert a postcondition in the step configuration for a
+clock-gating percentage of at least 80%:
+
+.. code:: python
+
+    postconditions:
+
+      # Check that at least 80% of registers were clock-gated
+
+      - |
+        from assertion_helpers import percent_clock_gated
+        assert percent_clock_gated() > 0.80
 
 Using Custom pytest Files
 --------------------------------------------------------------------------
@@ -197,24 +274,58 @@ Assertion Scripts in mflowgen
 When executing a step, mflowgen generates two scripts,
 ``mflowgen-check-preconditions.py`` and
 ``mflowgen-check-postconditions.py``, puts them in the build directory,
-and then runs these scripts before and after running the commands for the
-step. At runtime, if the post-condition check fails, re-running the step
-(e.g., ``make 4``) will only re-run the post-condition check. It will
-**not** trigger a complete rebuild of the step. The build status will not
-be marked "done" until all post-condition checks pass.
+and then runs these scripts before and after executing the step. At
+runtime if the postcondition check fails, re-running the step (e.g.,
+``make 4``) will only re-run the postcondition check. It will **not**
+re-execute the step. This gives you the chance to enter the sandbox and
+fix things until the postconditions pass. The build status will not be
+marked "done" until all postcondition checks pass.
 
-The two assertion scripts can also be run independently with ``pytest``.
-You can re-run the check yourself with default pytest options:
+.. note::
+
+    To completely re-run a step, you should clean that step. For example
+    if synthesis is step 4, ``make clean-4`` and ``make 4`` will do a
+    clean rebuild of synthesis.
+
+The two assertion scripts can also be run independently with pytest. The
+example below shows a precondition assertion firing and saying that
+Synopsys Design Compiler (i.e., ``dc_shell-xg-t``) is missing. You can
+re-run the check yourself with default pytest options:
 
 .. code:: bash
 
     % cd 4-synopsys-dc-synthesis
     % ./mflowgen-check-preconditions.py
 
-Or you can call pytest explicitly with your own arguments:
+        > Checking preconditions for step "synopsys-dc-synthesis"
+
+    pytest -q -rA --disable-warnings --tb=no --color=no ./mflowgen-check-preconditions.py
+    F...                                                                                      [100%]
+    ==================================== short test summary info ====================================
+    PASSED mflowgen-check-preconditions.py::test_1_
+    PASSED mflowgen-check-preconditions.py::test_2_
+    PASSED mflowgen-check-preconditions.py::test_3_
+    FAILED mflowgen-check-preconditions.py::test_0_ - AssertionError:  assert Tool( 'dc_shell-xg-t' )
+    1 failed, 3 passed in 0.05s
+
+Or you can call pytest explicitly with your own arguments for a longer
+traceback (although this traceback does not say very much):
 
 .. code:: bash
 
     % cd 4-synopsys-dc-synthesis
-    % pytest -v --tb=short mflowgen-check-preconditions.py
+    % pytest -q --tb=short mflowgen-check-preconditions.py
+
+    F...                                                                                      [100%]
+    =========================================== FAILURES ============================================
+    ____________________________________________ test_0_ ____________________________________________
+    mflowgen-check-preconditions.py:44: in test_0_
+        assert Tool( 'dc_shell-xg-t' )
+    E   AssertionError: assert Tool( 'dc_shell-xg-t' )
+    E    +  where Tool( 'dc_shell-xg-t' ) = Tool('dc_shell-xg-t')
+    ==================================== short test summary info ====================================
+    FAILED mflowgen-check-preconditions.py::test_0_ - AssertionError: assert Tool( 'dc_shell-xg-t' )
+    1 failed, 3 passed in 0.17s
+
+
 

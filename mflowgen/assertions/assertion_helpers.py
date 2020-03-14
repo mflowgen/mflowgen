@@ -51,9 +51,8 @@ sys.path.insert( 0, get_top_dir() )
 #-------------------------------------------------------------------------
 
 import pytest
-import shutil
 
-from mflowgen.assertions import File
+from mflowgen.assertions import File, Tool
 
 RED   = '\033[31m'
 GREEN = '\033[92m'

@@ -41,7 +41,7 @@ parameters:
 
 preconditions:
 
-  - assert shutil.which( 'innovus' )                 # tool check
+  - assert Tool( 'innovus' )                         # tool check
   - assert File( 'inputs/adk' )                      # must exist
   - assert File( 'inputs/design.sdc' )               # must exist
   - assert File( 'inputs/design.v' )                 # must exist

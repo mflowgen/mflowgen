@@ -54,7 +54,7 @@ debug:
 
 preconditions:
 
-  - assert shutil.which( 'innovus' )                 # tool check
+  - assert Tool( 'innovus' )                         # tool check
   - assert File( 'inputs/innovus-foundation-flow' )  # must exist
   - assert File( 'inputs/adk' )                      # must exist
   - assert File( 'inputs/design.checkpoint' )        # must exist

@@ -27,7 +27,7 @@ class File:
       assert not enable_case_sensitive, \
         'Cannot set "enable_regex" and "enable_case_sensitive" at once!'
 
-  # __contains__
+  # __bool__
   #
   # Allow to assert like this:
   #

@@ -58,7 +58,7 @@ debug:
 
 preconditions:
 
-  - assert shutil.which( 'calibredrv' )
+  - assert Tool( 'calibredrv' )
   - assert File( 'inputs/design.gds.gz' )
 
 postconditions:

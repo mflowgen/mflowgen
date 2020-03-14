@@ -43,7 +43,7 @@ parameters:
 
 preconditions:
 
-  - assert shutil.which( 'pt_shell' )        # tool check
+  - assert Tool( 'pt_shell' )                # tool check
   - assert File( 'inputs/adk' )              # must exist
   - assert File( 'inputs/design.vcs.v' )     # must exist
   - assert File( 'inputs/design.spef.gz' )   # must exist
