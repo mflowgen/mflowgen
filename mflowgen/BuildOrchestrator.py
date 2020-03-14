@@ -427,15 +427,22 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
   #     | execute |
   #     +---------+
   #      |       |
-  #      |       v
-  #      |   +-----------------+
-  #      |   | collect-outputs |
-  #      |   +-----------------+
-  #      |     |
-  #      v     v
-  #     +-------+
-  #     | alias |
-  #     +-------+
+  #      |       +----------------+
+  #      |       |                |
+  #      |       v                |
+  #      |   +-----------------+  |
+  #      |   | collect-outputs |  |
+  #      |   +-----------------+  |
+  #      |     |             |    |
+  #      |     |             v    v
+  #      |     |       +-----------------+
+  #      |     |       | post-conditions |
+  #      |     |       +-----------------+
+  #      |     |               |
+  #      v     v               v
+  #     +-------------------------+
+  #     |          alias          |
+  #     +-------------------------+
   #
   # These two extra edges allow steps to run even if they do not have any
   # inputs or outputs (e.g., analysis-only steps).
@@ -692,14 +699,11 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
             + ' cp -f {} {}; fi'.format( postcond_script, build_dir ),
         # Go into the build directory
         'cd ' + build_dir,
-        # Run the precondition checker
+        # Run the precondition checker if it exists
         'if [[ -e ' + s.mflowgen_precond + ' ]]; then' \
             + ' ./{x} || exit 1; fi'.format( x=s.mflowgen_precond ),
         # Run the commands
         './{x} 2>&1 | tee {x}.log || exit 1'.format( x=s.mflowgen_run ),
-        # Run the postcondition checker
-        'if [[ -e ' + s.mflowgen_postcond + ' ]]; then' \
-            + ' ./{x} || exit 1; fi'.format( x=s.mflowgen_postcond ),
         # Return to top so backends can assume we never changed directory
         'cd ..',
       ])
@@ -846,6 +850,68 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       )
 
       #...................................................................
+      # post-conditions
+      #...................................................................
+      # Here we assert post-conditions (if any)
+
+      s.w.gen_step_post_conditions_pre()
+
+      # Commands
+
+      commands = ' && '.join([
+        # Go into the build directory
+        'cd ' + build_dir,
+        # Run the postcondition checker if it exists
+        'if [[ -e ' + s.mflowgen_postcond + ' ]]; then' \
+            + ' ./{x} || exit 1; fi'.format( x=s.mflowgen_postcond ),
+        # Return to top so backends can assume we never changed directory
+        'cd ..',
+      ])
+
+      # Rule
+      #
+      # - Run the {command}
+      # - This rule depends on {deps}
+      #
+
+      rule = {
+        'command' : commands,
+        'deps'    : [],
+      }
+
+      # Pull in any backend dependencies
+
+      extra_deps = set()
+
+      for o in backend_outputs[step_name]['execute']:
+        extra_deps.add( o )
+      for o in backend_outputs[step_name]['collect-outputs']:
+        extra_deps.add( o )
+
+      extra_deps = list( extra_deps )
+
+      # Use the backend writer to generate the rule, and then grab any
+      # backend dependencies
+
+      t = s.w.gen_step_post_conditions( extra_deps = extra_deps, **rule )
+
+      backend_outputs[step_name]['post-conditions'] = t
+
+      # Metadata for customized backends
+
+      s.build_system_rules[step_name]['post-conditions'] = rule
+
+      s.build_system_deps[step_name]['post-conditions'] = set()
+
+      s.build_system_deps[step_name]['post-conditions'].add(
+        ( step_name, 'execute' )
+      )
+
+      s.build_system_deps[step_name]['post-conditions'].add(
+        ( step_name, 'collect-outputs' )
+      )
+
+      #...................................................................
       # alias
       #...................................................................
       # Here we create nice names for building this entire step
@@ -859,6 +925,8 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       for o in backend_outputs[step_name]['execute']:
         extra_deps.add( o )
       for o in backend_outputs[step_name]['collect-outputs']:
+        extra_deps.add( o )
+      for o in backend_outputs[step_name]['post-conditions']:
         extra_deps.add( o )
 
       extra_deps = list( extra_deps )
@@ -914,6 +982,10 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
       s.build_system_deps[step_name]['alias'].add(
         ( step_name, 'collect-outputs' )
+      )
+
+      s.build_system_deps[step_name]['alias'].add(
+        ( step_name, 'post-conditions' )
       )
 
       #...................................................................
