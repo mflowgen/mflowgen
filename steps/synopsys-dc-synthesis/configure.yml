@@ -36,6 +36,7 @@ commands:
 parameters:
   clock_period: 1.0
   design_name: undefined
+  # Path to the design instance in run.saif (e.g., tb/dut)
   saif_instance: undefined
   flatten_effort: 0
   topographical: True

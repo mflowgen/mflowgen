@@ -409,7 +409,10 @@ check_design > ${dc_reports_dir}/${dc_design_name}.mapped.checkdesign.rpt
 # Write the .namemap file for the Energy analysis
 
 if {[file exists "inputs/run.saif" ]} {
-  saif_map -create_map -input "inputs/run.saif" -source_instance ${dc_saif_instance}
+  saif_map                   \
+    -create_map              \
+    -input "inputs/run.saif" \
+    -source_instance ${dc_saif_instance}
 }
 
 #-------------------------------------------------------------------------
@@ -555,11 +558,23 @@ report_resources \
 #
 # Use SAIF file for power analysis
 if {[file exists "inputs/run.saif" ]} {
-  read_saif -map_names -input "inputs/run.saif" -instance_name $dc_saif_instance -verbose
-  report_saif -hier -annotated_flag -rtl_saif > ${dc_reports_dir}/${dc_design_name}.mapped.saif.rpt
-}
+  read_saif                            \
+    -map_names                         \
+    -input "inputs/run.saif"           \
+    -instance_name $dc_saif_instance   \
+    -verbose
 
-saif_map -type ptpx -write_map ${dc_reports_dir}/${dc_design_name}.namemap
+  report_saif        \
+    -hier            \
+    -annotated_flag  \
+    -rtl_saif        \
+    > ${dc_reports_dir}/${dc_design_name}.mapped.saif.rpt
+
+  saif_map     \
+    -type ptpx \
+    -write_map \
+    ${dc_reports_dir}/${dc_design_name}.namemap
+}
 
 report_power \
   -nosplit   \
