@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# configure
+# mflowgen
 #=========================================================================
 #
 #  -h --help     Display this message
@@ -8,8 +8,17 @@
 #     --design   Name of the design
 #     --backend  Backend build system: make, ninja
 #
+# Stash-related options:
+#
+#  -d --dir      string --  Path for stash init, stash link
+#  -s --step     int    --  Step number for stash push
+#  -m --msg      string --  Push message for stash push
+#     --hash     string --  Hash for stash drop
+#
+
+#
 # Author : Christopher Torng
-# Date   : June  2, 2019
+# Date   : June 2, 2019
 #
 
 import sys
@@ -22,7 +31,7 @@ import importlib
 import os
 import yaml
 
-from mflowgen import BuildOrchestrator
+from mflowgen import BuildOrchestrator, StashHandler
 from mflowgen import MakeBackend, NinjaBackend
 
 #-------------------------------------------------------------------------
@@ -45,8 +54,14 @@ def parse_cmdline():
   p.add_argument(       "--design",  default="../designs/GcdUnit" )
   p.add_argument(       "--backend", default="make",
                                      choices=("make", "ninja")    )
+  # Stash-related arguments
+  p.add_argument(       "args", type=str, nargs='*' ) # positional
+  p.add_argument( "-d", "--dir"                                   )
+  p.add_argument( "-s", "--step", type=int                        )
+  p.add_argument( "-m", "--msg"                                   )
+  p.add_argument(       "--hash"                                  )
   opts = p.parse_args()
-  if opts.help: p.error()
+  if opts.help and not opts.args: p.error() # print help only if not stash
   return opts
 
 #-------------------------------------------------------------------------
@@ -56,6 +71,20 @@ def parse_cmdline():
 def main():
 
   opts = parse_cmdline()
+
+  # Dispatch to StashHandler if positional arguments for stash are given
+
+  if opts.args and opts.args[0] == 'stash':
+    shandler = StashHandler()
+    shandler.launch(
+      args  = opts.args[1:],
+      help_ = opts.help,
+      dir_  = opts.dir,
+      step  = opts.step,
+      msg   = opts.msg,
+      hash_ = opts.hash,
+    )
+    return
 
   # Check that this design directory exists
 
