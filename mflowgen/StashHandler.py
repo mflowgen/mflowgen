@@ -613,6 +613,11 @@ class StashHandler:
       print( s.bold( 'Error:' ), 'Failed to complete stash pull' )
       raise
 
+    # Mark the new step as pre-built with a ".prebuilt" flag
+
+    with open( build_dir + '/.prebuilt', 'w' ) as fd: # touch
+      pass
+
     print(
       'Pulled step "{step}" from stash into "{dir_}"'.format(
       step      = step,

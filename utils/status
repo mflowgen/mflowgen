@@ -30,6 +30,7 @@
 #
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -87,6 +88,7 @@ def main():
 
   echo_green   = '\033[92m'
   echo_red     = '\033[91m'
+  echo_bold    = '\033[1m'
   echo_nocolor = '\033[0m'
 
   done_str  = echo_green + 'done ' + echo_nocolor
@@ -97,6 +99,13 @@ def main():
   for s in steps:
     if any([ re.match( r'.*touch ' + s + '/.postconditions.stamp', l ) for l in lines ]):
       status[s] = build_str
+
+  # Check which steps are prebuilt (i.e., have a special '.prebuilt' file)
+
+  prebuilt_str = echo_bold + '(pre-built)' + echo_nocolor
+  prebuilt = {}
+  for s in steps:
+    prebuilt[s] = prebuilt_str if os.path.exists( s+'/.prebuilt' ) else ''
 
   # Get the upcoming build order (by filtering the dry run commands for
   # commands that touch the stamp)
@@ -125,15 +134,16 @@ def main():
   print( 'Status:' )
   print()
 
-  template_str = ' - {status} -> {number:3} : {name}'
+  template_str = ' - {status} -> {number:3} : {name} {prebuilt}'
 
   for step, step_status in sorted( status.items(), # sort numerical order
                               key=lambda x: int(x[0].split('-')[0]) ):
     tokens = step.split('-')
     d = {
-      'status' : step_status,
-      'number' : tokens[0],
-      'name'   : '-'.join(tokens[1:]),
+      'status'   : step_status,
+      'number'   : tokens[0],
+      'name'     : '-'.join(tokens[1:]),
+      'prebuilt' : prebuilt[step],
     }
     print( template_str.format( **d ) )
 
