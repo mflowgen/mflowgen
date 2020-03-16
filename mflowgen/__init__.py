@@ -1,5 +1,5 @@
-from .MakeBackend import MakeBackend
-from .NinjaBackend import NinjaBackend
-from .BuildOrchestrator import BuildOrchestrator
-from .StashHandler import StashHandler
+from mflowgen.MakeBackend       import MakeBackend
+from mflowgen.NinjaBackend      import NinjaBackend
+from mflowgen.BuildOrchestrator import BuildOrchestrator
+from mflowgen.StashHandler      import StashHandler
 

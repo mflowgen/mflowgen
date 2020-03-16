@@ -11,8 +11,8 @@ import os
 import re
 import shutil
 
-from .utils import *
-from .assertions import dump_assertion_check_scripts
+from mflowgen.utils      import *
+from mflowgen.assertions import dump_assertion_check_scripts
 
 class BuildOrchestrator:
 

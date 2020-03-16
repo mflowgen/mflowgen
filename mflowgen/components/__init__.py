@@ -1,4 +1,4 @@
-from .Graph import Graph
-from .Step import Step
-from .Edge import Edge
+from mflowgen.components.Graph import Graph
+from mflowgen.components.Step  import Step
+from mflowgen.components.Edge  import Edge
 

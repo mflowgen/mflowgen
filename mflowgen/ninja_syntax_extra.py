@@ -8,7 +8,7 @@
 
 import os
 
-from .utils import stamp, get_top_dir
+from mflowgen.utils import stamp, get_top_dir
 
 #-------------------------------------------------------------------------
 # Extra ninja helper functions

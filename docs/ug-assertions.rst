@@ -14,6 +14,8 @@ customization and user extensibility.
 .. STOP, think about an assertion to prevent it from happening ever again,
 .. and put that thing in.
 
+.. We can now add assertions throughout our PD flows. This can be a very powerful time saver. Each bug takes hours or days of detective work. I think if we intelligently put effort into certain assertions, you can save big chunks of time over the next weeks and months.
+
 These assertions can be statically defined in a step configuration file or
 defined at graph construction time. For example, say we have a simple
 synthesis node with a configuration like this:

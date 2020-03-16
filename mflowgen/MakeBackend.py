@@ -10,15 +10,14 @@
 import datetime as dt
 import os
 
-from .makefile_syntax import Writer as MakeWriter
-from .makefile_syntax import make_cpdir, make_symlink
-from .makefile_syntax import make_execute, make_stamp, make_alias
-from .makefile_syntax import make_common_rules, make_clean
-from .makefile_syntax import make_diff
-from .makefile_syntax import make_runtimes, make_list
-from .makefile_syntax import make_graph, make_status, make_info
-
-from .utils           import stamp
+from mflowgen.makefile_syntax import Writer as MakeWriter
+from mflowgen.makefile_syntax import make_cpdir, make_symlink
+from mflowgen.makefile_syntax import make_execute, make_stamp, make_alias
+from mflowgen.makefile_syntax import make_common_rules, make_clean
+from mflowgen.makefile_syntax import make_diff
+from mflowgen.makefile_syntax import make_runtimes, make_list
+from mflowgen.makefile_syntax import make_graph, make_status, make_info
+from mflowgen.utils           import stamp
 
 class MakeBackend:
 

@@ -9,7 +9,7 @@ import copy
 import os
 import yaml
 
-from ..utils import get_top_dir
+from mflowgen.utils import get_top_dir
 
 class Step:
 

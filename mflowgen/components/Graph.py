@@ -7,10 +7,10 @@
 
 import os
 
-from .Edge import Edge
-from .Step import Step
+from mflowgen.components.Edge import Edge
+from mflowgen.components.Step import Step
 
-from ..utils import get_top_dir
+from mflowgen.utils import get_top_dir
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""

@@ -10,7 +10,7 @@
 import os
 import textwrap
 
-from .utils import stamp, get_top_dir
+from mflowgen.utils import stamp, get_top_dir
 
 #-------------------------------------------------------------------------
 # Writer class

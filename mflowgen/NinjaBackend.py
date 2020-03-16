@@ -10,13 +10,13 @@
 import datetime as dt
 import os
 
-from .ninja_syntax import Writer as NinjaWriter
-from .ninja_syntax_extra import ninja_cpdir, ninja_symlink
-from .ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
-from .ninja_syntax_extra import ninja_common_rules, ninja_clean
-from .ninja_syntax_extra import ninja_diff
-from .ninja_syntax_extra import ninja_runtimes, ninja_list
-from .ninja_syntax_extra import ninja_graph, ninja_status, ninja_info
+from mflowgen.ninja_syntax       import Writer as NinjaWriter
+from mflowgen.ninja_syntax_extra import ninja_cpdir, ninja_symlink
+from mflowgen.ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
+from mflowgen.ninja_syntax_extra import ninja_common_rules, ninja_clean
+from mflowgen.ninja_syntax_extra import ninja_diff
+from mflowgen.ninja_syntax_extra import ninja_runtimes, ninja_list
+from mflowgen.ninja_syntax_extra import ninja_graph, ninja_status, ninja_info
 
 class NinjaBackend:
 

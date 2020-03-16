@@ -32,3 +32,7 @@ __pycache__/
 *.stamp.*
 *.execstamp.*
 
+# pypi
+
+mflowgen.egg-info/
+
