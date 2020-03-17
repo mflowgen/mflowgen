@@ -28,7 +28,7 @@ setup(
   # General information
 
   name                          = 'mflowgen',
-  version                       = '0.1.0.1',
+  version                       = '0.1.0',
   description                   = \
       'mflowgen: A Modular ASIC and FPGA Flow Generator',
   long_description              = get_long_description(),
