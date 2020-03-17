@@ -98,6 +98,10 @@ Clone the repo:
     % cd mflowgen
     % TOP=${PWD}
 
+Install mflowgen with pip as an editable repo:
+
+    % pip install -e .
+
 The example design is a greatest-common divisor circuit in RTL. We
 have created three demo graphs for this design in
 `$TOP/designs/GcdUnit`: (1) `construct-open.py` uses an open-source
@@ -112,7 +116,7 @@ modified this file to choose the open-source toolflow.
 
     % cd $TOP
     % mkdir build && cd build
-    % ../configure --design ../designs/GcdUnit
+    % mflowgen run --design ../designs/GcdUnit
 
 You can show information about the currently configured flow:
 

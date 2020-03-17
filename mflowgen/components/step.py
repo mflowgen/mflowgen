@@ -347,6 +347,9 @@ class Step:
           raise KeyError( 'Error: Unrecognized parameter "' + cause + '"'
             ' in commands for step "' + s.get_name() + '"!' +
             ' Please escape literal curly braces with double braces' )
+        except AttributeError as e:
+          print( '\nError: Perhaps a command was interpreted as a dict\n')
+          raise
 
     # Expand debug
 

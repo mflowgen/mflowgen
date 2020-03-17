@@ -36,7 +36,7 @@ If mflowgen cannot find an adk at configure time, it will throw an OSError:
 
 .. code:: bash
 
-    % ../configure
+    % mflowgen run --design ../designs/GcdUnit
     OSError: Could not find adk "foobar-45nm" in system paths: ['../adks']
 
 There are two simple ways to add to the search path:
@@ -54,4 +54,5 @@ There are two simple ways to add to the search path:
 .. code:: bash
 
     % export MFLOWGEN_PATH=/path1:/path2:/path/to/adk/search/path
+
 

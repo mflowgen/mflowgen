@@ -6,9 +6,10 @@ setup.py inspired by the PyPA sample project:
 https://github.com/pypa/sampleproject/blob/master/setup.py
 """
 
-
 from os         import path
 from setuptools import find_packages, setup
+
+from mflowgen.version import __version__
 
 #-------------------------------------------------------------------------
 # get_long_descrption
@@ -28,7 +29,7 @@ setup(
   # General information
 
   name                          = 'mflowgen',
-  version                       = '0.1.0',
+  version                       = __version__,
   description                   = \
       'mflowgen: A Modular ASIC and FPGA Flow Generator',
   long_description              = get_long_description(),

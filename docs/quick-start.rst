@@ -24,6 +24,12 @@ First, clone the repo:
     % cd mflowgen
     % TOP=${PWD}
 
+Install mflowgen with pip as an editable repo:
+
+.. code:: bash
+
+    % pip install -e .
+
 The greatest common divisor design has three demo graphs in
 ``$TOP/designs/GcdUnit``:
 
@@ -50,7 +56,7 @@ NanGate Open Cell Library.
 
     % cd $TOP
     % mkdir build && cd build
-    % ../configure --design ../designs/GcdUnit
+    % mflowgen run --design ../designs/GcdUnit
 
 You can show information about the currently configured flow:
 

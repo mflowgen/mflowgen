@@ -13,7 +13,9 @@ import shutil
 import sys
 import yaml
 
-from datetime import datetime
+from datetime       import datetime
+
+from mflowgen.utils import bold, yellow
 
 #-------------------------------------------------------------------------
 # Stash Management
@@ -61,6 +63,7 @@ class StashHandler:
       'list',
       'push',
       'pull',
+      'pop',
       'drop',
       'help',
     ]
@@ -96,31 +99,9 @@ class StashHandler:
     except FileNotFoundError:
       s.stash = []
 
-    # Colors
-
-    s.RED    = '\033[31m'
-    s.GREEN  = '\033[92m'
-    s.YELLOW = '\033[93m'
-    s.BOLD   = '\033[1m'
-    s.END    = '\033[0m'
-
   #-----------------------------------------------------------------------
   # helpers
   #-----------------------------------------------------------------------
-
-  # Colors
-
-  def bold( s, text ):
-    return s.BOLD + text + s.END
-
-  def red( s, text ):
-    return s.RED + text + s.END
-
-  def green( s, text ):
-    return s.GREEN + text + s.END
-
-  def yellow( s, text ):
-    return s.YELLOW + text + s.END
 
   # gen_unique_hash
   #
@@ -173,7 +154,7 @@ class StashHandler:
              '2. Relink to a new stash (with stash link)\n',
              '3. Make sure the currently linked stash directory exists\n',
              '\n',
-             s.bold( 'Stash:' ), '{}'.format( stash_msg ) )
+             bold( 'Stash:' ), '{}'.format( stash_msg ) )
       print()
       sys.exit( 1 )
 
@@ -188,7 +169,7 @@ class StashHandler:
     try:
       assert any( is_target )
     except AssertionError:
-      print( s.bold( 'Error:' ), 'Stash does not contain hash',
+      print( bold( 'Error:' ), 'Stash does not contain hash',
                                   '"{}"'.format( hash_ ) )
       sys.exit( 1 )
     ind  = is_target.index( True )
@@ -218,9 +199,13 @@ class StashHandler:
   #-----------------------------------------------------------------------
   # launch
   #-----------------------------------------------------------------------
-  # Dispatch function for stash-related commands
+  # Dispatch function for commands
 
-  def launch( s, args, help_, dir_, step, msg, hash_ ):
+  def launch( s, args, help_, path, step, msg, hash_ ):
+
+    if help_ and not args:
+      s.launch_help()
+      return
 
     try:
       command = args[0]
@@ -232,17 +217,20 @@ class StashHandler:
     try:
       assert len( args ) <= 1 # no further positional args are allowed
     except Exception as e:
-      print( 'stash: Unrecognized positional args',
-              '(see mflowgen stash {} -h)'.format( command ) )
-      sys.exit( 1 )
+      print()
+      print( 'stash: Unrecognized positional args' )
+      # Allow this exception to pass, but force set the "help" flag so
+      # users can see what they should be doing instead.
+      help_ = True
 
-    if   command == 'init' : s.launch_init( help_, dir_ )
-    elif command == 'link' : s.launch_link( help_, dir_ )
+    if   command == 'init' : s.launch_init( help_, path )
+    elif command == 'link' : s.launch_link( help_, path )
     elif command == 'list' : s.launch_list( help_ )
     elif command == 'push' : s.launch_push( help_, step, msg )
     elif command == 'pull' : s.launch_pull( help_, hash_ )
+    elif command == 'pop'  : s.launch_pop ( help_, hash_ )
     elif command == 'drop' : s.launch_drop( help_, hash_ )
-    else                   : s.launch_help( help_ )
+    else                   : s.launch_help()
 
   #-----------------------------------------------------------------------
   # launch_init
@@ -253,23 +241,23 @@ class StashHandler:
   # - Writes a local YAML that simply stores a link to the stash directory
   #
 
-  def launch_init( s, help_, dir_ ):
+  def launch_init( s, help_, path ):
 
     # Help message
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash init',
-                                  '--dir/-d <path/to/store/dir>' )
+      print( bold( 'Usage:' ), 'mflowgen stash init',
+                                 '--path/-p <path/to/store/dir>' )
       print()
-      print( s.bold( 'Example:' ), 'mflowgen stash init',
-                                    '-d /tmp' )
+      print( bold( 'Example:' ), 'mflowgen stash init',
+                                    '-p /tmp' )
       print()
       print( 'Creates a subdirectory in the given directory and' )
       print( 'initializes it as an mflowgen stash.'              )
       print()
 
-    if help_ or not dir_:
+    if help_ or not path:
       print_help()
       return
 
@@ -289,7 +277,7 @@ class StashHandler:
 
     # Create this subdirectory in the target directory
 
-    new_stash_path = dir_ + '/' + dirname
+    new_stash_path = path + '/' + dirname
 
     try:
       os.makedirs( new_stash_path )
@@ -299,7 +287,7 @@ class StashHandler:
 
     # Link to this new stash
 
-    s.launch_link( help_ = False, dir_ = new_stash_path )
+    s.launch_link( help_ = False, path = new_stash_path )
 
   #-----------------------------------------------------------------------
   # launch_link
@@ -309,29 +297,29 @@ class StashHandler:
   # - Writes a local YAML that simply stores a link to the stash directory
   #
 
-  def launch_link( s, help_, dir_ ):
+  def launch_link( s, help_, path ):
 
     # Help message
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash link',
-                                  '--dir/-d <path/to/stash/dir>'         )
+      print( bold( 'Usage:' ), 'mflowgen stash link',
+                                 '--path/-p <path/to/stash/dir>'         )
       print()
-      print( s.bold( 'Example:' ), 'mflowgen stash link',
-                               '-d /tmp/2020-0315-mflowgen-stash-3aef14' )
+      print( bold( 'Example:' ), 'mflowgen stash link',
+                               '-p /tmp/2020-0315-mflowgen-stash-3aef14' )
       print()
       print( 'Links the current build graph to an mflowgen stash so'     )
       print( 'that all stash commands interact with that stash.'         )
       print()
 
-    if help_ or not dir_:
+    if help_ or not path:
       print_help()
       return
 
     # Link
 
-    s.set_stash_path( os.path.abspath( dir_ ) )
+    s.set_stash_path( os.path.abspath( path ) )
     print( 'Linked to stash:', s.get_stash_path() )
 
   #-----------------------------------------------------------------------
@@ -348,7 +336,7 @@ class StashHandler:
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash list'                )
+      print( bold( 'Usage:' ), 'mflowgen stash list'                  )
       print()
       print( 'Lists all pre-built steps stored in the mflowgen stash' )
       print( 'that the current build graph is linked to.'             )
@@ -365,7 +353,7 @@ class StashHandler:
     # Print the list
 
     print()
-    print( s.bold( 'Stash List' ) )
+    print( bold( 'Stash List' ) )
 
     template_str = \
       ' - {hash_} [ {date} ] {author} {step} -- {msg}'
@@ -376,14 +364,14 @@ class StashHandler:
     else:
       for x in s.stash:
         print( template_str.format(
-          hash_  = s.yellow( x[ 'hash' ] ),
+          hash_  = yellow( x[ 'hash' ] ),
           date   = x[ 'date'   ],
           author = x[ 'author' ],
           step   = x[ 'step'   ],
           msg    = x[ 'msg'    ],
         ) )
     print()
-    print( s.bold( 'Stash:' ), s.get_stash_path() )
+    print( bold( 'Stash:' ), s.get_stash_path() )
     print()
 
   #-----------------------------------------------------------------------
@@ -406,10 +394,10 @@ class StashHandler:
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash push',
+      print( bold( 'Usage:' ), 'mflowgen stash push',
                                   '--step/-s <int> --message/-m "<str>"' )
       print()
-      print( s.bold( 'Example:' ), 'mflowgen stash push',
+      print( bold( 'Example:' ), 'mflowgen stash push',
                                     '--step 5 -m "foo bar"'              )
       print()
       print( 'Pushes a built step to the mflowgen stash. The given step' )
@@ -445,7 +433,7 @@ class StashHandler:
     try:
       push_target = targets[0]
     except IndexError:
-      print( s.bold( 'Error:' ), 'No build directory found for step',
+      print( bold( 'Error:' ), 'No build directory found for step',
                                   '{}'.format( step ) )
       sys.exit( 1 )
 
@@ -497,7 +485,7 @@ class StashHandler:
       #
       pass
     except Exception as e:
-      print( s.bold( 'Error:' ), 'Failed to complete stash push' )
+      print( bold( 'Error:' ), 'Failed to complete stash push' )
       shutil.rmtree( path = remote_path, ignore_errors = True ) # clean up
       raise
 
@@ -536,9 +524,9 @@ class StashHandler:
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash pull --hash <hash>'     )
+      print( bold( 'Usage:' ), 'mflowgen stash pull --hash <hash>'       )
       print()
-      print( s.bold( 'Example:' ), 'mflowgen stash pull --hash 3e5ab4'   )
+      print( bold( 'Example:' ), 'mflowgen stash pull --hash 3e5ab4'     )
       print()
       print( 'Pulls a pre-built step from the stash matching the given'  )
       print( 'hash. This command copies the pre-built step from the'     )
@@ -584,7 +572,7 @@ class StashHandler:
     try:
       assert len( m ) > 0   # Assert for at least one match
     except AssertionError:
-      print( s.bold( 'Error:' ), 'The currently configured graph',
+      print( bold( 'Error:' ), 'The currently configured graph',
               'does not contain step "{}"'.format( step ) )
       sys.exit( 1 )
 
@@ -610,7 +598,7 @@ class StashHandler:
                        symlinks = False,
                        ignore_dangling_symlinks = False )
     except Exception as e:
-      print( s.bold( 'Error:' ), 'Failed to complete stash pull' )
+      print( bold( 'Error:' ), 'Failed to complete stash pull' )
       raise
 
     # Mark the new step as pre-built with a ".prebuilt" flag
@@ -620,9 +608,36 @@ class StashHandler:
 
     print(
       'Pulled step "{step}" from stash into "{dir_}"'.format(
-      step      = step,
-      dir_      = build_dir,
+      step = step,
+      dir_ = build_dir,
     ) )
+
+  #-----------------------------------------------------------------------
+  # launch_pop
+  #-----------------------------------------------------------------------
+  # This command simply calls both launch_pull and launch_drop
+
+  def launch_pop( s, help_, hash_ ):
+
+    # Help message
+
+    def print_help():
+      print()
+      print( bold( 'Usage:' ), 'mflowgen stash pop --hash <hash>'       )
+      print()
+      print( bold( 'Example:' ), 'mflowgen stash pop --hash 3e5ab4'     )
+      print()
+      print( 'Pulls a pre-built step from the stash and then drops it'  )
+      print( 'from the stash. This command literally runs pull and'     )
+      print( 'drop one after the other.'                                )
+      print()
+
+    if help_ or not hash_:
+      print_help()
+      return
+
+    s.launch_pull( help_, hash_ )
+    s.launch_drop( help_, hash_ )
 
   #-----------------------------------------------------------------------
   # launch_drop
@@ -639,9 +654,9 @@ class StashHandler:
 
     def print_help():
       print()
-      print( s.bold( 'Usage:' ), 'mflowgen stash drop --hash <hash>'   )
+      print( bold( 'Usage:' ), 'mflowgen stash drop --hash <hash>'     )
       print()
-      print( s.bold( 'Example:' ), 'mflowgen stash drop --hash 3e5ab4' )
+      print( bold( 'Example:' ), 'mflowgen stash drop --hash 3e5ab4'   )
       print()
       print( 'Removes the step with the given hash from the stash.'    )
       print()
@@ -666,7 +681,7 @@ class StashHandler:
     try:
       shutil.rmtree( remote_path )
     except Exception as e:
-      print( s.bold( 'Error:' ), 'Failed to complete stash drop' )
+      print( bold( 'Error:' ), 'Failed to complete stash drop' )
       raise
 
     # Update the metadata in the stash
@@ -684,19 +699,18 @@ class StashHandler:
   # launch_help
   #-----------------------------------------------------------------------
 
-  def launch_help( s, help_ ):
+  def launch_help( s ):
     print()
-    print( s.bold( 'Stash Commands' ) )
+    print( bold( 'Stash Commands' ) )
     print()
-    print( s.bold( ' - init :' ), 'Initialize a stash'                                )
-    print( s.bold( ' - link :' ), 'Link the current build graph to an existing stash' )
+    print( bold( ' - init :' ), 'Initialize a stash'                                )
+    print( bold( ' - link :' ), 'Link the current build graph to an existing stash' )
     print()
-    print( s.bold( ' - push :' ), 'Push a built step to the stash'                    )
-    print( s.bold( ' - pull :' ), 'Pull a built step from the stash'                  )
-    print( s.bold( ' - drop :' ), 'Remove a built step from the stash'                )
+    print( bold( ' - list :' ), 'List all pre-built steps in the stash'             )
     print()
-    print( s.bold( ' - list :' ), 'List all pre-built steps in the stash'             )
-    print( s.bold( ' - help :' ), 'Print this help message'                           )
+    print( bold( ' - push :' ), 'Push a built step to the stash'                    )
+    print( bold( ' - pull :' ), 'Pull a built step from the stash'                  )
+    print( bold( ' - drop :' ), 'Remove a built step from the stash'                )
     print()
     print( 'Run any command with -h to see more details'                 )
     print()

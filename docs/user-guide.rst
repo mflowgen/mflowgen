@@ -9,4 +9,6 @@ User Guide
    ug-clone-step
    ug-adk-paths
    ug-assertions
+   ug-stash
+   ug-mock
 
