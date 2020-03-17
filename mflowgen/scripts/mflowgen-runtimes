@@ -1,0 +1,124 @@
+#! /usr/bin/env python3
+#=========================================================================
+# mflowgen-runtimes
+#=========================================================================
+# Print runtimes for each build directory from the timestamps
+#
+# The build dirs should have two timestamps in format '%Y-%m%d-%H%M-%S'
+#
+# - .time_start
+# - .time_end
+#
+# The output should look something like this:
+#
+#     ----------------------------------------------------------------
+#     Runtimes
+#     ----------------------------------------------------------------
+#     0-rtl                               --                 1 sec
+#     1-adk                               --                 0 sec
+#     2-synopsys-dc-synthesis             --          3 min 16 sec
+#     ----------------------------------------------------------------
+#     Total                               --          3 min 17 sec
+#
+# Author : Christopher Torng
+# Date   : June 2, 2019
+#
+
+import datetime as dt
+import os
+
+#-------------------------------------------------------------------------
+# Main
+#-------------------------------------------------------------------------
+
+def main():
+
+  #-----------------------------------------------------------------------
+  # Compute runtimes from timestamps
+  #-----------------------------------------------------------------------
+
+  runtimes = {}
+  finished = {}
+
+  steps = sorted( [ x for x in os.listdir('.') if os.path.isdir(x) ] )
+
+  for d in steps:
+
+    # Get start timestamp
+
+    start_f = d + '/.time_start'
+
+    if not os.path.exists( start_f ):
+      continue
+
+    with open( start_f ) as fd:
+      start = fd.read().strip()
+      start = dt.datetime.strptime( start, '%Y-%m%d-%H%M-%S' )
+
+    # Get end timestamp
+
+    end_f = d + '/.time_end'
+
+    if os.path.exists( end_f ):
+      step_finished = True
+      with open( end_f ) as fd:
+        end = fd.read().strip()
+        end = dt.datetime.strptime( end, '%Y-%m%d-%H%M-%S' )
+
+    else:
+      step_finished = False
+      end = dt.datetime.now()
+
+    # Compute runtime
+
+    runtimes[d] = end - start
+    finished[d] = step_finished
+
+  #-----------------------------------------------------------------------
+  # Report runtimes
+  #-----------------------------------------------------------------------
+
+  print( '-'*80 )
+  print( 'Runtimes' )
+  print( '-'*80 )
+
+  def print_time( step, runtime_seconds, step_finished=True ):
+
+    template_str = \
+      '{step: <35} -- {h: >7} {m: >6} {s: >6} {tag}'
+
+    h = int( ( runtime_seconds / 60 ) / 60 )
+    m = int( ( runtime_seconds / 60 ) % 60 )
+    s = int(   runtime_seconds % 60        )
+
+    h_str = str( h ) + ' hr'  if h > 0 else ''
+    m_str = str( m ) + ' min' if m > 0 else ''
+    s_str = str( s ) + ' sec'
+
+    print( template_str.format(
+      step = step,
+      h    = h_str,
+      m    = m_str,
+      s    = s_str,
+      tag  = '' if step_finished else ' <-- in progress',
+    ))
+
+  for step in sorted( runtimes.keys(), # sort in numerical order
+                      key=lambda x: int(x.split('-')[0]) ):
+    step_finished   = finished[step]
+    runtime_seconds = runtimes[step].total_seconds()
+    print_time( step, runtime_seconds, step_finished )
+
+  # Report total runtime as well
+
+  runtime_seconds = \
+    sum( runtimes.values(), dt.timedelta() ).total_seconds()
+
+  print( '-'*80 )
+  print_time( 'Total', runtime_seconds, True )
+
+
+if __name__ == '__main__':
+  main()
+
+

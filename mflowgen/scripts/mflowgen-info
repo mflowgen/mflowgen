@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# info
+# mflowgen-info
 #=========================================================================
 # Reads the configure.yml of an mflowgen step and pretty prints content.
 #
@@ -527,8 +527,7 @@ def main():
   print( '- ' + data['source'] )
   print()
 
-main()
 
-
-
+if __name__ == '__main__':
+  main()
 

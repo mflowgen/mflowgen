@@ -8,7 +8,8 @@
 
 import os
 
-from mflowgen.utils import stamp, get_top_dir
+from mflowgen.utils         import get_top_dir
+from mflowgen.utils.helpers import stamp
 
 #-------------------------------------------------------------------------
 # Extra ninja helper functions
@@ -351,7 +352,7 @@ def ninja_runtimes( w ):
   w.rule(
     name        = 'runtimes',
     description = 'runtimes: Listing runtimes for each step',
-    command     = get_top_dir() + '/utils/runtimes',
+    command     = get_top_dir() + '/mflowgen/scripts/mflowgen-runtimes',
   )
   w.newline()
 
@@ -477,7 +478,7 @@ def ninja_graph_detailed( w, build_dirs ):
   build_dirs_commas = ','.join( build_dirs )
 
   python_graph_cmd = ' '.join([
-    get_top_dir() + '/utils/graph',
+    get_top_dir() + '/mflowgen/scripts/mflowgen-graph',
     '-t ' + build_dirs_commas,
     '-g .graph.dot',
     '-o .graph.subgraph.dot',
@@ -518,7 +519,7 @@ def ninja_status( w, steps ):
   w.rule(
     name        = 'status',
     description = 'status: Listing status for each step',
-    command     = get_top_dir() + '/utils/status' \
+    command     = get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
                   ' --backend ninja -s ' + steps_comma_separated
   )
   w.newline()
@@ -543,10 +544,11 @@ def ninja_info( w, build_dir ):
   step_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
   target        = 'info-' + build_id
 
-  command = get_top_dir() + '/utils/letters' \
+  command = get_top_dir() + '/mflowgen/scripts/mflowgen-letters' \
       + ' -c -t ' + step_name
 
-  command = command + ' && ' + get_top_dir() + '/utils/info' \
+  command = command + ' && ' + get_top_dir() \
+      + '/mflowgen/scripts/mflowgen-info'    \
       + ' -y .mflowgen/' + build_dir + '/configure.yml'
 
   w.rule(

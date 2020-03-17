@@ -1,8 +1,6 @@
-#! /usr/bin/env python3
 #=========================================================================
-# configure
+# __main__.py
 #=========================================================================
-# Legacy entry point for mflowgen command line interface
 
 from mflowgen.cli import main
 

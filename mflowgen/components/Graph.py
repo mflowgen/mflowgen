@@ -1,5 +1,5 @@
 #=========================================================================
-# Graph.py
+# graph.py
 #=========================================================================
 # Author : Christopher Torng
 # Date   : June 2, 2019
@@ -7,10 +7,9 @@
 
 import os
 
-from mflowgen.components.Edge import Edge
-from mflowgen.components.Step import Step
-
-from mflowgen.utils import get_top_dir
+from mflowgen.components.step import Step
+from mflowgen.components.edge import Edge
+from mflowgen.utils           import get_top_dir
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""

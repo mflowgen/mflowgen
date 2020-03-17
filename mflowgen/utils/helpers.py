@@ -1,5 +1,5 @@
 #=========================================================================
-# utils.py
+# helpers.py
 #=========================================================================
 # Author : Christopher Torng
 # Date   : June 2, 2019
@@ -20,16 +20,19 @@ import os
 #
 
 def get_top_dir( flag='.MFLOWGEN_TOP', relative=True ):
-  tmp = os.getcwd()
-  while tmp != '/':
-    tmp = os.path.dirname( tmp )
-    if flag in os.listdir( tmp ):
-      break
+  try:
+    return os.environ[ 'MFLOWGEN_HOME' ]
+  except KeyError:
+    tmp = os.getcwd()
+    while tmp != '/':
+      tmp = os.path.dirname( tmp )
+      if flag in os.listdir( tmp ):
+        break
 
-  if not relative:
-    return tmp
-  else:
-    return os.path.relpath( tmp, os.getcwd() )
+    if not relative:
+      return tmp
+    else:
+      return os.path.relpath( tmp, os.getcwd() )
 
 # get_files_in_dir
 #

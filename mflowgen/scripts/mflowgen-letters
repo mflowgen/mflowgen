@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# letters
+# mflowgen-letters
 #=========================================================================
 # Print big letters adapted from the 'Ivrit' font of the figlet package.
 #
@@ -884,5 +884,7 @@ def main():
   for e in errors:
     print( e )
 
-main()
+
+if __name__ == '__main__':
+  main()
 

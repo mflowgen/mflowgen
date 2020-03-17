@@ -1,15 +1,21 @@
 #=========================================================================
-# File
+# assertion_classes.py
 #=========================================================================
+# Classes to enable concise syntax for assertions
+#
+# Author : Christopher Torng
+# Date   : March 12, 2020
+#
+
+#-------------------------------------------------------------------------
+# File
+#-------------------------------------------------------------------------
 # A class that supports clean assertions for files.
 #
 # Properties about a File can be asserted like this:
 #
 #     >>> assert File('inputs/foo.txt')  # assert that this file exists
 #     >>> assert 'error' not in File('inputs/foo.txt')  # check for errors
-#
-# Author : Christopher Torng
-# Date   : March 12, 2020
 #
 
 import os
@@ -85,6 +91,49 @@ class File:
 
   def __repr__( s ):
     return 'File( \'{}\' )'.format( s.path )
+
+
+#-------------------------------------------------------------------------
+# Tool
+#-------------------------------------------------------------------------
+# A class that supports clean assertions for tools.
+#
+# Properties about a Tool can be asserted like this:
+#
+#     >>> assert Tool( 'dc_shell' )  # assert that this tool exists
+#
+
+import shutil
+
+class Tool:
+
+  def __init__( s, tool ):
+    s.tool = tool
+
+  # __bool__
+  #
+  # Allow to assert like this:
+  #
+  #     >>> assert     Tool( 'dc_shell' )   # tool exists
+  #     >>> assert not Tool( 'dc_shell' )   # tool does not exist
+  #
+
+  def __bool__( s ):
+    if shutil.which( s.tool ):
+      return True
+    else:
+      return False
+
+  # __str__
+
+  def __str__( s ):
+    return 'Tool( \'{}\' )'.format( s.tool )
+
+  # __repr__
+
+  def __repr__( s ):
+    return 'Tool( \'{}\' )'.format( s.tool )
+
 
 
 

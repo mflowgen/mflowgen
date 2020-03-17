@@ -1,5 +1,5 @@
 #=========================================================================
-# BuildOrchestrator.py
+# build_orchestrator.py
 #=========================================================================
 # Backend that generates build files from a graph
 #
@@ -11,8 +11,8 @@ import os
 import re
 import shutil
 
-from mflowgen.utils      import *
-from mflowgen.assertions import dump_assertion_check_scripts
+from mflowgen.assertions.assertion_helpers import dump_assertion_check_scripts
+from mflowgen.utils import get_top_dir, get_files_in_dir
 
 class BuildOrchestrator:
 
@@ -681,7 +681,8 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
       commands = ' && '.join([
         # Step banner in big letters
-        get_top_dir() + '/utils/letters -c -t ' + step_name,
+        get_top_dir() \
+            + '/mflowgen/scripts/mflowgen-letters -c -t ' + step_name,
         # Copy the command script to the build_dir
         'chmod +x {}'.format( run_script ),
         'cp -f {} {}'.format( run_script, build_dir ),

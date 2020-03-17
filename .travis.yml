@@ -28,11 +28,12 @@ script:
   - pyupgrade --py3-only --keep-percent-format $(find . -name '*.py')
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
   - git diff --exit-code
-  - mkdir -p build && cd build
 
   # Test that we can configure and run the common targets
 
-  - ../configure --design ../designs/GcdUnit
+  - ./configure --demo
+  - cd mflowgen-demo && mkdir -p build && cd build
+  - ../../configure --design ../GcdUnit
   - make list
   - make status
   - make runtimes

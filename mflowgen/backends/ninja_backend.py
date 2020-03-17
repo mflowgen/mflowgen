@@ -1,29 +1,28 @@
 #=========================================================================
-# MakeBackend.py
+# ninja_backend.py
 #=========================================================================
-# Backend that generates a Makefile from a BuildOrchestrator
+# Backend that generates ninja build files from a BuildOrchestrator
 #
 # Author : Christopher Torng
-# Date   : June 11, 2019
+# Date   : June 2, 2019
 #
 
 import datetime as dt
 import os
 
-from mflowgen.makefile_syntax import Writer as MakeWriter
-from mflowgen.makefile_syntax import make_cpdir, make_symlink
-from mflowgen.makefile_syntax import make_execute, make_stamp, make_alias
-from mflowgen.makefile_syntax import make_common_rules, make_clean
-from mflowgen.makefile_syntax import make_diff
-from mflowgen.makefile_syntax import make_runtimes, make_list
-from mflowgen.makefile_syntax import make_graph, make_status, make_info
-from mflowgen.utils           import stamp
+from mflowgen.backends.ninja_syntax       import Writer as NinjaWriter
+from mflowgen.backends.ninja_syntax_extra import ninja_cpdir, ninja_symlink
+from mflowgen.backends.ninja_syntax_extra import ninja_execute, ninja_stamp, ninja_alias
+from mflowgen.backends.ninja_syntax_extra import ninja_common_rules, ninja_clean
+from mflowgen.backends.ninja_syntax_extra import ninja_diff
+from mflowgen.backends.ninja_syntax_extra import ninja_runtimes, ninja_list
+from mflowgen.backends.ninja_syntax_extra import ninja_graph, ninja_status, ninja_info
 
-class MakeBackend:
+class NinjaBackend:
 
   def __init__( s ):
-    s.fd = open( 'Makefile', 'w' )
-    s.w = MakeWriter( s.fd )
+    s.fd = open( 'build.ninja', 'w' )
+    s.w = NinjaWriter( s.fd )
     # Track debug targets for list command
     s.debug_targets = {}
 
@@ -45,25 +44,16 @@ class MakeBackend:
     gen  = os.path.abspath( __file__ ).rstrip('c')
 
     s.fd.write( '#' + '='*73 + '\n' )
-    s.fd.write( '# Makefile\n' )
+    s.fd.write( '# build.ninja\n' )
     s.fd.write( '#' + '='*73 + '\n' )
     #s.fd.write( '# Generated : ' + date + '\n' )
     s.fd.write( '# Generator : ' + gen + '\n' )
-    #s.fd.write( '\n' )
+    s.fd.write( '\n' )
 
   # gen_prologue
 
   def gen_prologue( s ):
-
-    make_common_rules( s.w )
-
-    # Default target -- build everything
-
-    s.w.comment( 'Default' )
-    s.w.newline()
-
-    s.w.default( ' '.join( s.order ) )
-    s.w.newline()
+    ninja_common_rules( s.w )
 
   # gen_step_header
 
@@ -100,44 +90,17 @@ class MakeBackend:
 
   def gen_step_directory( s, dst, src, deps, extra_deps, sandbox ):
 
-    #.....................................................................
-    # Built-in toggle for enabling/disabling this rule
-    #.....................................................................
-    # This is a hack -- Add a knob for Makefiles to enable/disable this
-    # rule. The goal and primary use case in mind here is to allow users
-    # to copy in pre-built steps and have the build system think its
-    # dependencies have all already been satisfied. We cannot just "touch"
-    # files from earlier steps to make it seem like they are done, since
-    # downstream steps may need those files. The only way we see to make
-    # pre-built steps always look "done" without impacting earlier steps
-    # is to break the dependency. Specifically, if the "directory" and
-    # "collect-inputs" substeps are removed, then a pre-built step will
-    # always look "done". So we add a knob here that checks if the step
-    # build directory has a ".prebuilt" file and if so, ignores this rule.
-    s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
-    s.w.newline()
-    #.....................................................................
-
     all_deps = deps + extra_deps
 
     # Rules
 
-    target = make_cpdir(
+    target = ninja_cpdir(
       w       = s.w,
       dst     = dst,
       src     = src,
       deps    = all_deps,
       sandbox = sandbox,
     )
-
-    #.....................................................................
-    # Built-in toggle for enabling/disabling this rule
-    #.....................................................................
-    # Clean up from the above
-    s.w.write( 'endif' )
-    s.w.newline()
-    #.....................................................................
-
     s.w.newline()
 
     return [ target ]
@@ -165,45 +128,17 @@ class MakeBackend:
 
   def gen_step_collect_inputs( s, dst, src, deps, extra_deps ):
 
-    #.....................................................................
-    # Built-in toggle for enabling/disabling this rule
-    #.....................................................................
-    # This is a hack -- Add a knob for Makefiles to enable/disable this
-    # rule. The goal and primary use case in mind here is to allow users
-    # to copy in pre-built steps and have the build system think its
-    # dependencies have all already been satisfied. We cannot just "touch"
-    # files from earlier steps to make it seem like they are done, since
-    # downstream steps may need those files. The only way we see to make
-    # pre-built steps always look "done" without impacting earlier steps
-    # is to break the dependency. Specifically, if the "directory" and
-    # "collect-inputs" substeps are removed, then a pre-built step will
-    # always look "done". So we add a knob here that checks if the step
-    # build directory has a ".prebuilt" file and if so, ignores this rule.
-    dst_dir = dst.split('/')[0] # Assumes dst is relative to build dir
-    s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst_dir ) )
-    s.w.newline()
-    #.....................................................................
-
     all_deps = deps + extra_deps
 
     # Rules
 
-    target = make_symlink(
+    target = ninja_symlink(
       w    = s.w,
       dst  = dst,
       src  = src,
       deps = all_deps,
       src_is_symlink = True,
     )
-
-    #.....................................................................
-    # Built-in toggle for enabling/disabling this rule
-    #.....................................................................
-    # Clean up from the above
-    s.w.write( 'endif' )
-    s.w.newline()
-    #.....................................................................
-
     s.w.newline()
 
     return [ target ]
@@ -245,29 +180,26 @@ class MakeBackend:
     rule = build_dir + '-commands-rule'
     rule = rule.replace( '-', '_' )
 
-    # Stamp all outputs from execute
-
-    outputs = [ stamp( o, '.execstamp.' ) for o in outputs ]
+    description = build_dir + ': Executing...'
 
     # Update timestamps for pre-existing outputs so timestamp-based
     # dependency checking works
 
-    command = 'mkdir -p ' + build_dir + '/outputs && ' + \
-              command + ' && touch -c ' + build_dir + '/outputs/*'
+    command = command + ' && touch -c ' + build_dir + '/outputs/*'
 
     # Stamp the build directory
 
-    outputs.insert( 0, build_dir + '/.execstamp' )
+    command = command + ' && touch ' + build_dir + '/.execstamp'
 
     # Rules
 
-    targets = make_execute(
-      w            = s.w,
-      outputs      = outputs,
-      rule         = rule,
-      command      = command,
-      deps         = all_deps,
-      touch_target = not phony,
+    targets = ninja_execute(
+      w           = s.w,
+      outputs     = outputs,
+      rule        = rule,
+      command     = command,
+      description = description,
+      deps        = all_deps,
     )
 
     return targets
@@ -299,12 +231,11 @@ class MakeBackend:
 
     # Rules
 
-    target = make_symlink(
+    target = ninja_symlink(
       w    = s.w,
       dst  = dst,
       src  = src,
       deps = all_deps,
-      ignore_src_dep = True, # the only dep here comes through all_deps
     )
 
     return [ target ]
@@ -325,18 +256,12 @@ class MakeBackend:
 
     all_deps = deps + extra_deps
 
-    # Note: Because the execute outputs are all stamped with
-    # '.execstamp.', we should not depend on the file 'f' here. We should
-    # only depend on the stamped 'f', which we expect to come through in
-    # the list of extra_deps. So we set 'f_is_dep' to False.
-
     # Rules
 
-    target = make_stamp(
-      w        = s.w,
-      f        = f,
-      deps     = all_deps,
-      f_is_dep = False,
+    target = ninja_stamp(
+      w    = s.w,
+      f    = f,
+      deps = all_deps,
     )
 
     return [ target ]
@@ -376,19 +301,24 @@ class MakeBackend:
     rule = build_dir + '-post-conditions-commands-rule'
     rule = rule.replace( '-', '_' )
 
+    description = build_dir + ': Checking post-conditions...'
+
     # Stamp the build directory
 
     outputs = [ build_dir + '/.postconditions.stamp' ]
 
+    command = \
+      command + ' && touch ' + build_dir + '/.postconditions.stamp'
+
     # Rules
 
-    targets = make_execute(
-      w            = s.w,
-      outputs      = outputs,
-      rule         = rule,
-      command      = command,
-      deps         = all_deps,
-      touch_target = True,
+    targets = ninja_execute(
+      w           = s.w,
+      outputs     = outputs,
+      rule        = rule,
+      command     = command,
+      description = description,
+      deps        = all_deps,
     )
 
     return targets
@@ -420,7 +350,7 @@ class MakeBackend:
 
     # Rules
 
-    target = make_alias(
+    target = ninja_alias(
       w     = s.w,
       alias = alias,
       deps  = all_deps,
@@ -457,12 +387,12 @@ class MakeBackend:
     debug_rule = build_id + '-debug-rule'
     debug_rule = debug_rule.replace( '-', '_' )
 
-    make_execute(
-      w            = s.w,
-      outputs      = [ target ],
-      rule         = debug_rule,
-      command      = command,
-      touch_target = False,
+    ninja_execute(
+      w       = s.w,
+      outputs = [ target ],
+      rule    = debug_rule,
+      command = command,
+      pool    = 'console',
     )
 
     # Track debug targets for list command
@@ -481,25 +411,24 @@ class MakeBackend:
     s.w.comment( '-'*72 )
     s.w.newline()
 
+    # Default target -- build everything
+
+    s.w.comment( 'Default' )
+    s.w.newline()
+
+    s.w.default( ' '.join( s.order ) )
+    s.w.newline()
+
     # Clean target
 
     s.w.comment( 'Clean' )
     s.w.newline()
 
     command = \
-      '@find . -maxdepth 1 ! -name .mflowgen ! -name Makefile' \
+      'find . -maxdepth 1 ! -name .mflowgen ! -name build.ninja' \
       r' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
-    make_clean( s.w, name='clean-all', command=command )
-
-    # Clean subtargets (e.g., clean-0, clean-1)
-
-    dirs = sorted( [ './' + d for d in s.build_dirs.values() ] )
-    for d in dirs:
-      idx     = d.split('-')[0].lstrip('./')
-      name    = 'clean-' + idx
-      command = 'rm -rf ' + d
-      make_clean( s.w, name=name, command=command )
+    ninja_clean( s.w, name='clean-all', command=command )
 
     # Diff target
 
@@ -511,7 +440,16 @@ class MakeBackend:
       dst     = s.build_dirs[ step_name ]
       idx     = dst.split('-')[0].lstrip('./')
       name    = 'diff-' + idx
-      make_diff( s.w, name=name, src=src, dst=dst )
+      ninja_diff( s.w, name=name, src=src, dst=dst )
+
+    # Clean subtargets (e.g., clean-0, clean-1)
+
+    dirs = sorted( [ './' + d for d in s.build_dirs.values() ] )
+    for d in dirs:
+      idx     = d.split('-')[0].lstrip('./')
+      name    = 'clean-' + idx
+      command = 'rm -rf ' + d
+      ninja_clean( s.w, name=name, command=command )
 
     # Info target
 
@@ -519,34 +457,35 @@ class MakeBackend:
     s.w.newline()
 
     for step_name in s.order:
-      make_info( s.w, build_dir=s.build_dirs[ step_name ] )
+      ninja_info( s.w, build_dir=s.build_dirs[ step_name ] )
 
     # Runtime target
 
     s.w.comment( 'Runtimes' )
     s.w.newline()
 
-    make_runtimes( s.w )
+    ninja_runtimes( s.w )
 
     # List target
 
     s.w.comment( 'List' )
     s.w.newline()
 
-    make_list( s.w, s.build_dirs, s.debug_targets )
+    ninja_list( s.w, s.build_dirs, s.debug_targets )
 
     # Graph target
 
     s.w.comment( 'Graph' )
     s.w.newline()
 
-    make_graph( s.w )
+    ninja_graph( s.w )
 
     # Status target
 
     s.w.comment( 'Status' )
     s.w.newline()
 
-    make_status( s.w, s.build_dirs.values() )
+    ninja_status( s.w, s.build_dirs.values() )
+
 
 

@@ -10,7 +10,8 @@
 import os
 import textwrap
 
-from mflowgen.utils import stamp, get_top_dir
+from mflowgen.utils         import get_top_dir
+from mflowgen.utils.helpers import stamp
 
 #-------------------------------------------------------------------------
 # Writer class
@@ -450,7 +451,7 @@ def make_runtimes( w ):
   template_str += 'runtimes:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/runtimes'
+  command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-runtimes'
 
   w.write( template_str.format( command=command ) )
   w.newline()
@@ -561,7 +562,7 @@ def make_status( w, steps ):
   template_str += 'status:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/status' \
+  command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
             ' --backend make -s ' + steps_comma_separated
 
   w.write( template_str.format( command=command ) )
@@ -586,10 +587,11 @@ def make_info( w, build_dir ):
   template_str += '{target}:\n'
   template_str += '	{command}\n'
 
-  command = '@' + get_top_dir() + '/utils/letters' \
+  command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-letters' \
       + ' -c -t ' + step_name
 
-  command = command + ' && ' + get_top_dir() + '/utils/info' \
+  command = command + ' && ' + get_top_dir() \
+      + '/mflowgen/scripts/mflowgen-info'    \
       + ' -y .mflowgen/' + build_dir + '/configure.yml'
 
   w.write( template_str.format( target=target, command=command ) )

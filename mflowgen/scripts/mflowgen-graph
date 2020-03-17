@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 #=========================================================================
-# graph
+# mflowgen-graph
 #=========================================================================
 # Takes a ninja DOT graph and outputs a new graph with per-tag subgraphs
 #
@@ -200,5 +200,8 @@ def main():
     for l in other_lines[1:]:
       fd.write( l )
 
-main()
+
+if __name__ == '__main__':
+  main()
+
 

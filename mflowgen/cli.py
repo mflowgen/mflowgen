@@ -1,11 +1,11 @@
-#! /usr/bin/env python3
 #=========================================================================
 # mflowgen
 #=========================================================================
 #
 #  -h --help     Display this message
 #  -v --version  Version info
-#     --design   Name of the design
+#     --demo     Generate a demo design
+#     --design   Path to design directory containing the build graph
 #     --backend  Backend build system: make, ninja
 #
 # Stash-related options:
@@ -24,11 +24,18 @@
 import argparse
 import importlib
 import os
+import shutil
 import sys
 import yaml
 
-from mflowgen import BuildOrchestrator, StashHandler
-from mflowgen import MakeBackend, NinjaBackend
+from mflowgen.core      import BuildOrchestrator
+from mflowgen.stash     import StashHandler
+from mflowgen.backends  import MakeBackend, NinjaBackend
+
+# Path hack for now to find steps and adks
+
+os.environ[ 'MFLOWGEN_HOME' ] = \
+  os.path.abspath( os.path.dirname( os.path.dirname( __file__ ) ) )
 
 #-------------------------------------------------------------------------
 # Command line processing
@@ -38,16 +45,17 @@ class ArgumentParserWithCustomError(argparse.ArgumentParser):
   def error( self, msg = "" ):
     if ( msg ): print("\n ERROR: %s" % msg)
     print("")
-    file = open( sys.argv[0] )
+    file = open( __file__ )
     for ( lineno, line ) in enumerate( file ):
       if ( line[0] != '#' ): sys.exit(msg != "")
-      if ( (lineno == 2) or (lineno >= 4) ): print( line[1:].rstrip("\n") )
+      if ( (lineno == 1) or (lineno >= 3) ): print( line[1:].rstrip("\n") )
 
 def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
   p.add_argument( "-v", "--version", action="store_true"          )
   p.add_argument( "-h", "--help",    action="store_true"          )
-  p.add_argument(       "--design",  default="../designs/GcdUnit" )
+  p.add_argument(       "--demo",    action="store_true"          )
+  p.add_argument(       "--design"                                )
   p.add_argument(       "--backend", default="make",
                                      choices=("make", "ninja")    )
   # Stash-related arguments
@@ -59,6 +67,15 @@ def parse_cmdline():
   opts = p.parse_args()
   if opts.help and not opts.args: p.error() # print help only if not stash
   return opts
+
+#-------------------------------------------------------------------------
+# Helpers
+#-------------------------------------------------------------------------
+
+def bold( text ):
+  BOLD   = '\033[1m'
+  END    = '\033[0m'
+  return BOLD + text + END
 
 #-------------------------------------------------------------------------
 # Main
@@ -88,13 +105,67 @@ def main():
     )
     return
 
+  # Create a demo if the option was given
+
+  if opts.demo:
+
+    try:
+      os.makedirs( 'mflowgen-demo' )
+    except OSError:
+      if not os.path.isdir( 'mflowgen-demo' ):
+        raise
+
+    demo_src_path = os.environ[ 'MFLOWGEN_HOME' ] + '/designs/GcdUnit'
+    demo_dst_path = 'mflowgen-demo/GcdUnit'
+    try:
+      shutil.copytree( src      = demo_src_path,
+                       dst      = demo_dst_path,
+                       symlinks = False,
+                       ignore_dangling_symlinks = False )
+    except FileExistsError:
+      pass
+    except Exception as e:
+      print( bold( 'Error:' ), 'Could not copy demo from install' )
+      raise
+
+    print()
+    print( bold( 'Demo Circuit for mflowgen -- Greatest Common Divisor' ))
+    print()
+    print( 'A demo design has been provided for you in "mflowgen-demo"' )
+    print( 'of a simple arithmetic circuit with some state. To get'     )
+    print( 'started, run the following commands:'                       )
+    print()
+    print( bold( '  %' ), 'cd mflowgen-demo' )
+    print( bold( '  %' ), 'mkdir build && cd build' )
+    print( bold( '  %' ), 'mflowgen --design ../GcdUnit' )
+    print()
+    print( bold( '  %' ), 'make list     # See all steps' )
+    print( bold( '  %' ), 'make status   # See build status' )
+    print()
+    print( 'You can also generate a PDF of the graph with graphviz.' )
+    print()
+    print( bold( '  %' ), 'make graph' )
+    print( '   (open graph.pdf)' )
+    print()
+
+    return
+
   # Check that this design directory exists
+
+  if not opts.design:
+    if not opts.demo:
+      print( ' Error: argument --design required',
+                               'unless using --demo' )
+      sys.exit( 1 )
 
   if not os.path.exists( opts.design ):
     raise ValueError(
       'Directory not found at path "{}"'.format( opts.design ) )
 
+  # Locate the construct script
+  #
   # Read the .mflowgen.yml metadata in the design directory
+  #
 
   yaml_path = opts.design + '/.mflowgen.yml'
   yaml_path = os.path.abspath( yaml_path )
@@ -105,8 +176,6 @@ def main():
     except AttributeError:
       # PyYAML for python2 does not have FullLoader
       data = yaml.load( fd )
-
-  # Locate the construct script
 
   try:
     construct_path = data['construct']
@@ -159,9 +228,5 @@ def main():
   print( "Targets: run \"" + list_target   + "\" and \""
                            + status_target + "\"" )
   print()
-
-
-main()
-
 
 

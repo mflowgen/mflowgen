@@ -1,4 +1,4 @@
-from mflowgen.assertions.File import File
+from mflowgen.assertions import File
 
 def test_basic_file_exists():
   with open( 'exists.txt', 'w' ) as fd:
