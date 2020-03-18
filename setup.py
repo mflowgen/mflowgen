@@ -62,7 +62,7 @@ setup(
 
   install_requires = [
     'pytest>=4.4',
-    'pyyaml>=5.3',
+    'pyyaml>=5.0',
   ],
 
   # Classifiers
