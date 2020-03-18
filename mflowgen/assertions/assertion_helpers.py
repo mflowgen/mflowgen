@@ -16,6 +16,36 @@ import yaml
 # template_pytest_file
 #-------------------------------------------------------------------------
 
+# Insert this into the template_pytest_file if we assume that users did
+# not pip install mflowgen and are just running out of the repo.
+#
+# #-------------------------------------------------------------------------
+# # temporary -- until mflowgen is available as an install
+# #-------------------------------------------------------------------------
+# # Find mflowgen repo so we can import classes from it
+#
+# import os
+#
+# def get_top_dir( flag='.MFLOWGEN_TOP', relative=True ):
+#   try:
+#     return os.environ[ 'MFLOWGEN_HOME' ]
+#   except KeyError:
+#     tmp = os.getcwd()
+#     while tmp != '/':
+#       tmp = os.path.dirname( tmp )
+#       if flag in os.listdir( tmp ):
+#         break
+#
+#     if not relative:
+#       return tmp
+#     else:
+#       return os.path.relpath( tmp, os.getcwd() )
+#
+# import sys
+# sys.path.insert( 0, get_top_dir() )
+#
+# #-------------------------------------------------------------------------
+
 template_pytest_file='''\
 #! /usr/bin/env python3
 #-------------------------------------------------------------------------
@@ -23,34 +53,8 @@ template_pytest_file='''\
 #-------------------------------------------------------------------------
 # Generated: {gen}
 
-#-------------------------------------------------------------------------
-# temporary -- until mflowgen is available as an install
-#-------------------------------------------------------------------------
-# Find mflowgen repo so we can import classes from it
-
-import os
-
-def get_top_dir( flag='.MFLOWGEN_TOP', relative=True ):
-  try:
-    return os.environ[ 'MFLOWGEN_HOME' ]
-  except KeyError:
-    tmp = os.getcwd()
-    while tmp != '/':
-      tmp = os.path.dirname( tmp )
-      if flag in os.listdir( tmp ):
-        break
-
-    if not relative:
-      return tmp
-    else:
-      return os.path.relpath( tmp, os.getcwd() )
-
-import sys
-sys.path.insert( 0, get_top_dir() )
-
-#-------------------------------------------------------------------------
-
 import pytest
+import sys
 
 from mflowgen.assertions import File, Tool
 
