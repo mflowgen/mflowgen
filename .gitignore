@@ -34,7 +34,7 @@ __pycache__/
 
 # pypi
 
-mflowgen.egg-info/
+*.egg-info/
 dist/
 .eggs/
 
