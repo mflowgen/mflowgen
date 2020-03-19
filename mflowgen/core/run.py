@@ -14,6 +14,7 @@ import yaml
 
 from mflowgen.core.build_orchestrator import BuildOrchestrator
 from mflowgen.backends                import MakeBackend, NinjaBackend
+from mflowgen.utils                   import read_yaml
 
 class RunHandler:
 
@@ -50,12 +51,7 @@ class RunHandler:
       construct_path = design + '/construct.py'
     else:
 
-      with open( yaml_path ) as fd:
-        try:
-          data = yaml.load( fd, Loader=yaml.FullLoader )
-        except AttributeError:
-          # PyYAML for python2 does not have FullLoader
-          data = yaml.load( fd )
+      data = read_yaml( yaml_path )
 
       try:
         construct_path = data['construct']

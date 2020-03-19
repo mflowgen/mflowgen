@@ -9,7 +9,7 @@ import copy
 import os
 import yaml
 
-from mflowgen.utils import get_top_dir
+from mflowgen.utils import get_top_dir, read_yaml, write_yaml
 
 class Step:
 
@@ -36,12 +36,7 @@ class Step:
 
     # Read the YAML data
 
-    with open( yaml_path ) as fd:
-      try:
-        data = yaml.load( fd, Loader=yaml.FullLoader )
-      except AttributeError:
-        # PyYAML for python2 does not have FullLoader
-        data = yaml.load( fd )
+    data = read_yaml( yaml_path )
 
     # Check that this is a valid step configuration
 
@@ -567,8 +562,10 @@ class Step:
 
     # Dump the content
 
-    with open( build_dir + '/configure.yml', 'w' ) as fd:
-      yaml.dump( s._config, fd, default_flow_style=False )
+    write_yaml(
+      data = s._config,
+      path = build_dir + '/configure.yml',
+    )
 
   # The sandbox flag will copy the source step directory if true (default)
   # or symlink the source files into the build directory if false

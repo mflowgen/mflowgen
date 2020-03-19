@@ -6,6 +6,7 @@
 #
 
 import os
+import yaml
 
 #-------------------------------------------------------------------------
 # Utility functions
@@ -61,6 +62,33 @@ def stamp( p, stamp='.stamp.' ):
   p_stamp    = stamp + p_basename
   if p_dirname : return p_dirname + '/' + p_stamp
   else         : return p_stamp
+
+#-------------------------------------------------------------------------
+# YAML helper functions
+#-------------------------------------------------------------------------
+
+# read_yaml
+#
+# Takes a path to a yaml file and returns the data
+#
+
+def read_yaml( path ):
+  with open( path ) as f:
+    try:
+      data = yaml.load( f, Loader=yaml.FullLoader )
+    except AttributeError:
+      # PyYAML for python2 does not have FullLoader
+      data = yaml.load( f )
+  return data
+
+# write_yaml
+#
+# Takes a path to a file and dumps data
+#
+
+def write_yaml( data, path ):
+  with open( path, 'w' ) as f:
+    yaml.dump( data, f, default_flow_style=False )
 
 #-------------------------------------------------------------------------
 # Colors

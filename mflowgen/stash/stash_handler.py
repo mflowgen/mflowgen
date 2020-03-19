@@ -16,6 +16,7 @@ import yaml
 from datetime       import datetime
 
 from mflowgen.utils import bold, yellow
+from mflowgen.utils import read_yaml, write_yaml
 
 #-------------------------------------------------------------------------
 # Stash Management
@@ -67,17 +68,6 @@ class StashHandler:
       'drop',
       'help',
     ]
-
-    # Helper function
-
-    def read_yaml( yaml_path ):
-      with open( yaml_path ) as fd:
-        try:
-          data = yaml.load( fd, Loader=yaml.FullLoader )
-        except AttributeError:
-          # PyYAML for python2 does not have FullLoader
-          data = yaml.load( fd )
-      return data
 
     # Read YAML: Grab link path from hidden YAML
 
@@ -184,8 +174,10 @@ class StashHandler:
 
   def set_stash_path( s, path ):
     s.link_path = path
-    with open( s.link_path_yaml, 'w' ) as fd:
-      yaml.dump( { 'path' : s.link_path }, fd, default_flow_style=False )
+    write_yaml(
+      data = { 'path' : s.link_path },
+      path = s.link_path_yaml,
+    )
 
   #-----------------------------------------------------------------------
   # update_stash
@@ -193,8 +185,10 @@ class StashHandler:
   # Update the metadata in the linked stash directory
 
   def update_stash( s ):
-    with open( s.stash_yaml_path, 'w' ) as fd:
-      yaml.dump( s.stash, fd, default_flow_style=False )
+    write_yaml(
+      data = s.stash,
+      path = s.stash_yaml_path,
+    )
 
   #-----------------------------------------------------------------------
   # launch

@@ -98,7 +98,7 @@ class BuildOrchestrator:
       # - Use error propagation flags so that builds will stop for errors
 
       fd.write( '#! /usr/bin/env bash\n' )
-      fd.write( 'set -euox pipefail\n' )
+      fd.write( 'set -euo pipefail\n' )
 
       # Header
 
@@ -194,7 +194,7 @@ class BuildOrchestrator:
       # - Use error propagation flags so the build will stop for errors
 
       fd.write( '#! /usr/bin/env bash\n' )
-      fd.write( 'set -euox pipefail\n' )
+      fd.write( 'set -euo pipefail\n' )
 
       # Header
 

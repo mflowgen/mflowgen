@@ -10,7 +10,8 @@
 import os
 import re
 import stat
-import yaml
+
+from mflowgen.utils import read_yaml
 
 #-------------------------------------------------------------------------
 # template_pytest_file
@@ -187,12 +188,8 @@ def improve_assert_messages( entry ):
 
 def dump_assertion_check_scripts( step_name, dir_name ):
 
-  with open( dir_name + '/configure.yml' ) as fd:
-    try:
-      data = yaml.load( fd, Loader=yaml.FullLoader )
-    except AttributeError:
-      # PyYAML for python2 does not have FullLoader
-      data = yaml.load( fd )
+  yaml_path = dir_name + '/configure.yml'
+  data      = read_yaml( yaml_path )
 
   # Look at both preconditions and postconditions
 

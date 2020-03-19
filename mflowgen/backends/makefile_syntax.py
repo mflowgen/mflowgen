@@ -317,7 +317,7 @@ def make_common_rules( w ):
 
   w.write(
 '''
-SHELL=/usr/bin/env bash -euox pipefail
+SHELL=/usr/bin/env bash -euo pipefail
 
 # $1 -- $dst
 # $2 -- $src
