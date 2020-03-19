@@ -6,6 +6,10 @@
 # Date   : June 2, 2019
 #
 
+# Print commands during execution
+
+set -x
+
 # Generate the Innovus foundation flow scripts
 
 innovus -64 -no_gui -no_logv -batch -execute "writeFlowTemplate"

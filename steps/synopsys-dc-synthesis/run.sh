@@ -6,6 +6,12 @@
 # Date   : June 2, 2019
 #
 
+# Print commands during execution
+
+set -x
+
+# DC shell
+
 dc_exec='dc_shell-xg-t -64bit'
 
 # Build directories
