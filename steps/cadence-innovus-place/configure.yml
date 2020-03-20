@@ -42,6 +42,7 @@ parameters:
     - main.tcl
     - clean-cellpad.tcl
     - reporting.tcl
+  cell_padding: 2 # how much padding to 
 
 #-------------------------------------------------------------------------
 # Debug

@@ -11,6 +11,11 @@
 # placed. This leaves room for setup/hold fixing buffers to be placed next
 # to them later on.
 
-specifyCellPad *DFF* 2
+if {[info exists $ADK_CELLS_TO_BE_PADDED]} {
+    specifyCellPad $ADK_CELLS_TO_BE_PADDED $::env(cell_padding)    
+} else {
+    specifyCellPad *DFF* $::env(cell_padding)
+}
+
 reportCellPad -file $vars(rpt_dir)/$vars(step).cellpad.rpt
 
