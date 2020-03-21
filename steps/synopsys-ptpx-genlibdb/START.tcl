@@ -26,17 +26,9 @@
 # Execute
 #-------------------------------------------------------------------------
 
-# Read the execution order
+# Order is a comma-separated string containing scripts to run  
 
-if {[ info exists env(order) ] && $::env(order) != "None" } {
-  set order $::env(order)
-} else {
-  # Default order of scripts
-  set order "
-    read_design.tcl
-    extract_model.tcl
-  "
-}
+set order [split $::env(order) ","]                            
 
 # Run the scripts in order (inputs take priority)
 

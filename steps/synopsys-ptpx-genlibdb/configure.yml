@@ -36,6 +36,9 @@ commands:
 parameters:
   design_name: undefined
   order:
+    - read_design.tcl
+    - extract_model.tcl
+    - write_interface_timing.tcl
 
 #-------------------------------------------------------------------------
 # Assertions
