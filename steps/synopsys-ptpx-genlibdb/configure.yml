@@ -38,7 +38,7 @@ parameters:
   order:
     - read_design.tcl
     - extract_model.tcl
-    - write_interface_timing.tcl
+    - write-interface-timing.tcl
 
 #-------------------------------------------------------------------------
 # Assertions
