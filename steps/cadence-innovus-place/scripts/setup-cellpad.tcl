@@ -11,7 +11,7 @@
 # placed. This leaves room for setup/hold fixing buffers to be placed next
 # to them later on.
 
-if {[info exists $ADK_CELLS_TO_BE_PADDED]} {
+if {[info exists ADK_CELLS_TO_BE_PADDED]} {
     specifyCellPad $ADK_CELLS_TO_BE_PADDED $::env(cell_padding)    
 } else {
     specifyCellPad *DFF* $::env(cell_padding)
