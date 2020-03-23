@@ -110,7 +110,8 @@ setup(
 
   entry_points = {
     'console_scripts': [
-      'mflowgen      = mflowgen.cli:main',
+      'mflowgen        = mflowgen.cli:main',
+      'mflowgen-python = mflowgen.mflowgen_python:_mflowgen_python_main',
 #      'mflowgen-info = mflowgen.scripts:main' # use MFLOWGEN_HOME for now
     ]
   },
