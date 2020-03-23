@@ -14,7 +14,7 @@ python:
 
 install:
   - sudo apt-get install -y graphviz
-  - pip install --upgrade pip setuptools twine
+  - pip install --upgrade pip setuptools==41.0.0 twine
   - pip install --requirement requirements/ci.txt
   - pip install .
   - pip list
@@ -29,9 +29,9 @@ script:
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
   - git diff --exit-code
 
-  - which mflowgen-python
-
   # Test that we can configure and run the common targets
+
+  - which mflowgen-python
 
   - mflowgen run --demo
   - cd mflowgen-demo && mkdir -p build && cd build
