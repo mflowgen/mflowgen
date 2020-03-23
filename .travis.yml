@@ -29,6 +29,8 @@ script:
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
   - git diff --exit-code
 
+  - which mflowgen-python
+
   # Test that we can configure and run the common targets
 
   - mflowgen run --demo
