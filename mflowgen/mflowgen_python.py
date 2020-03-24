@@ -88,13 +88,17 @@ def _mflowgen_python_main():
   #   debug traceback is more readable, showing the script name and line
   #   number within the script instead of some nonsense.
   #
-  # - no local variables other than __name__ are defined here to reduce
-  #   any potential conflicts with variables inside the script
+  # - both __name__ and __file__ are set to mimic how it would look if we
+  #   were really to run the script in isolation with "python3 foo.py"
+  #
+  # - no local variables other than __name__ and __file__ are defined here
+  #   to reduce any potential conflicts with variables inside the script
   #
 
   else:
 
     __name__ = '__main__'
+    __file__ = sys.argv[0]
     exec(
       compile( open( sys.argv[0] ).read(), sys.argv[0], 'exec' ),
       locals()
