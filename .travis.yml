@@ -35,6 +35,8 @@ script:
 
   # Test that we can configure and run the common targets
 
+  - which mflowgen-python
+
   - mflowgen run --demo
   - cd mflowgen-demo && mkdir -p build && cd build
   - mflowgen run --design ../GcdUnit
