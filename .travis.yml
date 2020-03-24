@@ -14,7 +14,11 @@ python:
 
 install:
   - sudo apt-get install -y graphviz
-  - pip install --upgrade pip setuptools==41.0.0 twine
+  # For some reason, the latest setuptools (46.1.1) causes permission
+  # denied errors when trying to access site packages (to access scripts
+  # like mflowgen-status), so we are pinning to 46.0.0 and waiting to see
+  # if they will fix it on their end.
+  - pip install --upgrade pip setuptools==46.0.0 twine
   - pip install --requirement requirements/ci.txt
   - pip install .
   - pip list

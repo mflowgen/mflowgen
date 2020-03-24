@@ -37,5 +37,31 @@ def percent_clock_gated():
 
   return percentage
 
+# n_regs
+#
+# Reads the clock-gating report and returns an integer for the number of
+# registers that exist in the design.
+#
+
+def n_regs():
+
+  # Read the clock-gating report
+
+  with open( glob('reports/*clock_gating.rpt')[0] ) as fd:
+    lines = fd.readlines()
+
+  # Get the line with the number of registers, which looks like this:
+  #
+  #     |    Total number of registers          |       34         |
+  #
+
+  regs_line = [ l for l in lines if 'Total number of registers' in l ][0]
+
+  # Extract the number
+
+  regs = int( re.search( r'\|\s*(\d*)\s*\|', regs_line ).group(1) )
+
+  return regs
+
 
 
