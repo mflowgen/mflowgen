@@ -84,8 +84,9 @@ postconditions:
 
   # Check that at least N% of registers were clock-gated
 
-  #- |
-  #  from assertion_helpers import percent_clock_gated
-  #  assert percent_clock_gated() > 0.80
+  - |
+    from assertion_helpers import percent_clock_gated, n_regs
+    if n_regs() > 10:
+      assert percent_clock_gated() > 0.50
 
 
