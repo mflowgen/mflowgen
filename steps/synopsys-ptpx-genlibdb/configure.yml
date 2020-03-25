@@ -49,7 +49,6 @@ preconditions:
   - assert Tool( 'pt_shell' )                # tool check
   - assert File( 'inputs/adk' )              # must exist
   - assert File( 'inputs/design.vcs.v' )     # must exist
-  - assert File( 'inputs/design.spef.gz' )   # must exist
   - assert File( 'inputs/design.pt.sdc' )    # must exist
 
 postconditions:
@@ -62,5 +61,3 @@ postconditions:
   - assert 'error' not in File( 'logs/pt.log' )
   - assert 'Unresolved references' not in File( 'logs/pt.log' )
   - assert 'Unable to resolve' not in File( 'logs/pt.log' )
-
-

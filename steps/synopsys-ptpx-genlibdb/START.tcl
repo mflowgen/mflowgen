@@ -26,9 +26,9 @@
 # Execute
 #-------------------------------------------------------------------------
 
-# Order is a comma-separated string containing scripts to run  
+# Order is a comma-separated string containing scripts to run
 
-set order [split $::env(order) ","]                            
+set order [split $::env(order) ","]
 
 # Run the scripts in order (inputs take priority)
 
@@ -49,4 +49,3 @@ foreach tcl $order {
 }
 
 exit
-
