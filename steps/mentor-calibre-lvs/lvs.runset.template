@@ -4,7 +4,7 @@
 *lvsRunDir: ./
 *lvsLayoutPaths: inputs/design_merged.gds
 *lvsLayoutPrimary: ${design_name}
-*lvsSourcePath: inputs/merged.v
+*lvsSourcePath: merged.v
 *lvsSourceSystem: VERILOG
 *lvsSourcePrimary: ${design_name}
 *lvsSpiceFile: lvs.extracted.sp
