@@ -50,6 +50,7 @@ preconditions:
   - assert File( 'inputs/adk' )              # must exist
   - assert File( 'inputs/design.vcs.v' )     # must exist
   - assert File( 'inputs/design.pt.sdc' )    # must exist
+# - assert File( 'inputs/design.spef.gz' )   # spef is optional
 
 postconditions:
 
