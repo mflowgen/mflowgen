@@ -29,6 +29,7 @@ link_design
 
 # Read in the SDC and parasitics
 # Try to read the sdc constraints files
+
 if {[ file exists $ptpx_sdc ]} {
     puts "\n  > Info: Sourcing $ptpx_sdc\"\n"
     read_sdc -echo $ptpx_sdc
@@ -36,7 +37,8 @@ if {[ file exists $ptpx_sdc ]} {
     puts "\n  > Warn: No sdc constraint file found\"\n"
 }
 
-# Try to read the sped parasitic files
+# Try to read the spef parasitic files
+
 if {[ file exists $ptpx_spef ]} {
     puts "\n  > Info: Sourcing $ptpx_sdc\"\n"
     read_parasitics -format spef $ptpx_spef

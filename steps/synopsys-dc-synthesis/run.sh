@@ -75,13 +75,20 @@ fi
 
 $dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log || exit 1
 
+# Compress the spef file
+
+cd results
+gzip *.mapped.spef
+cd ..
+
 # Set up the outputs
 
 mkdir -p outputs && cd outputs
 
-ln -sf ../results/*.mapped.v design.v
-ln -sf ../results/*.mapped.sdc design.sdc
-ln -sf ../reports/*.namemap design.namemap
+ln -sf ../results/*.mapped.v       design.v
+ln -sf ../results/*.mapped.sdc     design.sdc
+ln -sf ../results/*.mapped.spef.gz design.spef.gz
+ln -sf ../reports/*.namemap        design.namemap
 
 cd ..
 
@@ -105,5 +112,3 @@ grep --color "unresolved references." logs/dc.log || true
 #
 
 grep --color "ELAB-405" logs/dc.log || true
-
-
