@@ -28,6 +28,7 @@ outputs:
 commands:
   - envsubst < lvs.runset.template > lvs.runset
   - if [ ! -f inputs/*.svrf ]; then touch inputs/rules.svrf; fi
+  - cat inputs/*.lvs.v > merged.v
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report

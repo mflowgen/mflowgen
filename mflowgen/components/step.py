@@ -238,6 +238,12 @@ class Step:
       s._config['postconditions'] = []
     s._config['postconditions'].extend( new_list )
 
+  def set_preconditions( s, new_list ):
+    s._config['preconditions'] = new_list
+
+  def set_postconditions( s, new_list ):
+    s._config['postconditions'] = new_list
+
   #-----------------------------------------------------------------------
   # Parameter system
   #-----------------------------------------------------------------------
