@@ -40,7 +40,6 @@ parameters:
   order:
     - globalnetconnect.tcl
     - main.tcl
-  auto-add-m1: True
 
 #-------------------------------------------------------------------------
 # Debug
