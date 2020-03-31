@@ -36,6 +36,7 @@ commands:
 
 parameters:
   design_name: undefined
+  ruleset_name: calibre-drc-block.rule
 
 #-------------------------------------------------------------------------
 # Debug
