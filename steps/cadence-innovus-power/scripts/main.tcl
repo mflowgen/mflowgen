@@ -11,7 +11,9 @@
 #-------------------------------------------------------------------------
 # Generate horizontal stdcell preroutes
 
-sroute -nets {VDD VSS}
+if { $::env(auto-add-M1) } {
+  sroute -nets {VDD VSS}
+}
 
 #-------------------------------------------------------------------------
 # Implement power strategy
