@@ -32,7 +32,7 @@ commands:
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report
-  - ln -sf ../_design.lvs.v.sp design.schematic.spi
+  - ln -sf ../_merged.v.sp design.schematic.spi
 
 #-------------------------------------------------------------------------
 # Parameters
