@@ -1,0 +1,13 @@
+*drcRulesFile: inputs/adk/${fill_rule_deck}
+*drcRunDir: ./
+*drcLayoutPaths: inputs/design.gds
+*drcLayoutPrimary: ${design_name}
+*drcResultsFile: dummyfill.gds
+*drcResultsFormat: GDSII
+*drcSummaryFile: fill.summary
+*drcDRCMaxResultsAll: 1
+*cmnShowOptions: 1
+*cmnTranscriptFile: fill.log
+*cmnTranscriptEchoToFile: 1
+*cmnRunMT: 1
+*cmnRunHyper: 1
