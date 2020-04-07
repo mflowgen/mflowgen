@@ -713,8 +713,12 @@ ranksep=0.8;
       steps = set( s.all_steps() )
     else:
       steps = set( seed_steps )
+      # If there are no steps, just return an empty list
+      if not steps:
+        return []
       # Delete any edges directed to nodes not in the subgraph
-      for k in edges.keys():
+      steps_with_edges_i = list( edges.keys() )
+      for k in steps_with_edges_i:
         if k not in seed_steps:
           del( edges[k] )
       # Delete any incoming edges from src nodes not in the subgraph
