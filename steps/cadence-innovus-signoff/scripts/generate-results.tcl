@@ -27,7 +27,7 @@ sed -i "s/get_design.*$/current_design\]/" $vars(results_dir)/$vars(design).pt.s
 # "mismatch" with the layout.
 
 foreach x $ADK_LVS_EXCLUDE_CELL_LIST {
-  append lvs_exclude_list [dbGet -u -e top.physInsts.cell.name $x] " "
+  append lvs_exclude_list [dbGet -u -e top.insts.cell.name $x] " "
 }
 
 saveNetlist -excludeLeafCell                   \
