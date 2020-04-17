@@ -12,27 +12,32 @@ Refer back to :ref:`innovus_submodularization` to see what the inputs, outputs,
 and scripts are and what they do. Here is a list of scripts you might
 tweak at this step:
 
-- ``floorplan.tcl`` -- This is where we size the core area (targeting a
-  certain density) and aspect ratio. This is also where we place macros. A
-  reasonable density target is about 75%, and a very aggressive density
-  is over 90%. Aspect ratios that are square are generally preferred over
-  long rectangular ones. Rectangular floorplans place more stress on
-  either horizontal or vertical routing resources and also make it
-  difficult to place macros. Note that ``planDesign`` is the command that
-  automatically places your macros.
+- :download:`floorplan.tcl
+  <../steps/cadence-innovus-init/scripts/floorplan.tcl>` -- This is where
+  we size the core area (targeting a certain density) and aspect ratio.
+  This is also where we place macros. A reasonable density target is about
+  75%, and a very aggressive density is over 90%. Aspect ratios that are
+  square are generally preferred over long rectangular ones. Rectangular
+  floorplans place more stress on either horizontal or vertical routing
+  resources and also make it difficult to place macros. Note that
+  ``planDesign`` is the command that automatically places your macros.
 
-- ``pin-assignments.tcl`` -- This is where we use the "editPin" command to
-  spread pins along the sides on specific metal layers. We could also read
-  a pre-saved io file in this script.
+- :download:`pin-assignments.tcl
+  <../steps/cadence-innovus-init/scripts/pin-assignments.tcl>` -- This is
+  where we use the "editPin" command to spread pins along the sides on
+  specific metal layers. We could also read a pre-saved io file in this
+  script.
 
-- ``make-path-groups.tcl`` -- You can create path groups to tell the
-  timing engine to prioritize certain paths that you may find more
-  important than others (e.g., paths to macros). During timing
-  optimization, the tool loops through each of the path groups and tries
-  to fix the worst paths in each group. If there were only a single path
-  group, the tool might never work on paths further down the list that you
-  as a designer know are important. Enough useful path groups have been
-  set for you that you will likely not need to add any more.
+- :download:`make-path-groups.tcl
+  <../steps/cadence-innovus-init/scripts/make-path-groups.tcl>` -- You can
+  create path groups to tell the timing engine to prioritize certain paths
+  that you may find more important than others (e.g., paths to macros).
+  During timing optimization, the tool loops through each of the path
+  groups and tries to fix the worst paths in each group. If there were
+  only a single path group, the tool might never work on paths further
+  down the list that you as a designer know are important. Enough useful
+  path groups have been set for you that you will likely not need to add
+  any more.
 
 Here is a list of checks you will want to run through before moving on to
 the next step:
