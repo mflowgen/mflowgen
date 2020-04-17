@@ -7,7 +7,7 @@ this step like this:
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make cadence-innovus-cts
 
 Here are the inputs, outputs, and scripts and what they do. Again, you

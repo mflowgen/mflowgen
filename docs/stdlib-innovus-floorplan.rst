@@ -5,7 +5,7 @@ The first step during place and route is called ``init`` (i.e., the ``cadence-in
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make cadence-innovus-init
 
 Refer back to :ref:`innovus_submodularization` to see what the inputs, outputs,

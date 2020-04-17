@@ -7,7 +7,7 @@ design up to this step like this:
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make cadence-innovus-power
 
 Here is a list of what the defaults inputs, outputs, and scripts are and

@@ -15,7 +15,7 @@ Then create a build directory and configure for this design:
 
     % cd $top
     % mkdir build && cd build
-    % mflowgen run --design ../design
+    % mflowgen run --design ../GcdUnit
     % make list
 
 Then open the mflowgen graph to see what this pipe cleaner flow looks

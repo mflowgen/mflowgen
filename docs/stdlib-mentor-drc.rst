@@ -6,7 +6,7 @@ step). You can run the design up to this step like this:
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make mentor-calibre-drc
 
 Here are the two inputs to this step:

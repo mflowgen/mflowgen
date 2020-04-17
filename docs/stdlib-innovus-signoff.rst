@@ -10,7 +10,7 @@ step). You can run the design up to this step like this:
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make cadence-innovus-route
     % make cadence-innovus-postroute
     % make cadence-innovus-signoff

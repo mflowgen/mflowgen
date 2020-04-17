@@ -7,7 +7,7 @@ the design up to this step like this:
 
 .. code:: bash
 
-    % cd $top/GcdUnit/build
+    % cd $top/build
     % make cadence-innovus-place
 
 Here are the inputs, outputs, and scripts in the place step and what they
