@@ -82,6 +82,7 @@ Cell Library.
    ref-graph-building-api
    ref-command-line-interface
    user-guide
+   stdlib
    faq
 
 
