@@ -1,0 +1,1 @@
+verifyConnectivity -noAntenna -noFill
