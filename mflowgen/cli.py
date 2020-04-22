@@ -5,20 +5,21 @@
 #  -h --help     Display this message
 #  -v --version  Version info
 #
-# Run-related options:
+# mflowgen run (Run-related options)
 #
 #     --demo            --  Generate a demo design
 #     --design   string --  Path to design directory with build graph
+#     --update          --  Re-read the graph and update the build
 #     --backend  string --  Backend build system: make, ninja
 #
-# Stash-related options:
+# mflowgen stash (Stash-related options)
 #
 #  -p --path     string --  Path for stash init, stash link
 #  -s --step     int    --  Step number for stash push
 #  -m --msg      string --  Push message for stash push
 #     --hash     string --  Hash for stash pull, stash pop, stash drop
 #
-# Mock-related options:
+# mflowgen mock (Mock-related options)
 #
 #  -p --path     string --  Path to step directory
 #
@@ -64,6 +65,7 @@ def parse_cmdline():
   # Run-related arguments
   p.add_argument(       "--demo",    action="store_true"          )
   p.add_argument(       "--design"                                )
+  p.add_argument(       "--update",  action="store_true"          )
   p.add_argument(       "--backend", default="make",
                                      choices=("make", "ninja")    )
 
@@ -132,8 +134,8 @@ def main():
     rhandler = RunHandler()
     rhandler.launch(
       help_   = opts.help,
-      demo    = opts.demo,
       design  = opts.design,
+      update  = opts.update,
       backend = opts.backend,
     )
     return

@@ -73,6 +73,15 @@ versions of the scripts) as well as the ``inputs`` directory (where the
 user can supply custom versions of the scripts) with priority given to the
 inputs. This allows users to extend the step with new scripts.
 
+.. note::
+
+    If the same script is found in both the ``scripts`` and ``inputs``
+    directories, priority is given to the copy in the inputs directory.
+
+    For example, suppose that "scripts/foo.tcl" exists and the flow
+    designer then supplies "inputs/foo.tcl". In this case,
+    "inputs/foo.tcl" is run and "scripts/foo.tcl" is ignored.
+
 For example, if we had a node called ``custom-init`` that provided
 ``new-last-step.tcl`` as an output, we could parameterize the init step to
 append the new script at the end:

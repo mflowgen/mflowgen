@@ -183,6 +183,7 @@ class StashHandler:
   # update_stash
   #-----------------------------------------------------------------------
   # Update the metadata in the linked stash directory
+  #
 
   def update_stash( s ):
     write_yaml(
@@ -194,6 +195,7 @@ class StashHandler:
   # launch
   #-----------------------------------------------------------------------
   # Dispatch function for commands
+  #
 
   def launch( s, args, help_, path, step, msg, hash_ ):
 
