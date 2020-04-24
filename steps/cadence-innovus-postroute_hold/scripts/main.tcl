@@ -24,6 +24,11 @@
 # violations are essentially unrecoverable after taping out.
 #
 
+
+#TODO: Find the correct place for this 
+#Route secondary power pins for AON Buf/Invs
+routePGPinUseSignalRoute -all
+
 # Enable verbose mode, which prints why hold violations were not fixed
 
 setOptMode -verbose true
