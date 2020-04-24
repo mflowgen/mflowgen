@@ -18,7 +18,7 @@ setDontUse MUX2D0P75BWP16P90 true
 # Without this variable setup, the tie cells
 # are inserted in default TOP domain
 # eventhough in the UPF it is specified to keep it always on
-
+set spgAddTieForNonDefPDFTerms 1
 
 source -verbose innovus-foundation-flow/INNOVUS/run_place.tcl
 
