@@ -378,10 +378,6 @@ set vars(signoff,stream_out,replace_tcl)      $vars(custom_scripts_dir)/stream-o
 
 set vars(signoff,summary_report,replace_tcl)  $vars(custom_scripts_dir)/summary-report.tcl
 
-# Custom verifyConnectivity - skip fill
-
-set vars(signoff,verify_connectivity,replace_tcl)      $vars(custom_scripts_dir)/verify-connectivity.tcl
-
 #-------------------------------------------------------------------------
 # Misc
 #-------------------------------------------------------------------------
