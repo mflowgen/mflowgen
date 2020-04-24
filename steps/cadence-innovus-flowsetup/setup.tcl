@@ -521,6 +521,12 @@ if {$captable_only_mode} {
 set vars(tags,verbose)                 true
 set vars(tags,verbosity_level)         high
 
+# Skip verifyConnectivity to avoid out-of-memory crash on some large designs
+
+if { $::env(skip_verify_connectivity) } {
+  set vars(signoff,verify_connectivity,skip) true
+}
+
 #-------------------------------------------------------------------------
 # Reduced-effort flow that sacrifices timing to iterate more quickly
 #-------------------------------------------------------------------------
