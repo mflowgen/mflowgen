@@ -53,6 +53,11 @@ saveNetlist -excludeLeafCell                        \
 
 saveNetlist -excludeLeafCell $vars(results_dir)/$vars(design).vcs.v
 
+# Write netlist for Power-Ground Aware GL simulation
+
+saveNetlist -includePowerGround $vars(results_dir)/$vars(design).pg.v
+
+
 # Write LEF for hierarchical bottom-up design
 
 write_lef_abstract                                                       \
