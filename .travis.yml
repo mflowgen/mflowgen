@@ -28,6 +28,13 @@ install:
 #-------------------------------------------------------------------------
 
 script:
+
+  # Remove setuptools misc to avoid checking syntax on it
+
+  - rm -rf ./eggs
+
+  # Formatting checks
+
   - autoflake --recursive --in-place --remove-duplicate-keys .
   - pyupgrade --py3-only --keep-percent-format $(find . -name '*.py')
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
