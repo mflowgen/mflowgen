@@ -26,6 +26,7 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
+  - if [ -z "{lvs_hcells_file}" ]; then lvs_use_hcells=0; else lvs_use_hcells=1; fi
   - envsubst < lvs.runset.template > lvs.runset
   - if [ ! -f inputs/*.svrf ]; then touch inputs/rules.svrf; fi
   - cat inputs/*.lvs.v > merged.v
@@ -40,6 +41,10 @@ commands:
 
 parameters:
   design_name: undefined
+  # path to hcells file if required
+  lvs_hcells_file:
+  # net names to connect in a space-separated list, e.g. "VDD VSS"
+  lvs_connect_names:
 
 #-------------------------------------------------------------------------
 # Debug
