@@ -18,7 +18,11 @@ install:
   # denied errors when trying to access site packages (to access scripts
   # like mflowgen-status), so we are pinning to 46.0.0 and waiting to see
   # if they will fix it on their end.
-  - pip install --upgrade pip setuptools==46.0.0 twine
+  #
+  # Also need to pin pip (20.0.2) because (20.1) makes pyupgrade exit 1
+  # for whatever reason. We are pinning for now and waiting to see if they
+  # fix it on their end.
+  - pip install --upgrade pip==20.0.2 setuptools==46.0.0 twine
   - pip install --requirement requirements/ci.txt
   - pip install .
   - pip list
@@ -28,10 +32,6 @@ install:
 #-------------------------------------------------------------------------
 
 script:
-
-  # Remove setuptools misc to avoid checking syntax on it
-
-  - rm -rf ./eggs
 
   # Formatting checks
 
