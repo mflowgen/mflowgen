@@ -77,7 +77,7 @@ set vars(library_sets)        "libs_typical"
 
 set vars(libs_typical,timing) [join "
                                 $vars(adk_dir)/stdcells.lib
-                                $vars(adk_dir)/stdcells-pm.lib
+                                [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]
                                 [glob -nocomplain $vars(adk_dir)/iocells.lib]
                                 [glob -nocomplain inputs/*tt*.lib]
                                 [glob -nocomplain inputs/*TT*.lib]
@@ -118,7 +118,7 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 set vars(lef_files) [join "
                       $vars(adk_dir)/rtk-tech.lef
                       $vars(adk_dir)/stdcells.lef
-                      $vars(adk_dir)/stdcells-pm.lef
+                      [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]
                       [glob -nocomplain $vars(adk_dir)/*.lef]
                       [glob -nocomplain inputs/*.lef]
                     "]
