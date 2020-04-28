@@ -21,6 +21,7 @@ outputs:
   - design.gds.gz
   - design.lvs.v
   - design.vcs.v
+  - design.vcs.pg.v
   - design.lef
   - design.pt.sdc
   - design.sdf
@@ -42,6 +43,7 @@ commands:
   - ln -sf ../results/*.gds.gz     design.gds.gz
   - ln -sf ../results/*.lvs.v      design.lvs.v
   - ln -sf ../results/*.vcs.v      design.vcs.v
+  - ln -sf ../results/*.vcs.pg.v   design.vcs.pg.v
   - ln -sf ../results/*.lef        design.lef
   - ln -sf ../results/*.pt.sdc     design.pt.sdc
   - ln -sf ../results/*.sdf        design.sdf
