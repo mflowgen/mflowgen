@@ -44,6 +44,7 @@ parameters:
   # path to hcells file if required
   lvs_hcells_file: ""
   # net names to connect in a quoted, space-separated list, e.g. "VDD VSS"
+  # in a construct.py, this will look something like 'lvs_connect_names' : '"VDD VSS VDDPST"'
   lvs_connect_names: ""
 
 #-------------------------------------------------------------------------
