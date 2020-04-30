@@ -6,6 +6,7 @@ User Guide
    :caption: Contents:
 
    ug-cli
+   ug-connect
    ug-clone-step
    ug-adk-paths
    ug-assertions
