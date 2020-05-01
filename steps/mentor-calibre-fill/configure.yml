@@ -29,8 +29,7 @@ commands:
   # Merge the design GDS with the dummy fill GDS
   - calibredrv -a layout filemerge \
                -infile [list -name inputs/design.gds -suffix _design] \
-               -infile [list -name FEOL.gds -suffix _feol] \
-               -infile [list -name BEOL.gds -suffix _beol] \
+               -infile [list -name {fill_gds} -suffix _fill] \
                -createtop {design_name}_filled \
                -out design_filled.gds
   - mkdir -p outputs && cd outputs
@@ -45,6 +44,7 @@ parameters:
   design_name: undefined
   # Use the rule deck "inputs/adk/${fill_rule_deck}"
   fill_rule_deck: calibre-fill.rule
+  fill_gds: FEOL.gds
 
 #-------------------------------------------------------------------------
 # Debug
