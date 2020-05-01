@@ -242,6 +242,26 @@ class MakeBackend:
     cd_idx    = tokens.index( 'cd' )
     build_dir = tokens[ cd_idx + 1 ]
 
+    #.....................................................................
+    # Built-in toggle for enabling/disabling this rule
+    #.....................................................................
+    # This is a hack -- Add a knob for Makefiles to enable/disable this
+    # rule. The goal and primary use case in mind here is to allow users
+    # to copy in pre-built steps and have the build system think its
+    # dependencies have all already been satisfied. We cannot just "touch"
+    # files from earlier steps to make it seem like they are done, since
+    # downstream steps may need those files. The only way we see to make
+    # pre-built steps always look "done" without impacting earlier steps
+    # is to break the dependency. Specifically, if the "directory" and
+    # "collect-inputs" substeps are removed, then a pre-built step will
+    # always look "done". So we add a knob here that checks if the step
+    # build directory has a ".prebuilt" file and if so, ignores this rule.
+    dst_dir = build_dir
+    s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst_dir ) )
+    s.w.newline()
+    s.w.newline()
+    #.....................................................................
+
     rule = build_dir + '-commands-rule'
     rule = rule.replace( '-', '_' )
 
@@ -269,6 +289,15 @@ class MakeBackend:
       deps         = all_deps,
       touch_target = not phony,
     )
+
+    #.....................................................................
+    # Built-in toggle for enabling/disabling this rule
+    #.....................................................................
+    # Clean up from the above
+    s.w.write( 'endif' )
+    s.w.newline()
+    s.w.newline()
+    #.....................................................................
 
     return targets
 
