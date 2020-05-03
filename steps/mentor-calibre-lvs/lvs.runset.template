@@ -20,7 +20,7 @@
 *cmnShowOptions: 1
 *cmnVConnectColon: 1
 *cmnVConnectReport: 1
-*cmnVConnectNamesState: SOME
+*cmnVConnectNamesState: ${lvs_connect_names_state}
 *cmnVConnectNames: ${lvs_connect_names}
 *cmnTranscriptFile: lvs.log
 *cmnTranscriptEchoToFile: 1
