@@ -197,7 +197,7 @@ class StashHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, args, help_, path, step, msg, hash_, only_o ):
+  def launch( s, args, help_, path, step, msg, hash_, all_ ):
 
     if help_ and not args:
       s.launch_help()
@@ -222,7 +222,7 @@ class StashHandler:
     if   command == 'init' : s.launch_init( help_, path )
     elif command == 'link' : s.launch_link( help_, path )
     elif command == 'list' : s.launch_list( help_ )
-    elif command == 'push' : s.launch_push( help_, step, msg, only_o )
+    elif command == 'push' : s.launch_push( help_, step, msg, all_ )
     elif command == 'pull' : s.launch_pull( help_, hash_ )
     elif command == 'pop'  : s.launch_pop ( help_, hash_ )
     elif command == 'drop' : s.launch_drop( help_, hash_ )
@@ -376,11 +376,11 @@ class StashHandler:
   # Internally, this command does the following:
   #
   # - Copies the target step build directory to the stash
-  #     - if "only_o" is True, then only stash the outputs
+  #     - if "all_" is True, then stash the entire step, not just outputs
   # - Updates the metadata YAML in the stash directory
   #
 
-  def launch_push( s, help_, step, msg, only_o ):
+  def launch_push( s, help_, step, msg, all_ ):
 
     try:
       author = os.environ[ 'USER' ]
@@ -393,18 +393,18 @@ class StashHandler:
       print()
       print( bold( 'Usage:' ), 'mflowgen stash push',
                                   '--step/-s <int> --message/-m "<str>"',
-                                  '[--only-outputs]'                     )
+                                  '[--all]'                              )
       print()
       print( bold( 'Example:' ), 'mflowgen stash push',
                                     '--step 5 -m "foo bar"'              )
       print()
       print( 'Pushes a built step to the mflowgen stash. The given step' )
-      print( 'is copied to the stash using archive mode (preserves all'  )
-      print( 'permissions) while following all symlinks. Then the'       )
-      print( 'stashed copy is given a hash stamp and is marked as'       )
-      print( 'authored by $USER (' + author + '). An optional message'   )
-      print( 'can also be attached to the push. If --only-outputs is'    )
-      print( 'given, then the stash will only contain outputs.'          )
+      print( 'is copied to the stash, preserving all permissions and'    )
+      print( 'following all symlinks. By default, only the outputs of a' )
+      print( 'step are stashed, but the entire step can be stashed with' )
+      print( '--all. The stashed copy is given a hash stamp and is'      )
+      print( 'marked as authored by $USER (' + author + '). An optional' )
+      print( 'message can also be attached to each push.'                )
       print()
 
     if help_ or not step or not msg:
@@ -445,7 +445,7 @@ class StashHandler:
 
     dst_dirname = '-'.join( [ datestamp, step_name, hashstamp ] )
 
-    # Helper function for '--only-outputs' to ignore copying other files
+    # Helper function to ignore copying files other than the outputs
 
     def f_ignore( path, files ):
       # For nested subdirectories, ignore all files
@@ -454,7 +454,7 @@ class StashHandler:
           return []     # ignore nothing in outputs
         else:
           return files  # ignore everything for any other directory
-      # At the top level, keep only outputs and a few other misc files
+      # At the top level, keep the outputs and a few other misc files
       keep = [
         'outputs',
         'configure.yml',
@@ -474,8 +474,8 @@ class StashHandler:
     # - ignore_dangling_symlinks = False  # Stop with error if we cannot
     #                                     #  follow a link to something
     #                                     #  we need
-    # - ignore                   = (func) # Ignore all but the outputs if
-    #                                     #  the option "only_o" was given
+    # - ignore                   = (func) # Ignore all but the outputs
+    #                                     #  unless "--all" was given
     #
 
     remote_path = s.get_stash_path() + '/' + dst_dirname
@@ -484,7 +484,7 @@ class StashHandler:
       shutil.copytree( src      = push_target,
                        dst      = remote_path,
                        symlinks = False,
-                       ignore   = f_ignore if only_o else None,
+                       ignore   = None if all_ else f_ignore,
                        ignore_dangling_symlinks = False )
     except shutil.Error:
       # According to online discussion, ignore_dangling_symlinks does not

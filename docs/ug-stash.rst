@@ -40,6 +40,14 @@ We can stash our synthesis step with a message like this:
     % mflowgen stash push --step 4 -m "Pushing synthesis as a test"
     Stashed step 4 "synopsys-dc-synthesis" as author "ctorng"
 
+.. note::
+
+    Only the outputs of a step are stashed by default. Saving the outputs
+    is often far smaller compared to saving the entire build of a step.
+    You can use the optional ``--all`` flag to save an entire step,
+    including all of its inputs, logs, and intermediate files. Note that
+    this can be very slow if there are many small files to copy.
+
 Now the stash contents show the pre-built synthesis step tagged with a
 "4d1c23" hash:
 

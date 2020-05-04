@@ -19,7 +19,7 @@
 #  -m --msg      string --  Push message for stash push
 #     --hash     string --  Hash for stash pull, stash pop, stash drop
 #
-#     --only-outputs    --  Stash push will only contain the outputs
+#     --all             --  Stash the entire step, not just its outputs
 #
 # mflowgen mock (Mock-related options)
 #
@@ -77,7 +77,7 @@ def parse_cmdline():
   p.add_argument( "-s", "--step", type=int                        )
   p.add_argument( "-m", "--msg"                                   )
   p.add_argument(       "--hash"                                  )
-  p.add_argument(       "--only-outputs", action="store_true"     )
+  p.add_argument(       "--all", action="store_true"              )
   opts = p.parse_args()
   if opts.help and not opts.args: p.error() # print help only if not stash
   return opts
@@ -114,7 +114,7 @@ def main():
       step   = opts.step,
       msg    = opts.msg,
       hash_  = opts.hash,
-      only_o = opts.only_outputs,
+      all_   = opts.all,
     )
     return
 
