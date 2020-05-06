@@ -66,14 +66,16 @@ mkdir -p alib
 cp -srf $PWD/inputs/adk/alib/* alib || true
 
 # Run the synthesis script
+#
+# - Note: We always run in topographical mode, even if the topographical
+#   mode parameter is false. This is because some commands are only
+#   available in topo mode even though they seem to be fairly general
+#   (e.g., create_scenario). So we run in topo mode and then have the
+#   scripts check the flag and skip physical-specific steps (e.g., reading
+#   tluplus) as needed.
+#
 
-if [ "x$topographical" == "xTrue" ]; then
-  opt_topographical='-topographical_mode'
-else
-  opt_topographical=
-fi
-
-$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log || exit 1
+$dc_exec -topographical_mode -f dc.tcl -output_log_file logs/dc.log || exit 1
 
 # Compress the spef file
 
