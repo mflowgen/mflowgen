@@ -20,8 +20,9 @@ will be using the GcdUnit design as a pipecleaner.
    :caption: Contents:
 
    stdlib-pipe-cleaners
+   stdlib-submodular-nodes.rst
+   stdlib-dc-synthesis
    stdlib-innovus-flowsetup
-   stdlib-innovus-submodularization
    stdlib-innovus-floorplan
    stdlib-innovus-power
    stdlib-innovus-place

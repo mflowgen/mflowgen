@@ -1,17 +1,17 @@
 .. _innovus_submodularization:
 
-Sub-Modularization Within Innovus Steps
+Sub-Modular Node Design
 ==========================================================================
 
-The mflowgen steps we provide for Innovus are designed to be submodular.
-This means that each step (which is already modular on its own) is further
-split into individual scripts for various purposes (e.g., reporting,
-setting up variables and margins, tweaking constraints). An mflowgen
-parameter called ``order`` then allows the user to parameterize how the
-step is run from a Python interface. For example, the user can remove a
-script that is not needed for their design, add an additional custom
-script for their design, or simply define a reordering of the existing
-scripts.
+The mflowgen steps we provide for DC synthesis and Innovus place-and-route
+steps are designed to be submodular. This means that each step (which is
+already modular on its own) is further split into individual scripts for
+various purposes (e.g., reporting, setting up variables and margins,
+tweaking constraints). An mflowgen parameter called ``order`` then allows
+the user to parameterize how the step is run from a Python interface. For
+example, the user can remove a script that is not needed for their design,
+add an additional custom script for their design, or simply define a
+reordering of the existing scripts.
 
 Take a look at the design initialization step (i.e.,
 ``cadence-innovus-init``), which is responsible for reading in the
