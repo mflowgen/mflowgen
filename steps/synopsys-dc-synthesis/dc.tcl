@@ -423,6 +423,15 @@ if {[file exists "inputs/run.saif" ]} {
 
 set_svf -off
 
+# Uniquify by prefixing every module in the design with the design name.
+# This is useful for hierarchical LVS when multiple blocks use modules
+# with the same name but different definitions.
+
+if { $dc_uniquify_with_design_name == True }
+  set uniquify_naming_style "${dc_design_name}_%s_%d"
+  uniquify -force
+}
+
 # Use naming rules to preserve structs
 
 define_name_rules verilog -preserve_struct_ports
