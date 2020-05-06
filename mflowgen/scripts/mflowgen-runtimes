@@ -40,7 +40,8 @@ def main():
   runtimes = {}
   finished = {}
 
-  steps = sorted( [ x for x in os.listdir('.') if os.path.isdir(x) ] )
+  steps = sorted( [ _ for _ in os.listdir('.') if os.path.isdir(_) ] )
+  steps = [ _ for _ in steps if _[0].isdigit() ] # filter for numbered
 
   for d in steps:
 
