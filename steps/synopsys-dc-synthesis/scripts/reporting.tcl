@@ -7,6 +7,10 @@
 # Date   : May 14, 2018
 #
 
+# Report variables
+
+print_variable_group all > ${dc_reports_dir}/${dc_design_name}.vars.rpt
+
 # Report units
 
 redirect -tee \
