@@ -34,17 +34,34 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  clock_period: 1.0
   design_name: undefined
+  clock_period: 1.0
   # Path to the design instance in run.saif (e.g., tb/dut)
   saif_instance: undefined
+  # Flatten effort 0 is strict hierarchy, 3 is full flattening
   flatten_effort: 0
   topographical: True
-  nthreads: 16  # multithreading available to the tool
+  # Multithreading available to the tool
+  nthreads: 16
+  # Enable high-effort area optimization (has longer spin time)
+  high_effort_area_opt: False
+  # Automatic fine-grain clock gating
+  gate_clock: True
   # Uniquify by prefixing every module in the design with the design name.
   # This is useful for hierarchical LVS when multiple blocks use modules
   # with the same name but different definitions.
   uniquify_with_design_name: True
+  # Subscript execute order
+  order:
+    - designer-interface.tcl
+    - setup-session.tcl
+    - read-design.tcl
+    - constraints.tcl
+    - make-path-groups.tcl
+    - compile-options.tcl
+    - compile.tcl
+    - generate-results.tcl
+    - reporting.tcl
 
 #-------------------------------------------------------------------------
 # Debug
@@ -53,7 +70,7 @@ parameters:
 debug:
   - export DC_EXIT_AFTER_SETUP=1
   - ln -sf results/*.mapped.ddc debug.ddc
-  - design_vision-xg -topographical -x "source dc.tcl; read_ddc debug.ddc"
+  - design_vision-xg -topographical -x "source START.tcl; read_ddc debug.ddc"
 
 #-------------------------------------------------------------------------
 # Assertions

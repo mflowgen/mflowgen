@@ -73,7 +73,7 @@ else
   opt_topographical=
 fi
 
-$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log || exit 1
+$dc_exec $opt_topographical -f START.tcl -output_log_file logs/dc.log || exit 1
 
 # Compress the spef file
 

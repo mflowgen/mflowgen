@@ -1,14 +1,13 @@
 #=========================================================================
-# designer_interface.tcl
+# designer-interface.tcl
 #=========================================================================
-# The designer_interface.tcl file is the first script run by Design
-# Compiler (see the top of dc.tcl). It is the interface that connects the
-# dc-synthesis scripts with the following:
+# The designer-interface.tcl file is the first script run by Design
+# Compiler. It is the interface that connects the synthesis scripts with
+# the following:
 #
 # - Build system parameters
 # - Build system inputs
 # - ASIC design kit
-# - Plugin scripts
 #
 # Author : Christopher Torng
 # Date   : April 8, 2018
@@ -18,10 +17,13 @@
 #-------------------------------------------------------------------------
 
 set dc_design_name                $::env(design_name)
-set dc_saif_instance              $::env(saif_instance)
 set dc_clock_period               $::env(clock_period)
+set dc_saif_instance              $::env(saif_instance)
 set dc_flatten_effort             $::env(flatten_effort)
 set dc_topographical              $::env(topographical)
+set dc_num_cores                  $::env(nthreads)
+set dc_high_effort_area_opt       $::env(high_effort_area_opt)
+set dc_gate_clock                 $::env(gate_clock)
 set dc_uniquify_with_design_name  $::env(uniquify_with_design_name)
 
 #-------------------------------------------------------------------------
@@ -72,20 +74,8 @@ set dc_additional_search_path   $adk_dir
 # Directories
 #-------------------------------------------------------------------------
 
-set dc_flow_dir                 .
-set dc_plugins_dir              .
-set dc_logs_dir                 logs
 set dc_reports_dir              reports
 set dc_results_dir              results
 set dc_alib_dir                 alib
-
-#-------------------------------------------------------------------------
-# Interface to plugins
-#-------------------------------------------------------------------------
-
-set dc_pre_synthesis_plugin     pre_synth.tcl
-set dc_read_design_plugin       read_design.tcl
-set dc_constraints_plugin       inputs/constraints.tcl
-set dc_post_synthesis_plugin    post_synth.tcl
 
 
