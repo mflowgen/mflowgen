@@ -41,6 +41,10 @@ parameters:
   flatten_effort: 0
   topographical: True
   nthreads: 16  # multithreading available to the tool
+  # Uniquify by prefixing every module in the design with the design name.
+  # This is useful for hierarchical LVS when multiple blocks use modules
+  # with the same name but different definitions.
+  uniquify_with_design_name: False
 
 #-------------------------------------------------------------------------
 # Debug
