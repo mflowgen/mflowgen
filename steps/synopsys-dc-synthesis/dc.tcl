@@ -427,7 +427,7 @@ set_svf -off
 # This is useful for hierarchical LVS when multiple blocks use modules
 # with the same name but different definitions.
 
-if { $dc_uniquify_with_design_name == True }
+if { $dc_uniquify_with_design_name == True } {
   set uniquify_naming_style "${dc_design_name}_%s_%d"
   uniquify -force
 }

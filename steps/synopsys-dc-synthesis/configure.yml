@@ -44,7 +44,7 @@ parameters:
   # Uniquify by prefixing every module in the design with the design name.
   # This is useful for hierarchical LVS when multiple blocks use modules
   # with the same name but different definitions.
-  uniquify_with_design_name: False
+  uniquify_with_design_name: True
 
 #-------------------------------------------------------------------------
 # Debug
