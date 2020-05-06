@@ -75,7 +75,13 @@ cp -srf $PWD/inputs/adk/alib/* alib || true
 #   tluplus) as needed.
 #
 
-$dc_exec -topographical_mode -f dc.tcl -output_log_file logs/dc.log || exit 1
+if [ "x$topographical" == "xTrue" ]; then
+  opt_topographical='-topographical_mode'
+else
+  opt_topographical=
+fi
+
+$dc_exec $opt_topographical -f dc.tcl -output_log_file logs/dc.log || exit 1
 
 # Compress the spef file
 
