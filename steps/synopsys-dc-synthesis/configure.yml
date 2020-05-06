@@ -76,11 +76,27 @@ postconditions:
   - assert 'error' not in File( 'logs/dc.log' )
   - assert 'Unresolved references' not in File( 'logs/dc.log' )
   - assert 'Unable to resolve' not in File( 'logs/dc.log' )
+  - assert 'Presto compilation terminated' not in File( 'logs/dc.log' )
 
   # If GTECH is found, that means this design was not mapped to a
   # technology library and is still in DC's generic representation
 
   - assert 'GTECH' not in File( 'outputs/design.v' )
+
+  # ELAB-405
+  #
+  # When using a Verilog generation tool, there may be a
+  # generation/translation mistake that defines a net twice. This will give
+  # a message like this:
+  #
+  #     Warning:  ./inputs/design.v:2473: Net mul__recv__msg__opd_b[0] or a
+  #     directly connected net may be driven by more than one process or block.
+  #     (ELAB-405)
+  #
+  # Multiply driven nets is usually a very bad sign
+  #
+
+  - assert 'ELAB-405' not in File( 'logs/dc.log' )
 
   # Sanity check that there is a clock in the constraints
 

@@ -66,14 +66,6 @@ mkdir -p alib
 cp -srf $PWD/inputs/adk/alib/* alib || true
 
 # Run the synthesis script
-#
-# - Note: We always run in topographical mode, even if the topographical
-#   mode parameter is false. This is because some commands are only
-#   available in topo mode even though they seem to be fairly general
-#   (e.g., create_scenario). So we run in topo mode and then have the
-#   scripts check the flag and skip physical-specific steps (e.g., reading
-#   tluplus) as needed.
-#
 
 if [ "x$topographical" == "xTrue" ]; then
   opt_topographical='-topographical_mode'
@@ -100,23 +92,4 @@ ln -sf ../reports/*.namemap        design.namemap
 
 cd ..
 
-# Grep for failure messages
 
-grep --color "^Error" logs/dc.log || true
-grep --color -B 3 "*** Presto compilation terminated" logs/dc.log || true
-grep --color "unresolved references." logs/dc.log || true
-
-# ELAB-405
-#
-# When using a Verilog generation tool, there may be a
-# generation/translation mistake that defines a net twice. This will give
-# a message like this:
-#
-#     Warning:  ./inputs/design.v:2473: Net mul__recv__msg__opd_b[0] or a
-#     directly connected net may be driven by more than one process or block.
-#     (ELAB-405)
-#
-# This is usually a bad sign..
-#
-
-grep --color "ELAB-405" logs/dc.log || true
