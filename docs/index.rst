@@ -19,6 +19,7 @@ running them.
 
 .. image:: _static/images/example-graph.jpg
   :width: 400px
+  :align: center
 
 .. <img width='350px' src='_static/images/example-graph.jpg'>
 

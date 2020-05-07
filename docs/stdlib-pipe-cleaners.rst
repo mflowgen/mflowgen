@@ -1,5 +1,17 @@
-GcdUnit Pipe Cleaner
+Greatest Common Divisor Pipe Cleaner
 ==========================================================================
+
+The GcdUnit module computes the greatest common divisor function and is a
+great design that has only 100-200 gates to quickly spin through the flow.
+Importantly, it contains only standard cells and no memory macros, greatly
+decreasing the complexity of the design. The datapath includes two state
+registers and the required muxing and arithmetic units to iteratively
+implement Euclid’s algorithm. The diagram below shows a hybrid Moore/Mealy
+FSM for controlling the datapath. Mealy transitions in the calc state
+determine whether to swap or subtract.
+
+.. image:: _static/images/gcdunit.svg
+  :align: center
 
 To start the GcdUnit pipe cleaner, first start the built-in demo:
 
@@ -23,15 +35,15 @@ like:
 
 .. code:: bash
 
-    $ make graph
+    % make graph
     (open graph.pdf in a PDF viewer like evince)
-    $ evince graph.pdf
+    % evince graph.pdf
 
 Here is the list of steps:
 
 .. code:: bash
 
-    $ make list
+    % make list
      -  0 : freepdk-45nm
      -  1 : rtl
      -  2 : info
@@ -63,6 +75,11 @@ Feel free to cross-check the construct.py, the graph visualization, and
 the `step configuration files
 <https://github.com/cornell-brg/mflowgen/tree/master/steps>`_ to see which
 files are passing between which steps.
+
+You will see that the GcdUnit RTL, a constraints file, and the technology
+interface from freepdk-45nm passes into the "synopsys-dc-synthesis" node.
+Compare this graph to the Python description of the graph in
+``GcdUnit/construct.py``.
 
 Here is a high-level overview of the Innovus steps. The
 ``cadence-innovus-flowsetup`` node first uses a script generator to

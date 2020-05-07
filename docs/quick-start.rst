@@ -8,6 +8,7 @@ algorithm. You can use this design to demo the default ASIC flow that
 ships with mflowgen, which should work for most designs.
 
 .. image:: _static/images/gcdunit.svg
+  :align: center
 
 **Greatest Common Divisor Circuit (GcdUnit)**
 

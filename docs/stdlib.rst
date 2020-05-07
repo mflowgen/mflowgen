@@ -6,8 +6,9 @@ standard commercial tools to synthesize an RTL design, place and route the
 gates, generate a layout, and verify it with a set of signoff steps.
 
 This section provides a high-level overview of running an entire pipe
-cleaner before doing deeper dives into the Innovus Foundation Flow, how
-mflowgen nodes for Innovus are set up, how to run each step, and which
+cleaner before doing deeper dives into the open-source technology files,
+submodular node organization, the DC synthesis node, the Innovus
+Foundation Flow, the Innovus nodes, how to run each step, and which
 scripts and reports are the most important to inspect.
 
 Pipe cleaners are small designs that run through the flow quickly and help
@@ -20,6 +21,7 @@ will be using the GcdUnit design as a pipecleaner.
    :caption: Contents:
 
    stdlib-pipe-cleaners
+   stdlib-freepdk45
    stdlib-submodular-nodes.rst
    stdlib-dc-synthesis
    stdlib-innovus-flowsetup
