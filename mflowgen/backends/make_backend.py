@@ -524,12 +524,15 @@ class MakeBackend:
 
     # Clean subtargets (e.g., clean-0, clean-1)
 
-    dirs = sorted( [ './' + d for d in s.build_dirs.values() ] )
-    for d in dirs:
-      idx     = d.split('-')[0].lstrip('./')
-      name    = 'clean-' + idx
-      command = 'rm -rf ' + d
-      make_clean( s.w, name=name, command=command )
+    for step_name, d in sorted( s.build_dirs.items(),
+                                  key=lambda x: x[1] ):
+      idx     = d.split('-')[0]
+      name_n  = 'clean-' + idx
+      name_s  = 'clean-' + step_name
+      command = 'rm -rf ./' + d
+      make_clean( s.w, name=name_n, command=command )
+      # Named clean subtargets (e.g., clean-foo, clean-bar)
+      make_alias( s.w, alias=name_s, deps=[name_n] )
 
     # Diff target
 
