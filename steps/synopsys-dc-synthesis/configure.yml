@@ -110,10 +110,38 @@ postconditions:
   #     directly connected net may be driven by more than one process or block.
   #     (ELAB-405)
   #
-  # Multiply driven nets is usually a very bad sign
+  # Multiply driven nets is usually a very bad sign.
   #
 
   - assert 'ELAB-405' not in File( 'logs/dc.log' )
+
+  # PSYN-024, PSYN-025, and PSYN-039
+  #
+  # PSYN-024 and PSYN-025 are warnings about inconsistent logical/physical
+  # libraries (logical is db, physical is lef). PSYN-024 says a logical
+  # definition of a cell exists and physical does not, and PSYN-025 says
+  # the physical definition exists but logical does not. If either of
+  # these appears, then PSYN-039 usually also appears which tells you that
+  # the inconsistent cell will be marked "dont_use".
+  #
+  # This is a problem if you _do_ expect those cells to be used by
+  # synthesis. In the most problematic case, if synthesis cannot find
+  # another candidate it may not do anything at all. For example, if no
+  # balanced-drive buffer cells are available, it may use an
+  # imbalanced-drive buffer. If no always-on power-domain buffer cells are
+  # available, it may not buffer at all.
+  #
+  # Technically, these cases are not a problem if you do _not_ expect
+  # synthesis to use that cell in the first place (e.g., if an IO cell is
+  # marked dont_use, it can be fine because synthesis should not be adding
+  # or using any IO cells). In these cases, you can either comment out
+  # this assertion (and risk missing other important cases), or you can
+  # just fix the inconsistency.
+  #
+
+  - assert 'PSYN-024' not in File( 'logs/dc.log' )
+  - assert 'PSYN-025' not in File( 'logs/dc.log' )
+  - assert 'PSYN-039' not in File( 'logs/dc.log' )
 
   # Sanity check that there is a clock in the constraints
 
