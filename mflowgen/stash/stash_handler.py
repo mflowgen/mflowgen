@@ -10,6 +10,7 @@
 import os
 import re
 import shutil
+import subprocess
 import sys
 import yaml
 
@@ -445,6 +446,31 @@ class StashHandler:
 
     dst_dirname = '-'.join( [ datestamp, step_name, hashstamp ] )
 
+    # Try to get some git information to help describe "where this step
+    # came from"
+
+    def get_shell_output( cmd ):
+      try:
+        output = subprocess.check_output( cmd.split(),
+                                          stderr=subprocess.DEVNULL,
+                                          universal_newlines=True )
+        output = output.strip()
+      except Exception:
+        output = ''
+      return output
+
+    git_cmd  = 'git rev-parse --short HEAD'    # git commit hash
+    git_hash = get_shell_output( git_cmd )
+
+    git_cmd  = 'git rev-parse --show-toplevel' # git root dir
+    git_repo = get_shell_output( git_cmd )
+    git_repo = os.path.basename( git_repo )
+
+    git_info = {
+      'git-root-dir' : git_repo,
+      'git-hash'     : git_hash
+    }
+
     # Helper function to ignore copying files other than the outputs
 
     def f_ignore( path, files ):
@@ -517,12 +543,13 @@ class StashHandler:
     # Update the metadata in the stash
 
     push_metadata = {
-      'date'   : datestamp,
-      'dir'    : dst_dirname,
-      'hash'   : hashstamp,
-      'author' : author,
-      'step'   : step_name,
-      'msg'    : msg,
+      'date'     : datestamp,
+      'dir'      : dst_dirname,
+      'hash'     : hashstamp,
+      'author'   : author,
+      'step'     : step_name,
+      'msg'      : msg,
+      'git-info' : git_info,
     }
 
     s.stash.append( push_metadata )
