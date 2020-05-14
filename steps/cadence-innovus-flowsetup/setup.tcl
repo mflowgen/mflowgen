@@ -92,7 +92,7 @@ set vars(libs_typical,timing) [join "
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
   set vars(libs_bc,timing)    [join "
                                 $vars(adk_dir)/stdcells-bc.lib
-                                [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]
+                                [glob -nocomplain $vars(adk_dir)/*-bc*.lib]
                                 [glob -nocomplain inputs/*ff*.lib]
                                 [glob -nocomplain inputs/*FF*.lib]
                               "]
