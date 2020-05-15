@@ -77,8 +77,8 @@ set vars(library_sets)        "libs_typical"
 
 set vars(libs_typical,timing) [join "
                                 $vars(adk_dir)/stdcells.lib
-                                $vars(adk_dir)/stdcells-lvt.lib
-                                $vars(adk_dir)/stdcells-ulvt.lib
+                                [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]
+                                [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]
                                 [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]
                                 [glob -nocomplain $vars(adk_dir)/iocells.lib]
                                 [glob -nocomplain inputs/*tt*.lib]
