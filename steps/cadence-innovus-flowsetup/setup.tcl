@@ -120,8 +120,6 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 set vars(lef_files) [join "
                       $vars(adk_dir)/rtk-tech.lef
                       $vars(adk_dir)/stdcells.lef
-                      $vars(adk_dir)/stdcells-lvt.lef
-                      $vars(adk_dir)/stdcells-ulvt.lef
                       [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]
                       [glob -nocomplain $vars(adk_dir)/*.lef]
                       [glob -nocomplain inputs/*.lef]
