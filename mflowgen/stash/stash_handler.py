@@ -478,11 +478,15 @@ class StashHandler:
       if '/' in path:
         if path.split('/')[1] == 'outputs':
           return []     # ignore nothing in outputs
+        elif path.split('/')[1] in [ 'logs', 'reports' ]: # TEMPORARY
+          return []     # ignore nothing                  # TEMPORARY
         else:
           return files  # ignore everything for any other directory
       # At the top level, keep the outputs and a few other misc files
       keep = [
         'outputs',
+        'logs',      # TEMPORARY
+        'reports',   # TEMPORARY
         'configure.yml',
         'mflowgen-run.log',
         '.time_start',
