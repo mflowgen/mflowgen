@@ -37,7 +37,12 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  # Enable useful clock skew -- [ True | False ]
   useful_skew: True
+  # Useful clock skew effort -- [ none | standard | medium | extreme ]
+  # - Note: This is ignored if useful_skew is False
+  # - Note: This flag is passed to "setOptMode -usefulSkewCCOpt"
+  useful_skew_ccopt_effort: standard
   order:
     - setup-ccopt.tcl
     - main.tcl
