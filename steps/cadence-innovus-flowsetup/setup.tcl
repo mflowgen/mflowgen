@@ -7,8 +7,7 @@
 # is intended to be used to define common process, technology, and library
 # information. Then innovus_config.tcl is then used to define
 # "block-specific" information like power and ground nets, tie and filler
-# cells, welltaps and endcaps, enabling useful skew, enabling clock
-# gating, etc.
+# cells, welltaps and endcaps, enabling clock gating, etc.
 #
 # In our BRG flow, most of our blocks are built the same way, so most of
 # the "block-specific" information is really common information. For
@@ -386,6 +385,10 @@ set vars(signoff,stream_out,replace_tcl)      $vars(custom_scripts_dir)/stream-o
 
 set vars(signoff,summary_report,replace_tcl)  $vars(custom_scripts_dir)/summary-report.tcl
 
+# CCOPT mode options are all during cts
+
+set vars(cts,set_ccopt_mode,skip) true
+
 #-------------------------------------------------------------------------
 # Misc
 #-------------------------------------------------------------------------
@@ -448,11 +451,6 @@ set vars(filler_cells)           $ADK_FILLER_CELLS
 
 set vars(antenna_diode)          $ADK_ANTENNA_CELL
 
-# List of buffers to use during useful skew
-
-set vars(useful_skew)  true
-#set vars(skew_buffers) ""
-
 # Clock-gate aware
 
 set vars(clock_gate_aware) true
@@ -504,7 +502,6 @@ set vars(time_design_options,hold)     -expandedViews
 
 set vars(flow_effort)                  standard
 set vars(congestion_effort)            medium
-set vars(ccopt_effort)                 high
 set vars(power_effort)                 high
 set vars(multi_cut_effort)             high
 
@@ -536,12 +533,10 @@ if { $::env(skip_verify_connectivity) } {
 #-------------------------------------------------------------------------
 
 if { $::env(express_flow) } {
-  set vars(flow_effort)       express
-  set vars(congestion_effort) low
-  set vars(ccopt_effort)      low
-  set vars(power_effort)      low
-  set vars(multi_cut_effort)  low
-
+  set vars(flow_effort)                 express
+  set vars(congestion_effort)           low
+  set vars(power_effort)                low
+  set vars(multi_cut_effort)            low
   set vars(postroute_extraction_effort) medium
 
   # Skipping (see "Tags for Innovus Flow")

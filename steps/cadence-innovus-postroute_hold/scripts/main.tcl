@@ -35,7 +35,7 @@ setOptMode -verbose true
 
 setOptMode -usefulSkewPostRoute true
 
-setOptMode -holdTargetSlack $::env(hold_target_slack) 
+setOptMode -holdTargetSlack  $::env(hold_target_slack)
 setOptMode -setupTargetSlack $::env(setup_target_slack)
 
 # Run the final postroute hold fixing
