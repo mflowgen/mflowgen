@@ -18,6 +18,8 @@
 # - If setOptMode -usefulSkew is false, then this entire option is ignored
 #
 
+puts "Info: Useful skew = $::env(useful_skew)"
+
 if { $::env(useful_skew) } {
   setOptMode -usefulSkew       true
   setOptMode -usefulSkewPreCTS true

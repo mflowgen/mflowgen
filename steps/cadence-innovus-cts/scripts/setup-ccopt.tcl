@@ -30,6 +30,8 @@ set_ccopt_property cts_merge_clock_logic true
 #   - "set_ccopt_effort -high"   and "setOptMode -usefulSkewCCOpt extreme"
 #
 
+puts "Info: Useful skew = $::env(useful_skew)"
+
 if { $::env(useful_skew) } {
   setOptMode -usefulSkew      true
   setOptMode -usefulSkewCCOpt extreme
