@@ -359,7 +359,7 @@ class StashHandler:
     if not s.stash:
       print( ' - ( the stash is empty )' )
     else:
-      for x in s.stash:
+      for x in reversed( s.stash ): # reversed chronological order
         print( template_str.format(
           hash_  = yellow( x[ 'hash' ] ),
           date   = x[ 'date'   ],
