@@ -408,7 +408,7 @@ class StashHandler:
       print( 'message can also be attached to each push.'                )
       print()
 
-    if help_ or not step or not msg:
+    if help_ or step==None or not msg:
       print_help()
       return
 
