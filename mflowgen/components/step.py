@@ -244,6 +244,12 @@ class Step:
   def set_postconditions( s, new_list ):
     s._config['postconditions'] = new_list
 
+  def get_preconditions( s ):
+    return s._config['preconditions']
+
+  def get_postconditions( s ):
+    return s._config['postconditions']
+
   #-----------------------------------------------------------------------
   # Parameter system
   #-----------------------------------------------------------------------
