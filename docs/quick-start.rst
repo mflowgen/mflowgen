@@ -17,6 +17,13 @@ through synthesis, place, and route with the included open-source 45nm
 ASIC design kit using either the open-source tools (e.g., Yosys) or the
 commercial tools (i.e., Synopsys, Cadence, Mentor).
 
+You may want to work in a virtual environment:
+
+.. code:: bash
+
+    % python3 -m venv venv
+    % source venv/bin/activate
+
 First, clone the repo:
 
 .. code:: bash
