@@ -378,6 +378,7 @@ class StashHandler:
         if verbose and 'stashed-from' in x.keys(): # stashed from
           for k, v in x['stashed-from'].items():
             print( stashed_from_template_str.format(k=k,v=v) )
+          print()
       if not all_ and len(s.stash) > n_print:
         n_extra = len(s.stash) - n_print
         print( ' - (...) see', n_extra, 'more with --all' )
