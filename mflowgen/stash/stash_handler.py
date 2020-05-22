@@ -365,7 +365,7 @@ class StashHandler:
       print( ' - ( the stash is empty )' )
     else:
       s.stash.reverse()  # print in reverse chronological order
-      n_print = 20       # print first N items
+      n_print = 10       # print first N items
       to_print = s.stash[:n_print] if not all_ else s.stash
       for x in to_print:
         print( template_str.format(
