@@ -38,6 +38,20 @@ setOptMode -usefulSkewPostRoute true
 setOptMode -holdTargetSlack  $::env(hold_target_slack)
 setOptMode -setupTargetSlack $::env(setup_target_slack)
 
+# Set the RC extraction effort
+#
+# The signoff-quality timing engine is a standalone engine that is meant
+# to be similar quality-wise to PrimeTime.
+#
+
+puts "Info: Using signoff engine = $::env(signoff_engine)"
+
+if { $::env(signoff_engine) } {
+  setExtractRCMode -engine postRoute -effortLevel signoff
+} else {
+  setExtractRCMode -engine postRoute -effortLevel high
+}
+
 # Run the final postroute hold fixing
 
 optDesign -postRoute -outDir reports -prefix postroute_hold -hold
