@@ -28,8 +28,8 @@ commands:
   - calibre -gui -drc -batch -runset fill.runset
   # Merge the design GDS with the dummy fill GDS
   - calibredrv -a layout filemerge \
-               -infile [list -name inputs/design.gds -suffix _design] \
-               -infile [list -name {fill_gds} -suffix _fill] \
+               -infile [list -name inputs/design.gds] \
+               -infile [list -name {fill_gds}] \
                -createtop {design_name}_filled \
                -out design_filled.gds
   - mkdir -p outputs && cd outputs
