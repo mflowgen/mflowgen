@@ -44,8 +44,12 @@ commands:
 parameters:
   design_gds: inputs/design.gds
   child_gds: inputs/child.gds
-  coord_x: 0.0
-  coord_y: 0.0
+  # coord_x and coord_y
+  #
+  # Coordinates should be a floating point number (or integer) followed by
+  # the character 'u' for microns.
+  coord_x: 0.0u
+  coord_y: 0.0u
 
 #-------------------------------------------------------------------------
 # Debug
