@@ -69,6 +69,6 @@ if { $::env(flatten_child) } {
 # Stream out gds0
 
 puts "> Streaming out $gdsout"
-$L0 gdsout $gdsout
+$L0 gdsout $gdsout $L0_topcell
 
 
