@@ -583,6 +583,20 @@ class StashHandler:
     s.stash.append( push_metadata )
     s.update_stash()
 
+    # Try adding the metadata to the stashed step itself, so that when the
+    # step gets pulled somewhere, we have all of its metadata to know
+    # where it came from
+
+    try:
+      data = push_metadata
+      data.update( { 'stash-dir': s.link_path } ) # add stash dir
+      write_yaml(
+        data = data,
+        path = remote_path+'/.mflowgen.stash.node.yml',
+      )
+    except Exception as e:
+      pass
+
     print(
       'Stashed step {step} "{step_name}" as author "{author}"'.format(
       step      = step,
