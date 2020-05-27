@@ -58,6 +58,14 @@ set L1_topcell [ $L1 topcell ]
 puts "> Creating reference for $L1_topcell in $L0_topcell at xy ($coord_x, $coord_y)"
 $L0 create ref $L0_topcell $L1_topcell $coord_x $coord_y 0 0 1.0
 
+# Flatten the child cell
+
+puts "Info: Flatten child = $::env(flatten_child)"
+
+if { $::env(flatten_child) } {
+  $L0 flatten ref $L0_topcell $L1_topcell $coord_x $coord_y 0 0 1.0
+}
+
 # Stream out gds0
 
 puts "> Streaming out $gdsout"
