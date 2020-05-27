@@ -50,6 +50,8 @@ parameters:
   # the character 'u' for microns.
   coord_x: 0.0u
   coord_y: 0.0u
+  # flatten the child_gds into the design_gds
+  flatten_child: False
 
 #-------------------------------------------------------------------------
 # Debug
