@@ -2,7 +2,7 @@ mflowgen
 ==========================================================================
 [![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/cornell-brg/mflowgen.svg?branch=master)](https://travis-ci.com/cornell-brg/mflowgen)
 
-**Author**: Christopher Torng (clt67@cornell.edu)
+**Author**: Christopher Torng (ctorng@stanford.edu)
 
 mflowgen is a modular flow specification and build-system
 generator for ASIC and FPGA design-space exploration built around
