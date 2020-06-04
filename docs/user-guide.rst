@@ -8,6 +8,7 @@ User Guide
    ug-cli
    ug-connect
    ug-clone-step
+   ug-param-space
    ug-adk-paths
    ug-assertions
    ug-stash

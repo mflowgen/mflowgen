@@ -60,6 +60,10 @@ NanGate Open Cell Library.
     choices. The remainder of this quickstart will assume you have modified
     this file and chosen the open-source toolflow.
 
+    Refer to :ref:`quick_start_commercial` for a similar quick start that
+    uses commercial tools (e.g., Synopsys, Cadence, Mentor) instead of
+    open-source tools.
+
 .. code:: bash
 
     % cd $TOP

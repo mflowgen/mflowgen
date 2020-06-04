@@ -79,11 +79,11 @@ Cell Library.
    :caption: Contents
 
    quick-start
-   motivation
    ref-graph-building-api
-   ref-command-line-interface
    user-guide
    stdlib
    faq
 
+..   motivation
+..   ref-command-line-interface
 
