@@ -22,6 +22,7 @@
 *cmnVConnectReport: 1
 *cmnVConnectNamesState: ${lvs_connect_names_state}
 *cmnVConnectNames: ${lvs_connect_names}
+*cmnVerifySourceNetlist: ${lvs_verify_netlist}
 *cmnTranscriptFile: lvs.log
 *cmnTranscriptEchoToFile: 1
 *cmnRunMT: 1
