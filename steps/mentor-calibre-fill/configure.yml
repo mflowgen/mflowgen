@@ -16,7 +16,7 @@ inputs:
   - adk
 
 outputs:
-  - design.gds
+  - fill.gds
 
 #-------------------------------------------------------------------------
 # Commands
@@ -26,14 +26,8 @@ commands:
   # Generate the dummy fill GDS
   - envsubst < fill.runset.template > fill.runset
   - calibre -gui -drc -batch -runset fill.runset
-  # Merge the design GDS with the dummy fill GDS
-  - calibredrv -a layout filemerge \
-               -infile [list -name inputs/design.gds -suffix _design] \
-               -infile [list -name {fill_gds} -suffix _fill] \
-               -createtop {design_name}_filled \
-               -out design_filled.gds
   - mkdir -p outputs && cd outputs
-  - ln -sf ../design_filled.gds design.gds
+  - ln -sf ../{fill_gds} fill.gds
 
 
 #-------------------------------------------------------------------------
@@ -51,7 +45,7 @@ parameters:
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m outputs/design.gds \
+  - calibredrv -m outputs/fill.gds \
                -l inputs/adk/calibre.layerprops
 
 #-------------------------------------------------------------------------
@@ -66,6 +60,6 @@ preconditions:
 
 postconditions:
 
-  - assert File( 'outputs/design.gds' )
+  - assert File( 'outputs/fill.gds' )
 
 
