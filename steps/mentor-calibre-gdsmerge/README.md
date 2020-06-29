@@ -44,3 +44,11 @@ Here is the exact version of calibre:
     % which calibredrv
     /cad/mentor/2018.8/aoi_cal_2018.2_33.24/bin/calibredrv
 
+**Backgrounding problem**
+
+If you put calibredrv in the background it will hang. This is a known
+bug documented in the manual, see `calibr_drv_ref.pdf` where it says
+"Do not start the tool as a background process or the Tcl shell locks up."
+
+To ameliorate the problem, gdsmerge does `"echo | calibredrv ..."`
+instead of `"calibredrv ..."` , this seems to solve the problem.
