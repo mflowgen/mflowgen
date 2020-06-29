@@ -53,7 +53,7 @@ Key features and design philosophies:
   postconditions are simply Python snippets that run before and
   after a node to catch unexpected situations that arise at build
   time. Assertions are collected and run with pytest. The mflowgen
-  graph-building DSL can also extend a node with _design-specific_
+  graph-building DSL can also extend a node with *design-specific*
   assertions by extending Python lists.
 
 - **A focus on hardware design-space exploration** -- Parameter
