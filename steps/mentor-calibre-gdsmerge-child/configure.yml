@@ -32,7 +32,9 @@ commands:
   # For some reason, Calibre requires this directory to exist
   - mkdir -p $HOME/.calibrewb_workspace/tmp
   # Run the merge
-  - calibredrv merge.tcl
+  # Need 'echo |' to stop calibredrv from hanging if the step is backgrounded,
+  # which is a known calibredrv bug noted in the manual (see calibr_drv_ref.pdf)
+  - echo | calibredrv merge.tcl
   # Get the outputs
   - mkdir -p outputs && cd outputs
   - ln -sf ../design_merged.gds
