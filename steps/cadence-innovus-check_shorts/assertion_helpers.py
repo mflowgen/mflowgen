@@ -9,8 +9,6 @@
 
 from glob import glob
 
-import re
-
 # Checks output of verify_drc command for any shorts...
 def get_shorts():
 
