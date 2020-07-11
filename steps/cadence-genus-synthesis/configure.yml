@@ -1,0 +1,82 @@
+#=========================================================================
+# Cadence Genus Synthesis
+#=========================================================================
+# Author : Christopher Torng, Yanghui Ou
+# Date   : June 7, 2019
+#
+
+name: cadence-genus-synthesis
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.v
+  - constraints.tcl
+
+outputs:
+  - design.v
+  - design.sdc
+  - design.namemap
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - genus -no_gui -f START.tcl -log logs/genus.log
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../results_syn/syn_out.v design.v
+  - ln -sf ../results_syn/syn_out._default_constraint_mode_.sdc design.sdc
+  - ln -sf ../name_map.rpt design.namemap
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  clock_period: 1.0
+  # Automatic fine-grain clock gating
+  gate_clock: True
+  # Uniquify by prefixing every module in the design with the design name.
+  # This is useful for hierarchical LVS when multiple blocks use modules
+  # with the same name but different definitions.
+  uniquify_with_design_name: True
+  order:
+    - main.tcl
+    - write_results.tcl
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - genus -no_gui -f results_syn/syn_out.genus_setup.tcl
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'genus' )                   # tool check
+  - assert File( 'inputs/adk' )              # must exist
+  - assert File( 'inputs/design.v' )         # must exist
+  - assert File( 'inputs/constraints.tcl' )  # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.v' )        # must exist
+  - assert File( 'outputs/design.sdc' )      # must exist
+
+  # Basic error checking
+
+  - assert 'Cannot resolve reference' not in File( 'logs/genus.log' )
+
+  # Sanity check that there is a clock in the constraints
+
+  - assert 'create_clock' in File( 'outputs/design.sdc' )
+
