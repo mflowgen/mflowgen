@@ -3,13 +3,11 @@
 #=========================================================================
 # Helper functions for assertions
 #
-# Author : Christopher Torng
-# Date   : March 14, 2020
+# Author : Maxwell Strange
+# Date   : July 10, 2020
 #
 
 from glob import glob
-
-import re
 
 # Checks output of verify_drc command for any shorts...
 def get_shorts():

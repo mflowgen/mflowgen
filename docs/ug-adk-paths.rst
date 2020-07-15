@@ -26,7 +26,7 @@ And say we had set the adk to be "freepdk-45nm":
 
 .. code:: python
 
-    >>> g.set_adk( adk_name )
+    >>> g.set_adk( 'freepdk-45nm' )
 
 Trying to locate the 'freepdk-45nm' ADK will result in mflowgen checking
 ``../adks/freepdk-45nm``, ``/path/to/foo/freepdk-45nm``, and
