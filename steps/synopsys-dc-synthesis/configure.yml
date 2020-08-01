@@ -90,7 +90,7 @@ postconditions:
 
   # Basic error checking
 
-  - assert 'error' not in File( 'logs/dc.log' )
+  - assert 'error:' not in File( 'logs/dc.log' )
   - assert 'Unresolved references' not in File( 'logs/dc.log' )
   - assert 'Unable to resolve' not in File( 'logs/dc.log' )
   - assert 'Presto compilation terminated' not in File( 'logs/dc.log' )
