@@ -42,6 +42,12 @@ innovus -64 -no_gui -no_logv -batch -execute "writeFlowTemplate"
 # postroute signoff".
 #
 
+if [[ -f inputs/setup.tcl ]]; then
+  cat setup_base.tcl inputs/setup.tcl > setup.tcl
+else
+  cp setup_base.tcl setup.tcl
+fi
+
 ./SCRIPTS/gen_flow.tcl -m flat --Verbose --nomake --setup . --dir \
   innovus-foundation-flow all | tee flowsetup.log
 
