@@ -106,7 +106,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update, backend ):
+  def launch( s, help_, design, update=False, backend='make' ):
 
     # Check that this design directory exists
 

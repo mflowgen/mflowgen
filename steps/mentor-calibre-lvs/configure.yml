@@ -20,21 +20,23 @@ inputs:
 outputs:
   - lvs.report
   - design.schematic.spi
+  - design_merged.lvs.v
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  - if [ -z "{lvs_hcells_file}" ]; then export lvs_use_hcells=0; else export lvs_use_hcells=1; fi
-  - if [ -z "{lvs_connect_names}" ]; then export lvs_connect_names_state=NONE; else export lvs_connect_names_state=SOME; fi
+  - if [ -z "$lvs_hcells_file" ]; then export lvs_use_hcells=0; else export lvs_use_hcells=1; fi
+  - if [ -z "$lvs_connect_names" ]; then export lvs_connect_names_state=NONE; else export lvs_connect_names_state=SOME; fi
   - envsubst < lvs.runset.template > lvs.runset
   - if [ ! -f inputs/*.svrf ]; then touch inputs/rules.svrf; fi
-  - cat inputs/*.lvs.v > merged.v
+  - cat inputs/*.lvs.v > merged.lvs.v
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report
   - ln -sf ../_merged.v.sp design.schematic.spi
+  - ln -sf ../merged.lvs.v design_merged.lvs.v
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -60,6 +62,14 @@ parameters:
   #   name in the extracted layout.
   #
   lvs_connect_names: ""
+  #
+  # lvs_verify_netlist:
+  #
+  # - Whether we should verify the source netlist after the v2lvs step.
+  #   Useful to set to 0 if some sources don't have all of their dependencies
+  #   present, such as when using LVS BOX.
+  #
+  lvs_verify_netlist: 1
 
 #-------------------------------------------------------------------------
 # Debug

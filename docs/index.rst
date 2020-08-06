@@ -48,6 +48,14 @@ Key features and design philosophies:
   or a more complex graph can be built for a more aggressive chip
   tapeout (reusing many of the same steps from before).
 
+- **Runtime assertions** -- Assertions can be built into each
+  modular node and checked at runtime. Preconditions and
+  postconditions are simply Python snippets that run before and
+  after a node to catch unexpected situations that arise at build
+  time. Assertions are collected and run with pytest. The mflowgen
+  graph-building DSL can also extend a node with *design-specific*
+  assertions by extending Python lists.
+
 - **A focus on hardware design-space exploration** -- Parameter
   expansion can be applied to steps to quickly spin out parallel
   builds for design-space exploration at both smaller scales with a
@@ -79,11 +87,11 @@ Cell Library.
    :caption: Contents
 
    quick-start
-   motivation
    ref-graph-building-api
-   ref-command-line-interface
    user-guide
    stdlib
    faq
 
+..   motivation
+..   ref-command-line-interface
 

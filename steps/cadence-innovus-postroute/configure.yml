@@ -36,6 +36,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  useful_skew: True
+  hold_target_slack: 0.005
+  setup_target_slack: 0.000
   order:
     - setup-optmode.tcl
     - main.tcl

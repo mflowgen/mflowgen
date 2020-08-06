@@ -78,9 +78,9 @@ class MockHandler:
       print()
       print( bold( 'Example:' )                                        )
       print()
-      print( '  % cd synopsys-dc-synthesis'                            )
+      print( '  % cd mflowgen/steps'                                   )
       print( '  % mkdir build && cd build'                             )
-      print( '  % mflowgen mock init --path ..'                        )
+      print( '  % mflowgen mock init --path ../synopsys-dc-synthesis'  )
       print()
       print( 'Creates a mock-up graph to help develop a modular step.' )
       print( 'The mock-up contains the "design-under-test" node and a' )
@@ -158,9 +158,7 @@ class MockHandler:
     # Launch mflowgen run on the mock graph
 
     RunHandler().launch( help_   = False,
-                         demo    = False,
-                         design  = '.',
-                         backend = 'make' ) # default to make
+                         design  = '.' )
 
   #-----------------------------------------------------------------------
   # launch_help

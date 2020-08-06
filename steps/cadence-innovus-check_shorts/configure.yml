@@ -1,52 +1,52 @@
 #=========================================================================
-# Mentor Calibre Fill
+# Cadence Innovus
 #=========================================================================
-# Author : Christopher Torng
-# Date   : April 6, 2020
+# Author : Maxwell Strange
+# Date   : July 10, 2020
 #
 
-name: mentor-calibre-fill
+name: cadence-innovus-check_shorts
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
 inputs:
-  - design.gds
+  - innovus-foundation-flow
   - adk
+  - design.checkpoint
 
 outputs:
-  - fill.gds
+  - design.checkpoint
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Generate the dummy fill GDS
-  - envsubst < fill.runset.template > fill.runset
-  - calibre -gui -drc -batch -runset fill.runset
-  - mkdir -p outputs && cd outputs
-  - ln -sf ../{fill_gds} fill.gds
+  - ln -sf inputs/innovus-foundation-flow
+  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
 
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/design.checkpoint
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
 parameters:
-  design_name: undefined
-  # Use the rule deck "inputs/adk/${fill_rule_deck}"
-  fill_rule_deck: calibre-fill.rule
-  fill_gds: FEOL.gds
+  order:
+    - main.tcl
 
 #-------------------------------------------------------------------------
 # Debug
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m outputs/fill.gds \
-               -l inputs/adk/calibre.layerprops
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
 
 #-------------------------------------------------------------------------
 # Assertions
@@ -54,12 +54,16 @@ debug:
 
 preconditions:
 
-  - assert Tool( 'calibre' )
-  - assert File( 'inputs/adk' )
-  - assert File( 'inputs/design.gds' )
+  - assert Tool( 'innovus' )                         # tool check
+  - assert File( 'inputs/innovus-foundation-flow' )  # must exist
+  - assert File( 'inputs/adk' )                      # must exist
+  - assert File( 'inputs/design.checkpoint' )        # must exist
 
 postconditions:
 
-  - assert File( 'outputs/fill.gds' )
+  - assert File( 'outputs/design.checkpoint' )       # must exist
+  - |
+    from assertion_helpers import get_shorts
+    assert len(get_shorts()) == 0, "!!!FOUND SHORTS!!!"
 
 

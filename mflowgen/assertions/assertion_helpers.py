@@ -86,7 +86,7 @@ def main():
     #
 
     pytest_args = [ '-q', '-rA', '--disable-warnings',
-                    '--tb=short', '--color=yes', f ]
+                    '--tb=short', '--color=yes', '--noconftest', f ]
     print( 'pytest ' + ' '.join( pytest_args ) )
     status = pytest.main( pytest_args )
     exit_status.append( status )

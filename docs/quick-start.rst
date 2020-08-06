@@ -17,6 +17,13 @@ through synthesis, place, and route with the included open-source 45nm
 ASIC design kit using either the open-source tools (e.g., Yosys) or the
 commercial tools (i.e., Synopsys, Cadence, Mentor).
 
+You may want to work in a virtual environment:
+
+.. code:: bash
+
+    % python3 -m venv venv
+    % source venv/bin/activate
+
 First, clone the repo:
 
 .. code:: bash
@@ -52,6 +59,10 @@ NanGate Open Cell Library.
     ``$TOP/designs/GcdUnit/.mflowgen.yml`` and specify one of the three
     choices. The remainder of this quickstart will assume you have modified
     this file and chosen the open-source toolflow.
+
+    Refer to :ref:`quick_start_commercial` for a similar quick start that
+    uses commercial tools (e.g., Synopsys, Cadence, Mentor) instead of
+    open-source tools.
 
 .. code:: bash
 

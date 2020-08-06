@@ -1,65 +1,41 @@
 #=========================================================================
-# Mentor Calibre Fill
+# Mentor Calibre -- Chip Art
 #=========================================================================
 # Author : Christopher Torng
-# Date   : April 6, 2020
+# Date   : May 29, 2020
 #
 
-name: mentor-calibre-fill
+name: mentor-calibre-chipart
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
 inputs:
-  - design.gds
-  - adk
+  - shapes.py
 
 outputs:
-  - fill.gds
+  - chipart.gds
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Generate the dummy fill GDS
-  - envsubst < fill.runset.template > fill.runset
-  - calibre -gui -drc -batch -runset fill.runset
-  - mkdir -p outputs && cd outputs
-  - ln -sf ../{fill_gds} fill.gds
-
+  - make
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
-parameters:
-  design_name: undefined
-  # Use the rule deck "inputs/adk/${fill_rule_deck}"
-  fill_rule_deck: calibre-fill.rule
-  fill_gds: FEOL.gds
+#parameters:
 
 #-------------------------------------------------------------------------
 # Debug
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m outputs/fill.gds \
+  - calibredrv -m chipart.gds \
                -l inputs/adk/calibre.layerprops
-
-#-------------------------------------------------------------------------
-# Assertions
-#-------------------------------------------------------------------------
-
-preconditions:
-
-  - assert Tool( 'calibre' )
-  - assert File( 'inputs/adk' )
-  - assert File( 'inputs/design.gds' )
-
-postconditions:
-
-  - assert File( 'outputs/fill.gds' )
 
 

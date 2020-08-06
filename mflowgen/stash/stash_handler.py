@@ -10,6 +10,7 @@
 import os
 import re
 import shutil
+import subprocess
 import sys
 import yaml
 
@@ -197,7 +198,7 @@ class StashHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, args, help_, path, step, msg, hash_, all_ ):
+  def launch( s, args, help_, path, step, msg, hash_, all_, verbose ):
 
     if help_ and not args:
       s.launch_help()
@@ -221,7 +222,7 @@ class StashHandler:
 
     if   command == 'init' : s.launch_init( help_, path )
     elif command == 'link' : s.launch_link( help_, path )
-    elif command == 'list' : s.launch_list( help_ )
+    elif command == 'list' : s.launch_list( help_, verbose, all_ )
     elif command == 'push' : s.launch_push( help_, step, msg, all_ )
     elif command == 'pull' : s.launch_pull( help_, hash_ )
     elif command == 'pop'  : s.launch_pop ( help_, hash_ )
@@ -326,16 +327,18 @@ class StashHandler:
   # - Reads the metadata YAML in the stash directory to list the stash
   #
 
-  def launch_list( s, help_ ):
+  def launch_list( s, help_, verbose, all_ ):
 
     # Help message
 
     def print_help():
       print()
-      print( bold( 'Usage:' ), 'mflowgen stash list'                  )
+      print( bold( 'Usage:' ), 'mflowgen stash list [--verbose] [--all]' )
       print()
-      print( 'Lists all pre-built steps stored in the mflowgen stash' )
-      print( 'that the current build graph is linked to.'             )
+      print( 'Lists all pre-built steps stored in the mflowgen stash'    )
+      print( 'that the current build graph is linked to. The --verbose'  )
+      print( 'flag prints metadata about where each stashed step was'    )
+      print( 'stashed from. Use --all to print all steps in the stash.'  )
       print()
 
     if help_:
@@ -354,11 +357,17 @@ class StashHandler:
     template_str = \
       ' - {hash_} [ {date} ] {author} {step} -- {msg}'
 
+    stashed_from_template_str = \
+      '     > {k:30} : {v}'
+
     print()
     if not s.stash:
       print( ' - ( the stash is empty )' )
     else:
-      for x in s.stash:
+      s.stash.reverse()  # print in reverse chronological order
+      n_print = 10       # print first N items
+      to_print = s.stash[:n_print] if not all_ else s.stash
+      for x in to_print:
         print( template_str.format(
           hash_  = yellow( x[ 'hash' ] ),
           date   = x[ 'date'   ],
@@ -366,6 +375,13 @@ class StashHandler:
           step   = x[ 'step'   ],
           msg    = x[ 'msg'    ],
         ) )
+        if verbose and 'stashed-from' in x.keys(): # stashed from
+          for k, v in x['stashed-from'].items():
+            print( stashed_from_template_str.format(k=k,v=v) )
+          print()
+      if not all_ and len(s.stash) > n_print:
+        n_extra = len(s.stash) - n_print
+        print( ' - (...) see', n_extra, 'more with --all' )
     print()
     print( bold( 'Stash:' ), s.get_stash_path() )
     print()
@@ -407,7 +423,7 @@ class StashHandler:
       print( 'message can also be attached to each push.'                )
       print()
 
-    if help_ or not step or not msg:
+    if help_ or step==None or not msg:
       print_help()
       return
 
@@ -445,6 +461,40 @@ class StashHandler:
 
     dst_dirname = '-'.join( [ datestamp, step_name, hashstamp ] )
 
+    # Try to get some information to help describe "where this step came
+    # from"
+
+    def get_shell_output( cmd ):
+      try:
+        output = subprocess.check_output( cmd.split(),
+                                          stderr=subprocess.DEVNULL,
+                                          universal_newlines=True )
+        output = output.strip()
+      except Exception:
+        output = ''
+      return output
+
+    def get_hostname():
+      import socket
+      return socket.gethostname()
+
+    git_cmd  = 'git rev-parse --short HEAD'    # git commit hash
+    git_hash = get_shell_output( git_cmd )
+
+    git_cmd  = 'git rev-parse --show-toplevel' # git root dir
+    git_repo = get_shell_output( git_cmd )
+    git_repo = os.path.basename( git_repo )
+
+    build_path = os.getcwd()                   # build dir path
+    hostname   = get_hostname()                # hostname
+
+    stashed_from = {
+      'stashed-from-git-root-dir'      : git_repo,
+      'stashed-from-git-root-dir-hash' : git_hash,
+      'stashed-from-dir'               : build_path,
+      'stashed-from-hostname'          : hostname,
+    }
+
     # Helper function to ignore copying files other than the outputs
 
     def f_ignore( path, files ):
@@ -452,11 +502,15 @@ class StashHandler:
       if '/' in path:
         if path.split('/')[1] == 'outputs':
           return []     # ignore nothing in outputs
+        elif path.split('/')[1] in [ 'logs', 'reports' ]: # TEMPORARY
+          return []     # ignore nothing                  # TEMPORARY
         else:
           return files  # ignore everything for any other directory
       # At the top level, keep the outputs and a few other misc files
       keep = [
         'outputs',
+        'logs',      # TEMPORARY
+        'reports',   # TEMPORARY
         'configure.yml',
         'mflowgen-run.log',
         '.time_start',
@@ -517,16 +571,31 @@ class StashHandler:
     # Update the metadata in the stash
 
     push_metadata = {
-      'date'   : datestamp,
-      'dir'    : dst_dirname,
-      'hash'   : hashstamp,
-      'author' : author,
-      'step'   : step_name,
-      'msg'    : msg,
+      'date'         : datestamp,
+      'dir'          : dst_dirname,
+      'hash'         : hashstamp,
+      'author'       : author,
+      'step'         : step_name,
+      'msg'          : msg,
+      'stashed-from' : stashed_from,
     }
 
     s.stash.append( push_metadata )
     s.update_stash()
+
+    # Try adding the metadata to the stashed step itself, so that when the
+    # step gets pulled somewhere, we have all of its metadata to know
+    # where it came from
+
+    try:
+      data = push_metadata
+      data.update( { 'stash-dir': s.link_path } ) # add stash dir
+      write_yaml(
+        data = data,
+        path = remote_path+'/.mflowgen.stash.node.yml',
+      )
+    except Exception as e:
+      pass
 
     print(
       'Stashed step {step} "{step_name}" as author "{author}"'.format(

@@ -1,19 +1,25 @@
 #=========================================================================
-# Mentor Calibre GDS Merge
+# Mentor Calibre GDS Merge -- Child
 #=========================================================================
+# Merges two GDS files, with:
+#
+#   1. The child.gds merged as a child cell of design.gds
+#   2. The child.gds placed at (coord_x, coord_y) inside design.gds
+#
 # Author : Christopher Torng
 # Date   : November 5, 2019
 #
 
-name: mentor-calibre-gdsmerge
+name: mentor-calibre-gdsmerge-child
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
 inputs:
-  - design.gds.gz
   - adk
+  - design.gds
+  - child.gds
 
 outputs:
   - design_merged.gds
@@ -25,17 +31,11 @@ outputs:
 commands:
   # For some reason, Calibre requires this directory to exist
   - mkdir -p $HOME/.calibrewb_workspace/tmp
-  # Glob for all gds files in adk
-  # Done manually because -indir inputs/adk did not work on Calibre 17
-  - ins=""; for f in inputs/adk/*.gds*; do ins="$ins -in $f"; done
-  # Use calibredrv to merge gds files
+  # Run the merge
   # Need 'echo |' to stop calibredrv from hanging if the step is backgrounded,
   # which is a known calibredrv bug noted in the manual (see calibr_drv_ref.pdf)
-  - echo | calibredrv -a layout filemerge \
-               -indir inputs \
-               $ins
-               -topcell {design_name} \
-               -out design_merged.gds 2>&1 | tee merge.log
+  - echo | calibredrv merge.tcl
+  # Get the outputs
   - mkdir -p outputs && cd outputs
   - ln -sf ../design_merged.gds
 
@@ -44,7 +44,16 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  design_name: undefined
+  design_gds: inputs/design.gds
+  child_gds: inputs/child.gds
+  # coord_x and coord_y
+  #
+  # Coordinates should be a floating point number (or integer) followed by
+  # the character 'u' for microns.
+  coord_x: 0.0u
+  coord_y: 0.0u
+  # flatten the child_gds into the design_gds
+  flatten_child: False
 
 #-------------------------------------------------------------------------
 # Debug
@@ -61,7 +70,8 @@ debug:
 preconditions:
 
   - assert Tool( 'calibredrv' )
-  - assert File( 'inputs/design.gds.gz' )
+  - assert File( 'inputs/design.gds' )
+  #- assert File( 'inputs/child.gds' ) # commented, maybe merging with adk
 
 postconditions:
 
@@ -82,9 +92,21 @@ postconditions:
   # what to do next for the merged GDS: (1) use one library's version, (2)
   # use the other library's version, (3) rename both and each reference
   # their own version, (4) something else...
+
+  # More naming conflicts
+  #
+  # The "-mode reportconflictsonly" option will report whether name
+  # conflicts exist. The notice looks like this:
+  #
+  #     Note: cell {cell_name} already exists in foo.gds, conflicts
+  #       with {cell_name} from bar.gds.
+  #
+  # We have to make sure this does not happen.
   #
 
   - "assert 'WARNING: Ignoring duplicate structure'
-      not in File( 'merge.log' )"
+      not in File( 'mflowgen-run.log' )"
+
+  - "assert 'conflicts with' not in File( 'mflowgen-run.log' )"
 
 

@@ -1,3 +1,5 @@
+.. _quick_start_commercial:
+
 Greatest Common Divisor Pipe Cleaner
 ==========================================================================
 

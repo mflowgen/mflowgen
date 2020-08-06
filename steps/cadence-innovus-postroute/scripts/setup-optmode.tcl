@@ -14,9 +14,30 @@ setOptMode -verbose true
 # Use this option carefully because over constraining can lead to increase
 # in buffers, which causes more congestion and power
 
-setOptMode -holdTargetSlack  0.005
-setOptMode -setupTargetSlack 0.000
+setOptMode -holdTargetSlack  $::env(hold_target_slack)
+setOptMode -setupTargetSlack $::env(setup_target_slack)
 
-setOptMode -usefulSkewPostRoute true
+# Useful skew
+#
+# setOptMode -usefulSkew [ true | false ]
+#
+# - This enables/disables all other -usefulSkew* options (e.g.,
+#   -usefulSkewCCOpt, -usefulSkewPostRoute, and -usefulSkewPreCTS)
+#
+# setOptMode -usefulSkewPostRoute [ true | false ]
+#
+# - If setOptMode -usefulSkew is false, then this entire option is ignored
+#
+
+puts "Info: Useful skew = $::env(useful_skew)"
+
+if { $::env(useful_skew) } {
+  setOptMode -usefulSkew          true
+  setOptMode -usefulSkewPostRoute true
+} else {
+  setOptMode -usefulSkew         false
+}
+
+
 
 

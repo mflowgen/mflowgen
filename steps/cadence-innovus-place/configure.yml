@@ -37,7 +37,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  useful_skew: True
   order:
+    - setup-optmode.tcl
     - setup-cellpad.tcl
     - main.tcl
     - clean-cellpad.tcl
