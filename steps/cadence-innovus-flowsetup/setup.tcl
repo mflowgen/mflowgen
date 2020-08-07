@@ -564,3 +564,7 @@ if { $::env(express_flow) } {
 #  set vars(signoff,time_design_hold,skip) true
 }
 
+# Allows user to override any of the defaults in this file
+if [file exists inputs/setup.tcl] {
+  source inputs/setup.tcl
+}
