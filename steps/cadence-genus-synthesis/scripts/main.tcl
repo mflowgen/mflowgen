@@ -18,13 +18,14 @@ if { $gate_clock == True } {
 }
  
 set_attr library    [join "
-                      [glob -nocomplain inputs/*.lib]
                       [glob -nocomplain inputs/adk/*.lib]
+                      [glob -nocomplain inputs/*.lib]
                     "]
 
 set_attr lef_library [join "
-                       [glob -nocomplain inputs/*.lef]
+                       inputs/adk/rtk-tech.lef
                        [glob -nocomplain inputs/adk/*.lef]
+                       [glob -nocomplain inputs/*.lef]
                      "]
 
 set_attr qrc_tech_file [list inputs/adk/pdk-typical-qrcTechFile]
