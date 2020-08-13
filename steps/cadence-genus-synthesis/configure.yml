@@ -75,6 +75,7 @@ postconditions:
   # Basic error checking
 
   - assert 'Cannot resolve reference' not in File( 'logs/genus.log' )
+  - assert 'Error   :' not in File( 'logs/genus.log' )
 
   # Sanity check that there is a clock in the constraints
 
