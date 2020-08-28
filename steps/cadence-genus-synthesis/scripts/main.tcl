@@ -42,6 +42,10 @@ if { $gate_clock == True } {
 #
 # Also, added "lsort" to "glob" for better determinacy.
 # 
+# Note, genus at the moment only uses typical libraries;
+# I'm leaving the best/worst lists for consistency with flowsetup step,
+# plus maybe someday someone would want to design to one of these cases...?
+# 
 # FIXME This could maybe could/should be wrapped up as a separate common
 # script somewhere? For use by both genus and flowsetup etc?
 # Better: Could be an executable bash script in e.g. "adks/bin"...?
