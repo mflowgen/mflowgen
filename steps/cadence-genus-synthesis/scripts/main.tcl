@@ -21,18 +21,6 @@ if { $gate_clock == True } {
 # (begin compiling library and lef lists)
 # ------------------------------------------------------------------------
 
-# OLD/BAD
-# set_attr library    [join "
-#                       [glob -nocomplain inputs/adk/*.lib]
-#                       [glob -nocomplain inputs/*.lib]
-#                     "]
-# 
-# set_attr lef_library [join "
-#                        inputs/adk/rtk-tech.lef
-#                        [glob -nocomplain inputs/adk/*.lef]
-#                        [glob -nocomplain inputs/*.lef]
-#                      "]
-
 ########################################################################
 # Library sets
 # 
