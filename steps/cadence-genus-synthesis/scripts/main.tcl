@@ -17,11 +17,11 @@ if { $gate_clock == True } {
   set_attr lp_insert_clock_gating true
 }
  
-# ------------------------------------------------------------------------
+#-------------------------------------------------------------------------
 # (begin compiling library and lef lists)
-# ------------------------------------------------------------------------
+#-------------------------------------------------------------------------
 
-########################################################################
+#-------------------------------------------------------------------------
 # Library sets
 # 
 # Steveri update Aug 2020: fixed library load ordering.
@@ -33,7 +33,7 @@ if { $gate_clock == True } {
 global vars
 set vars(adk_dir) inputs/adk
 
-########################################################################
+#-------------------------------------------------------------------------
 # Typical-case libraries
 set vars(libs_typical,timing) \
     [join "
@@ -48,7 +48,7 @@ set vars(libs_typical,timing) \
 puts "INFO: Found typical-typical libraries $vars(libs_typical,timing)"
 foreach L $vars(libs_typical,timing) { echo "L_TT    $L" }
 
-########################################################################
+#-------------------------------------------------------------------------
 # Best-case libraries
 # - Process: ff
 # - Voltage: highest
@@ -72,7 +72,7 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
   foreach L $vars(libs_bc,timing) { echo "L_FF    $L" }
 }
 
-########################################################################
+#-------------------------------------------------------------------------
 # Worst-case libraries
 # - Process: ss
 # - Voltage: lowest
@@ -91,7 +91,7 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
   foreach L $vars(libs_wc,timing) { echo "L_SS    $L" }
 }
 
-########################################################################
+#-------------------------------------------------------------------------
 # LEF files
 set vars(lef_files) \
 [join "
@@ -105,9 +105,9 @@ set vars(lef_files) \
 puts "INFO: Found LEF files $vars(lef_files)"
 foreach L $vars(lef_files) { echo "LEF    $L" }
 
-# ------------------------------------------------------------------------
+#-------------------------------------------------------------------------
 # (done compiling library and lef lists)
-# ------------------------------------------------------------------------
+#-------------------------------------------------------------------------
 
 set_attr library     $vars(libs_typical,timing)
 set_attr lef_library $vars(lef_files)
