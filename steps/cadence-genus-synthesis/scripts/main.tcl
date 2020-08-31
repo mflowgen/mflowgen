@@ -29,10 +29,6 @@ if { $gate_clock == True } {
 # existing step 'cadence-innovus-flowsetup/setup.tcl'
 #
 # Also, added "lsort" to "glob" for better determinacy.
-# 
-# FIXME This could maybe could/should be wrapped up as a separate common
-# script somewhere? For use by both genus and flowsetup etc?
-# Better: Could be an executable bash script in e.g. "adks/bin"...?
 
 global vars
 set vars(adk_dir) inputs/adk
