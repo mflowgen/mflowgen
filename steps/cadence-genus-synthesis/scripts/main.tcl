@@ -35,6 +35,7 @@ set vars(adk_dir) inputs/adk
 
 #-------------------------------------------------------------------------
 # Typical-case libraries
+
 set vars(libs_typical,timing) \
     [join "
         $vars(adk_dir)/stdcells.lib
@@ -93,6 +94,7 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 
 #-------------------------------------------------------------------------
 # LEF files
+
 set vars(lef_files) \
 [join "
     $vars(adk_dir)/rtk-tech.lef
