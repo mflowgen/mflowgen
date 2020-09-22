@@ -10,6 +10,17 @@ set design_name                $::env(design_name)
 set clock_period               $::env(clock_period)
 set gate_clock                 $::env(gate_clock)
 set uniquify_with_design_name  $::env(uniquify_with_design_name)
+set flatten_effort             $::env(flatten_effort)
+
+set auto_ungroup_val "both"
+# Here we do a weird mapping from our DC flatten_effort to genus flatten_effort
+# flatten_effort=0 goes to no flattening
+# flatten_effort!=0 goes to flattening to optimize for area + timing (genus default)
+# For more info: help auto_ungroup
+if { $flatten_effort == 0 } {
+  puts "Disabling automatic flattening."
+  set auto_ungroup_val "none"
+}
 
 set_db common_ui false
 
@@ -46,6 +57,10 @@ if { $uniquify_with_design_name == True } {
 set_attribute avoid true [get_lib_cells {*/E* */G* *D16* *D20* *D24* *D28* *D32* SDF* *DFM*}]
 # don't use Scan enable D flip flops
 set_attribute avoid true [get_lib_cells {*SEDF*}]
+# Obey flattening effort of mflowgen graph
+puts "printing autoungroup" 
+puts $auto_ungroup_val
+set_attribute auto_ungroup $auto_ungroup_val
 
 syn_gen
 set_attr syn_map_effort high

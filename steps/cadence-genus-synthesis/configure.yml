@@ -45,6 +45,7 @@ parameters:
   # This is useful for hierarchical LVS when multiple blocks use modules
   # with the same name but different definitions.
   uniquify_with_design_name: True
+  flatten_effort: 0
   order:
     - main.tcl
     - write_results.tcl
