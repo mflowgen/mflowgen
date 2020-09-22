@@ -58,8 +58,6 @@ set_attribute avoid true [get_lib_cells {*/E* */G* *D16* *D20* *D24* *D28* *D32*
 # don't use Scan enable D flip flops
 set_attribute avoid true [get_lib_cells {*SEDF*}]
 # Obey flattening effort of mflowgen graph
-puts "printing autoungroup" 
-puts $auto_ungroup_val
 set_attribute auto_ungroup $auto_ungroup_val
 
 syn_gen
