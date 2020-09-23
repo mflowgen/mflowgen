@@ -116,6 +116,8 @@ set_attr lef_library $vars(lef_files)
 
 set_attr qrc_tech_file [list inputs/adk/pdk-typical-qrcTechFile]
 
+set_attr hdl_flatten_complex_port true
+
 read_hdl -sv [lsort [glob -directory inputs -type f *.v *.sv]]
 elaborate $design_name
 
