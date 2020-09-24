@@ -19,6 +19,8 @@ inputs:
 outputs:
   - design.v
   - design.sdc
+  - design.sdf
+  - design.spef
   - design.namemap
 
 #-------------------------------------------------------------------------
@@ -30,6 +32,8 @@ commands:
   - mkdir -p outputs && cd outputs
   - ln -sf ../results_syn/syn_out.v design.v
   - ln -sf ../results_syn/syn_out._default_constraint_mode_.sdc design.sdc
+  - ln -sf ../results_syn/syn_out.sdf design.sdf
+  - ln -sf ../results_syn/syn_out.spef design.spef
   - ln -sf ../name_map.rpt design.namemap
 
 #-------------------------------------------------------------------------
@@ -71,6 +75,8 @@ postconditions:
 
   - assert File( 'outputs/design.v' )        # must exist
   - assert File( 'outputs/design.sdc' )      # must exist
+  - assert File( 'outputs/design.sdf' )      # must exist
+  - assert File( 'outputs/design.spef' )      # must exist
 
   # Basic error checking
 
