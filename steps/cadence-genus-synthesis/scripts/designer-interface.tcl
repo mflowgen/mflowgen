@@ -16,11 +16,13 @@ set design_name                $::env(design_name)
 set clock_period               $::env(clock_period)
 set gate_clock                 $::env(gate_clock)
 set uniquify_with_design_name  $::env(uniquify_with_design_name)
-set auto_ungroup_val "both"
+set flatten_effort             $::env(flatten_effort)
+
 # Here we do a weird mapping from our DC flatten_effort to genus flatten_effort
 # flatten_effort=0 goes to no flattening
 # flatten_effort!=0 goes to flattening to optimize for area + timing (genus default)
 # For more info: help auto_ungroup
+set auto_ungroup_val "both"
 if { $flatten_effort == 0 } {
   puts "Disabling automatic flattening."
   set auto_ungroup_val "none"
