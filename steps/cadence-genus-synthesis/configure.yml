@@ -56,7 +56,7 @@ parameters:
     - read-design.tcl
     - constraints.tcl
     - compile.tcl
-    - write_results.tcl
+    - generate-results.tcl
 
 #-------------------------------------------------------------------------
 # Debug
