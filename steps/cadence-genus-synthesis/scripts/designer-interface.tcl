@@ -2,12 +2,12 @@
 # designer-interface.tcl
 #=========================================================================
 # The designer-interface.tcl file is the first script run by Genus.
-# It is the interface that connects the synthesis scripts with 
-# the following:                                                         
-#                                                                        
-# - Build system parameters                                              
-# - Build system inputs                                                  
-# - ASIC design kit                                                      
+# It is the interface that connects the synthesis scripts with
+# the following:
+#
+# - Build system parameters
+# - Build system inputs
+# - ASIC design kit
 
 # Author : Alex Carsello, James Thomas
 # Date   : July 14, 2020
@@ -31,14 +31,14 @@ set_db common_ui false
 if { $gate_clock == True } {
   set_attr lp_insert_clock_gating true
 }
- 
+
 #-------------------------------------------------------------------------
 # (begin compiling library and lef lists)
 #-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # Library sets
-# 
+#
 # Steveri update Aug 2020: fixed library load ordering.
 # For consistency, using code similar to what I found in
 # existing step 'cadence-innovus-flowsetup/setup.tcl'
@@ -122,5 +122,5 @@ set vars(lef_files) \
 puts "INFO: Found LEF files $vars(lef_files)"
 foreach L $vars(lef_files) { echo "LEF    $L" }
 
-set vars(qrcTechFile) $vars(adk_dir)/pdk-typical-qrcTechFile\
+set vars(qrcTechFile) $vars(adk_dir)/pdk-typical-qrcTechFile
 
