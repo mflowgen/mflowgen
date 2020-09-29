@@ -15,3 +15,4 @@ set_attr qrc_tech_file $vars(qrcTechFile)
 
 set_attr hdl_flatten_complex_port true
 
+set_attr hdl_resolve_instance_with_libcell true
