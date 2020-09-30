@@ -23,7 +23,7 @@ outputs:
 
 commands:
   - mkdir -p logs
-  - genus -no_gui -f START.tcl -output_log_file logs/genus.log
+  - genus -no_gui -f START.tcl -log logs/genus.log
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.lib design.lib
 
