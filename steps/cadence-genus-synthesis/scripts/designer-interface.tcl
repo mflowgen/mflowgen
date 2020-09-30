@@ -1,8 +1,14 @@
 #=========================================================================
-# main.tcl
+# designer-interface.tcl
 #=========================================================================
-# Main Genus script.
+# The designer-interface.tcl file is the first script run by Genus.
+# It is the interface that connects the synthesis scripts with
+# the following:
 #
+# - Build system parameters
+# - Build system inputs
+# - ASIC design kit
+
 # Author : Alex Carsello, James Thomas
 # Date   : July 14, 2020
 
@@ -12,11 +18,11 @@ set gate_clock                 $::env(gate_clock)
 set uniquify_with_design_name  $::env(uniquify_with_design_name)
 set flatten_effort             $::env(flatten_effort)
 
-set auto_ungroup_val "both"
 # Here we do a weird mapping from our DC flatten_effort to genus flatten_effort
 # flatten_effort=0 goes to no flattening
 # flatten_effort!=0 goes to flattening to optimize for area + timing (genus default)
 # For more info: help auto_ungroup
+set auto_ungroup_val "both"
 if { $flatten_effort == 0 } {
   puts "Disabling automatic flattening."
   set auto_ungroup_val "none"
@@ -27,14 +33,14 @@ set_db common_ui false
 if { $gate_clock == True } {
   set_attr lp_insert_clock_gating true
 }
- 
+
 #-------------------------------------------------------------------------
 # (begin compiling library and lef lists)
 #-------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------
 # Library sets
-# 
+#
 # Steveri update Aug 2020: fixed library load ordering.
 # For consistency, using code similar to what I found in
 # existing step 'cadence-innovus-flowsetup/setup.tcl'
@@ -118,38 +124,5 @@ set vars(lef_files) \
 puts "INFO: Found LEF files $vars(lef_files)"
 foreach L $vars(lef_files) { echo "LEF    $L" }
 
-#-------------------------------------------------------------------------
-# (done compiling library and lef lists)
-#-------------------------------------------------------------------------
-
-set_attr library     $vars(libs_typical,timing)
-set_attr lef_library $vars(lef_files)
-
-set_attr qrc_tech_file [list inputs/adk/pdk-typical-qrcTechFile]
-
-set_attr hdl_flatten_complex_port true
-
-read_hdl -sv [lsort [glob -directory inputs -type f *.v *.sv]]
-elaborate $design_name
-
-source "inputs/adk/adk.tcl"
-
-source -verbose "inputs/constraints.tcl"
-
-if { $uniquify_with_design_name == True } {
-  set_attr uniquify_naming_style "${design_name}_%s_%d"
-  uniquify $design_name
-}
-
-# FIXME technology specific
-set_attribute avoid true [get_lib_cells {*/E* */G* *D16* *D20* *D24* *D28* *D32* SDF* *DFM*}]
-# don't use Scan enable D flip flops
-set_attribute avoid true [get_lib_cells {*SEDF*}]
-# Obey flattening effort of mflowgen graph
-set_attribute auto_ungroup $auto_ungroup_val
-
-syn_gen
-set_attr syn_map_effort high
-syn_map
-syn_opt 
+set vars(qrcTechFile) $vars(adk_dir)/pdk-typical-qrcTechFile
 

@@ -51,8 +51,12 @@ parameters:
   uniquify_with_design_name: True
   flatten_effort: 0
   order:
-    - main.tcl
-    - write_results.tcl
+    - designer-interface.tcl
+    - setup-session.tcl
+    - read-design.tcl
+    - constraints.tcl
+    - compile.tcl
+    - generate-results.tcl
 
 #-------------------------------------------------------------------------
 # Debug
