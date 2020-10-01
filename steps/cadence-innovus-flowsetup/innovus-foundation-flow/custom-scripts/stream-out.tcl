@@ -16,7 +16,7 @@ set merge_files \
         [glob -nocomplain inputs/*.gds*] \
     ]
 
-streamOut $vars(results_dir)/$vars(design)_innovus_merged.gds \
+streamOut $vars(results_dir)/$vars(design)-merged.gds \
     -units 1000 \
     -mapFile $vars(gds_layer_map) \
     -merge $merge_files

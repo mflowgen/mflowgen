@@ -19,7 +19,7 @@ inputs:
 outputs:
   - design.checkpoint
   - design.gds.gz
-  - design_innovus_merged.gds
+  - design-merged.gds
   - design.lvs.v
   - design.vcs.v
   - design.vcs.pg.v
@@ -42,7 +42,7 @@ commands:
   - ln -sf ../checkpoints/design.checkpoint
   - ln -sf ../typical.spef.gz             design.spef.gz
   - ln -sf ../results/*.gds.gz            design.gds.gz
-  - ln -sf ../results/*innovus_merged.gds design_innovus_merged.gds
+  - ln -sf ../results/*-merged.gds        design-merged.gds
   - ln -sf ../results/*.lvs.v             design.lvs.v
   - ln -sf ../results/*.vcs.v             design.vcs.v
   - ln -sf ../results/*.vcs.pg.v          design.vcs.pg.v
