@@ -1,0 +1,60 @@
+#=========================================================================
+# Cadence Pegasus DRC
+#=========================================================================
+# Author : Maxwell Strange
+# Date   : October 14, 2020
+#
+
+name: cadence-pegasus-drc
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - design_merged.gds
+  - adk
+
+outputs:
+  - drc.results
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  # Use the rule deck "inputs/adk/${drc_rule_deck}"
+  drc_rule_deck: pegasus-drc-block.rule
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - mkdir -p logs
+  - pegasus -drc -gds ./inputs/adk/${drc_rule_deck} -top_cell ${design_name} -log_dir ./logs/ -interactive
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../DRC.rep ./drc.summary
+  # - ln -sf ../drc.summary
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+# debug:
+#   - calibredrv -m inputs/design_merged.gds \
+#                -l inputs/adk/calibre.layerprops \
+#                -rve -drc drc.results
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'pegasus' )
+  - assert File( 'inputs/adk' )
+  - assert File( 'inputs/design_merged.gds' )
+
+
