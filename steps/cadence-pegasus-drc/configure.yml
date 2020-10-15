@@ -17,6 +17,7 @@ inputs:
 
 outputs:
   - drc.results
+  - drc.summary
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -36,7 +37,7 @@ commands:
   - pegasus -drc -gds ./inputs/adk/${drc_rule_deck} -top_cell ${design_name} -log_dir ./logs/ -interactive
   - mkdir -p outputs && cd outputs
   - ln -sf ../DRC.rep ./drc.summary
-  # - ln -sf ../drc.summary
+  - ln -sf ../DRC_RES.db ./drc.results
 
 #-------------------------------------------------------------------------
 # Debug
