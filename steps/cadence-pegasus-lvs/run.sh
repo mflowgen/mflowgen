@@ -4,7 +4,7 @@ if [ -e inputs/rules.svrf ]; then
   while read line; do
     if [[ $line == *"LVS BOX"* ]]; then
       arr=($(echo $line | xargs))
-      black_box="${black_box}lvs_black_box ${arr[-1]} -source_layout;\n"
+      black_box="${black_box}lvs_black_box \"${arr[-1]}\" -source_layout;\n"
     fi
   done < inputs/rules.svrf
 fi
@@ -19,6 +19,18 @@ if [ ! -z "$lvs_connect_names" ]; then
   virtual_connect="$virtual_connect;"
 fi
 export virtual_connect
+schematic_paths=""
+for spi in inputs/*.spi inputs/*.sp; do
+  if [ -e "$spi" ]; then
+    schematic_paths="${schematic_paths}schematic_path \"$spi\" spice;\n"
+  fi
+done
+for cdl in inputs/adk/*.cdl; do
+  if [ -e "$cdl" ]; then
+    schematic_paths="${schematic_paths}schematic_path \"$cdl\" cdl;\n"
+  fi
+done
+export schematic_paths=$(echo -e $schematic_paths)
 envsubst < lvs.runset.template > lvs.runset
 pegasus -lvs \
   -top_cell ${design_name} \

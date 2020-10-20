@@ -20,9 +20,8 @@ lvs_report_opt -none;
 report_summary -erc "${design_name}.sum" -replace;
 max_results -erc 1000;
 results_db -erc "${design_name}.erc_errors.oa" -oa;
-schematic_path "inputs/adk/*.cdl" cdl;
-schematic_path "inputs/*.spi" spice;
 schematic_path "merged.lvs.v" verilog;
+${schematic_paths}
 abort_on_layout_error yes;
 layout_format gdsii;
 layout_path "inputs/design_merged.gds"
