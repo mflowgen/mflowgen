@@ -39,10 +39,8 @@ commands:
 # Debug
 #-------------------------------------------------------------------------
 
-# debug:
-#   - calibredrv -m inputs/design_merged.gds \
-#                -l inputs/adk/calibre.layerprops \
-#                -rve -drc drc.results
+debug:
+  - pegasusDesignReview -data inputs/design_merged.gds:DRC_RES.db
 
 #-------------------------------------------------------------------------
 # Assertions
