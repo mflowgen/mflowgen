@@ -4,10 +4,8 @@
 # Author : Alex Carsello
 # Date   : September 28, 2020
 
-if { $uniquify_with_design_name == True } {
-  set_attr uniquify_naming_style "${design_name}_%s_%d"
-  uniquify $design_name
-}
+set_attr uniquify_naming_style "%s_%d"
+uniquify $design_name
 
 # Obey flattening effort of mflowgen graph
 set_attribute auto_ungroup $auto_ungroup_val
