@@ -1,0 +1,68 @@
+#=========================================================================
+# Cadence Pegasus LVS
+#=========================================================================
+# Author : James Thomas
+# Date   : October 16, 2020
+#
+
+name: cadence-pegasus-lvs
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design_merged.gds
+  - design.lvs.v
+  - rules.svrf
+
+outputs:
+  - lvs.report
+  - design.schematic.spi
+  - design_merged.lvs.v
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - cat inputs/*.lvs.v > merged.lvs.v
+  - source ./run.sh
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../$design_name.rep lvs.report
+  - ln -sf ../lvs.extracted.sp design.schematic.spi
+  - ln -sf ../merged.lvs.v design_merged.lvs.v
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  #
+  # lvs_hcells_file:
+  #
+  # - Path to hcells file if required
+  #
+  lvs_hcells_file: ""
+  #
+  # lvs_connect_names:
+  #
+  # - Nets to connect in a quoted, space-separated list, e.g. "VDD VSS"
+  # - Updating this from python looks something like this (notice quotes):
+  #     dc.update_params( { 'lvs_connect_names' : '"VDD VSS VDDPST"' } )
+  #
+  lvs_connect_names: ""
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'pegasus' )
+  - assert File( 'inputs/adk' )
+  - assert File( 'inputs/design_merged.gds' )
+  - assert File( 'inputs/design.lvs.v' )
+

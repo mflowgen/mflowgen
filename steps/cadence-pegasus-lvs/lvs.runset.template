@@ -1,0 +1,29 @@
+text_depth -primary
+virtual_connect -colon yes;
+virtual_connect -semicolon_as_colon no;
+${virtual_connect}
+virtual_connect -report yes;
+virtual_connect -report_maximum all;
+virtual_connect -depth -primary;
+lvs_ignore_ports no;
+lvs_expand_cell_on_error no;
+lvs_recognize_gates -none;
+lvs_break_ambig_max 32;
+lvs_abort -softchk yes;
+lvs_abort -supply_error yes;
+lvs_find_shorts yes;
+sconnect_upper_shape_count no;
+lvs_report_file "${design_name}.rep";
+lvs_report_max 50 -mismatched_net_limit 100;
+lvs_run_erc_checks yes;
+lvs_report_opt -none;
+report_summary -erc "${design_name}.sum" -replace;
+max_results -erc 1000;
+results_db -erc "${design_name}.erc_errors.oa" -oa;
+schematic_path "merged.lvs.v" verilog;
+${schematic_paths}
+abort_on_layout_error yes;
+layout_format gdsii;
+layout_path "inputs/design_merged.gds"
+${black_box}
+
