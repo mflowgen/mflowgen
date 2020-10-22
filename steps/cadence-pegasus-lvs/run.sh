@@ -1,4 +1,7 @@
-if [ ! -z "$lvs_hcells_file" ]; then hcell="-hcell $lvs_hcells_file"; fi
+hcell=""
+if [ ! -z "$lvs_hcells_file" ]; then
+  hcell="-hcell $lvs_hcells_file";
+fi
 black_box=""
 if [ -e inputs/rules.svrf ]; then
   while read line; do
