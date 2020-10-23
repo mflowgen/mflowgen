@@ -1,0 +1,19 @@
+FILE ${design_gds}
+PRIME ${design_top_cell}
+EXPAND 1
+PLACE_MIRROR 0
+PLACE_ANGLE 0
+PLACE_MAG 1.0
+PLACE_X 0.0
+PLACE_Y 0.0
+ENDPLACES
+FILE ${child_gds}
+PRIME ${child_top_cell}
+EXPAND ${expand_child}
+PLACE_MIRROR 0
+PLACE_ANGLE 0
+PLACE_MAG 1.0
+PLACE_X ${coord_x}
+PLACE_Y ${coord_y}
+ENDPLACES
+ENDFILES
