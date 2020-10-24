@@ -1,0 +1,70 @@
+#=========================================================================
+# Cadence Pegasus GDS Merge -- Child
+#=========================================================================
+# Merges two GDS files, with:
+#
+#   1. The child.gds merged as a child cell of design.gds
+#   2. The child.gds placed at (coord_x, coord_y) inside design.gds
+#
+# Author : James Thomas
+# Date   : October 23, 2020
+#
+
+name: cadence-pegasus-gdsmerge-child
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.gds
+  - child.gds
+
+outputs:
+  - design_merged.gds
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - if [ $flatten_child == "False" ]; then export expand_child=0; else export expand_child=1; fi
+  - envsubst < merge.setup.template > merge.setup
+  - pegasusDesignReview -batch dbmerge merge.setup design_merged.gds $design_top_cell
+  # Get the outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../design_merged.gds
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_gds: inputs/design.gds
+  child_gds: inputs/child.gds
+  design_top_cell: undefined
+  child_top_cell: undefined
+  # coord_x and coord_y
+  #
+  # Coordinates should be a floating point number (or integer) followed by
+  # the character 'u' for microns.
+  coord_x: 0.0u
+  coord_y: 0.0u
+  # flatten the child_gds into the design_gds
+  flatten_child: False
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'pegasusDesignReview' )
+  - assert File( 'inputs/design.gds' )
+  #- assert File( 'inputs/child.gds' ) # commented, maybe merging with adk
+
+postconditions:
+
+  - assert File( 'outputs/design_merged.gds' )
+
