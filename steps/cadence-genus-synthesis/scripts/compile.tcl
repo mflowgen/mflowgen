@@ -4,7 +4,7 @@
 # Author : Alex Carsello
 # Date   : September 28, 2020
 
-set_attribute uniquify_naming_style %s_%d
+set_attr uniquify_naming_style "%s_%d"
 uniquify $design_name
 
 # Obey flattening effort of mflowgen graph
