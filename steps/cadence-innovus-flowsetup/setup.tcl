@@ -196,11 +196,22 @@ set vars(delay_default,early_library_set)    libs_typical
 set vars(delay_default,late_library_set)     libs_typical
 set vars(delay_default,rc_corner)            typical
 
+if {"rcbest" in $vars(rc_corners)} {
+  lappend vars(delay_corners) "delay_best"
+  set vars(delay_best,early_library_set)    libs_typical
+  set vars(delay_best,late_library_set)     libs_typical
+  set vars(delay_best,rc_corner)            rcbest
+}
 # Use the best case for hold instead if the files are available
 
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
   set vars(delay_default,early_library_set)    libs_bc
+  if {"delay_best" in $vars(delay_corners)} {
+    set vars(delay_best,early_library_set)    libs_bc
+  }
 }
+
+
 
 #-------------------------------------------------------------------------
 # Delay Corners (old bc_wc style)
@@ -238,6 +249,12 @@ set vars(analysis_views)                       "analysis_default"
 set vars(analysis_default,delay_corner)        delay_default
 set vars(analysis_default,constraint_mode)     constraints_default
 
+if {"delay_best" in $vars(delay_corners)} {
+  lappend vars(analysis_views)                   "analysis_hold"
+  set vars(analysis_hold,delay_corner)           delay_best
+  set vars(analysis_hold,constraint_mode)        constraints_default
+}
+
 # Analysis views for setup and hold
 #
 # Notes:
@@ -269,6 +286,12 @@ set vars(active_setup_views)                   "analysis_default"
 set vars(default_hold_view)                    "analysis_default"
 set vars(hold_analysis_views)                  "analysis_default"
 set vars(active_hold_views)                    "analysis_default"
+
+if {"analysis_hold" in $vars(analysis_views)} {
+  set vars(default_hold_view)                    "analysis_hold"
+  set vars(hold_analysis_views)                  "analysis_hold"
+  set vars(active_hold_views)                    "analysis_hold"
+}
 
 # Misc
 
