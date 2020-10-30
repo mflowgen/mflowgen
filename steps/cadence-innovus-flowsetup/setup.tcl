@@ -202,6 +202,7 @@ if {"rcbest" in $vars(rc_corners)} {
   set vars(delay_best,late_library_set)     libs_typical
   set vars(delay_best,rc_corner)            rcbest
 }
+
 # Use the best case for hold instead if the files are available
 
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
