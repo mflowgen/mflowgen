@@ -28,7 +28,7 @@ outputs:
 
 commands:
   # Generate the dummy fill GDS
-  - pegasus -drc -fill inputs/adk/{fill_rule_deck} -gds design.gds -top_cell {design_name} -dp {nthreads}
+  - pegasus -drc -fill inputs/adk/{fill_rule_deck} -gds inputs/design.gds -top_cell {design_name} -dp {nthreads}
   - mkdir -p outputs && cd outputs
   - ln -sf ../{fill_gds} fill.gds
 
