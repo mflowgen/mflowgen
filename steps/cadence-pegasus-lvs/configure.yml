@@ -54,6 +54,7 @@ parameters:
   #     dc.update_params( { 'lvs_connect_names' : '"VDD VSS VDDPST"' } )
   #
   lvs_connect_names: ""
+  nthreads: 16
 
 #-------------------------------------------------------------------------
 # Assertions
