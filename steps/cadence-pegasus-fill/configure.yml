@@ -1,0 +1,60 @@
+#=========================================================================
+# Cadence Pegasus Fill
+#=========================================================================
+#
+# Generates a fill gds. Needs to be merged with the design in a separate
+# step.
+#
+# Author : James Thomas
+# Date   : November 2, 2020
+#
+
+name: cadence-pegasus-fill
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - design.gds
+  - adk
+
+outputs:
+  - fill.gds
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # Generate the dummy fill GDS
+  - pegasus -drc -fill inputs/adk/{fill_rule_deck} -gds inputs/design.gds -top_cell {design_name} -dp {nthreads}
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../{fill_gds} fill.gds
+
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  # Use the rule deck "inputs/adk/${fill_rule_deck}"
+  fill_rule_deck: pegasus-fill.rul
+  fill_gds: FEOL.gds
+  nthreads: 16
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'pegasus' )
+  - assert File( 'inputs/adk' )
+  - assert File( 'inputs/design.gds' )
+
+postconditions:
+
+  - assert File( 'outputs/fill.gds' )
+
