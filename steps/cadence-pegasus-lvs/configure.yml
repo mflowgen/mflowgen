@@ -45,7 +45,7 @@ parameters:
   #
   # - Path to hcells file if required
   #
-  lvs_hcells_file: ""
+  lvs_hcells_file: "inputs/adk/hcells.inc"
   #
   # lvs_connect_names:
   #
@@ -54,6 +54,7 @@ parameters:
   #     dc.update_params( { 'lvs_connect_names' : '"VDD VSS VDDPST"' } )
   #
   lvs_connect_names: ""
+  nthreads: 16
 
 #-------------------------------------------------------------------------
 # Assertions

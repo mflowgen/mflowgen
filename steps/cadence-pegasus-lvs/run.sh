@@ -42,6 +42,6 @@ pegasus -lvs \
   -control lvs.runset \
   ${hcell} \
   -ui_data -gdb_data \
-  -dp 8 \
+  -dp ${nthreads} \
   inputs/adk/pegasus-lvs.rul
 
