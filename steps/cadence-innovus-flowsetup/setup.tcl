@@ -196,7 +196,7 @@ set vars(delay_default,early_library_set)    libs_typical
 set vars(delay_default,late_library_set)     libs_typical
 set vars(delay_default,rc_corner)            typical
 
-if {"rcbest" in $vars(rc_corners)} {
+if {[lsearch -exact $vars(rc_corners) "rcbest"] != -1} {
   lappend vars(delay_corners) "delay_best"
   set vars(delay_best,early_library_set)    libs_typical
   set vars(delay_best,late_library_set)     libs_typical
@@ -207,7 +207,7 @@ if {"rcbest" in $vars(rc_corners)} {
 
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
   set vars(delay_default,early_library_set)    libs_bc
-  if {"delay_best" in $vars(delay_corners)} {
+  if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {
     set vars(delay_best,early_library_set)    libs_bc
   }
 }
@@ -250,7 +250,7 @@ set vars(analysis_views)                       "analysis_default"
 set vars(analysis_default,delay_corner)        delay_default
 set vars(analysis_default,constraint_mode)     constraints_default
 
-if {"delay_best" in $vars(delay_corners)} {
+if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {
   lappend vars(analysis_views)                   "analysis_hold"
   set vars(analysis_hold,delay_corner)           delay_best
   set vars(analysis_hold,constraint_mode)        constraints_default
@@ -288,7 +288,7 @@ set vars(default_hold_view)                    "analysis_default"
 set vars(hold_analysis_views)                  "analysis_default"
 set vars(active_hold_views)                    "analysis_default"
 
-if {"analysis_hold" in $vars(analysis_views)} {
+if {[lsearch -exact $vars(analysis_views) "analysis_hold"] != -1} {
   set vars(default_hold_view)                    "analysis_hold"
   set vars(hold_analysis_views)                  "analysis_hold"
   set vars(active_hold_views)                    "analysis_hold"
