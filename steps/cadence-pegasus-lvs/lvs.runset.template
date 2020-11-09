@@ -9,7 +9,7 @@ lvs_ignore_ports no;
 lvs_expand_cell_on_error no;
 lvs_recognize_gates -none;
 lvs_break_ambig_max 32;
-lvs_abort -softchk yes;
+lvs_abort -softchk no;
 lvs_abort -supply_error yes;
 lvs_find_shorts yes;
 sconnect_upper_shape_count no;
