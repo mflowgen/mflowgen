@@ -48,8 +48,6 @@ puts "Info: Using signoff engine = $::env(signoff_engine)"
 
 if { $::env(signoff_engine) } {
   setExtractRCMode -engine postRoute -effortLevel signoff
-} else {
-  setExtractRCMode -engine postRoute -effortLevel high
 }
 
 # Run the final postroute hold fixing
