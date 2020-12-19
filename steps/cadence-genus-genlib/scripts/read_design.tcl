@@ -3,12 +3,21 @@ set genus_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
 set genus_sdc                      [glob -nocomplain inputs/*.pt.sdc]
 set genus_spef                     [glob -nocomplain inputs/*.spef.gz]
 
-set_db common_ui false
 
-set_attr library    [join "
-                      [lsort [glob -nocomplain inputs/adk/*.lib]]
-                      [lsort [glob -nocomplain inputs/*.lib]]
-                    "]
+# No good for multiple reasons, see issue <issue-link-here>
+# set_attr library \
+#     [join "
+#        [lsort [glob -nocomplain inputs/adk/*.lib]]
+#        [lsort [glob -nocomplain inputs/*.lib]]
+#     "]
+# 
+# source set_libs.tcl
+if { [is_common_ui_mode] } { set_db common_ui false }
+if { [get_attribute library /] == "" } {
+    echo EMPTY
+    echo "**ERROR no tech libraries, should e.g. source 'set_libs.tcl'"
+    exit 13
+}
 
 read_hdl       $genus_gl_netlist
 elaborate
