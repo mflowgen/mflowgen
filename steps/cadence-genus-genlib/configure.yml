@@ -34,6 +34,7 @@ commands:
 parameters:
   design_name: undefined
   order:
+    - set_libs.tcl
     - read_design.tcl
     - extract_model.tcl
 

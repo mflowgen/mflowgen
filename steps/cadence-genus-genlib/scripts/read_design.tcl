@@ -3,12 +3,22 @@ set genus_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
 set genus_sdc                      [glob -nocomplain inputs/*.pt.sdc]
 set genus_spef                     [glob -nocomplain inputs/*.spef.gz]
 
-set_db common_ui false
 
-set_attr library    [join "
-                      [lsort [glob -nocomplain inputs/adk/*.lib]]
-                      [lsort [glob -nocomplain inputs/*.lib]]
-                    "]
+# No good for multiple reasons, see issue <issue-link-here>
+# set_attr library \
+#     [join "
+#        [lsort [glob -nocomplain inputs/adk/*.lib]]
+#        [lsort [glob -nocomplain inputs/*.lib]]
+#     "]
+# 
+# source set_libs.tcl
+if { [is_common_ui_mode] } { set_db common_ui false }
+if { [get_attribute library /] == "" } {
+    echo EMPTY
+    # OMG the things I gotta do to keep postcondition check from thinking there's an error
+     printf "%s%s no tech libraries, should e.g. source 'set_libs.tcl'\n" "**ERR" "OR"
+    exit 13
+}
 
 read_hdl       $genus_gl_netlist
 elaborate
