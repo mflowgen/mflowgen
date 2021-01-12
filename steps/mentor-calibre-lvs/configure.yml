@@ -34,7 +34,7 @@ commands:
   - if [ -z "$lvs_hcells_file" ]; then export lvs_use_hcells=0; else export lvs_use_hcells=1; fi
   - if [ -z "$lvs_connect_names" ]; then export lvs_connect_names_state=NONE; else export lvs_connect_names_state=SOME; fi
   - if [ ! -z "$adk_view_lvs2" ];
-    then export lvs_extra_spice_include="inputs/adk_lvs2/*.cdl" ];
+    then export lvs_extra_spice_include="inputs/adk_lvs2/*.cdl";
     fi
   - envsubst < lvs.runset.template > lvs.runset
   - if [ ! -f inputs/*.svrf ]; then touch inputs/rules.svrf; fi
