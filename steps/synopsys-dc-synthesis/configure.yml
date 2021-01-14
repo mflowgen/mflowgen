@@ -51,6 +51,21 @@ parameters:
   # This is useful for hierarchical LVS when multiple blocks use modules
   # with the same name but different definitions.
   uniquify_with_design_name: True
+  #Enable supression of selected warnings/messages. 
+  suppress_msg: True
+  #List of suppressed messages. Select carefully
+  suppressed_msg:
+    # MW techhnology file load messages abaout missing attributes 
+    - TFCHK-072
+    - TFCHK-014
+    - TFCHK-049
+    - TFCHK-050
+    - TFCHK-012
+    - TFCHK-073
+    - TFCHK-092
+    # orientation warning from MW
+    - PSYN-651
+    - PSYN-650
   # Subscript execute order
   order:
     - designer-interface.tcl
