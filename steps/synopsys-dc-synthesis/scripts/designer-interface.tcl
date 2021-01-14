@@ -25,6 +25,8 @@ set dc_num_cores                  $::env(nthreads)
 set dc_high_effort_area_opt       $::env(high_effort_area_opt)
 set dc_gate_clock                 $::env(gate_clock)
 set dc_uniquify_with_design_name  $::env(uniquify_with_design_name)
+set dc_suppress_msg 			  $::env(suppress_msg)
+set dc_suppressed_msg  			  [split $::env(suppressed_msg) ","]
 
 #-------------------------------------------------------------------------
 # Inputs

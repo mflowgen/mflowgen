@@ -21,6 +21,19 @@ set_host_options -max_cores $dc_num_cores
 set_app_var alib_library_analysis_path $dc_alib_dir
 
 #-------------------------------------------------------------------------
+# Message suppression
+#-------------------------------------------------------------------------
+
+
+if { $dc_suppress_msg } {
+
+  foreach m $dc_suppressed_msg {
+    suppress_message $m
+  }
+
+}
+
+#-------------------------------------------------------------------------
 # Libraries
 #-------------------------------------------------------------------------
 
