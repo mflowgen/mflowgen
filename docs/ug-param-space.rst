@@ -155,7 +155,7 @@ gates and does better (0.569ns) but still does not meet timing.
 
 This example sweep is not particularly complex and could easily be done
 manually (e.g., if only a few points are needed). However, sweeping the
-cross-product of multiple parameters at once (e.g., architectural RTL
+cross product of multiple parameters at once (e.g., architectural RTL
 design parameters, bitwidths) quickly becomes cumbersome. In this case,
 mflowgen parameter sweeps become more useful.
 

@@ -1,6 +1,6 @@
 mflowgen
 ==========================================================================
-[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/cornell-brg/mflowgen.svg?branch=master)](https://travis-ci.com/cornell-brg/mflowgen)
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/mflowgen/mflowgen.svg?branch=master)](https://travis-ci.com/mflowgen/mflowgen)
 
 **Author**: Christopher Torng (ctorng@stanford.edu)
 
