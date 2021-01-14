@@ -51,9 +51,9 @@ parameters:
   # This is useful for hierarchical LVS when multiple blocks use modules
   # with the same name but different definitions.
   uniquify_with_design_name: True
-  #Enable supression of selected warnings/messages. 
-  suppress_msg: True
-  #List of suppressed messages. Select carefully
+  # Enable supression of selected warnings/messages. 
+  suppress_msg: False
+  # List of suppressed messages. Select carefully
   suppressed_msg:
     # MW techhnology file load messages abaout missing attributes 
     - TFCHK-072
