@@ -27,5 +27,5 @@
 *cmnTranscriptEchoToFile: 1
 *cmnRunMT: 1
 *cmnRunHyper: 1
-*cmnV2LVS_SPICEIncFiles: inputs/adk/*.cdl inputs/*.spi inputs/*.sp
+*cmnV2LVS_SPICEIncFiles: inputs/adk/*.cdl ${lvs_extra_spice_include} inputs/*.spi inputs/*.sp
 *cmnV2LVS_UseRangeMode: 1

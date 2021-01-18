@@ -70,6 +70,14 @@ parameters:
   #   present, such as when using LVS BOX.
   #
   lvs_verify_netlist: 1
+  #
+  # lvs_extra_spice_include:
+  #
+  # - [steveri 01/2021] Added lvs_extra_spice_include to support where
+  # e.g.  most of the chip uses stdview but one IP block (dragonphy in
+  # our case) needs a different view b/c it uses LVT cells etc.
+  #
+  lvs_extra_spice_include: ""
 
 #-------------------------------------------------------------------------
 # Debug
