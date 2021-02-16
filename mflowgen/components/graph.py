@@ -10,6 +10,7 @@ import os
 from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
+from mflowgen.utils           import parse
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
@@ -773,3 +774,4 @@ ranksep=0.8;
     """Usage info etc.
     """
     print("FOO I am srtest")
+    do_all_tests()
