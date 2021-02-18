@@ -572,7 +572,22 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
       extra_deps = set()
 
+
+#       sorted_edges = s.g.get_edges_i( step_name )
+#       print("---")
+#       print("FOO BEFORE")
+#       for edge in sorted_edges: print(edge.src)
+# 
+#       sorted_edges.sort(key=lambda x: x.src)
+#       print("---")
+#       print("FOO AFTER")
+#       for edge in sorted_edges: print(edge.src)
+#       print("---")
+
+
+      
       for edge in s.g.get_edges_i( step_name ):
+      # for edge in sorted_edges:
         src_step_name, src_f = edge.get_src()
         for o in backend_outputs[src_step_name]['alias']:
           extra_deps.add( o )

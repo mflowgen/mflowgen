@@ -56,8 +56,11 @@ class Writer:
 
 def make_cpdir( w, dst, src, deps=None, sandbox=True ):
 
+  # Sort dep list for better debuggability.
+
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort()
 
   # $1 -- dst
   # $2 -- src
@@ -118,6 +121,7 @@ def make_symlink( w, dst, src, deps=None, src_is_symlink=False,
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort()
 
   # $1 -- dst
   # $2 -- src
@@ -190,6 +194,7 @@ def make_execute( w, outputs, rule, command, deps=None,
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort()
 
   # $1 -- rule name
   # #2 -- rule command
@@ -247,6 +252,7 @@ def make_stamp( w, f, deps=None, f_is_dep=True ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort()
 
   f_stamp = stamp( f )
 
@@ -288,6 +294,7 @@ def make_alias( w, alias, deps ):
 
   if deps:
     assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort()
 
   # $1 -- stamp
 

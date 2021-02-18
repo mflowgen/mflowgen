@@ -265,7 +265,7 @@ class MakeBackend:
     rule = build_dir + '-commands-rule'
     rule = rule.replace( '-', '_' )
 
-    # Stamp all outputs from execute
+    # Stamp all outputs from execute.
 
     outputs = [ stamp( o, '.execstamp.' ) for o in outputs ]
 

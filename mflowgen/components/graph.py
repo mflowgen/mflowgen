@@ -6,11 +6,13 @@
 #
 
 import os
+import inspect
 
 from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
-from mflowgen.utils           import parse
+# from mflowgen.utils.parse     import ParseNodes
+from mflowgen.utils           import ParseNodes
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
@@ -20,6 +22,7 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
+    s._todo    = {}
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -111,16 +114,42 @@ class Graph:
     return s._steps.keys()
 
   # Edges -- incoming and outgoing adjacency lists
+  # Sort them for better debuggability / repeatability / causality
+
+  def sort_edges( s, edge_list ):
+    sorted_edges = edge_list
+  
+    print("---")
+    print("FOO BEFORE")
+    for edge in sorted_edges: print(edge.src)
+
+    sorted_edges.sort(key=lambda x: x.src)
+
+    print("---")
+    print("FOO AFTER")
+    for edge in sorted_edges: print(edge.src)
+    print("---")
+    
+    return sorted_edges
 
   def get_edges_i( s, step_name ):
     try:
-      return s._edges_i[ step_name ]
+      return s.sort_edges(s._edges_i[ step_name ])
+      # return s._edges_i[ step_name ]
+
     except KeyError:
       return []
 
   def get_edges_o( s, step_name ):
     try:
-      return s._edges_o[ step_name ]
+      # return s._edges_o[ step_name ]
+      return s.sort_edges(s._edges_0[ step_name ])
+
+#       sorted_edges = s._edges_o[ step_name ]
+#       sorted_edges.sort(key=lambda x: x.src)
+#       
+#       return sorted_edges
+
     except KeyError:
       return []
 
@@ -638,7 +667,14 @@ ranksep=0.8;
 
     dot_nodes = []
 
-    for step_name in s.all_steps():
+    # Use ordered list for repeatability
+
+    # for step_name in s.all_steps():
+    stepname_list = []
+    for step_name in s.all_steps(): stepname_list.append( step_name )
+    stepname_list.sort()
+    for step_name in stepname_list:
+
       step     = s.get_step( step_name )
       port_str = '<{dot_port_id}> {label}'
 
@@ -670,8 +706,76 @@ ranksep=0.8;
 
     dot_edges = []
 
+    
+
+#     vlist = s._edges_i.values()
+# 
+#     for v in vlist:
+#       print(v)
+#       for i in v: print(f"  {i.src} -> {i.dst}")
+# #       for i in v: print(f"  {i.src[1]} -> {i.dst[1]}")
+#     exit()
+# 
+# 
+#     sorted_edges = vlist
+# 
+#     print("---")
+#     print("FOO BEFORE")
+#     for edge in sorted_edges: print(edge.src)
+# 
+#     sorted_edges.sort(key=lambda x: x.src)
+# 
+#     print("---")
+#     print("FOO AFTER")
+#     for edge in sorted_edges: print(edge.src)
+#     print("---")
+# 
+#     exit()
+# 
+#     print(vlist)
+#     exit()
+# 
+# 
+# 
+# #     vlist = s.sort_edges(s._edges_i.values()
+#     vlist.sort()
+#     for elist in vlist:
+
+
+#       elist.sort(key=lambda x: x.src)
+
+    print("---")
+    print("FOO BEFOREfoo")
+    for elist in s._edges_i.values():
+      print(elist)
+      for e in elist: print(f"  {e.src} -> {e.dst}")
+
+    sorted_elist = []
     for elist in s._edges_i.values():
       for e in elist:
+        sorted_elist.append(e)
+
+
+    print("---")
+    print("FOO AFTERfoo")
+#     elist.sort(key=lambda x: x.src[0])
+
+    s.sort_edges(sorted_elist)
+    # assert e.src[1] == e.dst[1] !! not always true !!
+    for e in sorted_elist: print(f"  {e.src} -> {e.dst}")
+
+    print("EXIT")
+#     exit()
+
+
+
+
+
+
+#     for elist in s._edges_i.values():
+#       for e in elist:
+
+    for e in sorted_elist:
         src_step_name, src_f = e.get_src()
         dst_step_name, dst_f = e.get_dst()
 
@@ -770,8 +874,183 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
+  # EXAMPLE: g.srstep( "rtl" , this_dir + '/../common/rtl')
+  # def srstep(s, stepname, stepdir ):
+
+
+  # Custom steps
+  # g.add_custom_steps("""
+  # 
+  #     rtl                - ../common/rtl                  -> synth
+  #     constraints        - constraints                    -> synth iflow
+  #     custom_dc_scripts  - custom-dc-scripts              -> iflow
+  #     testbench          - ../common/testbench            -> post_pnr_power
+  #     application        - ../common/application          -> post_pnr_power testbench
+  #     post_pnr_power     - ../common/tile-post-pnr-power
+  # 
+  # """)
+
+  # EXAMPLE: g.srstep( 'rtl - ../common/rtl -> synth')
+  def add_custom_steps(self, nodelist_string ):
+    nodes=ParseNodes(nodelist_string)
+    print("FOOOOPI")
+    for n in nodes.node_array:
+      print("\nZOOP ", end='')
+      print(f"Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+
+      stepname = n.name
+      stepdir  = n.step
+
+      frame = inspect.stack()[1]; module = inspect.getmodule(frame[0])
+      this_dir = os.path.dirname( os.path.abspath( module.__file__ ) )
+
+      # rtl                  = Step( this_dir + '/../common/rtl'                         )
+
+      self._todo[stepname] = [] ; # Initialize todo list
+
+      # Check for global/local collision etc
+
+      if stepname in frame[0].f_locals:
+        print(f'**ERROR local var "{stepname}" exists already; cannot build step via parsenode')
+        print(f"rtl='{frame[0].f_locals[stepname]}'")
+        exit(13)
+
+
+      # frame[0].f_globals['rtl'] = Step( this_dir + '/../common/rtl')
+      # frame[0].f_globals[stepname] = Step( this_dir + '/' + stepdir )
+      step = Step( this_dir + '/' + stepdir )
+      frame[0].f_globals[stepname] = step
+      # globals()[stepname] = step
+      
+
+
+      self.add_step( step )
+
+      self._check_todo_list(frame)
+
+      print("  ZAP")
+      successors = n.successors
+      for succ in successors:
+        print(f"  CONNECTING {stepname} to {succ}")
+        try:
+          self.connect_by_name( step, frame[0].f_globals[succ])
+          print("    CONNECTED!!!")
+        except:
+          print("    HA looks like {succ} don't exist (yet)")
+          print("    Add it to the todo list")
+          # self._todo[stepname].append(succ)
+          self._todo[stepname].append(succ)
+
+      print("    DONE\n\n")
+
+
+  def check_todo_list(self):
+    frame = inspect.stack()[1]; module = inspect.getmodule(frame[0])
+    self._check_todo_list(frame)
+
+
+  def _check_todo_list(self, frame):
+    for key in self._todo:
+      from_node = key
+      for to_node in self._todo[from_node]:
+        print(f"  TODO: connect {from_node} -> {to_node} --- connect({from_node}, {to_node})")
+
+
+        # Look for succ in caller locals
+        try:
+          a = frame[0].f_globals[from_node]
+          b = frame[0].f_locals[to_node]
+          print( "    READY!!!", end='')
+          print(f"    CONNECTING local {from_node} to {to_node}")
+          self.connect_by_name( a, b)
+          continue
+        except: pass
+
+        # Look for succ in caller globals
+        try: 
+          a = frame[0].f_globals[from_node]
+          b = frame[0].f_globals[to_node]
+          print( "    READY!!!", end='')
+          print(f"    CONNECTING global {from_node} to {to_node}")
+          self.connect_by_name( a, b)
+
+          print(f"    REMOVING {to_node} from {from_node} todo list ")
+          print(f"      todo list BEFORE: {self._todo[from_node]}")
+          self._todo[from_node].remove(to_node)
+          print(f"      todo list AFTER: {self._todo[from_node]}")
+          
+
+          # frame[0].f_globals[to_node]
+        except:
+          print("    it's not plugged in yet")
+
+
+
+  def testparser( s, nodestring ):
+    P = ParseNodes();
+    P.do_test(nodestring)
+
+
   def srtest ( s ):
     """Usage info etc.
     """
     print("FOO I am srtest")
-    do_all_tests()
+
+    P = ParseNodes();
+    P.do_all_tests()
+
+#     do_all_tests()
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+# OLD
+# 
+# #     print(module.__file__)
+# #     for v in module: print(v)
+# # 
+# # 
+# #     globals = inspect.getmembers(frame[0].f_globals)
+# #     for L in globals: print(L)
+# # 
+#     locals = frame[0].f_locals
+#     for L in locals: print(L)
+#     print("---")
+# 
+#     print(frame[0].f_locals['adk_name'])
+#     frame[0].f_locals['adk_name'] = "footle"
+#     print("---")
+# 
+# 
+#     locals = frame[0].f_locals
+#     for L in locals: print(L)
+#     print("---")
+# 
+# #     exec( 'rtl=10', frame[0].f_globals, frame[0].f_locals)
+# 
+# 
+#     return
+# 
+#     
+# 
+# 
+# 
+#     locals = inspect.getmembers(frame[0].f_locals)
+#     for L in locals: print(L)
+#                                 
+#     print("FOOOOOOOO")
+#     locals = inspect.getmembers(frame[1].f_locals)
+#     for L in locals: print(L)
+# 
+# 
+# 
+# 
+# #     module.locals()['rtl'] = Step(this_dir + '/../common/rtl')
+# # 
+# 
+# getmembers()
+# type='module', attribute='__file'
+# type='frame', attribute='f_locals'
+# 
+# 
