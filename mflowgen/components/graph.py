@@ -818,14 +818,7 @@ ranksep=0.8;
     frame = inspect.stack()[1][0]
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-
-      # rtl = Step( this_dir + '/../common/rtl' )
-      # g.add_step( rtl )
-
       step = self._add_step_with_handle(frame, n, DBG)
-
-      # g.connect_by_name( rtl, synth )
-
       self._connect_successor_nodes(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
@@ -842,18 +835,28 @@ ranksep=0.8;
           #    g.connect_by_name( custom_init,  init     )
 
     if DBG: print("Extend existing steps")
-    frame = inspect.stack()[1][0]
-
     nodes=ParseNodes(nodelist_string)
+    frame = inspect.stack()[1][0]
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
 
+      # Mark this step as an "extend" step
       self._extnodes.append(n.name)
-      step = self._add_step_with_handle(frame, n, DBG)
 
+      step = self._add_step_with_handle(frame, n, DBG)
       self._connect_successor_nodes(frame, n, DBG)
 
+      # TODO/BOOKMARK: 
+      # _connect_from_to() must check extnodes list and do the right thing
+
+
+
+
+
       if DBG: print("  DONE\n\n")
+
+
+
 
   def connect_outstanding_nodes(self, DBG=0):
     '''
@@ -949,26 +952,32 @@ ranksep=0.8;
       # Only global vars end up on the todo list, so 'from' node must be global
       from_node = frame.f_globals[from_name]
 
-      # Look for succ in caller locals
-      try:
-        to_node = frame.f_locals[to_name] ;# This will fail if local not exists
-        self.connect_by_name(from_node, to_node)
-        if DBG: print(f'   CONNECTED {from_name} -> {to_name} (local)')
-        return True
-      except:
-        if DBG: print(f"    {to_name} not local, is it global perchance?")
-
-      # Look for succ in caller globals
-      try: 
-        to_node = frame.f_globals[to_name] ;# This will fail if global not exists
-        self.connect_by_name(from_node, to_node)
-        if DBG: print(f'    CONNECTED {from_name} -> {to_name} (global)')
-        return True
-      except:
-        if DBG: print("    not global either; guess it's not plugged in yet")
+      to_node = self._findvar(frame, to_name)
+      if to_node == None:
         return False
 
+      else:
+        self.connect_by_name(from_node, to_node)
+        # TODO/FIXME/BOOKMARK check extnodes and do the thing
+        if DBG: print(f'   CONNECTED {from_name} -> {to_name}')
+        return True
+      
 
+  def _findvar(self, frame, varname):
+    """Search given frame for local or global var with called 'varname'"""
+    try:
+      value = frame.f_locals[varname] ;# This will fail if local not exists
+      print(f'    Found local var {varname}')
+      return value
+    except: pass
+
+    try:
+      value = frame.f_globals[varname] ;# This will fail if global not exists
+      print(f'    Found global var {varname}')
+      return value
+    except: pass
+
+    return None
 
 
 ##############################################################################
@@ -1117,4 +1126,54 @@ ranksep=0.8;
 
 #       if DBG:
 #         print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
+
+      
+
+#       # Look for succ in caller locals
+#       try:
+#         to_node = frame.f_locals[to_name] ;# This will fail if local not exists
+#         self.connect_by_name(from_node, to_node)
+#         if DBG: print(f'   CONNECTED {from_name} -> {to_name} (local)')
+#         return True
+#       except:
+#         if DBG: print(f"    {to_name} not local, is it global perchance?")
+# 
+#       # Look for succ in caller globals
+#       try: 
+#         to_node = frame.f_globals[to_name] ;# This will fail if global not exists
+#         self.connect_by_name(from_node, to_node)
+#         if DBG: print(f'    CONNECTED {from_name} -> {to_name} (global)')
+#         return True
+#       except:
+#         if DBG: print("    not global either; guess it's not plugged in yet")
+#         return False
+
+#   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
+#       '''
+#       Given names for "from" and "to" nodes, try and connect the two.
+#       If the "to" node does not exist (yet) in the given calling frame,
+#       return "False".
+#       '''
+#       # Only global vars end up on the todo list, so 'from' node must be global
+#       from_node = frame.f_globals[from_name]
+# 
+#       # Look for succ in caller locals
+#       try:
+#         to_node = frame.f_locals[to_name] ;# This will fail if local not exists
+#         self.connect_by_name(from_node, to_node)
+#         if DBG: print(f'   CONNECTED {from_name} -> {to_name} (local)')
+#         return True
+#       except:
+#         if DBG: print(f"    {to_name} not local, is it global perchance?")
+# 
+#       # Look for succ in caller globals
+#       try: 
+#         to_node = frame.f_globals[to_name] ;# This will fail if global not exists
+#         self.connect_by_name(from_node, to_node)
+#         if DBG: print(f'    CONNECTED {from_name} -> {to_name} (global)')
+#         return True
+#       except:
+#         if DBG: print("    not global either; guess it's not plugged in yet")
+#         return False
+
 
