@@ -791,40 +791,118 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
-  # Add custom steps
-  #
-  # EXAMPLE:
-  #     g.add_custom_steps("rtl - ../common/rtl -> synth")
-  #
-  # does this:
-  #     rtl = Step( this_dir + '/../common/rtl' )
-  #     g.add_step( rtl )
-  #     g.connect_by_name( rtl, synth )
-  #
-  # BIGGER EXAMPLE:
-  #   g.add_custom_steps("""
-  #     rtl                - ../common/rtl          -> synth
-  #     constraints        -    constraints         -> synth iflow
-  #     custom_dc_scripts  -    custom-dc-scripts   -> iflow
-  #     testbench          - ../common/testbench    -> post_pnr_power
-  #     application        - ../common/application  -> post_pnr_power testbench
-  #     post_pnr_power     - ../common/tile-post-pnr-power
-  #   """)
+  def add_custom_steps(self, nodelist_string, DBG=0 ):
+    '''
+    # Add custom steps
+    #
+    # EXAMPLE:
+    #     g.add_custom_steps("rtl - ../common/rtl -> synth")
+    #
+    # does this:
+    #     rtl = Step( this_dir + '/../common/rtl' )
+    #     g.add_step( rtl )
+    #     g.connect_by_name( rtl, synth )
+    #
+    # BIGGER EXAMPLE:
+    #   g.add_custom_steps("""
+    #     rtl                - ../common/rtl          -> synth
+    #     constraints        -    constraints         -> synth iflow
+    #     custom_dc_scripts  -    custom-dc-scripts   -> iflow
+    #     testbench          - ../common/testbench    -> post_pnr_power
+    #     application        - ../common/application  -> post_pnr_power testbench
+    #     post_pnr_power     - ../common/tile-post-pnr-power
+    #   """)
+    '''
+    if DBG: print("Adding custom steps")
+    nodes=ParseNodes(nodelist_string)
+    frame = inspect.stack()[1][0]
+    for n in nodes.node_array:
+      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+
+      # rtl = Step( this_dir + '/../common/rtl' )
+      # g.add_step( rtl )
+
+      step = self._add_step_with_handle(frame, n, DBG)
+
+      # g.connect_by_name( rtl, synth )
+
+      self._connect_successor_nodes(frame, n, DBG)
+      if DBG: print("  DONE\n\n")
+
+
+  def extend_step(self, nodelist_string, DBG=0 ):
+
+    # EXAMPLE:
+          #   extend_step("custom_init - custom-init -> init")
+          # Does this:
+          #    custom_init = Step( this_dir + '/custom-init'                           )
+          #    # Add extra input edges to innovus steps that need custom tweaks
+          #    init.extend_inputs( custom_init.all_outputs() )
+          #    g.add_step( custom_init              )
+          #    g.connect_by_name( custom_init,  init     )
+
+    if DBG: print("Extend existing steps")
+    frame = inspect.stack()[1][0]
+
+    nodes=ParseNodes(nodelist_string)
+    for n in nodes.node_array:
+      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+
+      self._extnodes.append(n.name)
+      step = self._add_step_with_handle(frame, n, DBG)
+
+      self._connect_successor_nodes(frame, n, DBG)
+
+      if DBG: print("  DONE\n\n")
+
+  def connect_outstanding_nodes(self, DBG=0):
+    '''
+    # construct.py should call this method after all steps have been built,
+    # to clear out the todo list.
+    '''
+    frame = inspect.stack()[1][0]
+    self._check_todo_list(frame, DBG)
+
+  def _check_todo_list(self, frame, DBG=0):
+    '''
+    # Try and clear out the todo list, i.e. see if outstanding nodes have been built yet.
+    '''
+    print("CHECKING TODO LIST")
+    for from_name in self._todo:
+
+      # Must make shallow copy b/c we may be deleting elements in situ
+      to_list = self._todo[from_name].copy() ;
+      for to_name in to_list:
+        if DBG:
+          print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
+        if self._connect_from_to(frame, from_name, to_name, DBG):
+          self._todo[from_name].remove(to_name)
+          print(f'    REMOVED from todo list: {from_name} -> {to_name}')
+        else:
+          print(f'    looks like maybe {to_name} does not exist yet')
 
   def _add_step_with_handle(self, frame, node, DBG=0):
-
+      '''
+      # Given a node with a stepname and associated dir, build the
+      # step and make a handle for the step in the calling frame
+      # Nota bene: the handle will be a GLOBAL variable!
+      #
+      # Example:
+      #     frame = inspect.stack()[0]
+      #     g.add_step_with_handle( 'rtl',  '/../common/rtl' )
+      #
+      # Does this:
+      #     rtl = Step( this_dir + '/../common/rtl' )
+      #     g.add_step( rtl )
+      #
+      # Also: after step is built, checks todo list to see if
+      # anyone is waiting to connect to this step.
+      '''
       stepname   = node.name
       stepdir    = node.step
 
       # Start a todo list for connections from this node to yet-unresolved nodes
       self._todo[stepname] = [] ; # Initialize todo list
-
-      # Given a stepname and associated dir, build step and
-      # make a handle for the step in the calling frame
-      # Nota bene: the handle will be a GLOBAL variable!
-      # Example:
-      #    frame = inspect.stack()[0]
-      #    g.add_step_with_handle( 'rtl',  '/../common/rtl' )
 
       # Check for global/local collision etc
       if stepname in frame.f_locals:
@@ -839,169 +917,56 @@ ranksep=0.8;
       frame.f_globals[stepname] = step
 
       # Add step to graph
-      self.add_step( step )
+      self.add_step(step)
 
       # Check todo list, see if new step has unlocked new connections
       self._check_todo_list(frame, DBG)
-
       return step
 
-  def _connect_successor_nodes(self, frame, node, step, DBG=0):
-
-      stepname   = node.name
-      successors = node.successors
-
-      # 3. g.connect_by_name( rtl, synth )
-      # If a successor node does not exist yet, add to 'todo' list
-      for succ_name in successors:
-        if DBG: print(f"  CONNECTING {stepname} to {succ_name}")
-        if self._connect_from_to(frame, stepname, succ_name, DBG=1):
+  def _connect_successor_nodes(self, frame, node, DBG=0):
+      '''
+      Given a node containing a list of successors, check each successor
+      to see if it exists in the calling frame yet. If so, connect them; 
+      otherwise, add it to a todo-list for later.
+      '''
+      node_name = node.name
+      for succ_name in node.successors:
+        if DBG: print(f"  CONNECTING {node_name} to {succ_name}")
+        if self._connect_from_to(frame, node_name, succ_name, DBG=1):
           if DBG: print("    CONNECTED!!!")
         else:
           if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
           if DBG: print(f"    Add it to the todo list")
-          self._todo[stepname].append(succ_name)
+          self._todo[node_name].append(succ_name)
 
 
-
-
-
-#         if DBG: print(f"  CONNECTING {stepname} to {succ_name}")
-#         try:
-#           # FIXME can succ_name be local instead of global??
-#           self.connect_by_name( step, frame.f_globals[succ_name])
-#           if DBG: print("    CONNECTED!!!")
-# 
-# #           if stepname in self._extnodes:
-# #             #   extend_step("custom_init - custom-init -> init")
-# #             # succ.extend_inputs( step.all_outputs() )
-# # 
-# 
-#         except:
-#           if DBG: print("    HA looks like {succ_name} don't exist (yet)")
-#           if DBG: print("    Add it to the todo list")
-#           # self._todo[stepname].append(succ_name)
-#           self._todo[stepname].append(succ_name)
-
-
-
-  def add_custom_steps(self, nodelist_string, DBG=0 ):
-    if DBG: print("Adding custom steps")
-    frame = inspect.stack()[1][0]
-
-    nodes=ParseNodes(nodelist_string)
-    for n in nodes.node_array:
-      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-
-      step = self._add_step_with_handle(frame, n, DBG)
-      self._connect_successor_nodes(frame, n, step, DBG)
-
-      if DBG: print("  DONE\n\n")
-
-  def extend_step(self, nodelist_string, DBG=0 ):
-
-    # EXAMPLE:
-    #   extend_step("custom_init - custom-init -> init")
-    # Does this:
-    #    custom_init = Step( this_dir + '/custom-init'                           )
-    #    # Add extra input edges to innovus steps that need custom tweaks
-    #    init.extend_inputs( custom_init.all_outputs() )
-    #    g.add_step( custom_init              )
-    #    g.connect_by_name( custom_init,  init     )
-
-    if DBG: print("Extend existing steps")
-    frame = inspect.stack()[1][0]
-
-    nodes=ParseNodes(nodelist_string)
-    for n in nodes.node_array:
-      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-
-      self._extnodes.append(n.name)
-      step = self._add_step_with_handle(frame, n, DBG)
-
-      self._connect_successor_nodes(frame, n, step, DBG)
-
-      if DBG: print("  DONE\n\n")
-
-
-
-
-
-
-  # construct.py should call this method after all steps have been built, to clear out the todo list.
-  def connect_outstanding_nodes(self, DBG=0):
-    frame = inspect.stack()[1][0]; module = inspect.getmodule(frame)
-    self._check_todo_list(frame, DBG)
-
-  # Try and clear out the todo list, i.e. see if outstanding nodes have been built yet.
-  def _check_todo_list(self, frame, DBG=0):
-    print("CHECKING TODO LIST")
-    for from_name in self._todo:
-
-      # Must make shallow copy b/c we may be deleting elements in situ
-      to_list = self._todo[from_name].copy() ;
-
-      for to_name in to_list:
-
-        if DBG:
-          print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
-        
-
-        if self._connect_from_to(frame, from_name, to_name, DBG):
-          self._todo[from_name].remove(to_name)
-          print(f'    FOO REMOVED from todo list: {from_name} -> {to_name}')
-
-
-  # Given calling frame, name of "from" node, and list of successors, try and connect em
   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
-
-#       # Connect the nodes and update the todo list
-#       def connectem( from_node, to_node ):
-#         self.connect_by_name( from_node, to_node)
-#         if DBG: print(f"      todo list BEFORE: {self._todo[from_name]}")
-#         self._todo[from_name].remove(to_name)
-#         if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
-#         print(f'    FOO CONNECTED {from_name} -> {to_name}')
-
-
-#       # Connect node to its successor node, and update the todo list
-#       def connectem(node, succ, succ_name):
-#         self.connect_by_name(node, succ)
-#         print(f'    FOO CONNECTED {from_name} -> {succ}')
-
-
-
-#       if DBG:
-#         print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
-
-      # All "from" nodes in todo list are globals, b/c they were defined via new system
+      '''
+      Given names for "from" and "to" nodes, try and connect the two.
+      If the "to" node does not exist (yet) in the given calling frame,
+      return "False".
+      '''
+      # Only global vars end up on the todo list, so 'from' node must be global
       from_node = frame.f_globals[from_name]
 
       # Look for succ in caller locals
       try:
         to_node = frame.f_locals[to_name] ;# This will fail if local not exists
-        if DBG: print(f"    READY! CONNECTING LOCAL {from_name} to {to_name}")
-        # connectem( from_node, to_node, to_name )
         self.connect_by_name(from_node, to_node)
-        print(f'    FOO CONNECTED {from_name} -> {to_name}')
-        # continue
+        if DBG: print(f'   CONNECTED {from_name} -> {to_name} (local)')
         return True
-
       except:
         if DBG: print(f"    {to_name} not local, is it global perchance?")
 
       # Look for succ in caller globals
       try: 
         to_node = frame.f_globals[to_name] ;# This will fail if global not exists
-        if DBG: print(f"    READY! CONNECTING GLOBAL {from_name} to {to_name}")
-        # connectem( from_node, to_node, to_name )
         self.connect_by_name(from_node, to_node)
-        print(f'    FOO CONNECTED {from_name} -> {to_name}')
+        if DBG: print(f'    CONNECTED {from_name} -> {to_name} (global)')
         return True
       except:
         if DBG: print("    not global either; guess it's not plugged in yet")
         return False
-
 
 
 
@@ -1011,10 +976,29 @@ ranksep=0.8;
 ##############################################################################
 # OLD
 # 
-
-  def testparser( s, nodestring ):
-    P = ParseNodes();
-    P.do_test(nodestring)
+# 
+#   def self.findvar(frame, varname):
+#     outcome = {}
+#     try:
+#       outcome['where'] = 'local'
+#       outcome['value'] = frame.f_locals[varname] ;# This will fail if local not exists
+#       return outcome
+#     except: pass
+#     try:
+#       outcome['where'] = 'global'
+#       outcome['value'] = frame.f_globals[varname] ;# This will fail if global not exists
+#       return outcome
+#     except:
+#       outcome['where'] = 'not found'
+#       return outcome
+# 
+# 
+# 
+#   def testparser( s, nodestring ):
+#     P = ParseNodes();
+#     P.do_test(nodestring)
+# 
+# 
 # 
 #   def srtest ( s ):
 #     """Usage info etc.
@@ -1025,7 +1009,7 @@ ranksep=0.8;
 #     P.do_all_tests()
 # 
 #     do_all_tests()
-
+# 
 # #     print(module.__file__)
 # #     for v in module: print(v)
 # # 
@@ -1090,3 +1074,47 @@ ranksep=0.8;
 #             print(f"      todo list BEFORE: {self._todo[from_name]}")
 #           self._todo[from_name].remove(to_name)
 #           if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
+
+
+      # 3. g.connect_by_name( rtl, synth )
+      # If a successor node does not exist yet, add to 'todo' list
+
+
+
+#         if DBG: print(f"  CONNECTING {stepname} to {succ_name}")
+#         try:
+#           # FIXME can succ_name be local instead of global??
+#           self.connect_by_name( step, frame.f_globals[succ_name])
+#           if DBG: print("    CONNECTED!!!")
+# 
+# #           if stepname in self._extnodes:
+# #             #   extend_step("custom_init - custom-init -> init")
+# #             # succ.extend_inputs( step.all_outputs() )
+# # 
+# 
+#         except:
+#           if DBG: print("    HA looks like {succ_name} don't exist (yet)")
+#           if DBG: print("    Add it to the todo list")
+#           # self._todo[stepname].append(succ_name)
+#           self._todo[stepname].append(succ_name)
+
+
+#       # Connect the nodes and update the todo list
+#       def connectem( from_node, to_node ):
+#         self.connect_by_name( from_node, to_node)
+#         if DBG: print(f"      todo list BEFORE: {self._todo[from_name]}")
+#         self._todo[from_name].remove(to_name)
+#         if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
+#         print(f'    FOO CONNECTED {from_name} -> {to_name}')
+
+
+#       # Connect node to its successor node, and update the todo list
+#       def connectem(node, succ, succ_name):
+#         self.connect_by_name(node, succ)
+#         print(f'    FOO CONNECTED {from_name} -> {succ}')
+
+
+
+#       if DBG:
+#         print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
+
