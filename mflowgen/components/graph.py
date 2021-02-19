@@ -853,23 +853,35 @@ ranksep=0.8;
 
       # 3. g.connect_by_name( rtl, synth )
       # If a successor node does not exist yet, add to 'todo' list
-      for succ in successors:
-        if DBG: print(f"  CONNECTING {stepname} to {succ}")
-        try:
-          # FIXME can succ be local instead of global??
-          self.connect_by_name( step, frame.f_globals[succ])
+      for succ_name in successors:
+        if DBG: print(f"  CONNECTING {stepname} to {succ_name}")
+        if self._connect_from_to(frame, stepname, succ_name, DBG=1):
           if DBG: print("    CONNECTED!!!")
+        else:
+          if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
+          if DBG: print(f"    Add it to the todo list")
+          self._todo[stepname].append(succ_name)
 
-#           if stepname in self._extnodes:
-#             #   extend_step("custom_init - custom-init -> init")
-#             # succ.extend_inputs( step.all_outputs() )
+
+
+
+
+#         if DBG: print(f"  CONNECTING {stepname} to {succ_name}")
+#         try:
+#           # FIXME can succ_name be local instead of global??
+#           self.connect_by_name( step, frame.f_globals[succ_name])
+#           if DBG: print("    CONNECTED!!!")
 # 
-
-        except:
-          if DBG: print("    HA looks like {succ} don't exist (yet)")
-          if DBG: print("    Add it to the todo list")
-          # self._todo[stepname].append(succ)
-          self._todo[stepname].append(succ)
+# #           if stepname in self._extnodes:
+# #             #   extend_step("custom_init - custom-init -> init")
+# #             # succ.extend_inputs( step.all_outputs() )
+# # 
+# 
+#         except:
+#           if DBG: print("    HA looks like {succ_name} don't exist (yet)")
+#           if DBG: print("    Add it to the todo list")
+#           # self._todo[stepname].append(succ_name)
+#           self._todo[stepname].append(succ_name)
 
 
 
@@ -923,14 +935,7 @@ ranksep=0.8;
 
   # Try and clear out the todo list, i.e. see if outstanding nodes have been built yet.
   def _check_todo_list(self, frame, DBG=0):
-
-    # Connect the nodes and update the todo list
-    def connectem( from_node, to_node ):
-      self.connect_by_name( from_node, to_node)
-      if DBG: print(f"      todo list BEFORE: {self._todo[from_name]}")
-      self._todo[from_name].remove(to_name)
-      if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
-
+    print("CHECKING TODO LIST")
     for from_name in self._todo:
 
       # Must make shallow copy b/c we may be deleting elements in situ
@@ -938,72 +943,64 @@ ranksep=0.8;
 
       for to_name in to_list:
 
-        self._connect_from_to(frame, from_name, to_name, DBG)
+        if DBG:
+          print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
+        
 
-#         if DBG: print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
-# 
-#         # All "from" nodes in todo list are globals, b/c they were defined via new system
-#         from_node = frame.f_globals[from_name]
-# 
-#         # Look for succ in caller locals
-#         try:
-#           to_node = frame.f_locals[to_name]
-#           if DBG: print(f"    READY! CONNECTING LOCAL {from_name} to {to_name}")
-#           connectem( from_node, to_node)
-#           continue
-#         except:
-#           if DBG: print(f"    {to_name} not local, is it global perchance?")
-# 
-#         # Look for succ in caller globals
-#         try: 
-#           to_node = frame.f_globals[to_name]
-#           if DBG: print(f"    READY! CONNECTING GLOBAL {from_name} to {to_name}")
-#           connectem( from_node, to_node)
-#         except:
-#           if DBG: print("    not global either; guess it's not plugged in yet")
+        if self._connect_from_to(frame, from_name, to_name, DBG):
+          self._todo[from_name].remove(to_name)
+          print(f'    FOO REMOVED from todo list: {from_name} -> {to_name}')
 
 
-  # Given from_name and list of successors 'to_list',  and calling frame, try and connect em
-
+  # Given calling frame, name of "from" node, and list of successors, try and connect em
   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
 
-      # Connect the nodes and update the todo list
-      def connectem( from_node, to_node ):
-        self.connect_by_name( from_node, to_node)
-        if DBG: print(f"      todo list BEFORE: {self._todo[from_name]}")
-        self._todo[from_name].remove(to_name)
-        if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
+#       # Connect the nodes and update the todo list
+#       def connectem( from_node, to_node ):
+#         self.connect_by_name( from_node, to_node)
+#         if DBG: print(f"      todo list BEFORE: {self._todo[from_name]}")
+#         self._todo[from_name].remove(to_name)
+#         if DBG: print(f"      todo list AFTER:  {self._todo[from_name]}")
+#         print(f'    FOO CONNECTED {from_name} -> {to_name}')
 
-#     for from_name in self._todo:
-# 
-#       # Must make shallow copy b/c we may be deleting elements in situ
-#       to_list = self._todo[from_name].copy() ;
-# 
-#       for to_name in to_list:
 
-      if DBG: print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
+#       # Connect node to its successor node, and update the todo list
+#       def connectem(node, succ, succ_name):
+#         self.connect_by_name(node, succ)
+#         print(f'    FOO CONNECTED {from_name} -> {succ}')
+
+
+
+#       if DBG:
+#         print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
 
       # All "from" nodes in todo list are globals, b/c they were defined via new system
       from_node = frame.f_globals[from_name]
 
       # Look for succ in caller locals
       try:
-        to_node = frame.f_locals[to_name]
+        to_node = frame.f_locals[to_name] ;# This will fail if local not exists
         if DBG: print(f"    READY! CONNECTING LOCAL {from_name} to {to_name}")
-        connectem( from_node, to_node)
+        # connectem( from_node, to_node, to_name )
+        self.connect_by_name(from_node, to_node)
+        print(f'    FOO CONNECTED {from_name} -> {to_name}')
         # continue
-        return
+        return True
 
       except:
         if DBG: print(f"    {to_name} not local, is it global perchance?")
 
       # Look for succ in caller globals
       try: 
-        to_node = frame.f_globals[to_name]
+        to_node = frame.f_globals[to_name] ;# This will fail if global not exists
         if DBG: print(f"    READY! CONNECTING GLOBAL {from_name} to {to_name}")
-        connectem( from_node, to_node)
+        # connectem( from_node, to_node, to_name )
+        self.connect_by_name(from_node, to_node)
+        print(f'    FOO CONNECTED {from_name} -> {to_name}')
+        return True
       except:
         if DBG: print("    not global either; guess it's not plugged in yet")
+        return False
 
 
 
