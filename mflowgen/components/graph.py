@@ -21,8 +21,10 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
-    s._todo    = {}   ;# Connections waiting to be made
-    s._extnodes= [] ;# list of extension nodes
+    s._todo = {}  ;# Connections waiting to be made
+    s._extnodes  = []  ;# Extensions  waiting to be made
+
+
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -823,10 +825,10 @@ ranksep=0.8;
       if DBG: print("  DONE\n\n")
 
 
-  def extend_step(self, nodelist_string, DBG=0 ):
+  def extend_steps(self, nodelist_string, DBG=0 ):
 
     # EXAMPLE:
-          #   extend_step("custom_init - custom-init -> init")
+          #   extend_steps("custom_init - custom-init -> init")
           # Does this:
           #    custom_init = Step( this_dir + '/custom-init'                           )
           #    # Add extra input edges to innovus steps that need custom tweaks
@@ -842,18 +844,18 @@ ranksep=0.8;
 
       # Mark this step as an "extend" step
       self._extnodes.append(n.name)
+      if DBG: print(f'    EXTNODE addinf {n.name}')
+
 
       step = self._add_step_with_handle(frame, n, DBG)
       self._connect_successor_nodes(frame, n, DBG)
 
-      # TODO/BOOKMARK: 
-      # _connect_from_to() must check extnodes list and do the right thing
-
-
-
-
-
       if DBG: print("  DONE\n\n")
+
+
+
+#   # Just added a new node; see if we can do extensions
+#   def _check_todo_extend_list(self, frame, DBG=0):
 
 
 
@@ -942,6 +944,9 @@ ranksep=0.8;
           if DBG: print(f"    Add it to the todo list")
           self._todo[node_name].append(succ_name)
 
+# Ext_connect must happen *after* step=Step() def and *before* add_step()
+
+
 
   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
       '''
@@ -957,26 +962,45 @@ ranksep=0.8;
         return False
 
       else:
+        if from_name in list(self._extnodes):
+          if DBG: print(f'    FOUND EXTNODE {from_name}')
+          #    init.extend_inputs( custom_init.all_outputs() )
+          to_node.extend_inputs( from_node.all_outputs() )
+
+
+
         self.connect_by_name(from_node, to_node)
-        # TODO/FIXME/BOOKMARK check extnodes and do the thing
         if DBG: print(f'   CONNECTED {from_name} -> {to_name}')
+
+        print(f'EXTNODES {self._extnodes}')
+        cond = from_name in self._extnodes
+        print(f'"{from_name}" in {self._extnodes}? "{cond}"')
+
+
+
+        # TODO/FIXME/BOOKMARK check extnodes and do the thing
+
+
         return True
       
 
   def _findvar(self, frame, varname):
     """Search given frame for local or global var with called 'varname'"""
+    DBG=1
     try:
       value = frame.f_locals[varname] ;# This will fail if local not exists
       print(f'    Found local var {varname}')
       return value
     except: pass
 
+    if DBG: print(f"    {varname} not local, is it global perchance?")
     try:
       value = frame.f_globals[varname] ;# This will fail if global not exists
       print(f'    Found global var {varname}')
       return value
     except: pass
 
+    if DBG: print("    not global either; guess it's not plugged in yet")
     return None
 
 
