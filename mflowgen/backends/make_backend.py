@@ -184,11 +184,10 @@ class MakeBackend:
     s.w.newline()
     #.....................................................................
 
-    s.w.write( 'FOOOOOOO1\n' )
     all_deps = deps + extra_deps
 
     # Rules
-    s.w.write( 'FOOOOOOO2\n' )
+
     target = make_symlink(
       w    = s.w,
       dst  = dst,
@@ -196,7 +195,7 @@ class MakeBackend:
       deps = all_deps,
       src_is_symlink = True,
     )
-    s.w.write( 'FOOOOOOO3\n' )
+
     #.....................................................................
     # Built-in toggle for enabling/disabling this rule
     #.....................................................................

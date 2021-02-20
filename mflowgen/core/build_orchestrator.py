@@ -513,8 +513,6 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
     for i, step_name in enumerate( s.order ):
 
-      print(f"BUILDO {step_name}")
-
       step      = s.g.get_step( step_name )
       build_dir = s.build_dirs[ step_name ]
       build_id  = s.build_ids[ step_name ]
@@ -625,12 +623,6 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
         src_step_name, src_f = edge.get_src()
         dst_step_name, dst_f = edge.get_dst()
-
-        if step_name == 'cadence-genus-synthesis':
-          print(f"foosy2 step_name='{step_name}', edge_i='{src_step_name}'->'{dst_step_name}'")
-
-
-
 
         link_src = s.build_dirs[ src_step_name ] + '/outputs/' + src_f
         link_dst = s.build_dirs[ dst_step_name ] + '/inputs/'  + dst_f

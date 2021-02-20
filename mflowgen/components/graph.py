@@ -233,20 +233,6 @@ class Graph:
 
     # For all overlaps, connect src to dst
 
-    if src_step_name == 'constraints':
-      print(f"foosys3 CONNECTING {src_step_name} -> {dst_step_name}")
-      print(f"foosys3   src_outputs={src_outputs}")
-      print(f"foosys3   dst_inputs={dst_inputs}")
-      print(f"foosys3   overlap={overlap}\n")
-
-#     if dst_step_name == 'cadence-genus-synthesis':
-#       print(f"foosys3 CONNECTING {src_step_name} -> {dst_step_name}")
-#       print(f"foosys3   src_outputs={src_outputs}")
-#       print(f"foosys3   dst_inputs={dst_inputs}")
-#       print(f"foosys3   overlap={overlap}\n")
-
-
-
     for name in overlap:
       l_handle = src_step.o( name )
       r_handle = dst_step.i( name )
@@ -813,7 +799,7 @@ ranksep=0.8;
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
       step = self._add_step_with_handle(frame, n, is_default=True, DBG=DBG)
-      self._connect_successor_nodes(frame, n, DBG)
+      self._build_todo_list(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
   def add_custom_steps(self, nodelist_string, DBG=0):
@@ -844,7 +830,7 @@ ranksep=0.8;
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
       step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
-      self._connect_successor_nodes(frame, n, DBG)
+      self._build_todo_list(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
 
@@ -868,7 +854,7 @@ ranksep=0.8;
       # Mark this step as an "extend" step
       self._extnodes.append(n.name)
       step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
-      self._connect_successor_nodes(frame, n, DBG)
+      self._build_todo_list(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
 
@@ -939,28 +925,9 @@ ranksep=0.8;
 
       # Add step to graph
       self.add_step(step)
-
-      # Check todo list, see if new step has unlocked new connections
-#       self._check_todo_list(frame, DBG)
       return step
 
-  def _connect_successor_nodes(self, frame, node, DBG=0):
-#       '''
-#       Given a node containing a list of successors, check each successor
-#       to see if it exists in the calling frame yet. If so, connect them; 
-#       otherwise, add it to a todo-list for later.
-#       '''
-#       node_name = node.name
-#       for succ_name in node.successors:
-#         if DBG: print(f"  CONNECTING {node_name} to {succ_name}")
-#         if self._connect_from_to(frame, node_name, succ_name, DBG=1):
-#           if DBG: print("    CONNECTED!!!")
-#         else:
-#           if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
-#           if DBG: print(f"    Add it to the todo list")
-#           self._todo[node_name].append(succ_name)
-# 
-#   def _build_todo_list(self, frame, node, DBG=0):
+  def _build_todo_list(self, frame, node, DBG=0):
       '''
       Given a node containing a list of successors, check each successor
       to see if it exists in the calling frame yet. If so, connect them; 
@@ -1221,12 +1188,11 @@ ranksep=0.8;
 #       except:
 #         if DBG: print("    not global either; guess it's not plugged in yet")
 #         return False
-
-
+# 
+# 
 #     is_default=False
 #     self._add_default_or_custom_step(nodelist_string, is_default, DBG)
-
-
+# 
 #   def _add_default_or_custom_step(self, frame, nodelist_string, is_default, DBG=0):
 #     nodes=ParseNodes(nodelist_string)
 #     for n in nodes.node_array:
@@ -1235,4 +1201,24 @@ ranksep=0.8;
 #       self._connect_successor_nodes(frame, n, DBG)
 #       if DBG: print("  DONE\n\n")
 # 
-
+# 
+#       # Check todo list, see if new step has unlocked new connections
+#       self._check_todo_list(frame, DBG)
+# 
+#   def _connect_successor_nodes(self, frame, node, DBG=0):
+#       '''
+#       Given a node containing a list of successors, check each successor
+#       to see if it exists in the calling frame yet. If so, connect them; 
+#       otherwise, add it to a todo-list for later.
+#       '''
+#       node_name = node.name
+#       for succ_name in node.successors:
+#         if DBG: print(f"  CONNECTING {node_name} to {succ_name}")
+#         if self._connect_from_to(frame, node_name, succ_name, DBG=1):
+#           if DBG: print("    CONNECTED!!!")
+#         else:
+#           if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
+#           if DBG: print(f"    Add it to the todo list")
+#           self._todo[node_name].append(succ_name)
+# 
+#   def _build_todo_list(self, frame, node, DBG=0):

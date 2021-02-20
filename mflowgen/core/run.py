@@ -170,7 +170,6 @@ class RunHandler:
       backend_cls = NinjaBackend
 
     b = BuildOrchestrator( g, backend_cls )
-    print("BUILDO")
     b.build()
 
     # Done
