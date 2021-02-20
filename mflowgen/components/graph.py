@@ -915,9 +915,12 @@ ranksep=0.8;
         exit(13)
 
       # Build the step and assign the handle
-      module = inspect.getmodule(frame)
-      this_dir = os.path.dirname( os.path.abspath( module.__file__ ) )
-      step = Step( this_dir + '/' + stepdir, default=is_default)
+      if not is_default:
+        module = inspect.getmodule(frame)
+        this_dir = os.path.dirname( os.path.abspath( module.__file__ ) )
+        stepdir = this_dir + '/' + stepdir
+      # step = Step( this_dir + '/' + stepdir, default=is_default)
+      step = Step( stepdir, default=is_default)
       frame.f_globals[stepname] = step
 
       # Add step to graph
