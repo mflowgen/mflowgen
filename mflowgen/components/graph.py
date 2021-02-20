@@ -233,6 +233,20 @@ class Graph:
 
     # For all overlaps, connect src to dst
 
+    if src_step_name == 'constraints':
+      print(f"foosys3 CONNECTING {src_step_name} -> {dst_step_name}")
+      print(f"foosys3   src_outputs={src_outputs}")
+      print(f"foosys3   dst_inputs={dst_inputs}")
+      print(f"foosys3   overlap={overlap}\n")
+
+#     if dst_step_name == 'cadence-genus-synthesis':
+#       print(f"foosys3 CONNECTING {src_step_name} -> {dst_step_name}")
+#       print(f"foosys3   src_outputs={src_outputs}")
+#       print(f"foosys3   dst_inputs={dst_inputs}")
+#       print(f"foosys3   overlap={overlap}\n")
+
+
+
     for name in overlap:
       l_handle = src_step.o( name )
       r_handle = dst_step.i( name )
@@ -927,10 +941,26 @@ ranksep=0.8;
       self.add_step(step)
 
       # Check todo list, see if new step has unlocked new connections
-      self._check_todo_list(frame, DBG)
+#       self._check_todo_list(frame, DBG)
       return step
 
   def _connect_successor_nodes(self, frame, node, DBG=0):
+#       '''
+#       Given a node containing a list of successors, check each successor
+#       to see if it exists in the calling frame yet. If so, connect them; 
+#       otherwise, add it to a todo-list for later.
+#       '''
+#       node_name = node.name
+#       for succ_name in node.successors:
+#         if DBG: print(f"  CONNECTING {node_name} to {succ_name}")
+#         if self._connect_from_to(frame, node_name, succ_name, DBG=1):
+#           if DBG: print("    CONNECTED!!!")
+#         else:
+#           if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
+#           if DBG: print(f"    Add it to the todo list")
+#           self._todo[node_name].append(succ_name)
+# 
+#   def _build_todo_list(self, frame, node, DBG=0):
       '''
       Given a node containing a list of successors, check each successor
       to see if it exists in the calling frame yet. If so, connect them; 
@@ -938,13 +968,11 @@ ranksep=0.8;
       '''
       node_name = node.name
       for succ_name in node.successors:
-        if DBG: print(f"  CONNECTING {node_name} to {succ_name}")
-        if self._connect_from_to(frame, node_name, succ_name, DBG=1):
-          if DBG: print("    CONNECTED!!!")
-        else:
-          if DBG: print(f"    HA looks like {succ_name} don't exist (yet)")
-          if DBG: print(f"    Add it to the todo list")
-          self._todo[node_name].append(succ_name)
+        if DBG: print(f"  ADDING {node_name}->{succ_name} to todo list")
+        self._todo[node_name].append(succ_name)
+
+
+
 
   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
       '''
