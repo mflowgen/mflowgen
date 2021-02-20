@@ -791,7 +791,18 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
-  def add_custom_steps(self, nodelist_string, DBG=0 ):
+  def add_default_steps(self, nodelist_string, DBG=0):
+    "Same as 'add_custom_step' but adds 'default=True' parm to Step() def"
+    if DBG: print("Adding default steps")
+    frame = inspect.stack()[1][0]
+    nodes=ParseNodes(nodelist_string)
+    for n in nodes.node_array:
+      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+      step = self._add_step_with_handle(frame, n, is_default=True, DBG=DBG)
+      self._connect_successor_nodes(frame, n, DBG)
+      if DBG: print("  DONE\n\n")
+
+  def add_custom_steps(self, nodelist_string, DBG=0):
     '''
     # Add custom steps
     #
@@ -814,26 +825,26 @@ ranksep=0.8;
     #   """)
     '''
     if DBG: print("Adding custom steps")
-    nodes=ParseNodes(nodelist_string)
     frame = inspect.stack()[1][0]
+    nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-      step = self._add_step_with_handle(frame, n, DBG)
+      step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
       self._connect_successor_nodes(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
 
   def extend_steps(self, nodelist_string, DBG=0 ):
-
+    """
     # EXAMPLE:
           #   extend_steps("custom_init - custom-init -> init")
           # Does this:
-          #    custom_init = Step( this_dir + '/custom-init'                           )
+          #    custom_init = Step( this_dir + '/custom-init')
           #    # Add extra input edges to innovus steps that need custom tweaks
           #    init.extend_inputs( custom_init.all_outputs() )
-          #    g.add_step( custom_init              )
-          #    g.connect_by_name( custom_init,  init     )
-
+          #    g.add_step( custom_init )
+          #    g.connect_by_name( custom_init,  init )
+    """
     if DBG: print("Extend existing steps")
     nodes=ParseNodes(nodelist_string)
     frame = inspect.stack()[1][0]
@@ -842,7 +853,7 @@ ranksep=0.8;
 
       # Mark this step as an "extend" step
       self._extnodes.append(n.name)
-      step = self._add_step_with_handle(frame, n, DBG)
+      step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
       self._connect_successor_nodes(frame, n, DBG)
       if DBG: print("  DONE\n\n")
 
@@ -874,7 +885,7 @@ ranksep=0.8;
         else:
           print(f'    looks like maybe {to_name} does not exist yet')
 
-  def _add_step_with_handle(self, frame, node, DBG=0):
+  def _add_step_with_handle(self, frame, node, is_default, DBG=0):
       '''
       # Given a node with a stepname and associated dir, build the
       # step and make a handle for the step in the calling frame
@@ -906,7 +917,7 @@ ranksep=0.8;
       # Build the step and assign the handle
       module = inspect.getmodule(frame)
       this_dir = os.path.dirname( os.path.abspath( module.__file__ ) )
-      step = Step( this_dir + '/' + stepdir )
+      step = Step( this_dir + '/' + stepdir, default=is_default)
       frame.f_globals[stepname] = step
 
       # Add step to graph
@@ -941,7 +952,7 @@ ranksep=0.8;
       # Only global vars end up on the todo list, so 'from' node must be global
       from_node = frame.f_globals[from_name]
 
-      to_node = self._findvar(frame, to_name)
+      to_node = self._findvar(frame, to_name, DBG)
       if to_node == None:
         return False
 
@@ -1180,4 +1191,17 @@ ranksep=0.8;
 #         if DBG: print("    not global either; guess it's not plugged in yet")
 #         return False
 
+
+#     is_default=False
+#     self._add_default_or_custom_step(nodelist_string, is_default, DBG)
+
+
+#   def _add_default_or_custom_step(self, frame, nodelist_string, is_default, DBG=0):
+#     nodes=ParseNodes(nodelist_string)
+#     for n in nodes.node_array:
+#       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+#       step = self._add_step_with_handle(frame, n, is_default, DBG)
+#       self._connect_successor_nodes(frame, n, DBG)
+#       if DBG: print("  DONE\n\n")
+# 
 
