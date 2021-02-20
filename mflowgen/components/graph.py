@@ -791,17 +791,6 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
-  def add_default_steps(self, nodelist_string, DBG=0):
-    "Same as 'add_custom_step' but adds 'default=True' parm to Step() def"
-    if DBG: print("Adding default steps")
-    frame = inspect.stack()[1][0]
-    nodes=ParseNodes(nodelist_string)
-    for n in nodes.node_array:
-      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-      step = self._add_step_with_handle(frame, n, is_default=True, DBG=DBG)
-      self._build_todo_list(frame, n, DBG)
-      if DBG: print("  DONE\n\n")
-
   def add_custom_steps(self, nodelist_string, DBG=0):
     '''
     # Add custom steps
@@ -831,8 +820,7 @@ ranksep=0.8;
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
       step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
       self._build_todo_list(frame, n, DBG)
-      if DBG: print("  DONE\n\n")
-
+      if DBG: print('')
 
   def extend_steps(self, nodelist_string, DBG=0 ):
     """
@@ -845,45 +833,26 @@ ranksep=0.8;
           #    g.add_step( custom_init )
           #    g.connect_by_name( custom_init,  init )
     """
-    if DBG: print("Extend existing steps")
+    if DBG: print("Extending existing steps")
     nodes=ParseNodes(nodelist_string)
     frame = inspect.stack()[1][0]
     for n in nodes.node_array:
       if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-
-      # Mark this step as an "extend" step
-      self._extnodes.append(n.name)
+      self._extnodes.append(n.name)  ;# Mark this step as an "extend" step
       step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
       self._build_todo_list(frame, n, DBG)
-      if DBG: print("  DONE\n\n")
+      if DBG: print('')
 
-
-
-  def connect_outstanding_nodes(self, DBG=0):
-    '''
-    # construct.py should call this method after all steps have been built,
-    # to clear out the todo list.
-    '''
+  def add_default_steps(self, nodelist_string, DBG=0):
+    "Similar to 'add_custom_steps' but adds 'default=True' parm to Step() def"
+    if DBG: print("Adding default steps")
     frame = inspect.stack()[1][0]
-    self._check_todo_list(frame, DBG)
-
-  def _check_todo_list(self, frame, DBG=0):
-    '''
-    # Try and clear out the todo list, i.e. see if outstanding nodes have been built yet.
-    '''
-    print("CHECKING TODO LIST")
-    for from_name in self._todo:
-
-      # Must make shallow copy b/c we may be deleting elements in situ
-      to_list = self._todo[from_name].copy() ;
-      for to_name in to_list:
-        if DBG:
-          print(f"  TODO: connect {from_name} -> {to_name} --- connect({from_name}, {to_name})")
-        if self._connect_from_to(frame, from_name, to_name, DBG):
-          self._todo[from_name].remove(to_name)
-          print(f'    REMOVED from todo list: {from_name} -> {to_name}')
-        else:
-          print(f'    looks like maybe {to_name} does not exist yet')
+    nodes=ParseNodes(nodelist_string)
+    for n in nodes.node_array:
+      if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
+      step = self._add_step_with_handle(frame, n, is_default=True, DBG=DBG)
+      self._build_todo_list(frame, n, DBG)
+      if DBG: print('')
 
   def _add_step_with_handle(self, frame, node, is_default, DBG=0):
       '''
@@ -935,11 +904,26 @@ ranksep=0.8;
       '''
       node_name = node.name
       for succ_name in node.successors:
-        if DBG: print(f"  ADDING {node_name}->{succ_name} to todo list")
+        if DBG: print(f"    Adding {node_name}->{succ_name} to todo list")
         self._todo[node_name].append(succ_name)
 
 
+  def connect_outstanding_nodes(self, DBG=0):
+    '''
+    # construct.py should call this method after all steps have been built,
+    # to clear out the todo list.
+    '''
+    frame = inspect.stack()[1][0]
+    print("PROCESSING CONNECTIONS IN TODO LIST")
+    for from_name in self._todo:
 
+      # Must make shallow copy b/c we may be deleting elements in situ
+      to_list = self._todo[from_name].copy() ;
+      for to_name in to_list:
+        if DBG: print(f"  CONNECTING {from_name} -> {to_name}")
+        self._connect_from_to(frame, from_name, to_name, DBG)
+        self._todo[from_name].remove(to_name)
+        # if DBG: print(f'    REMOVED from todo list: {from_name} -> {to_name}\n')
 
   def _connect_from_to(self, frame, from_name, to_name, DBG=0):
       '''
@@ -949,48 +933,41 @@ ranksep=0.8;
       '''
       # Only global vars end up on the todo list, so 'from' node must be global
       from_node = frame.f_globals[from_name]
+      to_node   = self._findvar(frame, to_name, DBG)
 
-      to_node = self._findvar(frame, to_name, DBG)
-      if to_node == None:
-        return False
+      # If it's an "extension" node, connect all "from" outputs as "to" inputs
+      if from_name in list(self._extnodes):
+        if DBG: print(f'    Extnode: connecting all outputs to dest node')
+        to_node.extend_inputs( from_node.all_outputs() )
 
-      else:
-        if from_name in list(self._extnodes):
-          if DBG: print(f'    FOUND EXTNODE {from_name}')
-          to_node.extend_inputs( from_node.all_outputs() )
+      # Connect "from" -> "to" nodes
+      self.connect_by_name(from_node, to_node)
+      # if DBG: print(f'    CONNECTED {from_name} -> {to_name}')
+      if DBG: print('')
 
-        self.connect_by_name(from_node, to_node)
-        if DBG: print(f'   CONNECTED {from_name} -> {to_name}')
-
-        print(f'EXTNODES {self._extnodes}')
-        cond = from_name in self._extnodes
-        print(f'"{from_name}" in {self._extnodes}? "{cond}"')
-
-
-
-        # TODO/FIXME/BOOKMARK check extnodes and do the thing
-
-
-        return True
       
 
   def _findvar(self, frame, varname, DBG=0):
     """Search given frame for local or global var with called 'varname'"""
     try:
       value = frame.f_locals[varname] ;# This will fail if local not exists
-      print(f'    Found local var {varname}')
+      if DBG: print(f"    Found local var '{varname}'")
       return value
     except: pass
 
-    if DBG: print(f"    {varname} not local, is it global perchance?")
+    # if DBG: print(f"    {varname} not local, is it global perchance? ", end='')
     try:
       value = frame.f_globals[varname] ;# This will fail if global not exists
-      print(f'    Found global var {varname}')
+      if DBG: print(f"    Found global var '{varname}'")
       return value
     except: pass
 
-    if DBG: print("    not global either; guess it's not plugged in yet")
-    return None
+#     if DBG: print('')
+    print(f"**ERROR Could not find '{varname}'"); exit(13)
+# 
+# 
+#     if DBG: print("\n    not global either; guess it's not plugged in yet")
+#     return None
 
 
 ##############################################################################
@@ -1222,3 +1199,6 @@ ranksep=0.8;
 #           self._todo[node_name].append(succ_name)
 # 
 #   def _build_todo_list(self, frame, node, DBG=0):
+# 
+#         else:
+#           print(f'    looks like maybe {to_name} does not exist yet')
