@@ -1,8 +1,9 @@
 # EASYSTEPS - Simpler step  creation
 
-So...for some time now I have thought it would be useful to simplify the way we build `construct.py` scripts for new flows...it seemed to me that there was a lot of duplicated/unnecessary extra effort involved for various simple tasks. 
+So...for some time now I have thought it would be useful to simplify the way we build `construct.py` scripts for new flows...it seemed to me that there was a lot of duplicated/unnecessary extra effort involved for various simple tasks. So I built the "easysteps" package.
 
-Without easysteps, adding a node/step involves modifying your `construct.py` script in three separate places, once to define the node, once to add the node to the graph, and once to connect it to the other nodes in the graph. For example, adding a couple of default nodes `iflow` and `init` currently looks like the code below (all "before" examples are taken from the `Tile_PE/construct.py` script in the `garnet` repo).
+Without easysteps, adding a node/step involves modifying your `construct.py` script in three separate places, once to define the node, once to add the node to the graph, and once to connect it to the other nodes in the graph. For example, adding a couple of default nodes `iflow` and `init` currently looks like the code below (all "before" examples are taken from [Tile_PE/construct.py](https://github.com/StanfordAHA/garnet/blob/master/mflowgen/Tile_PE/construct.py) in StanfordAHA's `garnet` repo).
+
 ```
   # Adding default nodes BEFORE:
 
@@ -28,10 +29,10 @@ Without easysteps, adding a node/step involves modifying your `construct.py` scr
   g.connect_by_name( power,        place        )
 ```
 
-I propose combining all these steps in a single place in the script, e.g. something like
+Easysteps combines all these steps in a single place in the script, e.g.
 ```
   # Adding default nodes AFTER:
-  
+
   g.add_default_steps('''
     init  - cadence-innovus-init  -> power
     power - cadence-innovus-power -> place
@@ -40,9 +41,9 @@ I propose combining all these steps in a single place in the script, e.g. someth
           -> route postroute signoff debugcalibre
     ''')
 ```
-The string passed to this new function `add_default_steps()`, yaml-like in simplicity, would be parsed and expanded, invisibly to the user, into the full `Step()/add_step()/connect_by_name()` sequence.
+The string passed to this new function `add_default_steps()`, yaml-like in simplicity, gets parsed and expanded, invisibly to the user, into the full `Step()/add_step()/connect_by_name()` sequence.
 
-Similarly, code for custom nodes might change as follows
+Similarly, code for custom nodes changes as follows
 ```
   # Custom nodes BEFORE
 
