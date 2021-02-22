@@ -6,14 +6,14 @@
 #
 
 import os
-import inspect
 
 from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
-from mflowgen.utils           import ParseNodes
 
-# Optional SR easysteps
+# Packages for optional SR easysteps
+
+import inspect
 from mflowgen.components      import easysteps
 
 class Graph:
@@ -24,8 +24,9 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
-    s._todo    = {}   ;# Connections waiting to be made
-    s._extnodes= [] ;# list of extension nodes
+
+    s._todo    = {}   ;# Connections waiting to be made, used only by easysteps
+    s._extnodes= []   ;# List of extension nodes, used only by easysteps
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -794,6 +795,8 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
+  import inspect
+
   def add_custom_steps(self, nodelist_string, DBG=0):
     frame = inspect.stack()[1][0]
     easysteps.add_custom_steps(self, frame, nodelist_string, DBG)
@@ -821,8 +824,3 @@ ranksep=0.8;
 
   def _findvar(self, frame, varname, DBG=0):
     return easysteps._findvar(self, frame, varname, DBG)
-
-      
-
-
-# OLD CODE see ~/tmpdir/easysteps.py.old
