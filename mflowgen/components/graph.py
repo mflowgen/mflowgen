@@ -795,8 +795,6 @@ ranksep=0.8;
   # SR playspace
   #-----------------------------------------------------------------------
 
-  import inspect
-
   def add_custom_steps(self, nodelist_string, DBG=0):
     frame = inspect.stack()[1][0]
     easysteps.add_custom_steps(self, frame, nodelist_string, DBG)
@@ -809,18 +807,6 @@ ranksep=0.8;
     frame = inspect.stack()[1][0]
     easysteps.add_default_steps(self, frame, nodelist_string, DBG)
 
-  def _add_step_with_handle(self, frame, node, is_default, DBG=0):
-    easysteps._add_step_with_handle(self, frame, node, is_default, DBG)
-
-  def _build_todo_list(self, frame, node, DBG=0):
-    easysteps._build_todo_list(self, frame, node, DBG)
-
   def connect_outstanding_nodes(self, DBG=0):
     frame = inspect.stack()[1][0]
     easysteps.connect_outstanding_nodes(self, frame, DBG)
-
-  def _connect_from_to(self, frame, from_name, to_name, DBG=0):
-    easysteps._connect_from_to(self, frame, from_name, to_name, DBG)
-
-  def _findvar(self, frame, varname, DBG=0):
-    return easysteps._findvar(self, frame, varname, DBG)

@@ -37,7 +37,7 @@ def add_custom_steps(self, frame, nodelist_string, DBG=0):
     nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
         if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-        step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
+        step = _add_step_with_handle(self, frame, n, is_default=False, DBG=DBG)
 
 def extend_steps(self, frame, nodelist_string, DBG=0 ):
     '''
@@ -59,7 +59,7 @@ def extend_steps(self, frame, nodelist_string, DBG=0 ):
     for n in nodes.node_array:
         if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
         self._extnodes.append(n.name)  ;# Mark this step as an "extend" step
-        step = self._add_step_with_handle(frame, n, is_default=False, DBG=DBG)
+        step = _add_step_with_handle(self, frame, n, is_default=False, DBG=DBG)
 
 def add_default_steps(self, frame, nodelist_string, DBG=0):
     "Similar to 'add_custom_steps' but adds 'default=True' parm to Step() def"
@@ -67,7 +67,7 @@ def add_default_steps(self, frame, nodelist_string, DBG=0):
     nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
         if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
-        step = self._add_step_with_handle(frame, n, is_default=True, DBG=DBG)
+        step = _add_step_with_handle(self, frame, n, is_default=True, DBG=DBG)
 
 def _add_step_with_handle(self, frame, node, is_default, DBG=0):
       '''
@@ -95,7 +95,7 @@ def _add_step_with_handle(self, frame, node, is_default, DBG=0):
       if stepname in frame.f_locals:
         print(f'**ERROR local var "{stepname}" exists already; cannot build step via parsenode')
         print(f"rtl='{frame[0].f_locals[stepname]}'")
-        exit(13)
+        assert False
 
       # Build the step and assign the handle
       if not is_default:
@@ -135,7 +135,7 @@ def connect_outstanding_nodes(self, frame, DBG=0):
             if DBG: print(f"  CONNECTING {from_name} -> {to_name}")
 
             # Don't know (yet) whether to_node is local or global to calling frame (construct.py)
-            to_node   = self._findvar(frame, to_name, DBG)
+            to_node = _findvar(frame, to_name, DBG)
 
             # If "from" is an "extension" node, connect all "from" outputs as "to" inputs
             if from_name in list(self._extnodes):
@@ -150,8 +150,7 @@ def connect_outstanding_nodes(self, frame, DBG=0):
             self._todo[from_name].remove(to_name)
             # if DBG: print(f'    REMOVED from todo list: {from_name} -> {to_name}\n')
 
-
-def _findvar(self, frame, varname, DBG=0):
+def _findvar(frame, varname, DBG=0):
     "Search given frame for local or global var 'varname'"
 
     # print(f"Look for varname '{varname}' among list of frame's locals")
@@ -169,4 +168,4 @@ def _findvar(self, frame, varname, DBG=0):
     except: pass
 
     # Give up
-    print(f"**ERROR Could not find '{varname}'"); exit(13)
+    print(f"**ERROR Could not find '{varname}'"); assert False
