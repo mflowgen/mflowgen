@@ -13,20 +13,16 @@ import re;
 #   """)
 #
 #   custom_nodes.addnode("custom_dc_scripts - custom-dc-scripts -> iflow")
-#
-#   print(P)
-#
 #   for n in custom_nodes.node_array:
 #       print(f'{n.name} - {n.step} -> {n.successors}')
-
 
 class ParseNodes:
 
     # Syntax:
     # 
-    #  <node> <step> [ "->" <list of successor nodes> ]
+    #  <node> "-" <step> [ "->" <list of successor nodes> ]
     # 
-    # Newlines are ignored.
+    # Newlines are ignored, as are right-arrows (" -> ") and semicolons.
     # Pound-sign introduces a comment that extends to end of line.
     # 
     # Examples:
@@ -56,9 +52,8 @@ class ParseNodes:
         self.node_array = []
         self.node_array = self.parse_nodelist(nodestring, self.node_array, DBG)
 
-    # def show_all_nodes(s, node_array):
-    def show_all_nodes(self):
 
+    def show_all_nodes(self):
         node_array = self.node_array
 
         # Calculate field widths
@@ -77,42 +72,22 @@ class ParseNodes:
 
         return()
 
-
-
-        i=0;
-        for n in node_array: print(f"  {i:02} {node_array[i]}"); i=i+1
-
-
-
-
     def parse_error(self, errmsg):
         print(f"**ERROR {errmsg}"); assert False
 
-    class ParseNode:
+    # Private data structure for nodes
+    class _ParseNode:
         def __init__(self, name, step, successors):
             self.name = name
             self.step = step
             self.successors = successors
 
         def __repr__(self):
-            # print(f"{self.name} ({self.step}) -> {self.successors}")
             s=f"({self.step})"
             w=16
             return(f"{self.name:{w}} {s:25} -> {self.successors}")
 
-    # global NODES; NODES = []
-
-
-    def parse_nodelist(s, nodelist, node_array, DBG=0):
-        """
-    Given a nodelist string
-      - parse the string
-      - add the resulting list of nodes to array "nodes"
-      - return the final array
-    """
-
-        i=-1
-
+    def _canonicalize(self, nodelist, DBG=0):
         # Canonicalize the nodelist;
         # - get rid of comments (TODO)
         # - get rid of right-arrows, they're just noise
@@ -126,11 +101,26 @@ class ParseNodes:
         nodelist = re.sub(r'\s+', ' ', " " + nodelist + " "); # Whitespace inc. newlines
         if DBG: print(f'nodelist1="{nodelist}"')
 
+        return nodelist
+
+
+    def parse_nodelist(s, nodelist, node_array, DBG=0):
+        """
+        Given a nodelist string
+          - parse the string
+          - add the resulting list of nodes to array "nodes"
+          - return the final array
+        """
+
+        nodelist = s._canonicalize(nodelist)
+
+
         if nodelist == ' ':
             print('no nodelist')
             return []
 
         # Build a dictionary of nodes, steps, and successor nodes
+        i=-1
         while (nodelist != ""):  # Repeat until string is empty
 
             # Prevent infinite loops
@@ -157,8 +147,8 @@ class ParseNodes:
 
             #         node_array.append("foo"); 
 
-            n = s.ParseNode(nodename, step, [])
-            node_array.append(n)
+            node = s._ParseNode(nodename, step, [])
+            node_array.append(node)
 
             # Are we done?
             if (remain == " "):
@@ -170,7 +160,7 @@ class ParseNodes:
             ww = r'^ (\S+)( [^-].*)$'
             f = re.search(ww, remain)
             while (f):
-                succ=f.group(1); n.successors.append(succ)
+                succ=f.group(1); node.successors.append(succ)
                 if DBG>1: print(f"  found successor '{succ}'")
                 remain = f.group(2)
                 f = re.search(ww, remain)
@@ -188,7 +178,7 @@ class ParseNodes:
             # Should be one final optional successor node in list
             f = re.search(r'^ (\S+) $', remain)
             if f:
-                succ=f.group(1); n.successors.append(succ)
+                succ=f.group(1); node.successors.append(succ)
                 if DBG>1: print(f"  found successor '{succ}' (final)")
                 break
 
