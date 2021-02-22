@@ -11,8 +11,9 @@ from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
 
-# Packages for optional SR easysteps
-
+# # Packages for optional SR easysteps
+# # travis breaks if i import these, why?
+# 
 # import inspect
 # from mflowgen.components      import easysteps
 
@@ -792,7 +793,7 @@ ranksep=0.8;
     return order
 
   #-----------------------------------------------------------------------
-  # SR playspace
+  # Optional easysteps
   #-----------------------------------------------------------------------
 
   def add_custom_steps(self, nodelist_string, DBG=0):
