@@ -170,11 +170,3 @@ def _findvar(self, frame, varname, DBG=0):
 
     # Give up
     print(f"**ERROR Could not find '{varname}'"); exit(13)
-
-
-
-
-
-
-##############################################################################
-# OLD CODE see ~/tmpdir/easysteps.py.old
