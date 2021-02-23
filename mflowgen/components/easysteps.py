@@ -147,7 +147,7 @@ def connect_outstanding_nodes(self, frame, DBG=0):
 
             # If "from" is an "extension" node, connect all "from" outputs as "to" inputs
             if from_name in list(self._extnodes):
-              if DBG: print(f'    Extnode: connecting all outputs to dest node')
+              if DBG: print('    Extnode: connecting all outputs to dest node')
               to_node.extend_inputs( from_node.all_outputs() )
 
             # Connect "from" -> "to" nodes
