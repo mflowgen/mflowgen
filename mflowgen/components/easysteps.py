@@ -4,11 +4,13 @@
 # Author : S. Richardson
 # Date   : February, 2021
 
-import os
-import inspect
+# Hm weird travis test fails if i import anything here :(
+# import os
+# import inspect
 
-from mflowgen.components.step import Step
-from mflowgen.utils           import ParseNodes
+# Hm weird travis test fails if i import anything here :(
+# from mflowgen.components.step import Step
+# from mflowgen.utils           import ParseNodes
 
 def add_custom_steps(self, frame, nodelist_string, DBG=0):
     '''
@@ -32,8 +34,8 @@ def add_custom_steps(self, frame, nodelist_string, DBG=0):
     #     post_pnr_power     - ../common/tile-post-pnr-power
     #   """)
     '''
+    from mflowgen.utils import ParseNodes ;# Cannot import at top level or mflowgen travis complains (??)
     if DBG: print("Adding custom steps")
-    module = inspect.getmodule(frame); print(f"foofile {module.__file__}")
     nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
         if DBG: print(f"  Found '{n.name}' - '{n.step}' -> {n.successors}   ")
@@ -54,6 +56,7 @@ def extend_steps(self, frame, nodelist_string, DBG=0 ):
     #    g.connect_by_name( custom_init,  init )
     #
     '''
+    from mflowgen.utils import ParseNodes ;# Cannot import at top level or mflowgen travis complains (??)
     if DBG: print("Extending existing steps")
     nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
@@ -63,6 +66,7 @@ def extend_steps(self, frame, nodelist_string, DBG=0 ):
 
 def add_default_steps(self, frame, nodelist_string, DBG=0):
     "Similar to 'add_custom_steps' but adds 'default=True' parm to Step() def"
+    from mflowgen.utils import ParseNodes ;# Cannot import at top level or mflowgen travis complains (??)
     if DBG: print("Adding default steps")
     nodes=ParseNodes(nodelist_string)
     for n in nodes.node_array:
@@ -85,6 +89,10 @@ def _add_step_with_handle(self, frame, node, is_default, DBG=0):
       #
       # Also: after step is built, add successors to todo list for later processing
       '''
+      import os      ;# Cannot import at top level or mflowgen travis complains (??)
+      import inspect ;# Cannot import at top level or mflowgen travis complains (??)
+      from mflowgen.components.step import Step ;# ibidem
+
       stepname   = node.name
       stepdir    = node.step
 

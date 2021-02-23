@@ -5,7 +5,8 @@ from mflowgen.components.graph import Graph
 from mflowgen.components.step  import Step
 from mflowgen.components.edge  import Edge
 
-from mflowgen.components.easysteps import extend_steps
-from mflowgen.components.easysteps import add_custom_steps
-from mflowgen.components.easysteps import add_default_steps
-from mflowgen.components.easysteps import connect_outstanding_nodes
+# mflowgen travis doesn't seem to like these(!)
+# from mflowgen.components.easysteps import extend_steps
+# from mflowgen.components.easysteps import add_custom_steps
+# from mflowgen.components.easysteps import add_default_steps
+# from mflowgen.components.easysteps import connect_outstanding_nodes
