@@ -11,11 +11,9 @@ from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
 
-# # Packages for optional SR easysteps
-# # travis breaks if i import these, why?
-# 
-# import inspect
-# from mflowgen.components      import easysteps
+# Packages for optional SR easysteps
+import inspect
+from mflowgen.components      import easysteps
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
@@ -797,25 +795,17 @@ ranksep=0.8;
   #-----------------------------------------------------------------------
 
   def add_custom_steps(self, nodelist_string, DBG=0):
-    import inspect
-    from mflowgen.components      import easysteps
     frame = inspect.stack()[1][0]
     easysteps.add_custom_steps(self, frame, nodelist_string, DBG)
 
   def extend_steps(self, nodelist_string, DBG=0 ):
-    import inspect
-    from mflowgen.components      import easysteps
     frame = inspect.stack()[1][0]
     easysteps.extend_steps(self, frame, nodelist_string, DBG )
 
   def add_default_steps(self, nodelist_string, DBG=0):
-    import inspect
-    from mflowgen.components      import easysteps
     frame = inspect.stack()[1][0]
     easysteps.add_default_steps(self, frame, nodelist_string, DBG)
 
   def connect_outstanding_nodes(self, DBG=0):
-    import inspect
-    from mflowgen.components      import easysteps
     frame = inspect.stack()[1][0]
     easysteps.connect_outstanding_nodes(self, frame, DBG)
