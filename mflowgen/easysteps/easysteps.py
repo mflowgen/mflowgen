@@ -7,8 +7,8 @@
 import os
 import inspect
 
+from mflowgen.easysteps.parse import ParseNodes
 from mflowgen.components.step import Step
-from mflowgen.utils           import ParseNodes
 
 # Persistent storage for todo list
 _todo    = {}   ;# Connections waiting to be made, used only by easysteps
