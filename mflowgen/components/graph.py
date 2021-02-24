@@ -11,10 +11,6 @@ from mflowgen.components.step import Step
 from mflowgen.components.edge import Edge
 from mflowgen.utils           import get_top_dir
 
-# Packages for optional SR easysteps
-import inspect
-from mflowgen.components      import easysteps
-
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
 
@@ -23,9 +19,6 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
-
-    s._todo    = {}   ;# Connections waiting to be made, used only by easysteps
-    s._extnodes= []   ;# List of extension nodes, used only by easysteps
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -789,23 +782,3 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
-
-  #-----------------------------------------------------------------------
-  # Optional easysteps
-  #-----------------------------------------------------------------------
-
-  def add_custom_steps(self, nodelist_string, DBG=0):
-    frame = inspect.stack()[1][0]
-    easysteps.add_custom_steps(self, frame, nodelist_string, DBG)
-
-  def extend_steps(self, nodelist_string, DBG=0 ):
-    frame = inspect.stack()[1][0]
-    easysteps.extend_steps(self, frame, nodelist_string, DBG )
-
-  def add_default_steps(self, nodelist_string, DBG=0):
-    frame = inspect.stack()[1][0]
-    easysteps.add_default_steps(self, frame, nodelist_string, DBG)
-
-  def connect_outstanding_nodes(self, DBG=0):
-    frame = inspect.stack()[1][0]
-    easysteps.connect_outstanding_nodes(self, frame, DBG)
