@@ -107,7 +107,7 @@ class Graph:
     return s._steps[ step_name ]
 
   def all_steps( s ):
-    return s._steps.keys()
+    return sorted( s._steps.keys() )
 
   # Edges -- incoming and outgoing adjacency lists
   # Sort them for better debuggability / repeatability / causality
@@ -642,11 +642,7 @@ ranksep=0.8;
 
     dot_nodes = []
 
-    # Use ordered list for repeatability
-
-    stepname_list = list(s.all_steps()); stepname_list.sort()
-    for step_name in stepname_list:
-
+    for step_name in s.all_steps():
       step     = s.get_step( step_name )
       port_str = '<{dot_port_id}> {label}'
 
