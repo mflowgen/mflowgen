@@ -517,7 +517,7 @@ class MakeBackend:
 
     command = \
       '@find . -maxdepth 1 ! -name Makefile' \
-      r' ! -name .mflowgen ! -name .mflowgen.stash.yml' \
+      r' ! -name .mflowgen\*' \
       r' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
     make_clean( s.w, name='clean-all', command=command )

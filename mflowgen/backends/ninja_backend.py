@@ -426,7 +426,7 @@ class NinjaBackend:
 
     command = \
       'find . -maxdepth 1 ! -name build.ninja' \
-      r' ! -name .mflowgen ! -name .mflowgen.stash.yml' \
+      r' ! -name .mflowgen\*' \
       r' ! -name \. ! -name \.\. -exec rm -rf {} +'
 
     ninja_clean( s.w, name='clean-all', command=command )
