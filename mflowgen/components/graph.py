@@ -113,7 +113,7 @@ class Graph:
   # Sort them for better debuggability / repeatability / causality
 
   def sort_edges( s, edge_list ):
-    edge_list.sort(key=lambda x: x.src)
+    edge_list.sort(key=lambda x: x.dst)
     return edge_list
 
   def get_edges_i( s, step_name ):
@@ -124,7 +124,7 @@ class Graph:
 
   def get_edges_o( s, step_name ):
     try:
-      return s.sort_edges(s._edges_0[ step_name ])
+      return s.sort_edges(s._edges_o[ step_name ])
     except KeyError:
       return []
 
