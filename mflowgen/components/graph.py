@@ -107,19 +107,24 @@ class Graph:
     return s._steps[ step_name ]
 
   def all_steps( s ):
-    return s._steps.keys()
+    return sorted( s._steps.keys() )
 
   # Edges -- incoming and outgoing adjacency lists
+  # Sort them for better debuggability / repeatability / causality
+
+  def sort_edges( s, edge_list ):
+    edge_list.sort(key=lambda x: x.dst)
+    return edge_list
 
   def get_edges_i( s, step_name ):
     try:
-      return s._edges_i[ step_name ]
+      return s.sort_edges(s._edges_i[ step_name ])
     except KeyError:
       return []
 
   def get_edges_o( s, step_name ):
     try:
-      return s._edges_o[ step_name ]
+      return s.sort_edges(s._edges_o[ step_name ])
     except KeyError:
       return []
 
@@ -669,8 +674,17 @@ ranksep=0.8;
 
     dot_edges = []
 
-    for elist in s._edges_i.values():
-      for e in elist:
+    # Gather all the input edges and sort them for repeatable results
+
+    elist = []
+    for edges in s._edges_i.values():
+      elist = elist + edges
+    s.sort_edges(elist)
+
+    # Build dot-graph edges
+
+    for e in elist:
+
         src_step_name, src_f = e.get_src()
         dst_step_name, dst_f = e.get_dst()
 
@@ -764,5 +778,3 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
-
-
