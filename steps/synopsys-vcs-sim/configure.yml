@@ -38,7 +38,7 @@ inputs:
 # the waveform parameter to False.
 
 outputs:
-  - design.vpd
+  - run.vcd
 
 #-------------------------------------------------------------------------
 # Commands
@@ -52,6 +52,6 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  clock_period: 1.0
   testbench_name: tb
+  dut_name: dut
   waveform: True
