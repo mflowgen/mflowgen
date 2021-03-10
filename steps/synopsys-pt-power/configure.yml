@@ -35,10 +35,10 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - ./run.sh
+  - source run.sh
 
 debug:
-  - ./debug.sh
+  - source debug.sh
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -46,15 +46,18 @@ debug:
 
 parameters:
   design_name: undefined
-  #The strip path/ saif_instance must be defined, without any quotations!
+  #The strip path/saif_instance must be defined, without any quotations!
   saif_instance: th/dut
-  # analysis mode either averaged or time_based
+  # analysis mode either "averaged" or "time_based"
   analysis_mode: averaged
   # If VCD activity files is the result of a zero-delay simulation, it needs
   # to be specified! (Otherwise SDF simulation will be assumed)
   zero_delay_simulation: False
-  # Set library operating condition
+  # Set library operating condition to be used for timing and power estimation
+  # Leaving it undefined PrimeTime will choose the operating condition of the first target library in the list
+  # eg. the Operating condition of the FreePDK45 ADK can be set "typical"
   lib_op_condition: undefined
+  # Order of script execution
   order:
     - designer-interface.tcl
     - setup-session.tcl
