@@ -1,0 +1,68 @@
+#=========================================================================
+# Synopsys PrimePower -- Gate-Level Power Estimation
+#=========================================================================
+# This step runs gate-level average power analysis with Synopsys PrimeTime PX
+# or PrimePower, the successor of the PrimeTime PX feature
+#
+# Both average and time-base power analysis can be done
+# Either gate-level or rtl switching activities can be used
+#
+# Author : Maximilian Koschay
+# Date   : 05.03.2021
+#
+
+name: synopsys-pt-power
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.vcs.v
+  - design.pt.sdc
+  - design.spef.gz
+  - run.saif
+  - run.vcd
+  - design.namemap
+
+outputs:
+  - primetime.session
+  - design.sdf
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - source run.sh
+
+debug:
+  - source debug.sh
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  #The strip path/saif_instance must be defined, without any quotations!
+  saif_instance: th/dut
+  # analysis mode either "averaged" or "time_based"
+  analysis_mode: averaged
+  # If VCD activity files is the result of a zero-delay simulation, it needs
+  # to be specified! (Otherwise SDF simulation will be assumed)
+  zero_delay_simulation: False
+  # Set library operating condition to be used for timing and power estimation
+  # Leaving it undefined PrimeTime will choose the operating condition of the first target library in the list
+  # eg. the Operating condition of the FreePDK45 ADK can be set "typical"
+  lib_op_condition: undefined
+  # Order of script execution
+  order:
+    - designer-interface.tcl
+    - setup-session.tcl
+    - read-design.tcl
+    - report-timing.tcl
+    - report-power.tcl
+
+

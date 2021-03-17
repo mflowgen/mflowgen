@@ -15,8 +15,8 @@ set genus_spef                     [glob -nocomplain inputs/*.spef.gz]
 if { [is_common_ui_mode] } { set_db common_ui false }
 if { [get_attribute library /] == "" } {
     echo EMPTY
-    # OMG the things I gotta do to keep postcondition check from thinking there's an error
-     printf "%s%s no tech libraries, should e.g. source 'set_libs.tcl'\n" "**ERR" "OR"
+    # OMG the things I gotta do to keep postcondition check from thinking there's an errror [sic]
+    printf "%s%s no tech libraries, should e.g. source 'set_libs.tcl'\n" "**ERR" "OR"
     exit 13
 }
 

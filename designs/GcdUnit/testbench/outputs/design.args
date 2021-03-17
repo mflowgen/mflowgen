@@ -1,0 +1,1 @@
+-debug_access+pp +lint=TFIPC-L -lca +neg_tchk -sverilog 

@@ -29,6 +29,7 @@ def construct():
     'adk'            : adk_name,
     'adk_view'       : adk_view,
     'topographical'  : True,
+    'saif_instance'  : 'GcdUnitTb/GcdUnit_inst'
   }
 
   #-----------------------------------------------------------------------
@@ -44,7 +45,8 @@ def construct():
 
   # Custom steps
 
-  rtl = Step( this_dir + '/rtl' )
+  rtl       = Step( this_dir + '/rtl' )
+  testbench = Step( this_dir + '/testbench')
 
   # Default steps
 
@@ -66,6 +68,15 @@ def construct():
   drc            = Step( 'mentor-calibre-drc',             default=True )
   lvs            = Step( 'mentor-calibre-lvs',             default=True )
   debugcalibre   = Step( 'cadence-innovus-debug-calibre',  default=True )
+  vcs_sim        = Step( 'synopsys-vcs-sim',               default=True )
+  power_est      = Step( 'synopsys-pt-power',              default=True )
+
+  #-----------------------------------------------------------------------
+  # Modify Nodes
+  #-----------------------------------------------------------------------
+
+  vcs_sim.extend_inputs(['test_vectors.txt'])
+  vcs_sim.update_params(testbench.params())
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
@@ -90,6 +101,9 @@ def construct():
   g.add_step( drc            )
   g.add_step( lvs            )
   g.add_step( debugcalibre   )
+  g.add_step( testbench      )
+  g.add_step( vcs_sim        )
+  g.add_step( power_est      )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges
@@ -156,6 +170,14 @@ def construct():
   g.connect_by_name( signoff,        debugcalibre   )
   g.connect_by_name( drc,            debugcalibre   )
   g.connect_by_name( lvs,            debugcalibre   )
+
+  g.connect_by_name( adk,            vcs_sim        )
+  g.connect_by_name( signoff,        vcs_sim        )
+  g.connect_by_name( testbench,      vcs_sim        )
+
+  g.connect_by_name( adk,            power_est      )
+  g.connect_by_name( signoff,        power_est      )
+  g.connect_by_name( vcs_sim,        power_est      )
 
   #-----------------------------------------------------------------------
   # Parameterize

@@ -6,13 +6,14 @@ ARGS="$ARGS -hsopt"
 
 # Dump waveform
 if [ "$waveform" = "True" ]; then
-    ARGS="$ARGS +vcs+dumpvars+outputs/design.vpd"
+    ARGS="$ARGS +vcs+dumpvars+outputs/run.vcd"
 fi
 
 # ADK for GLS
-if [ -d "inputs/adk" ]; then
-    ARGS="$ARGS inputs/adk/stdcells.v"
-fi
+for f in inputs/adk/*.v; do
+    [ -e "$f" ] || continue
+    ARGS="$ARGS $f"
+done
 
 # Set-up testbench
 ARGS="$ARGS -top $testbench_name"
@@ -27,6 +28,11 @@ for f in inputs/*.sv; do
     [ -e "$f" ] || continue
     ARGS="$ARGS $f"
 done
+
+if [ -a "inputs/design.sdf" ]; then
+  ARGS="$ARGS +sdfverbose -sdf typ:${testbench_name}.${dut_name}:inputs/design.sdf"
+fi
+
 
 # Optional arguments
 if [ -f "inputs/design.args" ]; then
