@@ -89,6 +89,7 @@ ln -sf ../results/*.mapped.v       design.v
 ln -sf ../results/*.mapped.sdc     design.sdc
 ln -sf ../results/*.mapped.spef.gz design.spef.gz
 ln -sf ../reports/*.namemap        design.namemap
+ln -sf ../results/*.svf            design.svf
 
 cd ..
 

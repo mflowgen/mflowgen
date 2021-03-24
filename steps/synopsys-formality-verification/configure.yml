@@ -1,0 +1,70 @@
+#=========================================================================
+# Synopsys Formality -- Formal Verification
+#=========================================================================
+# This step runs formal verification with Synopsys Formality. This step
+# proves the equivalence of two designs: the reference design and the
+# implemented design. The main purpose is to find any issues that may
+# have been created during the implemenation process.
+#
+# In general, this step should be run twice: 
+# - RTL (reference) vs. post-synthesis netlist (implementation)
+# - Post-synthesis netlist (reference) vs. post-layout netlist (implementation)
+#
+# Author : Kartik Prabhu
+# Date   : March 23, 2021
+
+name: synopsys-formality-verification
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.ref.v
+  - design.ref.upf
+  - design.impl.v
+  - design.impl.upf
+  - design.svf
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - source run.sh
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  # Multithreading available to the tool
+  nthreads: 8
+  # Order of script execution
+  order:
+    - designer-interface.tcl
+    - setup-session.tcl
+    - read-design.tcl
+    - verify.tcl
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug: 
+  - fm_shell -gui -session fm_session.fss
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+postconditions:
+  
+  # Check for no failing compare points
+  - |
+    import glob
+    with open(glob.glob('reports/*.failing_points.rpt')[0], 'r') as f:
+      text = f.read()
+    assert "No failing compare points." in text
