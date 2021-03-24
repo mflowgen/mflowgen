@@ -21,6 +21,7 @@ outputs:
   - design.v
   - design.sdc
   - design.namemap
+  - design.svf
 
 #-------------------------------------------------------------------------
 # Commands
