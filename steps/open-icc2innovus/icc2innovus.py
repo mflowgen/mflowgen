@@ -19,7 +19,7 @@ innovus_size_cell_cmd = "ecoChangeCell -inst {} -cell {}\n"
 innovus_insert_buffer_cmd = "ecoAddRepeater -term {} -cell {} -name {}\n"
 innovus_remove_buffer_cmd = "ecoDeleteRepeater -inst {}\n"
 
-with open('inputs/icc_eco.tcl', 'r') as icc_eco, open('outputs/innovus_eco.tcl', 'w') as innovus_eco:
+with open('inputs/icc_eco.tcl') as icc_eco, open('outputs/innovus_eco.tcl', 'w') as innovus_eco:
     for icc_eco_cmd in icc_eco:
 
         # skip comments
@@ -28,7 +28,7 @@ with open('inputs/icc_eco.tcl', 'r') as icc_eco, open('outputs/innovus_eco.tcl',
         
         # current instance command is used to set the instance path
         elif re.match("current_instance", icc_eco_cmd):
-            m = re.match("current_instance {(\S+)}", icc_eco_cmd)
+            m = re.match(r"current_instance {(\S+)}", icc_eco_cmd)
             
             if m:
                 instPath = m.groups()[0] + "/"
@@ -36,14 +36,14 @@ with open('inputs/icc_eco.tcl', 'r') as icc_eco, open('outputs/innovus_eco.tcl',
                 instPath = ""
             
         elif re.match("size_cell", icc_eco_cmd):
-            m = re.match("size_cell {(\S+)} {(\S+)}", icc_eco_cmd)
+            m = re.match(r"size_cell {(\S+)} {(\S+)}", icc_eco_cmd)
 
             inst, cell = m.groups()
 
             innovus_eco.write(innovus_size_cell_cmd.format(instPath+inst, cell))
         
         elif re.match("remove_buffer", icc_eco_cmd):
-            m = re.match("remove_buffer \[get_cells {(\S+)}\]", icc_eco_cmd)
+            m = re.match(r"remove_buffer \[get_cells {(\S+)}\]", icc_eco_cmd)
 
             inst = m.groups()[0]
             innovus_eco.write(innovus_remove_buffer_cmd.format(instPath+inst, cell))
@@ -51,4 +51,4 @@ with open('inputs/icc_eco.tcl', 'r') as icc_eco, open('outputs/innovus_eco.tcl',
         else:
             print("WARNING: Unknown command!")
             print(icc_eco_cmd)        
-                
+ 
