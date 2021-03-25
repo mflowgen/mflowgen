@@ -30,8 +30,8 @@ set pt_additional_search_path   $adk_dir
 set pt_target_libraries         stdcells.db
 
 set pt_extra_link_libraries     [join "
-                                      [glob -nocomplain inputs/*.db]
-                                      [glob -nocomplain inputs/adk/*.db]
+                                      [lsort [glob -nocomplain inputs/*.db]]
+                                      [lsort [glob -nocomplain inputs/adk/*.db]]
                                   "]
 
 set pt_adk_tcl                  $adk_dir/adk.tcl
@@ -46,6 +46,6 @@ set pt_eco_leakage_pattern		"HVT SVT LVT ULVT"
 # Inputs
 #-------------------------------------------------------------------------
 
-set pt_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
-set pt_sdc                      [glob -nocomplain inputs/*.pt.sdc]
-set pt_spef                     [glob -nocomplain inputs/*.spef.gz]
+set pt_gl_netlist               [lsort [glob -nocomplain inputs/*.vcs.v]]
+set pt_sdc                      [lsort [glob -nocomplain inputs/*.pt.sdc]]
+set pt_spef                     [lsort [glob -nocomplain inputs/*.spef.gz]]
