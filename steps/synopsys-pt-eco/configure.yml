@@ -1,0 +1,62 @@
+#=========================================================================
+# Synopsys PrimeTime ECO
+#=========================================================================
+# This step runs PrimeTime in order to generate ECOs for improving 
+# power and fixing timing violations.
+#
+# Author : Kartik Prabhu
+# Date   : September 21, 2020
+#
+
+name: synopsys-pt-eco
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.vcs.v
+  - design.pt.sdc
+  - design.spef.gz
+
+outputs:
+  - icc_eco.tcl
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - pt_shell -file START.tcl
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  # Possible ECO types:
+  # - power
+  # - drc_max_transition
+  # - drc_max_capacitance
+  # - drc_max_fanout
+  # - drc_noise
+  # - drc_cell_em
+  # - timing
+  # - leakage
+  eco_types: 
+    - power
+    - drc_max_transition
+    - drc_max_capacitance
+    - drc_max_fanout
+    - drc_noise
+    - drc_cell_em
+    - timing
+    - leakage
+  order:
+    - designer-interface.tcl
+    - read-design.tcl
+    - fix-eco.tcl
+  setup_margin: 0.0
+  hold_margin: 0.0
