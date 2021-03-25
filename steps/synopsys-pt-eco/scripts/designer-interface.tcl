@@ -34,8 +34,7 @@ set pt_extra_link_libraries     [join "
                                       [glob -nocomplain inputs/adk/*.db]
                                   "]
 
-# List of library cell buffers
-set pt_buf_list					"BUF_X1 BUF_X2 BUF_X4 BUF_X8 BUF_X16 BUF_X32"
+set pt_adk_tcl                  $adk_dir/adk.tcl
 
 # for leakage recovery, order cells based on substring priority, 
 # with lowest leakage first

@@ -30,10 +30,10 @@ foreach pt_eco_type [split $::env(eco_types) ","] {
         fix_eco_power -verbose -methods {remove_buffer}
     } elseif { [string match "drc_*" $pt_eco_type] } {
         set drc_eco_type [string range $pt_eco_type 4 end]
-        fix_eco_drc -verbose -type $drc_eco_type -buffer_list $pt_buf_list
+        fix_eco_drc -verbose -type $drc_eco_type -buffer_list $ADK_BUF_CELL_LIST
     } elseif { $pt_eco_type == "timing" } {
         fix_eco_timing -verbose -type setup -setup_margin $pt_setup_margin -hold_margin $pt_hold_margin
-        fix_eco_timing -verbose -type hold -buffer_list $pt_buf_list -setup_margin $pt_setup_margin -hold_margin $pt_hold_margin
+        fix_eco_timing -verbose -type hold -buffer_list $ADK_BUF_CELL_LIST -setup_margin $pt_setup_margin -hold_margin $pt_hold_margin
     } elseif { $pt_eco_type == "leakage" } {
         fix_eco_leakage -verbose -pattern_priority $pt_eco_leakage_pattern
     } else {

@@ -151,6 +151,19 @@ set ADK_VIRTUOSO_EXCLUDE_CELL_LIST \
   WELLTAP*"
 
 #-------------------------------------------------------------------------
+# ADK_BUF_CELL_LIST (OPTIONAL)
+#-------------------------------------------------------------------------
+# For ECOs, we specify what buffer cells can be used in order to resolve
+# timing violations.
+set ADK_BUF_CELL_LIST \
+  "BUF_X1 \
+   BUF_X2 \
+   BUF_X4 \
+   BUF_X8 \
+   BUF_X16 \
+   BUF_X32"
+
+#-------------------------------------------------------------------------
 # Support for open-source tools
 #-------------------------------------------------------------------------
 # Open-source tools tend to require more detailed variables than

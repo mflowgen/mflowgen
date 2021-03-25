@@ -6,6 +6,10 @@
 # Author : Kartik Prabhu
 # Date   : September 21, 2020
 
+# Set up variables for this specific ASIC design kit
+
+source -echo -verbose $pt_adk_tcl
+
 
 # Set up paths and libraries
 
