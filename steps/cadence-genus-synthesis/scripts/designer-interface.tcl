@@ -125,4 +125,5 @@ puts "INFO: Found LEF files $vars(lef_files)"
 foreach L $vars(lef_files) { echo "LEF    $L" }
 
 set vars(qrcTechFile) $vars(adk_dir)/pdk-typical-qrcTechFile
+set vars(capTableFile) $vars(adk_dir)/rtk-typical.captable
 
