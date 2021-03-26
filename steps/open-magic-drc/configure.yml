@@ -1,0 +1,29 @@
+#=========================================================================
+# DRC using magic
+#=========================================================================
+# Author : Priyanka Raina
+# Date   : Dec 12, 2020
+#
+
+name: open-magic-drc
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+inputs:
+  - adk
+  - design-merged.gds
+
+outputs:
+  - drc_results.log
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
+commands: 
+  - magic -noconsole -dnull -rcfile inputs/adk/magicrc run_drc.tcl | tee outputs/drc_results.log
+  - grep "error" outputs/drc_results.log

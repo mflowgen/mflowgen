@@ -29,6 +29,7 @@ outputs:
   - design.virtuoso.v
   - design.spef.gz
   - design.rcbest.spef.gz
+  - design.def.gz
 
 #-------------------------------------------------------------------------
 # Commands
@@ -52,6 +53,7 @@ commands:
   - ln -sf ../results/*.pt.sdc            design.pt.sdc
   - ln -sf ../results/*.sdf               design.sdf
   - ln -sf ../results/*.virtuoso.v        design.virtuoso.v
+  - ln -sf ../results/*.def.gz            design.def.gz
 
 #-------------------------------------------------------------------------
 # Parameters

@@ -26,6 +26,7 @@ sed -i "s/get_design.*$/current_design\]/" $vars(results_dir)/$vars(design).pt.s
 # cells instances with VDD/VSS ports, and this will cause LVS to flag a
 # "mismatch" with the layout.
 
+set lvs_exclude_list ""
 foreach x $ADK_LVS_EXCLUDE_CELL_LIST {
   append lvs_exclude_list [dbGet -u -e top.insts.cell.name $x] " "
 }
@@ -69,6 +70,6 @@ write_lef_abstract                                                       \
 
 # Save DEF for use in running DC again
 
-defOut $vars(results_dir)/$vars(design).def.gz
+defOut -routing $vars(results_dir)/$vars(design).def.gz
 
 

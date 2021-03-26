@@ -16,6 +16,10 @@
 # Parameters
 #-------------------------------------------------------------------------
 
+set design_name                   $::env(design_name)
+set clock_period                  $::env(clock_period)
+# dc_design_name and dc_clock_period kept for backwards comptability,
+# prefer to use design_name and clock_period for tool independence
 set dc_design_name                $::env(design_name)
 set dc_clock_period               $::env(clock_period)
 set dc_saif_instance              $::env(saif_instance)

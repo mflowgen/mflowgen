@@ -1,0 +1,31 @@
+#=========================================================================
+# LVS using netgen
+#=========================================================================
+# Author : Priyanka Raina
+# Date   : Dec 12, 2020
+#
+
+name: open-netgen-lvs
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+inputs:
+  - adk # Needs netgen.tcl setup file from adk
+  - design_extracted.spice
+  - design.lvs.spice
+
+outputs:
+  - lvs_results.log
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
+commands: 
+  - cp inputs/design.lvs.spice design.lvs.spice
+  - netgen -batch lvs "inputs/design_extracted.spice $design_name" "design.lvs.spice $design_name" inputs/adk/libs.tech/netgen/sky130A_setup.tcl outputs/lvs_results.log
+

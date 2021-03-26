@@ -15,7 +15,7 @@ set clock_net  clk
 set clock_name ideal_clock
 
 create_clock -name ${clock_name} \
-             -period ${dc_clock_period} \
+             -period ${clock_period} \
              [get_ports ${clock_net}]
 
 # This constraint sets the load capacitance in picofarads of the
@@ -36,7 +36,7 @@ set_driving_cell -no_design_rule \
 #
 # - make this non-zero to avoid hold buffers on input-registered designs
 
-set_input_delay -clock ${clock_name} [expr ${dc_clock_period}/2.0] [all_inputs]
+set_input_delay -clock ${clock_name} [expr ${clock_period}/2.0] [all_inputs]
 
 # set_output_delay constraints for output ports
 
@@ -44,11 +44,11 @@ set_output_delay -clock ${clock_name} 0 [all_outputs]
 
 # Make all signals limit their fanout
 
-set_max_fanout 20 $dc_design_name
+set_max_fanout 20 $design_name
 
 # Make all signals meet good slew
 
-set_max_transition [expr 0.25*${dc_clock_period}] $dc_design_name
+set_max_transition [expr 0.25*${clock_period}] $design_name
 
 #set_input_transition 1 [all_inputs]
 #set_max_transition 10 [all_outputs]
