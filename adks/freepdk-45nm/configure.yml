@@ -21,7 +21,7 @@ outputs:
 commands:
   # If standard view is selected, download the full pkg (~17MB)
   - if [[ x{adk_view} == xview-standard ]]; then
-      wget https://github.com/cornell-brg/freepdk-45nm/archive/master.zip;
+      wget https://github.com/mflowgen/freepdk-45nm/archive/master.zip;
       unzip master.zip;
       mv freepdk-45nm-master view-standard;
     fi
