@@ -45,13 +45,13 @@ addRing -nets {VDD VSS} -type core_rings -follow core   \
 
 # Get M1 min width and signal routing pitch as defined in the LEF
 
-set M1_min_width    [dbGet [dbGetLayerByZ 1].minWidth]
-set M1_route_pitchX [dbGet [dbGetLayerByZ 1].pitchX]
+set M1_min_width    [dbGet [dbGetLayerByZ [expr $base_layer_idx + 1]].minWidth]
+set M1_route_pitchX [dbGet [dbGetLayerByZ [expr $base_layer_idx + 1]].pitchX]
 
 # Bottom stripe params
 
 set pmesh_bot_str_width [expr  8 *  3 * $M1_min_width   ]
-set pmesh_bot_str_pitch [expr 10 * 10 * $M1_route_pitchX]
+set pmesh_bot_str_pitch [expr 4 * 10 * $M1_route_pitchX]
 
 set pmesh_bot_str_intraset_spacing [expr $pmesh_bot_str_pitch - $pmesh_bot_str_width]
 set pmesh_bot_str_interset_pitch   [expr 2*$pmesh_bot_str_pitch]
@@ -61,7 +61,7 @@ setViaGenMode -viarule_preference default
 setViaGenMode -ignore_DRC false
 
 setAddStripeMode -reset
-setAddStripeMode -stacked_via_bottom_layer 1 \
+setAddStripeMode -stacked_via_bottom_layer [expr $base_layer_idx + 1] \
                  -stacked_via_top_layer    $pmesh_top
 
 # Add the stripes
@@ -90,7 +90,7 @@ addStripe -nets {VSS VDD} -layer $pmesh_bot -direction vertical \
 # - pmesh_top_str_interset_pitch   : Pitch between same-signal stripes
 
 set pmesh_top_str_width [expr  8 *  3 * $M1_min_width   ]
-set pmesh_top_str_pitch [expr 10 * 10 * $M1_route_pitchX]
+set pmesh_top_str_pitch [expr 4 * 10 * $M1_route_pitchX]
 
 set pmesh_top_str_intraset_spacing [expr $pmesh_top_str_pitch - $pmesh_top_str_width]
 set pmesh_top_str_interset_pitch   [expr 2*$pmesh_top_str_pitch]

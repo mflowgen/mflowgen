@@ -14,7 +14,13 @@
 #
 # Here we check the direction of M2 to decide which power strategy to use.
 
-set M2_direction [dbGet [dbGet head.layers.name 2 -p].direction]
+if {[info exists ADK_BASE_LAYER_IDX]} {
+  set base_layer_idx $ADK_BASE_LAYER_IDX
+} else {
+  set base_layer_idx 0
+}
+
+set M2_direction [dbGet [dbGet head.layers.name [expr $base_layer_idx + 2] -p].direction]
 
 if { $M2_direction == "Vertical" } {
   # Vertical M2 -- Use single power mesh strategy
