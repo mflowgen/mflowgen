@@ -50,8 +50,33 @@ if { $::env(signoff_engine) } {
   setExtractRCMode -engine postRoute -effortLevel signoff
 }
 
+# SR April 2021: QRC seems to crash more often when multi-cpu value
+# is large; after changing from 16 back to eight, I managed to get
+# twenty-ish consecutive runs with no error. Also see Innovus User
+# Guide Product Version 19.10, dated April 2019, p. 1057:
+# "Generally, performance improvement will ... diminish beyond 8 CPUs."
+
+set need_restore_multi false
+if {[getDistributeHost -mode] == "local"} {
+    set ncpu [getMultiCpuUsage -localCpu]
+    if {$ncpu > 8} {
+        set need_restore_multi true
+        setMultiCpuUsage -localCpu 8
+        puts "\nInfo: Temporarily changed multi-cpu from $ncpu to 8 to make QRC happy"
+    }
+}
+
 # Run the final postroute hold fixing
 
 optDesign -postRoute -outDir reports -prefix postroute_hold -hold
 
+# Restore original multi settings
+
+if {$need_restore_multi == true} {
+    setDistributeHost -local
+    setMultiCpuUsage -localCpu $ncpu
+    puts "\nInfo: Restored multi-cpu back to its original value '$ncpu'"
+}
+
+    
 
