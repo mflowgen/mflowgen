@@ -46,6 +46,11 @@ if { $gate_clock == True } {
 # existing step 'cadence-innovus-flowsetup/setup.tcl'
 #
 # Also, added "lsort" to "glob" for better determinacy.
+#
+# FIXME Note similar code in nearby scripts, maybe they should all share a common code base
+#     cadence-innovus-flowsetup/setup.tcl
+#     cadence-genus-synthesis/scripts/designer-interface.tcl
+#     cadence-genus-synthesis/scripts/setup-session.tcl
 
 global vars
 set vars(adk_dir) inputs/adk
@@ -101,6 +106,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
     set vars(libs_wc,timing) \
         [join "
             $vars(adk_dir)/stdcells-wc.lib
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
             [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
             [lsort [glob -nocomplain inputs/*ss*.lib]]
             [lsort [glob -nocomplain inputs/*SS*.lib]]

@@ -71,6 +71,11 @@ set vars(dbs_dir)             checkpoints
 source $vars(adk_dir)/adk.tcl
 
 # Library sets
+# 
+# FIXME Note similar code in nearby scripts, maybe they should all share a common code base
+#     cadence-innovus-flowsetup/setup.tcl
+#     cadence-genus-synthesis/scripts/designer-interface.tcl
+#     cadence-genus-synthesis/scripts/setup-session.tcl
 
 set vars(library_sets)        "libs_typical"
 
@@ -113,6 +118,9 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
   set vars(libs_wc,timing)    [join "
                                 $vars(adk_dir)/stdcells-wc.lib
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
                                 [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]
                                 [glob -nocomplain inputs/*ss*.lib]
                                 [glob -nocomplain inputs/*SS*.lib]
