@@ -115,6 +115,8 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 # - Voltage: lowest
 # - Temperature: lowest (temperature inversion at 28nm and below)
 
+# FIXME/TODO all the globs (above and below) should be lsort'ed for better
+# determinacy; but I will save that for a separate branch fix on some later day...
 if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
   set vars(libs_wc,timing)    [join "
                                 $vars(adk_dir)/stdcells-wc.lib
