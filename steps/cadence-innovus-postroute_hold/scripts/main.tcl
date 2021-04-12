@@ -50,11 +50,27 @@ if { $::env(signoff_engine) } {
   setExtractRCMode -engine postRoute -effortLevel signoff
 }
 
-# SR April 2021: QRC seems to crash more often when multi-cpu value
-# is large; after changing from 16 back to eight, I managed to get
-# twenty-ish consecutive runs with no error. Also see Innovus User
-# Guide Product Version 19.10, dated April 2019, p. 1057:
+# QRC seems to crash more often when multi-cpu value is large;
+# after changing from 16 back to eight, I managed to get
+# twenty-ish consecutive runs with no error. Also see Innovus
+# User Guide Product Version 19.10, dated April 2019, p. 1057:
 # "Generally, performance improvement will ... diminish beyond 8 CPUs."
+# ---
+# More details about the error, from run logs:
+# 
+# Cadence Innovus(TM) Implementation System.
+# Version:        v19.10-p002_1, built Fri Apr 19 15:18:11 PDT 2019
+# ...
+# ERROR (Cpp-2) : A mandatory condition failed to be true at line 907 of file snzcomps.cpp.
+# Condition: compFlags.to_bool()
+# ERROR (EXTGRMP-103) : Current job number 1 failed. Please check stdout and log files for more details. Exiting...
+#  Tool:                    Cadence Quantus Extraction 64-bit
+#  Version:                 19.1.1-s086 Mon Mar 25 09:39:10 PDT 2019
+#  Error messages:          2
+# Exit code 2.
+# Cadence Quantus Extraction completed unsuccessfully at 2021-Apr-01 02:52:10
+# ---
+# For even more details, see https://github.com/STanfordAHA/garnet/issues/761
 
 set need_restore_multi false
 if {[getDistributeHost -mode] == "local"} {
