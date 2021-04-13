@@ -71,11 +71,6 @@ set vars(dbs_dir)             checkpoints
 source $vars(adk_dir)/adk.tcl
 
 # Library sets
-# 
-# FIXME Note similar code in nearby scripts, maybe they should all share a common code base
-#     cadence-innovus-flowsetup/setup.tcl
-#     cadence-genus-synthesis/scripts/designer-interface.tcl
-#     cadence-genus-synthesis/scripts/setup-session.tcl
 
 set vars(library_sets)        "libs_typical"
 
@@ -115,8 +110,6 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 # - Voltage: lowest
 # - Temperature: lowest (temperature inversion at 28nm and below)
 
-# FIXME/TODO all the globs (above and below) should be lsort'ed for better
-# determinacy; but I will save that for a separate branch fix on some later day...
 if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
   set vars(libs_wc,timing)    [join "
                                 $vars(adk_dir)/stdcells-wc.lib

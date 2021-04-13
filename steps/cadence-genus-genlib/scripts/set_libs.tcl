@@ -6,11 +6,6 @@
 # Author : Stephen Richardson
 # Date   : December 2020
 
-# FIXME Note similar code in nearby scripts, maybe they should all share a common code base
-#     cadence-innovus-flowsetup/setup.tcl
-#     cadence-genus-synthesis/scripts/designer-interface.tcl
-#     cadence-genus-synthesis/scripts/setup-session.tcl
-
 set vars(adk_dir) inputs/adk
 
 #-------------------------------------------------------------------------
