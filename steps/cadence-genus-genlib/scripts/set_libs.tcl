@@ -6,12 +6,6 @@
 # Author : Stephen Richardson
 # Date   : December 2020
 
-# Note similar code in nearby scripts
-# FIXME maybe they should all share a common code base
-#     cadence-innovus-flowsetup/setup.tcl
-#     cadence-genus-synthesis/scripts/designer-interface.tcl
-#     cadence-genus-synthesis/scripts/setup-session.tcl
-
 set vars(adk_dir) inputs/adk
 
 #-------------------------------------------------------------------------
@@ -36,7 +30,7 @@ foreach L $vars(libs_typical,timing) { echo "L_TT    $L" }
 # - Voltage: highest
 # - Temperature: highest (temperature inversion at 28nm and below)
 # FIXME note this code repeats all the bc libraries in the list at
-# least twice, because of the extra '*-bc-*' pattern...
+# least twice, because of the extra '*-bc-*' pattern...is this intentional?
 
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
     set vars(libs_bc,timing) \
@@ -59,12 +53,14 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 # - Process: ss
 # - Voltage: lowest
 # - Temperature: lowest (temperature inversion at 28nm and below)
-# FIXME is there a reason this only looks for iocells???
 
 if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
     set vars(libs_wc,timing) \
         [join "
             $vars(adk_dir)/stdcells-wc.lib
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
             [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
             [lsort [glob -nocomplain inputs/*ss*.lib]]
             [lsort [glob -nocomplain inputs/*SS*.lib]]

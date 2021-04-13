@@ -101,6 +101,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
     set vars(libs_wc,timing) \
         [join "
             $vars(adk_dir)/stdcells-wc.lib
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
             [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
             [lsort [glob -nocomplain inputs/*ss*.lib]]
             [lsort [glob -nocomplain inputs/*SS*.lib]]
