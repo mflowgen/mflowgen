@@ -101,5 +101,5 @@ preconditions:
 
 postconditions:
 
-  - assert '#     INCORRECT     #' not in File( 'lvs.report' )
+  - "assert '#     INCORRECT     #' not in File( 'lvs.report' )"
 
