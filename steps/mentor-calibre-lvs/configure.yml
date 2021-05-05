@@ -99,4 +99,7 @@ preconditions:
   - assert File( 'inputs/design_merged.gds' )
   - assert File( 'inputs/design.lvs.v' )
 
+postconditions:
+
+  - "assert '#     INCORRECT     #' not in File( 'lvs.report' )"
 
