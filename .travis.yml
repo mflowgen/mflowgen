@@ -39,8 +39,12 @@ script:
   - |
     exit_status=0
     for f in `find * -name \*.tcl`; do
-       echo $f;
-       grep -H '[glob ' {} \; | grep -v '[lsort ' && exit_status=13
+       ERR=
+       grep -H '\[glob ' $f | grep -v '\[lsort ' > /tmp/tmp$$ && ERR=true
+       if [ "$ERR" ]; then
+         echo BAD FILE $f; cat /tmp/tmp$$; exit_status=13; echo ""
+         /bin/rm /tmp/tmp$$
+       fi
     done
     exit $exit_status
 
