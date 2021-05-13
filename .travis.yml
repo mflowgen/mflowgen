@@ -22,10 +22,11 @@ install:
   # Also need to pin pip (20.0.2) because (20.1) makes pyupgrade exit 1
   # for whatever reason. We are pinning for now and waiting to see if they
   # fix it on their end.
-  - pip install --upgrade pip==20.0.2 setuptools==46.0.0 twine
-  - pip install --requirement requirements/ci.txt
-  - pip install .
-  - pip list
+
+#   - pip install --upgrade pip==20.0.2 setuptools==46.0.0 twine
+#   - pip install --requirement requirements/ci.txt
+#   - pip install .
+#   - pip list
 
 #-------------------------------------------------------------------------
 # Tests
@@ -36,4 +37,7 @@ script:
   - echo build up a \
     command line
 
+  - for f in `find * -name \*.tcl`; do \
+      echo $f; \
+    done
 
