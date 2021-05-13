@@ -34,37 +34,15 @@ install:
 
 script:
 
-  - echo build up a \
-    command line
+  - echo Every '[glob' command must be preceded by '[lsort' or this test will fail.
 
-  - echo TEST1
-  - for f in `find * -name \*.tcl`; do echo $f; done
-
-  - echo TEST2
-  - 'for f in `find * -name \*.tcl`; do
-     echo $f;
-     done'
-
-  - echo TEST2a
   - |
-    for f in `find * -name \*.tcl`; do
-    echo $f;
-    done
-
-  - echo TEST3
-  - 'for f in `find * -name \*.tcl`; do
-       echo $f;
-     done'
-
-
-  - echo TEST3a
-  - |
+    exit_status=0
     for f in `find * -name \*.tcl`; do
        echo $f;
+       grep -H '[glob ' {} \; | grep -v '[lsort ' && exit_status=13
     done
+    exit $exit_status
 
 
-  - echo TEST3b
-  - '''for f in `find * -name \*.tcl`; do
-       echo $f;
-     done'''
+  # - find * -name \*.tcl -exec grep '[glob ' {} \; | grep -v '[lsort ' && exit 13
