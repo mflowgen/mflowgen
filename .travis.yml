@@ -35,18 +35,14 @@ install:
 script:
 
   - echo Every '[glob' command must be preceded by '[lsort' or this test will fail.
-
   - |
     exit_status=0
     for f in `find * -name \*.tcl`; do
        ERR=
-       grep '\[glob ' $f | grep -v '\[lsort ' > /tmp/tmp$$ && ERR=true
+       cat -n $f | grep '\[glob ' | grep -v '\[lsort ' > /tmp/tmp$$ && ERR=true
        if [ "$ERR" ]; then
          echo BAD FILE $f; cat /tmp/tmp$$; exit_status=13; echo ""
          /bin/rm /tmp/tmp$$
        fi
     done
     exit $exit_status
-
-
-  # - find * -name \*.tcl -exec grep '[glob ' {} \; | grep -v '[lsort ' && exit 13
