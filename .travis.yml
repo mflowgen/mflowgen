@@ -33,37 +33,7 @@ install:
 
 script:
 
-  # Formatting checks
+  - echo build up a \
+    command line
 
-  - autoflake --recursive --in-place --remove-duplicate-keys .
-  - pyupgrade --py3-only --keep-percent-format $(find . -name '*.py')
-  - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
-  - git diff --exit-code
-
-  # No glob w/o lsort in tcl scripts please
-
-  - find * -name \*.tcl -exec grep 'glob ' {} \; | grep -v lsort && exit 13
-
-  # Test that we can configure and run the common targets
-
-  - which mflowgen-python
-
-  - mflowgen run --demo
-  - cd mflowgen-demo && mkdir -p build && cd build
-  - mflowgen run --design ../GcdUnit
-  - make list
-  - make status
-  - make runtimes
-  - make graph
-  - make clean-all
-  - make info
-
-#  - py.test ../mflowgen/tests
-
-#-------------------------------------------------------------------------
-# After success
-#-------------------------------------------------------------------------
-
-after_success:
-  - echo done
 
