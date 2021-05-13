@@ -18,8 +18,8 @@
 set ptpx_additional_search_path   inputs/adk
 set ptpx_target_libraries         inputs/adk/stdcells.db
 set ptpx_extra_link_libraries     [join "
-                                    [glob -nocomplain inputs/*.db]
-                                    [glob -nocomplain inputs/adk/*.db]
+                                    [lsort [glob -nocomplain inputs/*.db]]
+                                    [lsort [glob -nocomplain inputs/adk/*.db]]
                                 "]
 
 #-------------------------------------------------------------------------
@@ -34,9 +34,9 @@ set ptpx_logs_dir                 logs
 set ptpx_reports_dir              reports
 set ptpx_results_dir              results
 
-set ptpx_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
-set ptpx_sdc                      [glob -nocomplain inputs/*.pt.sdc]
-set ptpx_spef                     [glob -nocomplain inputs/*.spef.gz]
+set ptpx_gl_netlist               [lsort [glob -nocomplain inputs/*.vcs.v]]
+set ptpx_sdc                      [lsort [glob -nocomplain inputs/*.pt.sdc]]
+set ptpx_spef                     [lsort [glob -nocomplain inputs/*.spef.gz]]
 
 puts "done"
 

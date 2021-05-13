@@ -17,7 +17,7 @@
 
 set ptpx_additional_search_path   inputs/adk
 set ptpx_target_libraries         inputs/adk/stdcells.db
-set ptpx_extra_link_libraries     [glob -nocomplain inputs/*.db]
+set ptpx_extra_link_libraries     [lsort [glob -nocomplain inputs/*.db]]
 
 #-------------------------------------------------------------------------
 # Interface to the build system
@@ -25,9 +25,9 @@ set ptpx_extra_link_libraries     [glob -nocomplain inputs/*.db]
 
 set ptpx_design_name              $::env(design_name)
 
-set ptpx_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
-set ptpx_sdc                      [glob -nocomplain inputs/*.pt.sdc]
-set ptpx_spef                     [glob -nocomplain inputs/*.spef.gz]
+set ptpx_gl_netlist               [lsort [glob -nocomplain inputs/*.vcs.v]]
+set ptpx_sdc                      [lsort [glob -nocomplain inputs/*.pt.sdc]]
+set ptpx_spef                     [lsort [glob -nocomplain inputs/*.spef.gz]]
 
 puts "done"
 

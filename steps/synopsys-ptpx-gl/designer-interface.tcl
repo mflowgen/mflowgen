@@ -19,8 +19,8 @@ set ptpx_additional_search_path   $adk_dir
 set ptpx_target_libraries         stdcells.db
 
 set ptpx_extra_link_libraries     [join "
-                                      [glob -nocomplain inputs/*.db]
-                                      [glob -nocomplain inputs/adk/*.db]
+                                      [lsort [glob -nocomplain inputs/*.db]]
+                                      [lsort [glob -nocomplain inputs/adk/*.db]]
                                   "]
 
 #-------------------------------------------------------------------------

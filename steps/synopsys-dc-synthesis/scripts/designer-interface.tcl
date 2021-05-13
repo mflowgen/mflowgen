@@ -56,8 +56,8 @@ set adk_dir                     inputs/adk
 #                                "]
 
 set dc_extra_link_libraries     [join "
-                                    [glob -nocomplain inputs/*.db]
-                                    [glob -nocomplain inputs/adk/*.db]
+                                    [lsort [glob -nocomplain inputs/*.db]]
+                                    [lsort [glob -nocomplain inputs/adk/*.db]]
                                 "]
 
 #-------------------------------------------------------------------------
