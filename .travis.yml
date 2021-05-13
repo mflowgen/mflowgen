@@ -40,6 +40,10 @@ script:
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
   - git diff --exit-code
 
+  # No glob w/o lsort in tcl scripts please
+
+  - find * -name \*.tcl -exec grep 'glob ' {} \; | grep -v lsort && exit 13
+
   # Test that we can configure and run the common targets
 
   - which mflowgen-python
