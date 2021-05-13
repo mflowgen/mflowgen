@@ -76,12 +76,12 @@ set vars(library_sets)        "libs_typical"
 
 set vars(libs_typical,timing) [join "
                                 $vars(adk_dir)/stdcells.lib
-                                [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]
-                                [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]
-                                [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]
-                                [glob -nocomplain $vars(adk_dir)/iocells.lib]
-                                [glob -nocomplain inputs/*tt*.lib]
-                                [glob -nocomplain inputs/*TT*.lib]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
+                                [lsort [glob -nocomplain inputs/*tt*.lib]]
+                                [lsort [glob -nocomplain inputs/*TT*.lib]]
                               "]
 
 # The best case is:
@@ -93,13 +93,13 @@ set vars(libs_typical,timing) [join "
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
   set vars(libs_bc,timing)    [join "
                                 $vars(adk_dir)/stdcells-bc.lib
-                                [glob -nocomplain $vars(adk_dir)/stdcells-lvt-bc.lib]
-                                [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-bc.lib]
-                                [glob -nocomplain $vars(adk_dir)/stdcells-pm-bc.lib]
-                                [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]
-                                [glob -nocomplain $vars(adk_dir)/*-bc*.lib]
-                                [glob -nocomplain inputs/*ff*.lib]
-                                [glob -nocomplain inputs/*FF*.lib]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-bc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-bc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-bc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]]
+                                [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
+                                [lsort [glob -nocomplain inputs/*ff*.lib]]
+                                [lsort [glob -nocomplain inputs/*FF*.lib]]
                               "]
   lappend vars(library_sets)  "libs_bc"
 }
@@ -116,9 +116,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
                                 [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
                                 [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
                                 [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
-                                [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]
-                                [glob -nocomplain inputs/*ss*.lib]
-                                [glob -nocomplain inputs/*SS*.lib]
+                                [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
+                                [lsort [glob -nocomplain inputs/*ss*.lib]]
+                                [lsort [glob -nocomplain inputs/*SS*.lib]]
                               "]
   lappend vars(library_sets)  "libs_wc"
 }
@@ -126,9 +126,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 set vars(lef_files) [join "
                       $vars(adk_dir)/rtk-tech.lef
                       $vars(adk_dir)/stdcells.lef
-                      [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]
-                      [glob -nocomplain $vars(adk_dir)/*.lef]
-                      [glob -nocomplain inputs/*.lef]
+                      [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]]
+                      [lsort [glob -nocomplain $vars(adk_dir)/*.lef]]
+                      [lsort [glob -nocomplain inputs/*.lef]]
                     "]
 
 #-------------------------------------------------------------------------
