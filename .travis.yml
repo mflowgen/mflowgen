@@ -37,7 +37,5 @@ script:
   - echo build up a \
     command line
 
-  - for f in `find * -name \*.tcl`; do \
-      echo $f; \
-    done
+  - for f in `find * -name \*.tcl`; do echo $f; done
 
