@@ -37,5 +37,34 @@ script:
   - echo build up a \
     command line
 
+  - echo TEST1
   - for f in `find * -name \*.tcl`; do echo $f; done
 
+  - echo TEST2
+  - 'for f in `find * -name \*.tcl`; do
+     echo $f;
+     done'
+
+  - echo TEST2a
+  - |
+    for f in `find * -name \*.tcl`; do
+    echo $f;
+    done
+
+  - echo TEST3
+  - 'for f in `find * -name \*.tcl`; do
+       echo $f;
+     done'
+
+
+  - echo TEST3a
+  - |
+    for f in `find * -name \*.tcl`; do
+       echo $f;
+    done
+
+
+  - echo TEST3b
+  - '''for f in `find * -name \*.tcl`; do
+       echo $f;
+     done'''
