@@ -22,17 +22,25 @@ install:
   # Also need to pin pip (20.0.2) because (20.1) makes pyupgrade exit 1
   # for whatever reason. We are pinning for now and waiting to see if they
   # fix it on their end.
-
-#   - pip install --upgrade pip==20.0.2 setuptools==46.0.0 twine
-#   - pip install --requirement requirements/ci.txt
-#   - pip install .
-#   - pip list
+  - pip install --upgrade pip==20.0.2 setuptools==46.0.0 twine
+  - pip install --requirement requirements/ci.txt
+  - pip install .
+  - pip list
 
 #-------------------------------------------------------------------------
 # Tests
 #-------------------------------------------------------------------------
 
 script:
+
+  # Formatting checks
+
+  - autoflake --recursive --in-place --remove-duplicate-keys .
+  - pyupgrade --py3-only --keep-percent-format $(find . -name '*.py')
+  - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
+  - git diff --exit-code
+
+  # New format check: every 'glob' must include 'lsort'
 
   - echo Every '[glob' command must be preceded by '[lsort' or this test will fail.
   - |
@@ -46,3 +54,28 @@ script:
        fi
     done
     exit $exit_status
+
+
+  # Test that we can configure and run the common targets
+
+  - which mflowgen-python
+
+  - mflowgen run --demo
+  - cd mflowgen-demo && mkdir -p build && cd build
+  - mflowgen run --design ../GcdUnit
+  - make list
+  - make status
+  - make runtimes
+  - make graph
+  - make clean-all
+  - make info
+
+#  - py.test ../mflowgen/tests
+
+#-------------------------------------------------------------------------
+# After success
+#-------------------------------------------------------------------------
+
+after_success:
+  - echo done
+
