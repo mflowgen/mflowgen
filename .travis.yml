@@ -47,7 +47,7 @@ script:
   #   precede the glob with an lsort, as recommended by TCL 'glob' man page.
   #
   # Example: given a directory with files 'cells-lvt' and 'cells',
-  #     [glob cells*]        => { cells cells-lvt } ?OR? { cells-lvt cells }
+  #     [glob cells*]        => { cells cells-lvt } ? OR SOMETIMES ? { cells-lvt cells }
   #     [lsort [glob cells*] => { cells cells-lvt } ALWAYS
 
   - echo Every '[glob' command must be preceded by '[lsort' or this test will fail.
