@@ -40,6 +40,41 @@ script:
   - flake8 --select=F --ignore=F401,F405,F403,F811,F821,F841
   - git diff --exit-code
 
+  # New format check: every 'glob' in a TCL script must include
+  # 'lsort' to avoid non-determinism.
+  #
+  # Explanation:
+  #   glob by itself returns a list in random order. For determinate order,
+  #   precede the glob with an lsort, as recommended by TCL 'glob' man page.
+  #
+  # Example: given a directory with files 'cells-lvt' and 'cells',
+  #     [glob cells*]         => { cells cells-lvt } ? OR SOMETIMES ? { cells-lvt cells }
+  #     [lsort [glob cells*]] => { cells cells-lvt } ALWAYS
+  # 
+  # So what could go wrong? E.g. a "multivt" view might have
+  # two libraries "stdcells-tt.lib" and "stdcells-bc.lib" such that
+  # the same cell name appears in both libraries but with different
+  # characteristics. If the designer loads the libraries using e.g.
+  # 
+  #   set lib_list [glob stdcells*.lib]
+  # 
+  # they might sometimes get the typical-case cell and other times get
+  # the worst-case cell, leading to erratic and unexpected behavior.
+
+  - echo Every '[glob' command must be preceded by '[lsort' or this test will fail.
+  - |
+    exit_status=0
+    for f in `find * -name \*.tcl`; do
+       ERR=
+       cat -n $f | grep '\[glob ' | grep -v '\[lsort ' > /tmp/tmp$$ && ERR=true
+       if [ "$ERR" ]; then
+         echo BAD FILE $f; cat /tmp/tmp$$; exit_status=13; echo ""
+         /bin/rm /tmp/tmp$$
+       fi
+    done
+    exit $exit_status
+
+
   # Test that we can configure and run the common targets
 
   - which mflowgen-python

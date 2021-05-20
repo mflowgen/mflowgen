@@ -12,8 +12,8 @@ streamOut $vars(results_dir)/$vars(design).gds.gz \
 
 set merge_files \
     [concat \
-        [glob -nocomplain inputs/adk/*.gds*] \
-        [glob -nocomplain inputs/*.gds*] \
+        [lsort [glob -nocomplain inputs/adk/*.gds*]] \
+        [lsort [glob -nocomplain inputs/*.gds*]] \
     ]
 
 streamOut $vars(results_dir)/$vars(design)-merged.gds \

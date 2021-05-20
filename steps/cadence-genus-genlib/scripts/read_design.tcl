@@ -1,7 +1,7 @@
 set genus_design_name              $::env(design_name)
-set genus_gl_netlist               [glob -nocomplain inputs/*.vcs.v]
-set genus_sdc                      [glob -nocomplain inputs/*.pt.sdc]
-set genus_spef                     [glob -nocomplain inputs/*.spef.gz]
+set genus_gl_netlist               [lsort [glob -nocomplain inputs/*.vcs.v]]
+set genus_sdc                      [lsort [glob -nocomplain inputs/*.pt.sdc]]
+set genus_spef                     [lsort [glob -nocomplain inputs/*.spef.gz]]
 
 
 # No good for multiple reasons, see issue <issue-link-here>

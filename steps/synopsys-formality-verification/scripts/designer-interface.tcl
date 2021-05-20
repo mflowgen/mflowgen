@@ -24,8 +24,8 @@ set adk_dir                       inputs/adk
 set fm_additional_search_path   $adk_dir
 
 set fm_extra_link_libraries     [join "
-                                      [glob -nocomplain inputs/*.db]
-                                      [glob -nocomplain inputs/adk/*.db]
+                                      [lsort [glob -nocomplain inputs/*.db]]
+                                      [lsort [glob -nocomplain inputs/adk/*.db]]
                                   "]
 
 #-------------------------------------------------------------------------
