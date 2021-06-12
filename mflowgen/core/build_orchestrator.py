@@ -680,6 +680,8 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       postcond_script = meta_build_dir + '/' + s.mflowgen_postcond
 
       commands = ' && '.join([
+        # FIRST set pipefail so we get correct error status at the end
+        'set -o pipefail',
         # Step banner in big letters
         get_top_dir() \
             + '/mflowgen/scripts/mflowgen-letters -c -t ' + step_name,
