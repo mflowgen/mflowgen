@@ -59,6 +59,6 @@ postconditions:
 
   # Basic error checking
 
-  - assert 'error' not in File( 'logs/pt.log' )
+  - assert 'Error:' not in File( 'logs/pt.log' )
   - assert 'Unresolved references' not in File( 'logs/pt.log' )
   - assert 'Unable to resolve' not in File( 'logs/pt.log' )
