@@ -69,7 +69,7 @@ if { $dc_uniquify_with_design_name == True } {
 
 # Use naming rules to preserve structs
 
-define_name_rules verilog -preserve_struct_ports
+define_name_rules verilog -preserve_struct_ports -case_insensitive
 
 report_names     \
   -rules verilog \
