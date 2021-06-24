@@ -67,7 +67,8 @@ if { $dc_uniquify_with_design_name == True } {
   uniquify -force
 }
 
-# Use naming rules to preserve structs
+# Use naming rules to preserve structs and use case insensitive names
+# to guarantee unique names even with case insensitive tools 
 
 define_name_rules verilog -preserve_struct_ports -case_insensitive
 
