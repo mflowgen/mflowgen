@@ -401,6 +401,16 @@ set vars(route,restore_design,skip)             true
 set vars(postroute,restore_design,skip)         true
 set vars(signoff,restore_design,skip)           true
 
+# [steveri Aug 2021] FAIL routeDesign if placement is bad.
+# METHOD: replace "routeDesign" w/ "routeDesign -placementCheck" in run_route.tcl
+# ANECDOTE: without this new "-placementCheck" switch, glb_tile build
+# went into postroute_hold with bad placement and was still runnning
+# after 122 hours (takes less than one hour with correct placement).
+
+set tmp_rrdrt $vars(custom_scripts_dir)/route,route_design,replace_tcl.tcl
+echo "routeDesign -placementCheck"     > $tmp_rrdrt
+set vars(route,route_design,replace_tcl) $tmp_rrdrt
+
 # Custom GDS stream out tcl
 
 set vars(gds_layer_map)                       $vars(adk_dir)/rtk-stream-out.map
@@ -554,13 +564,6 @@ set vars(tags,verbosity_level)         high
 if { $::env(skip_verify_connectivity) } {
   set vars(signoff,verify_connectivity,skip) true
 }
-
-# [steveri Aug 2021] FAIL routeDesign if placement is bad.
-# Anecdote: without this new "-placementCheck" switch, glb_tile build
-# went into postroute_hold with bad placement and was still runnning
-# after 122 hours (takes less than one hour with correct placement).
-
-set vars(route,route_design) "routeDesign -placementCheck"
 
 #-------------------------------------------------------------------------
 # Reduced-effort flow that sacrifices timing to iterate more quickly
