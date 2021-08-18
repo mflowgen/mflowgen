@@ -555,6 +555,13 @@ if { $::env(skip_verify_connectivity) } {
   set vars(signoff,verify_connectivity,skip) true
 }
 
+# [steveri Aug 2021] FAIL routeDesign if placement is bad.
+# Anecdote: without this new "-placementCheck" switch, glb_tile build
+# went into postroute_hold with bad placement and was still runnning
+# after 122 hours (takes less than one hour with correct placement).
+
+set vars(route,route_design) "routeDesign -placementCheck"
+
 #-------------------------------------------------------------------------
 # Reduced-effort flow that sacrifices timing to iterate more quickly
 #-------------------------------------------------------------------------
