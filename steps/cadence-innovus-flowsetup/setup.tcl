@@ -408,7 +408,8 @@ set vars(signoff,restore_design,skip)           true
 # after 122 hours (takes less than one hour with correct placement).
 
 set tmp_rrdrt $vars(custom_scripts_dir)/route,route_design,replace_tcl.tcl
-echo "routeDesign -placementCheck"     > $tmp_rrdrt
+set tmpf [open $tmp_rrdt w]
+puts $tmpf "routeDesign -placementCheck"; close $tmpf
 set vars(route,route_design,replace_tcl) $tmp_rrdrt
 
 # Custom GDS stream out tcl
