@@ -407,8 +407,6 @@ set vars(signoff,restore_design,skip)           true
 # went into postroute_hold with bad placement and was still runnning
 # after 122 hours (takes less than one hour with correct placement).
 
-set vars(route,check_place,skip) false
-
 set tmp_rrdrt $vars(custom_scripts_dir)/route,route_design,replace_tcl.tcl
 set tmpf [open $tmp_rrdrt w]
 puts $tmpf "routeDesign -placementCheck"; close $tmpf
