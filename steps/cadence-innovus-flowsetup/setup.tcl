@@ -401,7 +401,7 @@ set vars(route,restore_design,skip)             true
 set vars(postroute,restore_design,skip)         true
 set vars(signoff,restore_design,skip)           true
 
-# [steveri Aug 2021] FAIL routeDesign if placement is bad.
+# [steveri Aug 2021] FAIL routeDesign immediately if placement is bad.
 # METHOD: replace "routeDesign" w/ "routeDesign -placementCheck" in run_route.tcl
 # ANECDOTE: without this new "-placementCheck" switch, glb_tile build
 # went into postroute_hold with bad placement and was still runnning
