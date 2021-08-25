@@ -402,6 +402,7 @@ set vars(postroute,restore_design,skip)         true
 set vars(signoff,restore_design,skip)           true
 
 # [Aug 2021] FAIL routeDesign immediately if placement is bad.
+# Also see garnet issue https://github.com/StanfordAHA/garnet/issues/803
 # 
 # ANECDOTE: without the "-placementCheck" switch, glb_tile CI build
 # went into postroute_hold with bad placement and was still runnning
