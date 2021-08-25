@@ -20,15 +20,13 @@ source $vars(adk_dir)/adk.tcl
 
 mkdir -p $vars(rpt_dir)
 
-# [steveri 08/2021] There seems to be a source of nondeterminism when
+# [08/2021] There seems to be a source of nondeterminism when
 # building e.g. garnet glb tile:
 # 
-# **WARN: (IMPECO-560): The netlist is not unique, because the module
+#   **WARN: (IMPECO-560): The netlist is not unique, because the module
 #   'Tile_PE_mux_logic_1_20' is instantiated multiple times. Make the
 #   netlist unique by running 'set init_design_uniquify 1' before
 #   loading the design to avoid the problem.
-# 
-# Type 'man IMPECO-560' for more detail.
 #
 # So...
 
