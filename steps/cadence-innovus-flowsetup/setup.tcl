@@ -401,20 +401,9 @@ set vars(route,restore_design,skip)             true
 set vars(postroute,restore_design,skip)         true
 set vars(signoff,restore_design,skip)           true
 
-# [Aug 2021] FAIL routeDesign immediately if placement is bad.
-# Also see garnet issue https://github.com/StanfordAHA/garnet/issues/803
-# 
-# ANECDOTE: without the "-placementCheck" switch, glb_tile CI build
-# went into postroute_hold with bad placement and was still runnning
-# after 122 hours (takes less than one hour with correct placement).
-# 
-# METHOD: Create and point to a tmp file containing the command that
-# will replace "routeDesign"
+# Replace "routeDesign" command with contents of "route-design-check.tcl"
 
-set tmp_rrdrt $vars(custom_scripts_dir)/route,route_design,replace_tcl.tcl
-set tmpf [open $tmp_rrdrt w]
-puts $tmpf "routeDesign -placementCheck"; close $tmpf
-set vars(route,route_design,replace_tcl) $tmp_rrdrt
+set vars(route,route_design,replace_tcl)      $vars(custom_scripts_dir)/route-design-check.tcl
 
 # Custom GDS stream out tcl
 
