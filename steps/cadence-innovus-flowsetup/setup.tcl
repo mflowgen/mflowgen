@@ -401,6 +401,10 @@ set vars(route,restore_design,skip)             true
 set vars(postroute,restore_design,skip)         true
 set vars(signoff,restore_design,skip)           true
 
+# Replace "routeDesign" command with contents of "route-design-check.tcl"
+
+set vars(route,route_design,replace_tcl)      $vars(custom_scripts_dir)/route-design-check.tcl
+
 # Custom GDS stream out tcl
 
 set vars(gds_layer_map)                       $vars(adk_dir)/rtk-stream-out.map

@@ -19,4 +19,3 @@ source $vars(adk_dir)/adk.tcl
 # there is always a reports directory.
 
 mkdir -p $vars(rpt_dir)
-
