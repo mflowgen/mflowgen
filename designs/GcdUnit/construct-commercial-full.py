@@ -48,6 +48,8 @@ def construct():
   rtl       = Step( this_dir + '/rtl' )
   testbench = Step( this_dir + '/testbench')
 
+  foo = Step( this_dir + '/foo')
+
   # Default steps
 
   info           = Step( 'info',                           default=True )
@@ -90,6 +92,7 @@ def construct():
 
   g.add_step( info           )
   g.add_step( rtl            )
+  g.add_step( foo            )
   g.add_step( constraints    )
   g.add_step( dc             )
   g.add_step( iflow          )
@@ -133,6 +136,8 @@ def construct():
   g.connect_by_name( adk,            gdsmerge       )
   g.connect_by_name( adk,            drc            )
   g.connect_by_name( adk,            lvs            )
+
+  g.connect_by_name( rtl,            foo            )
 
   g.connect_by_name( rtl,            dc             )
   g.connect_by_name( constraints,    dc             )

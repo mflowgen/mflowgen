@@ -1,0 +1,8 @@
+name: foo
+
+inputs:
+  - design.v
+
+commands:
+  - tclsh foo.tcl
+
