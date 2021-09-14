@@ -21,19 +21,24 @@ import yaml
 #
 
 def get_top_dir( flag='.MFLOWGEN_TOP', relative=True ):
-  try:
-    return os.environ[ 'MFLOWGEN_HOME' ]
-  except KeyError:
-    tmp = os.getcwd()
+
+  if flag == '.MFLOWGEN_TOP':
+    try:
+      return os.environ[ 'MFLOWGEN_HOME' ]
+    except KeyError:
+      pass
+
+  tmp = os.getcwd()
+  if flag not in os.listdir( tmp ):
     while tmp != '/':
       tmp = os.path.dirname( tmp )
       if flag in os.listdir( tmp ):
         break
 
-    if not relative:
-      return tmp
-    else:
-      return os.path.relpath( tmp, os.getcwd() )
+  if not relative:
+    return tmp
+  else:
+    return os.path.relpath( tmp, os.getcwd() )
 
 # get_files_in_dir
 #
