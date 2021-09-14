@@ -25,6 +25,11 @@
 #
 #  -p --path     string --  Path to step directory
 #
+# mflowgen check (Check-related options)
+#
+#  -s --step     int    --  Step number for check step, check list
+#     --verbose
+#
 
 #
 # Author : Christopher Torng
@@ -40,6 +45,7 @@ from mflowgen.demo      import DemoHandler
 from mflowgen.core      import RunHandler
 from mflowgen.stash     import StashHandler
 from mflowgen.mock      import MockHandler
+from mflowgen.check     import CheckHandler
 
 # Path hack for now to find steps and adks
 
@@ -80,7 +86,7 @@ def parse_cmdline():
   p.add_argument(       "--all",     action="store_true"          )
   p.add_argument(       "--verbose", action="store_true"          )
   opts = p.parse_args()
-  if opts.help and not opts.args: p.error() # print help only if not stash
+  if opts.help and not opts.args: p.error() # print help
   return opts
 
 #-------------------------------------------------------------------------
@@ -128,6 +134,18 @@ def main():
       args  = opts.args[1:],
       help_ = opts.help,
       path  = opts.path,
+    )
+    return
+
+  # Dispatch to CheckHandler
+
+  if opts.args and opts.args[0] == 'check':
+    chandler = CheckHandler()
+    chandler.launch(
+      args    = opts.args[1:],
+      help_   = opts.help,
+      step    = opts.step,
+      verbose = opts.verbose,
     )
     return
 
