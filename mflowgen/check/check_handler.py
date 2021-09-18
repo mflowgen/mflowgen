@@ -35,6 +35,86 @@ class CheckHandler:
     ]
 
   #-----------------------------------------------------------------------
+  # helpers
+  #-----------------------------------------------------------------------
+
+  def execute_tcl_snippet( s, snippet ):
+
+    # Execute the implementation code
+    #
+    # Hacks starting here
+    # emit the impl body into a new script
+
+    def get_shell_output( cmd ):
+      try:
+        output = subprocess.check_output( cmd.split(),
+                                          stderr=subprocess.DEVNULL,
+                                          universal_newlines=True )
+        output = output.strip()
+      except Exception:
+        output = ''
+      return output
+
+    with open('/tmp/mflowgen-impl.tcl','w') as fd:
+      x = snippet.replace('return', 'puts')
+      fd.write( x )
+
+    out = get_shell_output( 'tclsh /tmp/mflowgen-impl.tcl' )
+
+    #print(out)
+
+    # Check the output against each property
+    #
+    # Hacks again
+    # the output must be space delimited
+    # the expression uses a, b, c, d, etc
+
+    _ = out.split()
+
+    try:
+      a = _[0]
+    except Exception:
+      a = None
+    try:
+      b = _[1]
+    except Exception:
+      b = None
+    try:
+      c = _[2]
+    except Exception:
+      c = None
+    try:
+      d = _[3]
+    except Exception:
+      d = None
+    try:
+      e = _[4]
+    except Exception:
+      e = None
+    try:
+      f = _[5]
+    except Exception:
+      f = None
+    try:
+      g = _[6]
+    except Exception:
+      g = None
+    try:
+      h = _[7]
+    except Exception:
+      h = None
+    try:
+      i = _[8]
+    except Exception:
+      i = None
+    try:
+      j = _[9]
+    except Exception:
+      j = None
+
+    return out, a, b, c, d, e, f, g, h, i, j
+
+  #-----------------------------------------------------------------------
   # launch
   #-----------------------------------------------------------------------
   # Dispatch function for commands
@@ -226,78 +306,10 @@ class CheckHandler:
           properties.append( p )
 
         # Execute the implementation code
-        #
-        # Hacks starting here
-        # emit the impl body into a new script
 
-        def get_shell_output( cmd ):
-          try:
-            output = subprocess.check_output( cmd.split(),
-                                              stderr=subprocess.DEVNULL,
-                                              universal_newlines=True )
-            output = output.strip()
-          except Exception:
-            output = ''
-          return output
+        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( implement[1] )
 
-        with open('/tmp/mflowgen-impl.tcl','w') as fd:
-          x = implement[1].replace('return', 'puts')
-          fd.write( x )
-
-        out = get_shell_output( 'tclsh /tmp/mflowgen-impl.tcl' )
-
-        #print(out)
-
-        # Check the output against each property
-        #
-        # Hacks again
-        # the output must be space delimited
-        # the expression uses a, b, c, d, etc
-
-        _ = out.split()
-
-        try:
-          a = _[0]
-        except Exception:
-          a = None
-        try:
-          b = _[1]
-        except Exception:
-          b = None
-        try:
-          c = _[2]
-        except Exception:
-          c = None
-        try:
-          d = _[3]
-        except Exception:
-          d = None
-        try:
-          e = _[4]
-        except Exception:
-          e = None
-        try:
-          f = _[5]
-        except Exception:
-          f = None
-        try:
-          g = _[6]
-        except Exception:
-          g = None
-        try:
-          h = _[7]
-        except Exception:
-          h = None
-        try:
-          i = _[8]
-        except Exception:
-          i = None
-        try:
-          j = _[9]
-        except Exception:
-          j = None
-
-        #print( a, b, c, d, e, f, g, h, i, j )
+        #print( out, a, b, c, d, e, f, g, h, i, j )
 
         for p in properties:
           print( 'Checking property:', p['name'] )
@@ -308,6 +320,60 @@ class CheckHandler:
           result = eval( p['property'] )
           print( result )
           print()
+
+    # Handle distributed block checks
+    #
+    # LIMITATION -- you cannot have a distributed block check within the
+    # same file ... the filename:procname is the dict key right now, so
+    # they will alias if you put more than one in the same tcl file
+    #
+
+    check_distributed_bundles = {}
+
+    for step, block in procs.items():
+      d_keys  = [ k for k in procs[step].keys() if '.distributed.' in k ]
+      d_names = [ re.search( r'(mflowgen\.distributed\..*?)$', k )
+                   for k in d_keys ]
+      d_names = [ _.group(1) for _ in d_names if _ ]
+      for name, key in zip( d_names, d_keys ):
+        try:
+          check_distributed_bundles[name]
+        except KeyError:
+          check_distributed_bundles[name] = []
+        check_distributed_bundles[name].append( procs[step][key] )
+
+    #for k, v in check_distributed_bundles.items():
+    #  print( k )
+    #  print( v )
+    #  print()
+
+    # Execute the snippets in each distributed bundle and make sure the
+    # outputs match
+
+    results = {}
+
+    for name, proc_list in check_distributed_bundles.items():
+      for idx, p in enumerate( proc_list ):
+        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( p[1] )
+        result = [ a, b, c, d, e, f, g, h, i, j ]
+        # track outputs and compare new results to others
+        try:
+          results[name]
+        except KeyError:
+          results[name] = result
+        #print( name, out, a, b, c, d, e, f, g, h, i, j )
+
+        equality_property = results[name] == result
+
+        print( 'Checking property:', name )
+        print( '  - Block #:', idx )
+        print( '  - Expression:', '(distributed equality)' )
+        print( '  - Output:', out )
+        print( '  - Outcome: ... ', end='' )
+
+        print( equality_property )
+        print()
+
 
   #-----------------------------------------------------------------------
   # launch_here
