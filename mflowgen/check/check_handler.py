@@ -31,7 +31,8 @@ class CheckHandler:
       'here',
       'list',
       'status',
-      'help'
+      'help',
+      'enum'
     ]
 
   #-----------------------------------------------------------------------
@@ -146,6 +147,7 @@ class CheckHandler:
     elif command == 'here'   : s.launch_here  ( help_, verbose )
     elif command == 'list'   : s.launch_list  ( help_, verbose, step )
     elif command == 'status' : s.launch_status( help_, verbose, step )
+    elif command == 'enum'   : s.launch_enum  ()
     else                     : s.launch_help  ()
 
   #-----------------------------------------------------------------------
@@ -474,3 +476,10 @@ class CheckHandler:
     print()
 
 
+  #-----------------------------------------------------------------------
+  # launch_enum
+  #-----------------------------------------------------------------------
+
+  def launch_enum( s ):
+      print()
+      print( 'Check enum not implemented yet' )
