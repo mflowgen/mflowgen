@@ -208,6 +208,9 @@ class CheckHandler:
           if f.endswith( '.tcl' ):
             tcl_files[step].add( root + '/' + f )
 
+    #for k, v in tcl_files.items():
+    #  print( k, v )
+
     return tcl_files
 
   #-----------------------------------------------------------------------
@@ -241,8 +244,6 @@ class CheckHandler:
       return
 
     tcl_files = s.get_all_tcl_files()
-    #for k, v in tcl_files.items():
-    #  print( k, v )
 
     # Search tcl files for mflowgen-annotated procs (proc mflowgen.*), and
     # return the result as a dict (i.e., key = "<file>:<procname>", value =
