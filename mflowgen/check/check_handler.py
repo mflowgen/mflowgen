@@ -151,39 +151,16 @@ class CheckHandler:
     else                     : s.launch_help  ()
 
   #-----------------------------------------------------------------------
-  # launch_graph
+  # get_all_tcl_files
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
   # - Loop over all nodes in the graph
   # - Make a list of all node source directories
   # - Make a list of all tcl files in those directories
-  #
-  # - Search tcl files for "proc mflowgen." and return a dict of name-body
-  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
-  # - From this dict, make a list of intent-implementation pairs
-  #
-  # - For each intent-implementation pair, parse the properties, run the
-  #   implementation code, and pass the outputs through each property
-  #
-
-  def launch_graph( s, help_, verbose ):
-
-    # Help message
-
-    def print_help():
-      print()
-      print( bold( 'Usage:' ), 'mflowgen check graph [--verbose]' )
-      print()
-      print( 'Inspects all nodes in the graph for tcl files with' )
-      print( 'intent-property-implementation constructs and'      )
-      print( 'statically checks the design intent properties.'    )
-      print()
-
-    if help_:
-      print_help()
-      return
-
+    
+  def get_all_tcl_files( s ):
+    
     # Get all existing steps
     #
     # Currently this is done by just looking at the directory names in the
@@ -231,6 +208,39 @@ class CheckHandler:
           if f.endswith( '.tcl' ):
             tcl_files[step].add( root + '/' + f )
 
+    return tcl_files
+
+  #-----------------------------------------------------------------------
+  # launch_graph
+  #-----------------------------------------------------------------------
+  # Internally, this command does the following:
+  #
+  # - Search tcl files for "proc mflowgen." and return a dict of name-body
+  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
+  # - From this dict, make a list of intent-implementation pairs
+  #
+  # - For each intent-implementation pair, parse the properties, run the
+  #   implementation code, and pass the outputs through each property
+  #
+
+  def launch_graph( s, help_, verbose ):
+
+    # Help message
+
+    def print_help():
+      print()
+      print( bold( 'Usage:' ), 'mflowgen check graph [--verbose]' )
+      print()
+      print( 'Inspects all nodes in the graph for tcl files with' )
+      print( 'intent-property-implementation constructs and'      )
+      print( 'statically checks the design intent properties.'    )
+      print()
+
+    if help_:
+      print_help()
+      return
+
+    tcl_files = s.get_all_tcl_files()
     #for k, v in tcl_files.items():
     #  print( k, v )
 
