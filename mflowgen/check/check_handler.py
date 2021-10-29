@@ -467,6 +467,7 @@ class CheckHandler:
     print( bold( 'Check Commands' ) )
     print()
     print( bold( ' - graph  :' ), 'Check design intent properties in the graph' )
+    print( bold( ' - enum   :' ), 'Check enum properties in the graph' )
     print( bold( ' - here   :' ), 'Run a simple check in the current directory' )
     print()
     print( bold( ' - list   :' ), 'List all design intent properties in the graph' )
