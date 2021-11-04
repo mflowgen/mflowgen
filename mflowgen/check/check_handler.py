@@ -151,15 +151,17 @@ class CheckHandler:
     else                     : s.launch_help  ()
 
   #-----------------------------------------------------------------------
-  # get_all_tcl_files
+  # get_all_mflowgen_procs
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
   # - Loop over all nodes in the graph
   # - Make a list of all node source directories
   # - Make a list of all tcl files in those directories
+  # - Search tcl files for "proc mflowgen." and return a dict of name-body
+  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
     
-  def get_all_tcl_files( s ):
+  def get_all_mflowgen_procs( s ):
     
     # Get all existing steps
     #
@@ -210,16 +212,36 @@ class CheckHandler:
 
     #for k, v in tcl_files.items():
     #  print( k, v )
+    
+    # Search tcl files for mflowgen-annotated procs (proc mflowgen.*), and
+    # return the result as a dict (i.e., key = "<file>:<procname>", value =
+    # "<procbody>")
 
-    return tcl_files
+    # FIXME -- the mflowgen annotations have to be perfectly formed for
+    # now ... specifically, the proc body must begin with a '{\n' and end
+    # with a '\n}' to be collected. That is because we are using simple
+    # regex here and not a tcl parser.
+
+    procs = {}
+
+    for step, files in tcl_files.items():
+      procs[step] = {}
+      for f in files:
+        with open( f ) as fd:
+          text = fd.read()
+        matches = re.findall( r'proc *(mflowgen.*?) *{(.*?)} *{\n(.*?)\n}', text, re.DOTALL )
+        for m in matches:
+          k = f + ':' + m[0]
+          v = ( m[1], m[2] )
+          procs[step][k] = v
+
+    return procs
 
   #-----------------------------------------------------------------------
   # launch_graph
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Search tcl files for "proc mflowgen." and return a dict of name-body
-  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
   # - From this dict, make a list of intent-implementation pairs
   #
   # - For each intent-implementation pair, parse the properties, run the
@@ -243,29 +265,154 @@ class CheckHandler:
       print_help()
       return
 
-    tcl_files = s.get_all_tcl_files()
+    procs = s.get_all_mflowgen_procs()
 
-    # Search tcl files for mflowgen-annotated procs (proc mflowgen.*), and
-    # return the result as a dict (i.e., key = "<file>:<procname>", value =
-    # "<procbody>")
+    #for step in procs.keys():
+    #  for k, v in procs[step].items():
+    #    print( k )
+    #    print( v )
+    #    print()
 
-    # FIXME -- the mflowgen annotations have to be perfectly formed for
-    # now ... specifically, the proc body must begin with a '{\n' and end
-    # with a '\n}' to be collected. That is because we are using simple
-    # regex here and not a tcl parser.
+    # Make a list of intent-implementation pairs
+    #
+    # We do this by grabbing the intent, substituting implementation, and
+    # then getting the loop body.
+    #
 
-    procs = {}
+    check_bundles = {}
 
-    for step, files in tcl_files.items():
-      procs[step] = {}
-      for f in files:
-        with open( f ) as fd:
-          text = fd.read()
-        matches = re.findall( r'proc *(mflowgen.*?) *{(.*?)} *{\n(.*?)\n}', text, re.DOTALL )
+    for step, block in procs.items():
+      intents    = [ k for k in procs[step].keys() if '.intent.' in k ]
+      implements = [ k.replace('.intent','.implement') for k in intents ]
+      check_bundles[step] = [ { 'intent'    : procs[step][x],
+                                'implement' : procs[step][y] }
+                                for x, y in zip( intents, implements ) ]
+
+    #for step in check_bundles.keys():
+    #  for bundle in check_bundles[step]:
+    #    for k, v in bundle.items():
+    #      print( k )
+    #      print( v )
+    #      print()
+
+    # For each intent-implementation pair, parse the properties, run the
+    # implementation code, and pass the outputs through each property
+
+    for step in check_bundles.keys():
+      for bundle in check_bundles[step]:
+        intent    = bundle['intent']
+        implement = bundle['implement']
+
+        intent_args = intent[0]
+        intent_body = intent[1]
+
+        # Grab the properties
+
+        properties = []
+
+        matches = re.findall( r'array *set *(mflowgen.*?) *{.*?property *\"(.*?)\".*?describe *\"(.*?)\".*?}', intent_body, re.DOTALL )
         for m in matches:
-          k = f + ':' + m[0]
-          v = ( m[1], m[2] )
-          procs[step][k] = v
+          p = {}
+          p['name']     = m[0]
+          p['property'] = m[1]
+          p['describe'] = m[2]
+          properties.append( p )
+
+        # Execute the implementation code
+
+        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( implement[1] )
+
+        #print( out, a, b, c, d, e, f, g, h, i, j )
+
+        for p in properties:
+          print( 'Checking property:', p['name'] )
+          print( '  - Expression:', p['property'] )
+          print( '  - Output:', out )
+          print( '  - Outcome: ... ', end='' )
+
+          result = eval( p['property'] )
+          print( result )
+          print()
+
+    # Handle distributed block checks
+    #
+    # LIMITATION -- you cannot have a distributed block check within the
+    # same file ... the filename:procname is the dict key right now, so
+    # they will alias if you put more than one in the same tcl file
+    #
+
+    check_distributed_bundles = {}
+
+    for step, block in procs.items():
+      d_keys  = [ k for k in procs[step].keys() if '.distributed.' in k ]
+      d_names = [ re.search( r'(mflowgen\.distributed\..*?)$', k )
+                   for k in d_keys ]
+      d_names = [ _.group(1) for _ in d_names if _ ]
+      for name, key in zip( d_names, d_keys ):
+        try:
+          check_distributed_bundles[name]
+        except KeyError:
+          check_distributed_bundles[name] = []
+        check_distributed_bundles[name].append( procs[step][key] )
+
+    #for k, v in check_distributed_bundles.items():
+    #  print( k )
+    #  print( v )
+    #  print()
+
+    # Execute the snippets in each distributed bundle and make sure the
+    # outputs match
+
+    results = {}
+
+    for name, proc_list in check_distributed_bundles.items():
+      for idx, p in enumerate( proc_list ):
+        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( p[1] )
+        result = [ a, b, c, d, e, f, g, h, i, j ]
+        # track outputs and compare new results to others
+        try:
+          results[name]
+        except KeyError:
+          results[name] = result
+        #print( name, out, a, b, c, d, e, f, g, h, i, j )
+
+        equality_property = results[name] == result
+
+        print( 'Checking property:', name )
+        print( '  - Block #:', idx )
+        print( '  - Expression:', '(distributed equality)' )
+        print( '  - Output:', out )
+        print( '  - Outcome: ... ', end='' )
+
+        print( equality_property )
+        print()
+  
+  #-----------------------------------------------------------------------
+  # launch_enum
+  #-----------------------------------------------------------------------
+  # Internally, this command does the following:
+  # 
+  # -x
+  #
+
+  def launch_enum( s, help_, verbose ):
+
+    # Help message
+
+    def print_help():
+      print()
+      print( bold( 'Usage:' ), 'mflowgen check enum [--verbose]' )
+      print()
+      print( 'Inspects all nodes in the graph for tcl files with' )
+      print( 'enum constructs and statically checks enum'      )
+      print( 'properties.'    )
+      print()
+
+    if help_:
+      print_help()
+      return
+
+    procs = s.get_all_mflowgen_procs()
 
     #for step in procs.keys():
     #  for k, v in procs[step].items():
