@@ -147,7 +147,7 @@ class CheckHandler:
     elif command == 'here'   : s.launch_here  ( help_, verbose )
     elif command == 'list'   : s.launch_list  ( help_, verbose, step )
     elif command == 'status' : s.launch_status( help_, verbose, step )
-    elif command == 'enum'   : s.launch_enum  ()
+    elif command == 'enum'   : s.launch_enum  ( help_, verbose )
     else                     : s.launch_help  ()
 
   #-----------------------------------------------------------------------
@@ -420,120 +420,12 @@ class CheckHandler:
     #    print( v )
     #    print()
 
-    # Make a list of intent-implementation pairs
-    #
-    # We do this by grabbing the intent, substituting implementation, and
-    # then getting the loop body.
-    #
-
-    check_bundles = {}
-
     for step, block in procs.items():
-      intents    = [ k for k in procs[step].keys() if '.intent.' in k ]
-      implements = [ k.replace('.intent','.implement') for k in intents ]
-      check_bundles[step] = [ { 'intent'    : procs[step][x],
-                                'implement' : procs[step][y] }
-                                for x, y in zip( intents, implements ) ]
+      enums = [ k for k in procs[step].keys() if '.enum.' in k ]
 
-    #for step in check_bundles.keys():
-    #  for bundle in check_bundles[step]:
-    #    for k, v in bundle.items():
-    #      print( k )
-    #      print( v )
-    #      print()
+    print("Check enum not implemented yet")
 
-    # For each intent-implementation pair, parse the properties, run the
-    # implementation code, and pass the outputs through each property
-
-    for step in check_bundles.keys():
-      for bundle in check_bundles[step]:
-        intent    = bundle['intent']
-        implement = bundle['implement']
-
-        intent_args = intent[0]
-        intent_body = intent[1]
-
-        # Grab the properties
-
-        properties = []
-
-        matches = re.findall( r'array *set *(mflowgen.*?) *{.*?property *\"(.*?)\".*?describe *\"(.*?)\".*?}', intent_body, re.DOTALL )
-        for m in matches:
-          p = {}
-          p['name']     = m[0]
-          p['property'] = m[1]
-          p['describe'] = m[2]
-          properties.append( p )
-
-        # Execute the implementation code
-
-        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( implement[1] )
-
-        #print( out, a, b, c, d, e, f, g, h, i, j )
-
-        for p in properties:
-          print( 'Checking property:', p['name'] )
-          print( '  - Expression:', p['property'] )
-          print( '  - Output:', out )
-          print( '  - Outcome: ... ', end='' )
-
-          result = eval( p['property'] )
-          print( result )
-          print()
-
-    # Handle distributed block checks
-    #
-    # LIMITATION -- you cannot have a distributed block check within the
-    # same file ... the filename:procname is the dict key right now, so
-    # they will alias if you put more than one in the same tcl file
-    #
-
-    check_distributed_bundles = {}
-
-    for step, block in procs.items():
-      d_keys  = [ k for k in procs[step].keys() if '.distributed.' in k ]
-      d_names = [ re.search( r'(mflowgen\.distributed\..*?)$', k )
-                   for k in d_keys ]
-      d_names = [ _.group(1) for _ in d_names if _ ]
-      for name, key in zip( d_names, d_keys ):
-        try:
-          check_distributed_bundles[name]
-        except KeyError:
-          check_distributed_bundles[name] = []
-        check_distributed_bundles[name].append( procs[step][key] )
-
-    #for k, v in check_distributed_bundles.items():
-    #  print( k )
-    #  print( v )
-    #  print()
-
-    # Execute the snippets in each distributed bundle and make sure the
-    # outputs match
-
-    results = {}
-
-    for name, proc_list in check_distributed_bundles.items():
-      for idx, p in enumerate( proc_list ):
-        out, a, b, c, d, e, f, g, h, i, j = s.execute_tcl_snippet( p[1] )
-        result = [ a, b, c, d, e, f, g, h, i, j ]
-        # track outputs and compare new results to others
-        try:
-          results[name]
-        except KeyError:
-          results[name] = result
-        #print( name, out, a, b, c, d, e, f, g, h, i, j )
-
-        equality_property = results[name] == result
-
-        print( 'Checking property:', name )
-        print( '  - Block #:', idx )
-        print( '  - Expression:', '(distributed equality)' )
-        print( '  - Output:', out )
-        print( '  - Outcome: ... ', end='' )
-
-        print( equality_property )
-        print()
-
+     
 
   #-----------------------------------------------------------------------
   # launch_here
@@ -634,11 +526,3 @@ class CheckHandler:
     print( 'Run any command with -h to see more details'                 )
     print()
 
-
-  #-----------------------------------------------------------------------
-  # launch_enum
-  #-----------------------------------------------------------------------
-
-  def launch_enum( s ):
-      print()
-      print( 'Check enum not implemented yet' )
