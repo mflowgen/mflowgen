@@ -24,7 +24,7 @@ check_timing -verbose > reports/check_timing.report
 report_global_timing > reports/report_global_timing.report
 report_clock -skew -attribute > reports/report_clock.report 
 report_analysis_coverage > reports/report_analysis_coverage.report
-report_timing -crosstalk_delta -slack_lesser_than 1000.0 -max_paths 100 -pba_mode exhaustive -delay max -nosplit -input -net -transition_time > reports/report_timing_setup_pba.report
+report_timing -crosstalk_delta -slack_lesser_than 1000.0 -max_paths 100 -pba_mode exhaustive -delay max -nosplit -input -net -transition_time -path_type full_clock_expanded > reports/report_timing_setup_pba.report
 report_timing -crosstalk_delta -slack_lesser_than 1000.0 -max_paths 100 -pba_mode exhaustive -delay min -nosplit -input -net -transition_time -path_type full_clock_expanded > reports/report_timing_hold_pba.report
 
 write_sdf -significant_digits 6 design.sdf
