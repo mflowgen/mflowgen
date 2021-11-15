@@ -27,6 +27,7 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
+  - mkdir -p reports
   - pt_shell -file pt.tcl
   - mkdir -p outputs && cd outputs
   - ln -sf ../design.sdf design.sdf
