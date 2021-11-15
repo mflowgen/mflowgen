@@ -404,8 +404,8 @@ class CheckHandler:
       print( bold( 'Usage:' ), 'mflowgen check enum [--verbose]' )
       print()
       print( 'Inspects all nodes in the graph for tcl files with' )
-      print( 'enum constructs and statically checks enum'      )
-      print( 'properties.'    )
+      print( 'enum constructs and statically checks enum'         )
+      print( 'properties.'                                        )
       print()
 
     if help_:
