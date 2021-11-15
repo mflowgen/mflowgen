@@ -48,7 +48,7 @@ report_timing \
   -net \
   -transition_time \
   -path_type full_clock_expanded \
-  > reports/report_timing_setup_pba.report
+  > reports/$::env(design_name).timing.setup.rpt
 
 report_timing \
   -crosstalk_delta \
@@ -61,7 +61,7 @@ report_timing \
   -net \
   -transition_time \
   -path_type full_clock_expanded \
-  > reports/report_timing_hold_pba.report
+  > reports/$::env(design_name).timing.hold.rpt
 
 write_sdf -significant_digits 6 design.sdf
 
