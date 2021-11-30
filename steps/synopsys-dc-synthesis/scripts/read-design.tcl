@@ -31,6 +31,12 @@ if {[file exists [which setup-design-params.txt]]} {
 current_design $dc_design_name
 link
 
+# Load UPF if it exists
+if {[file exists $dc_upf]} {
+  load_upf $dc_upf
+  source $dc_voltages
+}
+
 #-------------------------------------------------------------------------
 # Write out useful files
 #-------------------------------------------------------------------------

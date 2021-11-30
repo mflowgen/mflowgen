@@ -16,12 +16,15 @@ inputs:
   - design.v
   - constraints.tcl
   - run.saif
+  - design.upf
+  - set-design-voltages.tcl
 
 outputs:
   - design.v
   - design.sdc
   - design.namemap
   - design.svf
+  - design.upf
 
 #-------------------------------------------------------------------------
 # Commands

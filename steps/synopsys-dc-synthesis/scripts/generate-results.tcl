@@ -67,4 +67,8 @@ set_app_var write_sdc_output_net_resistance false
 
 write_sdc -nosplit ${dc_results_dir}/${dc_design_name}.mapped.sdc
 
+# UPF
+if {[file exists $dc_upf]} {
+  save_upf ${dc_results_dir}/${dc_design_name}.upf
+}
 
