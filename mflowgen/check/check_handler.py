@@ -247,6 +247,37 @@ class CheckHandler:
     return procs
   
   #-----------------------------------------------------------------------
+  # get_all_mflowgen_calls
+  #-----------------------------------------------------------------------
+  # Internally, this command does the following:
+  #
+  # - Search tcl files for "[mflowgen.* *]" and return a dict of name-body
+  #   pairs (i.e., key = <file>:<callname>, value = <callargs>)
+  
+  def get_all_mflowgen_calls( s ):
+    
+    tcl_files = s.get_all_tcl_files() 
+
+    # FIXME -- the mflowgen annotations have to be perfectly formed for now
+
+    calls = {}
+
+    for step, files in tcl_files.items():
+      calls[step] = {}
+      for f in files:
+        with open( f ) as fd:
+          text = fd.read()
+        matches = re.findall( r'\[ *(mflowgen.*?) +(.*?) *\]', text, re.DOTALL )
+
+        for m in matches:
+          k = f + ':' + m[0]
+          v = m[1]
+          calls[step][k] = v
+
+    return calls
+
+  
+  #-----------------------------------------------------------------------
   # launch_graph
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
@@ -421,16 +452,16 @@ class CheckHandler:
       print_help()
       return
 
-    procs = s.get_all_mflowgen_procs()
+    calls = s.get_all_mflowgen_calls()
 
-    #for step in procs.keys():
+    #for step in calls.keys():
     #  for k, v in procs[step].items():
     #    print( k )
     #    print( v )
     #    print()
-
-    for step, block in procs.items():
-      enums = [ k for k in procs[step].keys() if '.enum.' in k ]
+    for step, block in calls.items():
+      enums = [ k for k in calls[step].keys() if '.enum.' in k ]
+      print(enums)
 
     print("Check enum not implemented yet")
 
