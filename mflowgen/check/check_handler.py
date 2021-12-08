@@ -149,20 +149,16 @@ class CheckHandler:
     elif command == 'status' : s.launch_status( help_, verbose, step )
     elif command == 'enum'   : s.launch_enum  ( help_, verbose )
     else                     : s.launch_help  ()
-
   #-----------------------------------------------------------------------
-  # get_all_mflowgen_procs
+  # get_all_tcl_files
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
   # - Loop over all nodes in the graph
   # - Make a list of all node source directories
-  # - Make a list of all tcl files in those directories
-  # - Search tcl files for "proc mflowgen." and return a dict of name-body
-  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
+  # - Returns a dict of all tcl files in those directories (step: file list)
     
-  def get_all_mflowgen_procs( s ):
-    
+  def get_all_tcl_files( s ):
     # Get all existing steps
     #
     # Currently this is done by just looking at the directory names in the
@@ -212,7 +208,19 @@ class CheckHandler:
 
     #for k, v in tcl_files.items():
     #  print( k, v )
+    return tcl_files
+
+  #-----------------------------------------------------------------------
+  # get_all_mflowgen_procs
+  #-----------------------------------------------------------------------
+  # Internally, this command does the following:
+  #
+  # - Search tcl files for "proc mflowgen." and return a dict of name-body
+  #   pairs (i.e., key = <file>:<procname>, value = <procbody>)
     
+  def get_all_mflowgen_procs( s ):
+    
+    tcl_files = s.get_all_tcl_files() 
     # Search tcl files for mflowgen-annotated procs (proc mflowgen.*), and
     # return the result as a dict (i.e., key = "<file>:<procname>", value =
     # "<procbody>")
@@ -230,13 +238,14 @@ class CheckHandler:
         with open( f ) as fd:
           text = fd.read()
         matches = re.findall( r'proc *(mflowgen.*?) *{(.*?)} *{\n(.*?)\n}', text, re.DOTALL )
+
         for m in matches:
           k = f + ':' + m[0]
           v = ( m[1], m[2] )
           procs[step][k] = v
 
     return procs
-
+  
   #-----------------------------------------------------------------------
   # launch_graph
   #-----------------------------------------------------------------------
