@@ -31,4 +31,16 @@ proc mflowgen.distributed.blockB {} {
   return [ list this sentence does not match ]
 }
 
+# Test enum check
+proc mflowgen.enum.stdcell { a } {
+  return $a
+}
 
+# Command w/o enum
+set_driving_cell -cell INV_X1
+
+# Should pass
+set_driving_cell -cell [mflowgen.enum.stdcell INV_X1]
+
+# Should fail
+set_driving_cell -cell [mflowgen.enum.stdcell INV_Z4]
