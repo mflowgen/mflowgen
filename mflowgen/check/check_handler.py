@@ -16,6 +16,8 @@ from mflowgen.utils import bold, yellow
 from mflowgen.utils import read_yaml, write_yaml
 from mflowgen.utils import get_top_dir
 
+from collections import defaultdict
+
 #-------------------------------------------------------------------------
 # Check Management
 #-------------------------------------------------------------------------
@@ -260,19 +262,18 @@ class CheckHandler:
 
     # FIXME -- the mflowgen annotations have to be perfectly formed for now
 
-    calls = {}
+    calls = defaultdict(list)
 
     for step, files in tcl_files.items():
-      calls[step] = {}
       for f in files:
         with open( f ) as fd:
           text = fd.read()
-        matches = re.findall( r'\[ *(mflowgen.*?) +(.*?) *\]', text, re.DOTALL )
+        matches = re.findall( r'\[ *mflowgen\.(.*?)\.(.*?) +(.*?) *\]', text, re.DOTALL )
 
         for m in matches:
-          k = f + ':' + m[0]
-          v = m[1]
-          calls[step][k] = v
+          k = m[0]
+          v = (step,f,m[1],m[2])
+          calls[k].append(v)
 
     return calls
 
@@ -452,18 +453,16 @@ class CheckHandler:
       print_help()
       return
 
+    enums = {'stdcell': ['INV_X1', 'INV_X2', 'INV_X4']}
     calls = s.get_all_mflowgen_calls()
-
-    #for step in calls.keys():
-    #  for k, v in procs[step].items():
-    #    print( k )
-    #    print( v )
-    #    print()
-    for step, block in calls.items():
-      enums = [ k for k in calls[step].keys() if '.enum.' in k ]
-      print(enums)
-
-    print("Check enum not implemented yet")
+    for call in calls['enum']:
+        step, f, enum_name, arg = call
+        print( f"Checking enum mflowgen.enum.{enum_name}" )
+        print( f"  - Step #: {step}" )
+        print( f"  - File: {f}" )
+        print( f"  - Expression: {arg}" )
+        print( f"  - Outcome: {arg in enums[enum_name]}" )
+    
 
      
 
