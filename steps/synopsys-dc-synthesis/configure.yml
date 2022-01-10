@@ -17,7 +17,6 @@ inputs:
   - constraints.tcl
   - run.saif
   - design.upf
-  - set-design-voltages.tcl
 
 outputs:
   - design.v

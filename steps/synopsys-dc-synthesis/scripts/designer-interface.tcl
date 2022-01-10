@@ -39,7 +39,6 @@ set dc_suppressed_msg  			  [split $::env(suppressed_msg) ","]
 set dc_rtl_handoff              inputs/design.v
 set adk_dir                     inputs/adk
 set dc_upf                      inputs/design.upf
-set dc_voltages                 inputs/set-design-voltages.tcl
 
 # Extra libraries
 #

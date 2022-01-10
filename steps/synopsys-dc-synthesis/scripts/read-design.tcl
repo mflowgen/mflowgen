@@ -34,7 +34,6 @@ link
 # Load UPF if it exists
 if {[file exists $dc_upf]} {
   load_upf $dc_upf
-  source $dc_voltages
 }
 
 #-------------------------------------------------------------------------
