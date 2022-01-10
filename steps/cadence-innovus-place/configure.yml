@@ -41,6 +41,7 @@ parameters:
   order:
     - setup-optmode.tcl
     - setup-cellpad.tcl
+    - setup-inst-gap.tcl
     - main.tcl
     - clean-cellpad.tcl
     - reporting.tcl
