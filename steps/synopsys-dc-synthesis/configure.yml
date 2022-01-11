@@ -16,12 +16,14 @@ inputs:
   - design.v
   - constraints.tcl
   - run.saif
+  - design.upf
 
 outputs:
   - design.v
   - design.sdc
   - design.namemap
   - design.svf
+  - design.upf
 
 #-------------------------------------------------------------------------
 # Commands
