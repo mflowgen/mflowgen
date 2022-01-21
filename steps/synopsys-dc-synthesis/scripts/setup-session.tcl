@@ -159,4 +159,8 @@ set_app_var sh_new_variable_message false
 
 if {[info exists ::env(DC_EXIT_AFTER_SETUP)]} { set DC_SETUP_DONE true }
 
+# Accept list of don't use cells from ADK 
 
+if {[info exists ADK_DONT_USE_CELL_LIST]} {                       
+  set_dont_use [get_lib_cells $ADK_DONT_USE_CELL_LIST]
+}                                                                 
