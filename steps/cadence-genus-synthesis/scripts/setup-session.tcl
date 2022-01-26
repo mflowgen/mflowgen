@@ -22,3 +22,7 @@ if {[file exists $vars(capTableFile)]} {
 set_attr hdl_flatten_complex_port true
 
 set_attr hdl_resolve_instance_with_libcell true
+
+if {[info exists ADK_DONT_USE_CELL_LIST]} {
+  set_attribute avoid true [get_lib_cells $ADK_DONT_USE_CELL_LIST]
+}
