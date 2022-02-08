@@ -52,37 +52,63 @@ class RunHandler:
         sys.exit( 1 )
       return construct_path
 
-    # Search in the design directory
+    # Find a construct python file that describes the flow
+    #
+    # The --design argument can be used in two ways to point to the python
+    # file with the flow graph:
+    #
+    # 1. Directly provide the path to the python file
+    # 2. Provide the path to the directory that contains the flow graph
+    #
+    # With the second option, if the flow graph is not the default
+    # (i.e., "construct.py" in the top level of the given directory), then
+    # a .mflowgen.yml file should describe where within the directory to
+    # find the flow graph and it should look like this:
+    #
+    #     construct: path/within/directory/to/construct.py
+    #
 
-    if not os.path.exists( design ):
+    if not os.path.exists( os.path.dirname( design ) ):
       print()
       print( bold( 'Error:' ), 'Directory not found at path',
                                       '"{}"'.format( design ) )
       print()
       sys.exit( 1 )
 
-    yaml_path = os.path.abspath( design + '/.mflowgen.yml' )
+    # Option 1 -- Construct path directly provided
 
-    if not os.path.exists( yaml_path ):
-      construct_path = design + '/construct.py'
+    if design.endswith('.py'):
+
+      construct_path = design
+
+    # Option 2 -- Construct path pointing within a directory
+
     else:
 
-      data = read_yaml( yaml_path )
+      yaml_path = os.path.abspath( design + '/.mflowgen.yml' )
 
-      try:
-        construct_path = data['construct']
-      except KeyError:
-        raise KeyError(
-          'YAML file "{}" must have key "construct"'.format( yaml_path ) )
+      if not os.path.exists( yaml_path ):
+        construct_path = design + '/construct.py'
+      else:
 
-      if not construct_path.startswith( '/' ): # check if absolute path
-        construct_path = design + '/' + construct_path
+        data = read_yaml( yaml_path )
 
-      construct_path = os.path.abspath( construct_path )
+        try:
+          construct_path = data['construct']
+        except KeyError:
+          raise KeyError(
+            'YAML file "{}" must have key "construct"'.format( yaml_path ) )
 
-      if not os.path.exists( construct_path ):
-        raise ValueError(
-          'Construct script not found at "{}"'.format( construct_path ) )
+        if not construct_path.startswith( '/' ): # check if absolute path
+          construct_path = design + '/' + construct_path
+
+    # Check that this file exists
+
+    construct_path = os.path.abspath( construct_path )
+
+    if not os.path.exists( construct_path ):
+      raise ValueError(
+        'Construct script not found at "{}"'.format( construct_path ) )
 
     return construct_path
 
