@@ -44,6 +44,15 @@ class Step:
       'Step -- ' \
       'Step YAML must have a "name" field: {}'.format( yaml_path )
 
+    # If we're extending another node, grab the parent node's config
+
+    if 'extends' in data.keys():
+        parent = Step( data['extends'], default=True )
+        parent_config = parent._config.copy()
+        # Update parent's config with this step's config
+        parent_config.update(data)
+        data = parent_config
+
     # Remove empty inputs and outputs
 
     if 'inputs' in data.keys():
@@ -120,8 +129,7 @@ class Step:
 
     data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
 
-    # Save the config
-
+    # Then save this node's config to override anything this step changed
     s._config.update( data )
 
   #-----------------------------------------------------------------------
@@ -536,6 +544,12 @@ class Step:
 
   def get_dir( s ):
     return s.step_dir
+
+  def get_all_dirs( s ):
+    if hasattr(s, 'parent'):
+        return s.parent.get_all_dirs() + [s.step_dir]
+    else:
+        return [s.step_dir]
 
   def get_commands( s ):
     return s._config['commands']
