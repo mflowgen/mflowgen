@@ -4,10 +4,10 @@ mflowgen
 
 <!-- **Author**: Christopher Torng (ctorng@stanford.edu) -->
 
-*Reviewers: We found that we are unfortunately unable to fully
+<!-- *Reviewers: We found that we are unfortunately unable to fully
 anonymize this repo as it is already used in various open-source
 projects. We respectfully request that you do not read further in
-order to preserve blindedness.*
+order to preserve blindedness.* -->
 
 mflowgen is a modular flow specification and build-system
 generator for ASIC and FPGA design-space exploration built around
