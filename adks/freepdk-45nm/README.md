@@ -8,7 +8,7 @@ This ASIC design kit uses FreePDK45 and the NanGate Open Cell Library.
 More information is available in the README of the standard base kit
 located here:
 
-- http://www.csl.cornell.edu/~ctorng/dropbox/pkg-freepdk45-nangate.tar.gz
+- https://github.com/mflowgen/freepdk-45nm
 
 This repository only contains the tiny base kit necessary to push a
 design through synthesis and place and route but not further (e.g.,
