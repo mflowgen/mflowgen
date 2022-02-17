@@ -22,7 +22,7 @@ You can dump the foundation flow yourself by running the ``writeFlowTemplate``
 command in an Innovus shell. This is essentially what the
 ``cadence-innovus-flowsetup`` node is responsible for (see the `step
 configuration file
-<https://github.com/cornell-brg/mflowgen/blob/master/steps/cadence-innovus-flowsetup/configure.yml>`__).
+<https://github.com/mflowgen/mflowgen/blob/master/steps/cadence-innovus-flowsetup/configure.yml>`__).
 Feel free to open Innovus and run it yourself:
 
 .. code:: bash

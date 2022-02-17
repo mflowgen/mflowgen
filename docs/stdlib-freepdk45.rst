@@ -27,7 +27,7 @@ the bottom), the poly (red vertical strips), contacts (dark blue squares), and
 input pins on M1 (three dark blue squares that connect to the poly gates). The
 physical database containing these layout shapes is known as a graphic database
 system (GDS) and can be found in "stdcells.gds" in the base kit `here
-<https://github.com/cornell-brg/mflowgen/tree/master/adks/freepdk-45nm/pkgs/base>`__.
+<https://github.com/mflowgen/mflowgen/tree/master/adks/freepdk-45nm/pkgs/base>`__.
 
 Each cell in the library is characterized with a large number of SPICE
 simulations and the timing information is captured in the "stdcells.lib" and
@@ -36,13 +36,13 @@ file formats). You can find more details about this library `here
 <https://projects.si2.org/openeda.si2.org/help/group_ld.php?group=63>`__. The
 liberty (.lib) file is human-readable and you can directly read it in the base
 kit `here
-<https://github.com/cornell-brg/mflowgen/blob/master/adks/freepdk-45nm/pkgs/base/stdcells.lib>`__.
+<https://github.com/mflowgen/mflowgen/blob/master/adks/freepdk-45nm/pkgs/base/stdcells.lib>`__.
 
 The Nangate library also comes with the routing technology kit (RTK) technology
 LEF, often called the "tech LEF". This describes all available layers that the
 synthesis and place-and-route tools can use for routing. This file is also
 human-readable and you can read it in the base kit `here
-<https://github.com/cornell-brg/mflowgen/blob/master/adks/freepdk-45nm/pkgs/base/rtk-tech.lef>`__.
+<https://github.com/mflowgen/mflowgen/blob/master/adks/freepdk-45nm/pkgs/base/rtk-tech.lef>`__.
 For example, the "metal1" parameters look like this:
 
 .. code::

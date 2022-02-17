@@ -34,7 +34,7 @@ setup(
       'mflowgen: A Modular ASIC and FPGA Flow Generator',
   long_description              = get_long_description(),
   long_description_content_type = 'text/markdown',
-  url                           = 'https://github.com/cornell-brg/mflowgen',
+  url                           = 'https://github.com/mflowgen/mflowgen',
   author                        = 'Christopher Torng',
   author_email                  = 'clt67@cornell.edu',
 

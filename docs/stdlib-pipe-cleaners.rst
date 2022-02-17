@@ -75,7 +75,7 @@ Here is the list of steps:
 
 Feel free to cross-check the construct.py, the graph visualization, and
 the `step configuration files
-<https://github.com/cornell-brg/mflowgen/tree/master/steps>`_ to see which
+<https://github.com/mflowgen/mflowgen/tree/master/steps>`_ to see which
 files are passing between which steps.
 
 You will see that the GcdUnit RTL, a constraints file, and the technology

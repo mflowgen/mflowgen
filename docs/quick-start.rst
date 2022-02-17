@@ -28,7 +28,7 @@ First, clone the repo:
 
 .. code:: bash
 
-    % git clone https://github.com/cornell-brg/mflowgen
+    % git clone https://github.com/mflowgen/mflowgen
     % cd mflowgen
     % TOP=${PWD}
 
