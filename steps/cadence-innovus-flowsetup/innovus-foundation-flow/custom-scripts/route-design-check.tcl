@@ -36,3 +36,12 @@ if {[info exists ::env(stop_on_failed_routing)]} {
 # grinding 122 hours later (takes less than one hour with correct placement).
 
 routeDesign -placementCheck
+
+if {[info exists ::env(stop_on_failed_routing)]} {
+    if { $::env(stop_on_failed_routing) } {
+        if { [llength [get_db markers]] } {
+            echo "**ERROR [llength [get_db markers]] DRC violation(s) remain after routing"
+            exit 13
+        }
+    }
+}
