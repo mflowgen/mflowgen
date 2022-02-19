@@ -21,7 +21,7 @@
 # Failure mode can now be controlled by way of an environment variable,
 # e.g. "export stop_on_failed_routing true"
 
-if {[info exists ::env(stop_on_failed_routing) {
+if {[info exists ::env(stop_on_failed_routing)]} {
     setNanoRouteMode -drouteAutoStop $::env(stop_on_failed_routing)
 }
 
