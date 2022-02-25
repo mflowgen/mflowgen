@@ -53,6 +53,15 @@ class Step:
         parent_config.update(data)
         data = parent_config
 
+    # Add ability to extend and/or prepend fields of parent nodes
+    for field in ['inputs', 'outputs', 'commands', 'parameters']:
+        # If we're extending, add new values to end of parent field
+        if f"extend_{field}" in data.keys():
+            data[field].extend(data[f"extend_{field}"])
+        # If we're prepending, add new values to beginning of parent field
+        if f"prepend_{field}" in data.keys():
+            data[field] = data[f"prepend_{field}"] + data[field]
+
     # Remove empty inputs and outputs
 
     if 'inputs' in data.keys():
