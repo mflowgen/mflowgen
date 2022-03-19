@@ -32,4 +32,5 @@ will be using the GcdUnit design as a pipecleaner.
    stdlib-innovus-signoff
    stdlib-mentor-drc
    stdlib-mentor-lvs
+   stdlib-nodes
 
