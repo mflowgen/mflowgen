@@ -13,4 +13,5 @@ User Guide
    ug-assertions
    ug-stash
    ug-mock
+   ug-static-check
 
