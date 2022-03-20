@@ -127,3 +127,13 @@ are passed to the intent, and they are all checked for consistency
 at *graph elaboration time*, not tool runtime. This allows for immediate
 feedback if a given implementation is incorrect and greatly shortens the 
 debug loop for any designer trying to reuse this code.
+
+Here are 2 separate blocks that reused the same createAON intent, but
+with different implementation blocks.
+
+ 
+.. image:: _static/images/pe-aon-example.png
+  :width: 400px
+
+.. image:: _static/images/mem-aon-example.png
+  :width: 400px
