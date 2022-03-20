@@ -133,7 +133,7 @@ with different implementation blocks.
 
  
 .. image:: _static/images/pe-aon-example.png
-  :width: 400px
+  :width: 150px
 
 .. image:: _static/images/mem-aon-example.png
   :width: 400px
