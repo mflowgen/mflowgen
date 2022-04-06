@@ -1,0 +1,29 @@
+
+name: cadence-innovus-genlib
+
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - innovus-foundation-flow
+  - design.checkpoint
+
+outputs:
+  - design.lib
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+- ln -sf inputs/innovus-foundation-flow
+- innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
+- cd outputs
+- ln -sf ../checkpoints/design.checkpoint
+- ln -sf ../design.lib design.lib
+parameters:
+  order:
+  - generate-lib.tcl
