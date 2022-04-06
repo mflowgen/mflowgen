@@ -26,4 +26,4 @@ commands:
 - ln -sf ../design.lib design.lib
 parameters:
   order:
-  - generate-lib.tcl
+  - extract_model.tcl
