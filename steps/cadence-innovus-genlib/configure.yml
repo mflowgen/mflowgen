@@ -24,9 +24,23 @@ commands:
 - cd outputs
 - ln -sf ../checkpoints/design.checkpoint
 - ln -sf ../design.lib design.lib
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
 parameters:
   order:
   - extract_model.tcl
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
 
 #-------------------------------------------------------------------------
 # Assertions
