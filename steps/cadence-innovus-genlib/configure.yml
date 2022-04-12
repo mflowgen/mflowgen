@@ -1,0 +1,59 @@
+
+name: cadence-innovus-genlib
+
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - innovus-foundation-flow
+  - design.checkpoint
+
+outputs:
+  - design.lib
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+- ln -sf inputs/innovus-foundation-flow
+- innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
+- cd outputs
+- ln -sf ../checkpoints/design.checkpoint
+- ln -sf ../design.lib design.lib
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  order:
+  - extract_model.tcl
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - innovus -overwrite -64
+    -init innovus-foundation-flow/custom-scripts/run-debug.tcl
+    -log logs/debug.log
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'innovus' )                 # tool check
+  - assert File( 'inputs/innovus-foundation-flow' )  # must exist
+  - assert File( 'inputs/adk' )              # must exist
+  - assert File( 'inputs/design.checkpoint' )        # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.lib' )      # must exist
+
