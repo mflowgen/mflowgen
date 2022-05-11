@@ -24,7 +24,7 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-  - if [ $drc_env_setup != 'undefined' ]; then source inputs/adk/{drc_env_setup}; fi
+  - if [ -f "inputs/adk/{drc_env_setup}" ]; then source inputs/adk/{drc_env_setup}; fi
   - envsubst < drc.runset.template > drc.runset
   - calibre -gui -drc -batch -runset drc.runset
   - mkdir -p outputs && cd outputs
