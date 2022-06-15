@@ -1,6 +1,6 @@
 mflowgen
 ==========================================================================
-[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/mflowgen/mflowgen.svg?branch=master)](https://travis-ci.com/mflowgen/mflowgen)
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/mflowgen/mflowgen.svg?branch=master)](https://travis-ci.com/mflowgen/mflowgen) [![pypi](https://img.shields.io/pypi/v/mflowgen)](https://pypi.org/project/mflowgen/)
 
 <!-- **Author**: Christopher Torng (ctorng@stanford.edu) -->
 
