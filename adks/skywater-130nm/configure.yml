@@ -1,6 +1,9 @@
 #=========================================================================
 # ASIC Design Kit -- Skywater130
 #=========================================================================
+# This step pulls the version and view of the sky 130 ADK specified
+# by the adk_version and adk_view parameters.
+#
 # Author : Alex Carsello
 # Date   : July 12, 2022
 #
