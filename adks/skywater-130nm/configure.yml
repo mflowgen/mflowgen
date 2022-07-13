@@ -1,0 +1,50 @@
+#=========================================================================
+# ASIC Design Kit -- Skywater130
+#=========================================================================
+# This step pulls the version and view of the sky 130 ADK specified
+# by the adk_version and adk_view parameters.
+#
+# Author : Alex Carsello
+# Date   : July 12, 2022
+#
+
+name: skywater-130nm
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+outputs:
+  - adk
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # If standard view is selected, download the full pkg (~17MB)
+  - if [[ x{adk_view} == xview-standard ]]; then
+      wget https://github.com/mflowgen/skywater-130nm/archive/v{adk_version}.zip;
+      unzip v{adk_version}.zip;
+      mv skywater-130nm-{adk_version}/{adk_view} {adk_view};
+    fi
+  # Set up the outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../{adk_view} adk
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  adk: skywater-130nm
+  adk_view: view-standard
+  adk_version: 0.0.0
+
+#-------------------------------------------------------------------------
+# Special mflowgen tags
+#-------------------------------------------------------------------------
+
+sandbox: False
+
+
