@@ -21,9 +21,9 @@ outputs:
 commands:
   # If standard view is selected, download the full pkg (~17MB)
   - if [[ x{adk_view} == xview-standard ]]; then
-      wget https://github.com/mflowgen/skywater-130nm/archive/open_pdks.zip;
-      unzip open_pdks.zip;
-      mv skywater-130nm-open_pdks/{adk_view} {adk_view};
+      wget https://github.com/mflowgen/skywater-130nm/archive/v{adk_version}.zip;
+      unzip v{adk_version}.zip;
+      mv skywater-130nm-{adk_version}/{adk_view} {adk_view};
     fi
   # Set up the outputs
   - mkdir -p outputs && cd outputs
@@ -36,6 +36,7 @@ commands:
 parameters:
   adk: skywater-130nm
   adk_view: view-standard
+  adk_version: 0.0.0
 
 #-------------------------------------------------------------------------
 # Special mflowgen tags
