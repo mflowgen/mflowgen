@@ -1,13 +1,8 @@
 mflowgen
 ==========================================================================
-[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/mflowgen/mflowgen.svg?branch=master)](https://travis-ci.com/mflowgen/mflowgen) [![pypi](https://img.shields.io/pypi/v/mflowgen)](https://pypi.org/project/mflowgen/)
+[![Documentation Status](https://readthedocs.org/projects/mflowgen/badge/?version=latest)](https://mflowgen.readthedocs.io/en/latest) [![Build Status](https://travis-ci.com/mflowgen/mflowgen.svg?branch=master)](https://travis-ci.com/mflowgen/mflowgen) [![pypi](https://img.shields.io/pypi/v/mflowgen)](https://pypi.org/project/mflowgen)
 
 <!-- **Author**: Christopher Torng (ctorng@stanford.edu) -->
-
-<!-- *Reviewers: We found that we are unfortunately unable to fully
-anonymize this repo as it is already used in various open-source
-projects. We respectfully request that you do not read further in
-order to preserve blindedness.* -->
 
 mflowgen is a modular flow specification and build-system
 generator for ASIC and FPGA design-space exploration built around
