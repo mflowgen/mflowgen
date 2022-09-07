@@ -4,7 +4,7 @@
 # Author : Alex Carsello
 # Date   : September 28, 2020
 
-read_hdl -sv [lsort [glob -directory inputs -type f *.v *.sv]]
+read_hdl -define {$read_hdl_defines} -sv [lsort [glob -directory inputs -type f *.v *.sv]]
 
 # Prevent backslashes from being prepended to signal names...
 # this causes SAIF files to be invalid...needs to be before elaboration.

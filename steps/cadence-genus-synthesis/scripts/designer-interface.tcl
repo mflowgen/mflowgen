@@ -17,6 +17,7 @@ set clock_period               $::env(clock_period)
 set gate_clock                 $::env(gate_clock)
 set uniquify_with_design_name  $::env(uniquify_with_design_name)
 set flatten_effort             $::env(flatten_effort)
+set read_hdl_defines           $::env(read_hdl_defines)
 
 # Here we do a weird mapping from our DC flatten_effort to genus flatten_effort
 # flatten_effort=0 goes to no flattening
