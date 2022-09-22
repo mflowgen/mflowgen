@@ -19,6 +19,7 @@ set merge_files \
 streamOut $vars(results_dir)/$vars(design)-merged.gds \
     -units 1000 \
     -mapFile $vars(gds_layer_map) \
+    -uniquifyCellNames \
     -merge $merge_files
                
 
