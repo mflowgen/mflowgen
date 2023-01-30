@@ -65,7 +65,6 @@ set dc_extra_link_libraries     [join "
 # Interface to the ASIC design kit
 #-------------------------------------------------------------------------
 
-#set dc_milkyway_ref_libraries   $adk_dir/stdcells.mwlib
 set dc_milkyway_ref_libraries   [join "
                                     [lsort [glob -nocomplain $adk_dir/stdcells*.mwlib]]
                                 "]
