@@ -29,7 +29,8 @@ def construct():
     'adk'            : adk_name,
     'adk_view'       : adk_view,
     'topographical'  : True,
-    'saif_instance'  : 'GcdUnitTb/GcdUnit_inst'
+    'saif_instance'  : 'GcdUnitTb/GcdUnit_inst',
+    'use_dc'         : True
   }
 
   #-----------------------------------------------------------------------
@@ -52,7 +53,12 @@ def construct():
 
   info           = Step( 'info',                           default=True )
   constraints    = Step( 'constraints',                    default=True )
-  dc             = Step( 'synopsys-dc-synthesis',          default=True )
+
+  if parameters['use_dc']:
+      syn        = Step('synopsys-dc-synthesis',           default=True )
+  else:
+      syn        = Step('cadence-genus-synthesis',         default=True )
+
   iflow          = Step( 'cadence-innovus-flowsetup',      default=True )
   init           = Step( 'cadence-innovus-init',           default=True )
   power          = Step( 'cadence-innovus-power',          default=True )
@@ -92,7 +98,7 @@ def construct():
   g.add_step( info           )
   g.add_step( rtl            )
   g.add_step( constraints    )
-  g.add_step( dc             )
+  g.add_step( syn            )
   g.add_step( iflow          )
   g.add_step( init           )
   g.add_step( power          )
@@ -121,7 +127,7 @@ def construct():
 
   # Connect by name
 
-  g.connect_by_name( adk,            dc             )
+  g.connect_by_name( adk,            syn            )
   g.connect_by_name( adk,            iflow          )
   g.connect_by_name( adk,            init           )
   g.connect_by_name( adk,            power          )
@@ -137,14 +143,14 @@ def construct():
   g.connect_by_name( adk,            drc            )
   g.connect_by_name( adk,            lvs            )
 
-  g.connect_by_name( rtl,            dc             )
-  g.connect_by_name( constraints,    dc             )
+  g.connect_by_name( rtl,            syn            )
+  g.connect_by_name( constraints,    syn            )
 
-  g.connect_by_name( dc,             iflow          )
-  g.connect_by_name( dc,             init           )
-  g.connect_by_name( dc,             power          )
-  g.connect_by_name( dc,             place          )
-  g.connect_by_name( dc,             cts            )
+  g.connect_by_name( syn,            iflow          )
+  g.connect_by_name( syn,            init           )
+  g.connect_by_name( syn,            power          )
+  g.connect_by_name( syn,            place          )
+  g.connect_by_name( syn,            cts            )
 
   g.connect_by_name( iflow,          init           )
   g.connect_by_name( iflow,          power          )
@@ -178,7 +184,7 @@ def construct():
   g.connect_by_name( gdsmerge,       lvs            )
 
   g.connect_by_name( adk,            debugcalibre   )
-  g.connect_by_name( dc,             debugcalibre   )
+  g.connect_by_name( syn,            debugcalibre   )
   g.connect_by_name( iflow,          debugcalibre   )
   g.connect_by_name( signoff,        debugcalibre   )
   g.connect_by_name( drc,            debugcalibre   )
@@ -193,13 +199,13 @@ def construct():
   g.connect_by_name( vcs_sim,        power_est      )
 
   g.connect_by_name( adk,            verif_post_synth )
-  g.connect_by_name( dc,             verif_post_synth )
-  g.connect( rtl.o('design.v'), verif_post_synth.i('design.ref.v') )
-  g.connect( dc.o('design.v'), verif_post_synth.i('design.impl.v') )
+  g.connect_by_name( syn,            verif_post_synth )
+  g.connect( rtl.o('design.v'), verif_post_synth.i('design.ref.v')  )
+  g.connect( syn.o('design.v'), verif_post_synth.i('design.impl.v') )
 
   g.connect_by_name( adk,            verif_post_layout )
-  g.connect_by_name( dc,             verif_post_layout )
-  g.connect( dc.o('design.v'), verif_post_layout.i('design.ref.v') )
+  g.connect_by_name( syn,            verif_post_layout )
+  g.connect( syn.o('design.v'), verif_post_layout.i('design.ref.v') )
   g.connect( signoff.o('design.lvs.v'), verif_post_layout.i('design.impl.v') )
 
   #-----------------------------------------------------------------------
