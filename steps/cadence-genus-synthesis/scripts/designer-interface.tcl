@@ -56,7 +56,6 @@ set vars(adk_dir) inputs/adk
 
 set vars(libs_typical,timing) \
     [join "
-        $vars(adk_dir)/stdcells.lib
         [lsort [glob -nocomplain $vars(adk_dir)/stdcells*.lib]]
         [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
         [lsort [glob -nocomplain inputs/*tt*.lib]]
@@ -76,7 +75,6 @@ foreach L $vars(libs_typical,timing) { echo "L_TT    $L" }
 if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
     set vars(libs_bc,timing) \
         [join "
-            $vars(adk_dir)/stdcells-bc.lib
             [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
             [lsort [glob -nocomplain inputs/*ff*.lib]]
             [lsort [glob -nocomplain inputs/*FF*.lib]]
@@ -95,7 +93,6 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
     set vars(libs_wc,timing) \
         [join "
-            $vars(adk_dir)/stdcells-wc.lib
             [lsort [glob -nocomplain $vars(adk_dir)/*-wc*.lib]]
             [lsort [glob -nocomplain inputs/*ss*.lib]]
             [lsort [glob -nocomplain inputs/*SS*.lib]]
@@ -107,11 +104,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 #-------------------------------------------------------------------------
 # LEF files
 
+# will grab rtk-tech.lef and stdcells*.lef
 set vars(lef_files) \
 [join "
-    $vars(adk_dir)/rtk-tech.lef
-    $vars(adk_dir)/stdcells.lef
-    [lsort [glob -nocomplain $vars(adk_dir)/stdcells*.lef]]
     [lsort [glob -nocomplain $vars(adk_dir)/*.lef]]
     [lsort [glob -nocomplain inputs/*.lef]]
 "]
