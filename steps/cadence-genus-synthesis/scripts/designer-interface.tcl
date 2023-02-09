@@ -104,9 +104,9 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
 #-------------------------------------------------------------------------
 # LEF files
 
+# will grab rtk-tech.lef and stdcells*.lef
 set vars(lef_files) \
 [join "
-    $vars(adk_dir)/rtk-tech.lef
     [lsort [glob -nocomplain $vars(adk_dir)/*.lef]]
     [lsort [glob -nocomplain inputs/*.lef]]
 "]
