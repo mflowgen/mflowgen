@@ -57,7 +57,9 @@ set vars(adk_dir) inputs/adk
 set vars(libs_typical,timing) \
     [join "
         $vars(adk_dir)/stdcells.lib
-        [lsort [glob -nocomplain $vars(adk_dir)/stdcells*.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]]
         [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
         [lsort [glob -nocomplain inputs/*tt*.lib]]
         [lsort [glob -nocomplain inputs/*TT*.lib]]
@@ -77,6 +79,10 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
     set vars(libs_bc,timing) \
         [join "
             $vars(adk_dir)/stdcells-bc.lib
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-bc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-bc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-bc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]]
             [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
             [lsort [glob -nocomplain inputs/*ff*.lib]]
             [lsort [glob -nocomplain inputs/*FF*.lib]]
@@ -96,7 +102,10 @@ if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
     set vars(libs_wc,timing) \
         [join "
             $vars(adk_dir)/stdcells-wc.lib
-            [lsort [glob -nocomplain $vars(adk_dir)/*-wc*.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
+            [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
             [lsort [glob -nocomplain inputs/*ss*.lib]]
             [lsort [glob -nocomplain inputs/*SS*.lib]]
       "]
@@ -111,7 +120,7 @@ set vars(lef_files) \
 [join "
     $vars(adk_dir)/rtk-tech.lef
     $vars(adk_dir)/stdcells.lef
-    [lsort [glob -nocomplain $vars(adk_dir)/stdcells*.lef]]
+    [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]]
     [lsort [glob -nocomplain $vars(adk_dir)/*.lef]]
     [lsort [glob -nocomplain inputs/*.lef]]
 "]

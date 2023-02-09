@@ -65,18 +65,13 @@ set dc_extra_link_libraries     [join "
 # Interface to the ASIC design kit
 #-------------------------------------------------------------------------
 
-#set dc_milkyway_ref_libraries   $adk_dir/stdcells.mwlib
-set dc_milkyway_ref_libraries   [join "
-                                    [lsort [glob -nocomplain $adk_dir/stdcells*.mwlib]]
-                                "]
+set dc_milkyway_ref_libraries   $adk_dir/stdcells.mwlib
 set dc_milkyway_tf              $adk_dir/rtk-tech.tf
 set dc_tluplus_map              $adk_dir/rtk-tluplus.map
 set dc_tluplus_max              $adk_dir/rtk-max.tluplus
 set dc_tluplus_min              $adk_dir/rtk-min.tluplus
 set dc_adk_tcl                  $adk_dir/adk.tcl
-set dc_target_libraries         [join "
-                                    [lsort [glob -nocomplain $adk_dir/stdcells*.db]]
-                                "]
+set dc_target_libraries         stdcells.db
 
 # Extra libraries
 
@@ -89,3 +84,5 @@ set dc_additional_search_path   $adk_dir
 set dc_reports_dir              reports
 set dc_results_dir              results
 set dc_alib_dir                 alib
+
+
