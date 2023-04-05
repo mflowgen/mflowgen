@@ -20,11 +20,11 @@ if { [ lindex [dbGet top.insts.cell.pgterms.name VSS] 0 ] != 0x0 } {
 # Connect VPWR / VGND if any cells have these pins
 
 if { [ lindex [dbGet top.insts.cell.pgterms.name VPWR] 0 ] != 0x0 } {
-  globalNetConnect VDD -type pgpin -pin VDD -inst * -verbose
+  globalNetConnect VDD -type pgpin -pin VPWR -inst * -verbose
 }
 
 if { [ lindex [dbGet top.insts.cell.pgterms.name VGND] 0 ] != 0x0 } {
-  globalNetConnect VSS -type pgpin -pin VSS -inst * -verbose
+  globalNetConnect VSS -type pgpin -pin VGND -inst * -verbose
 }
 
 # Connect VNW / VPW if any cells have these pins
@@ -47,3 +47,11 @@ if { [ lindex [dbGet top.insts.cell.pgterms.name VPB] 0 ] != 0x0 } {
   globalNetConnect VDD -type pgpin -pin VPB -inst * -verbose
 }
 
+# Connect vcc / vssx if any cells have these pins
+if { [ lindex [dbGet top.insts.cell.pgterms.name vssx] 0 ] != 0x0 } {
+  globalNetConnect VSS -type pgpin -pin vssx -inst * -verbose
+}
+
+if { [ lindex [dbGet top.insts.cell.pgterms.name vcc] 0 ] != 0x0 } {
+  globalNetConnect VDD -type pgpin -pin vcc -inst * -verbose
+}
