@@ -58,6 +58,7 @@ proc run_rail_analysis {} {
     set_power_data -reset
     set_power_data -format current -scale 1 ${power_analysis_dir}/static_VDD.ptiavg
     set_power_pads -reset
+    create_power_pads -auto_fetch -net VDD -format xy -vsrc_file ${design_name}_VDD.pp
     set_power_pads -net VDD -format xy -file ${design_name}_VDD.pp
     set_package -reset
     set_package -spice {} -mapping {}
