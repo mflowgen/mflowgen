@@ -14,8 +14,8 @@ name: cadence-voltus-gen-pg-library
 inputs:
   - adk
   - design.lef
-  - design.gds
-  - design.cdl
+  - design-merged.gds
+  - design.schematic.spi
 
 outputs:
   - design.cl
