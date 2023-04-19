@@ -1,0 +1,44 @@
+#=========================================================================
+# Cadence Voltus Static Rail Analysis
+#=========================================================================
+# Author : Alex Carsello
+# Date   : April 18, 2023
+#
+
+name: cadence-voltus-static-rail-analysis
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.lef
+  - design.vcs.pg.v
+  - design.def.gz
+  - static_power_analysis_results
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - voltus -overwrite -64 -nowin -init run_voltus_static_rail_analysis.tcl -log logs/run.log
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'voltus' )                               # tool check
+  - assert File( 'inputs/adk' )                           # must exist
+  - assert File( 'inputs/static_power_analysis_results' ) # must exist
+

@@ -1,0 +1,55 @@
+#=========================================================================
+# Cadence Innovus
+#=========================================================================
+# Author : Alex Carsello
+# Date   : April 17, 2023
+#
+
+name: cadence-voltus-gen-pg-library
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.lef
+  - design.gds
+  - design.cdl
+
+outputs:
+  - design.cl
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - echo {design_name} > instances.list
+  - voltus -overwrite -64 -nowin -init run_voltus_genpgl.tcl -log logs/run.log
+
+  # Outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../PGV/{design_name}.cl
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'voltus' )                         # tool check
+  - assert File( 'inputs/adk' )                      # must exist
+
+postconditions:
+
+  - assert File( 'outputs/design.cl' )       # must exist
+
+

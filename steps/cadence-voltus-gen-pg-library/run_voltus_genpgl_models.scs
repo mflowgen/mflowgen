@@ -1,0 +1,10 @@
+
+simulator lang=spectre
+
+include "inputs/adk/pdk-spectre.lib" section=tt
+include "inputs/adk/pdk-wire-fixed-corner.lib.scs" section=Nominal
+
+simulator lang=spice
+
+.option PARHIER=Local
+.global 0
