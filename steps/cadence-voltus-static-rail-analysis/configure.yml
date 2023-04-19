@@ -16,7 +16,9 @@ inputs:
   - design.lef
   - design.vcs.pg.v
   - design.def.gz
+  - design.sdc
   - static_power_analysis_results
+  - innovus-foundation-flow
 
 #-------------------------------------------------------------------------
 # Commands

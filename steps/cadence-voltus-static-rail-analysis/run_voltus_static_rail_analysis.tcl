@@ -4,15 +4,15 @@
 set design_name $::env(design_name)
 
 # First, import the design
-read_lib -lef [glob inputs/*.lef] inputs/adk/rtk-tech.lef
-#read_view_definition
+read_lib -lef inputs/adk/rtk-tech.lef [glob inputs/adk/stdcells*.lef] [glob inputs/*.lef]
+read_view_definition inputs/innovus-foundation-flow/view_definition.tcl
 read_verilog [glob inputs/*.v]
 set_top_module $design_name -ignore_undefined_cell
 read_def [glob inputs/*.def.gz]
 
 # Read in power intent
 #read_power_domain -cpf inputs/design.cpf
-set macro_pg_libs [glob inputs/*.cl]
+set macro_pg_libs [glob -nocomplain inputs/*.cl]
 set stdcell_pg_libs [glob inputs/adk/*.cl]
 
 # Set rail analysis mode
@@ -20,21 +20,18 @@ set_rail_analysis_mode \
     -method                     static \
     -accuracy                   xd \
     -analysis_view              analysis_default \
-    -power_grid_library { \
-        $stdcell_pg_libs \
-        $macro_pg_libs \
-    } \
+    -power_grid_library "$stdcell_pg_libs $macro_pg_libs" \
     -enable_rlrp_analysis       true \
     -verbosity true
 
 #    -use_em_view_list           ../data/voltus/em_view.list \
 
 # Since we're not using a CPF file, specify pg nets
-set_pg_nets -net VDD_AO     -voltage 0.8 -threshold 0.71 
+set_pg_nets -net VDD        -voltage 0.8 -threshold 0.71 
 set_pg_nets -net VSS        -voltage 0.0 -threshold 0.09 
 
 set_power_data -reset
-set current_files [glob inputs/power_analysis_output/static_*.ptiavg] 
+set current_files [glob inputs/static_power_analysis_results/static_*.ptiavg] 
 set_power_data -format current -scale 1 $current_files
 
 # Auto fetch power pad locations and run rail analysis for each net

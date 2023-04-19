@@ -5,8 +5,8 @@ set clock_period $::env(clock_period)
 set power_analysis_dir "./static_power_analysis_results"
 
 # First, import the design
-read_lib -lef [glob inputs/*.lef] inputs/adk/rtk-tech.lef
-#read_view_definition
+read_lib -lef inputs/adk/rtk-tech.lef [glob inputs/adk/stdcells*.lef] [glob inputs/*.lef] 
+read_view_definition inputs/innovus-foundation-flow/view_definition.tcl
 read_verilog [glob inputs/*.v]
 set_top_module $design_name -ignore_undefined_cell
 read_def [glob inputs/*.def.gz]
@@ -15,7 +15,7 @@ read_def [glob inputs/*.def.gz]
 #read_power_domain -cpf inputs/design.cpf
 
 # Read in parasitics
-read_spef -rc_corner  RC_wc_125 -decoupled [glob inputs/*.spef.gz]
+read_spef -rc_corner typical -decoupled [glob inputs/*.spef.gz]
 
 # Set power analysis mode
 set_power_analysis_mode \
@@ -33,7 +33,7 @@ set_default_switching_activity -reset
 set_default_switching_activity -input_activity 0.2 -period ${clock_period}
 
 # Run static power analysis
-report_power -rail_analysis_format VS -outfile ${power_analysis_dir}/{$design_name}_static.rpt
+report_power -rail_analysis_format VS -outfile ${power_analysis_dir}/${design_name}_static.rpt
 
 exit
 
