@@ -26,7 +26,7 @@ outputs:
 
 commands:
   - echo {design_name} > instances.list
-  - v2cdl -v inputs/design.vcs.pg.v -o design.cdl
+  - v2cdl -i -v inputs/design.vcs.pg.v -o design.cdl
   # Remove first 3 lines of CDL, because they're comments that cause errors
   - sed -e '1,3d' < design.cdl > design_cleaned.cdl
   - mv design_cleaned.cdl design.cdl
