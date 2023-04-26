@@ -19,7 +19,7 @@ set_pg_library_mode \
   -gds_layermap $myGdsLayerMap \
   -gds_files inputs/design-merged.gds \
   -spice_models run_voltus_genpgl_models.scs \
-  -spice_subckts "design.cdl [glob -nocomplain inputs/*.cdl] [glob inputs/adk/stdcells*.cdl]" \
+  -spice_subckts "design.cdl [glob -nocomplain inputs/*.cdl] [glob -nocomplain inputs/*.sp] [glob -nocomplain inputs/*.spi] [glob inputs/adk/stdcells*.cdl]" \
   -stop@via V1 \
   -power_pins { VDD 0.800} \
   -ground_pins {VSS GND}
