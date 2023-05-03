@@ -3,6 +3,8 @@
 
 set design_name $::env(design_name)
 
+set_multi_cpu_usage -localCpu 8
+
 # First, import the design
 read_lib -lef inputs/adk/rtk-tech.lef [glob inputs/adk/stdcells*.lef] [glob inputs/*.lef]
 read_view_definition inputs/innovus-foundation-flow/view_definition.tcl
