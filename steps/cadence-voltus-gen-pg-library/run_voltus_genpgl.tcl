@@ -4,6 +4,8 @@ set myQrcTechFile inputs/adk/pdk-typical-qrcTechFile
 
 set myGdsLayerMap inputs/adk/pdk-qrc-gds.layermap
 
+set myLefLayerMap inputs/adk/pdk-lefdef.layermap
+
 set_multi_cpu_usage -localCpu 8
 
 # LefDef map is optional
@@ -17,6 +19,7 @@ set_pg_library_mode \
   -current_distribution propagation \
   -extraction_tech_file $myQrcTechFile \
   -gds_layermap $myGdsLayerMap \
+  -lef_layermap $myLefLayerMap \
   -gds_files inputs/design-merged.gds \
   -spice_models run_voltus_genpgl_models.scs \
   -spice_subckts "design.cdl [glob -nocomplain inputs/*.cdl] [glob -nocomplain inputs/*.sp] [glob -nocomplain inputs/*.spi] [glob inputs/adk/stdcells*.cdl]" \
