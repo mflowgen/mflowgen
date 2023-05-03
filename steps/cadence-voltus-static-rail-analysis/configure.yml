@@ -21,6 +21,7 @@ inputs:
 #-------------------------------------------------------------------------
 
 commands:
+  - rm -rf *_
   - voltus -overwrite -64 -nowin -init run_voltus_static_rail_analysis.tcl -log logs/run.log
 
 #-------------------------------------------------------------------------
@@ -40,3 +41,8 @@ preconditions:
   - assert File( 'inputs/adk' )                           # must exist
   - assert File( 'inputs/static_power_analysis_results' ) # must exist
 
+postconditions:
+  - |
+    import glob
+    for results_file in glob.glob('**_static_rail/*/results', recursive=True):
+        assert 'PASSED !' in File(results_file)
