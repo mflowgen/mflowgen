@@ -12,15 +12,16 @@ read_def [glob inputs/*.def.gz]
 
 # Read in power intent
 #read_power_domain -cpf inputs/design.cpf
+set techonly_pg_lib inputs/adk/techonly.cl
+set stdcell_pg_libs [glob inputs/adk/stdcell*.cl]
 set macro_pg_libs [glob -nocomplain inputs/*.cl]
-set stdcell_pg_libs [glob inputs/adk/*.cl]
 
 # Set rail analysis mode
 set_rail_analysis_mode \
     -method                     static \
     -accuracy                   xd \
     -analysis_view              analysis_default \
-    -power_grid_library "$stdcell_pg_libs $macro_pg_libs" \
+    -power_grid_library "$techonly_pg_lib $stdcell_pg_libs $macro_pg_libs" \
     -enable_rlrp_analysis       true \
     -verbosity true
 
