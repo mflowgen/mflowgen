@@ -5,11 +5,7 @@ set clock_period $::env(clock_period)
 set power_analysis_dir "./static_power_analysis_results"
 
 # First, import the design
-read_lib -lef inputs/adk/rtk-tech.lef [glob inputs/adk/stdcells*.lef] [glob inputs/*.lef] 
-read_view_definition inputs/innovus-foundation-flow/view_definition.tcl
-read_verilog [glob inputs/*.v]
-set_top_module $design_name -ignore_undefined_cell
-read_def [glob inputs/*.def.gz]
+read_design -physical_data inputs/design.checkpoint/save.enc.dat $design_name
 
 # Read in power intent
 #read_power_domain -cpf inputs/design.cpf

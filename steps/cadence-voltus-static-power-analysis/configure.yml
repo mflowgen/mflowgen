@@ -13,12 +13,8 @@ name: cadence-voltus-static-power-analysis
 
 inputs:
   - adk
-  - design.lef
-  - design.vcs.pg.v
-  - design.def.gz
+  - design.checkpoint
   - design.spef.gz
-  - design.sdc
-  - innovus-foundation-flow
 
 outputs:
   - static_power_analysis_results

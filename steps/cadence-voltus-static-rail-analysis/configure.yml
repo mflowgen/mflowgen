@@ -13,12 +13,8 @@ name: cadence-voltus-static-rail-analysis
 
 inputs:
   - adk
-  - design.lef
-  - design.vcs.pg.v
-  - design.def.gz
-  - design.sdc
+  - design.checkpoint
   - static_power_analysis_results
-  - innovus-foundation-flow
 
 #-------------------------------------------------------------------------
 # Commands
