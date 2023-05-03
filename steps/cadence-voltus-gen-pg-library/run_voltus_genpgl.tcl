@@ -8,9 +8,6 @@ set myLefLayerMap inputs/adk/pdk-lefdef.layermap
 
 set_multi_cpu_usage -localCpu 8
 
-# LefDef map is optional
-#set myLefLayerMap 12lp_11M_3Mx_4Cx_2Kx_2Gx_LB.lefdef.map
-
 read_lib -lef inputs/adk/rtk-tech.lef [glob inputs/adk/stdcells*.lef] inputs/design.lef
 
 set_pg_library_mode \
@@ -28,8 +25,6 @@ set_pg_library_mode \
   -ground_pins {VSS GND} \
   -enable_distributed_processing true
   
-  #-lef_layermap $myLefLayerMap \
-
 set_advanced_pg_library_mode \
   -enable_subconductor_layers true \
   -verbosity true
