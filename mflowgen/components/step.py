@@ -115,13 +115,13 @@ class Step:
 
     # Make sure that test specifications are valid
 
-    test_args = ['test_node', 'default', 'attach_points']
+    test_args = ['test_node', 'default', 'attach_points', 'description']
     attach_points = ['INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
                      'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
     if 'tests' in data.keys():
-      assert type( data['tests'] ) == dict, f"{data['tests']}"
-      for test_name, test in data['tests'].items():
-        assert type( test ) == dict, f"{test}"
+      assert type( data['tests'] ) == list
+      for test in data['tests']:
+        assert type( test ) == dict
         # Check that there are no invalid kwargs for each test
         for arg in test:
           assert arg in test_args, \
