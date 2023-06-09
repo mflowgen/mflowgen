@@ -113,6 +113,26 @@ class Step:
             f = o.values()[0]
             data['outputs'][idx] = { os.path.basename( f ) : f }
 
+    # Make sure that test specifications are valid
+
+    test_args = ['test_node', 'default', 'attach_points']
+    attach_points = ['INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
+                     'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
+    if 'tests' in data.keys():
+      assert type( data['tests'] ) == dict, f"{data['tests']}"
+      for test_name, test in data['tests'].items():
+        assert type( test ) == dict, f"{test}"
+        # Check that there are no invalid kwargs for each test
+        for arg in test:
+          assert arg in test_args, \
+            f"{arg} isn't a valid test argument. Must be one of {test_args}."
+        # Check that the attach points for each test are valid
+        assert 'attach_points' in test, 'must specify attach points for test'
+        for point in test['attach_points']:
+          assert point in attach_points, \
+            f"{point} is not a valid attach point. Must be one of {attach_points}"
+      
+
     # Save additional metadata aside from the YAML data
     #
     # - Step directory -- we copy this when we instance a step in a build
