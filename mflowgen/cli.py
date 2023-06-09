@@ -10,6 +10,7 @@
 #     --demo            --  Generate a demo design
 #     --design   string --  Path to design directory with build graph
 #     --update          --  Re-read the graph and update the build
+#     --test            --  Automatically attach tests to graph
 #     --backend  string --  Backend build system: make, ninja
 #
 # mflowgen stash (Stash-related options)
@@ -68,6 +69,7 @@ def parse_cmdline():
   p.add_argument(       "--demo",     action="store_true"          )
   p.add_argument(       "--design"                                 )
   p.add_argument(       "--update",   action="store_true"          )
+  p.add_argument(       "--test",     action="store_true"          )
   p.add_argument(       "--subgraph", action="store_true"          )
   p.add_argument(       "--backend",  default="make",
                                       choices=("make", "ninja")    )
@@ -143,6 +145,7 @@ def main():
       help_    = opts.help,
       design   = opts.design,
       update   = opts.update,
+      test     = opts.test,
       subgraph = opts.subgraph,
       backend  = opts.backend,
     )

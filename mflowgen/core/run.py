@@ -133,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, subgraph=False, backend='make' ):
+  def launch( s, help_, design, update=False, test=False, subgraph=False, backend='make' ):
 
     # Check that this design directory exists
 
@@ -142,7 +142,7 @@ class RunHandler:
                                'unless using --update or --demo' )
       sys.exit( 1 )
 
-    s.launch_run( design, update, subgraph, backend )
+    s.launch_run( design, update, test, subgraph, backend )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -151,7 +151,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, subgraph, backend ):
+  def launch_run( s, design, update, test, subgraph, backend ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -201,6 +201,10 @@ class RunHandler:
 
     if len(g.all_outputs()) > 0:
       g.generate_output_step()
+
+    # Automatically connect any tests supplied by nodes in the graph
+    if test == True:
+      g.add_tests()
 
     # Generate the build files (e.g., Makefile) for the selected backend
     # build system
