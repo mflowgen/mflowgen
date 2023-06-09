@@ -577,6 +577,12 @@ class Step:
       return s._config['debug']
     else:
       return []
+  
+  def get_tests( s ):
+    if 'tests' in s._config.keys():
+      return s._config['tests']
+    else:
+      return []
 
   def dump_yaml( s, build_dir ):
 
