@@ -879,3 +879,54 @@ ranksep=0.8;
     s.add_step( output_step )
     for output_name, int_node_output in s._outputs.items():
       s.connect( int_node_output, output_step.i( output_name ) )
+
+#-----------------------------------------------------------------------
+# Automatic Test Connector
+#-----------------------------------------------------------------------
+
+# Iterates through all steps in the graph and returns all tests in a 
+# dictionary of lists of test dictionaries
+# tests[step name][test_idx][test_attribute]
+
+  def all_tests( s ):
+    tests = {}
+    for step_name in s.all_steps():
+      tests[step_name] = s.get_step(step_name).get_tests()
+  
+    return tests
+  
+  
+  def add_tests( s ):
+    # Just put this map of attach points to actual step names here for now.
+    # In final implementation, each node will contain a step_type label
+    # and this function will use those labels to know where to attach tests.
+    attach_point_map = {
+      'INIT': 'cadence-innovus-init',
+      'POWER': 'cadence-innovus-power',
+      'PLACE': 'cadence-innovus-place',
+      'CTS': 'cadence-innovus-cts',
+      'POSTCTS_HOLD': 'cadence-innovus-postcts-hold',
+      'ROUTE': 'cadence-innovus-route',
+      'POSTROUTE': 'cadence-innovus-postroute',
+      'POSTROUTE_HOLD': 'cadence-innovus-postroute-hold',
+      'SIGNOFF': 'cadence-innovus-signoff'
+    }
+    
+    tests = s.all_tests()
+    adk = s.get_adk_step()
+    
+    # Add each test at the specified attach points
+    for step_name, tests in tests.items():
+      for test in tests:
+        clone = False
+        for attach_point in test['attach_points']:
+          flow_step = s.get_step(attach_point_map[attach_point])
+          # Create as many clones of the test node as needed
+          # to connect to all test points
+          test_step = Step( test['test_node'], default=test['default'] )
+          test_step.set_name(f"TEST-{step_name}-AT-{attach_point}")
+          s.add_step(test_step)
+          # Connect adk to test
+          s.connect_by_name(adk, test_step)
+          # Connect specified attach_point step to test
+          s.connect_by_name(flow_step, test_step)
