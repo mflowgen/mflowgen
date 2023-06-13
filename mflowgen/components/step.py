@@ -594,6 +594,12 @@ class Step:
       return s._config['tests']
     else:
       return []
+  
+  def get_attach_point_tags( s ):
+    if 'attach_point_tags' in s._config.keys():
+      return s._config['attach_point_tags']
+    else:
+      return []
 
   def dump_yaml( s, build_dir ):
 
