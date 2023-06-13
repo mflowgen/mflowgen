@@ -913,13 +913,12 @@ ranksep=0.8;
     # Add each test at the specified attach points
     for step_name, tests in tests.items():
       for test in tests:
-        clone = False
         for attach_point in test['attach_points']:
           for flow_step in attach_point_map[attach_point]:
             # Create as many clones of the test node as needed
             # to connect to all test points
             test_step = Step( test['test_node'], default=test['default'] )
-            test_step.set_name(f"TEST-{step_name}-AT-{attach_point}")
+            test_step.set_name(f"TEST-{test['description']}-test-{step_name}-AT-{attach_point}")
             s.add_step(test_step)
             # Connect adk to test
             s.connect_by_name(adk, test_step)
