@@ -7,6 +7,8 @@
 
 name: cadence-innovus-postroute_hold
 
+attach_point_tags: POSTROUTE_HOLD
+
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
