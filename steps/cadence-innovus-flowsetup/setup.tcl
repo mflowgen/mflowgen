@@ -74,15 +74,25 @@ source $vars(adk_dir)/adk.tcl
 
 set vars(library_sets)        "libs_typical"
 
-set vars(libs_typical,timing) [join "
-                                $vars(adk_dir)/stdcells.lib
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
-                                [lsort [glob -nocomplain inputs/*tt*.lib]]
-                                [lsort [glob -nocomplain inputs/*TT*.lib]]
-                              "]
+set list_libs_tt \
+    [join "
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
+        [lsort [glob -nocomplain $vars(adk_dir)/*-typical*.lib]]
+        [lsort [glob -nocomplain inputs/*tt*.lib]]
+        [lsort [glob -nocomplain inputs/*TT*.lib]]
+    "]
+
+if {[llength $list_libs_tt] > 0} {
+    set vars(libs_typical,timing) $list_libs_tt
+    puts "INFO: Found typical-typical libraries $vars(libs_typical,timing)"
+    foreach L $vars(libs_typical,timing) { puts "L_TT    $L" }
+} else {
+    puts "ERROR: No typical-typical library is found in ADK nor inputs"
+}
 
 # The best case is:
 #
@@ -90,18 +100,20 @@ set vars(libs_typical,timing) [join "
 # - Voltage: highest
 # - Temperature: highest (temperature inversion at 28nm and below)
 
-if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
-  set vars(libs_bc,timing)    [join "
-                                $vars(adk_dir)/stdcells-bc.lib
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-bc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-bc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-bc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/iocells-bc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
-                                [lsort [glob -nocomplain inputs/*ff*.lib]]
-                                [lsort [glob -nocomplain inputs/*FF*.lib]]
-                              "]
-  lappend vars(library_sets)  "libs_bc"
+set list_libs_bc \
+    [join "
+        [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
+        [lsort [glob -nocomplain inputs/*ff*.lib]]
+        [lsort [glob -nocomplain inputs/*FF*.lib]]
+    "]
+
+if {[llength $list_libs_bc] > 0} {
+    set vars(libs_bc,timing) $list_libs_bc
+    lappend vars(library_sets)  "libs_bc"
+    puts "INFO: Found fast-fast libraries $vars(libs_bc,timing)"
+    foreach L $vars(libs_bc,timing) { puts "L_FF    $L" }
+} else {
+    puts "WARNING: No fast-fast library is found in ADK nor inputs"
 }
 
 # The worst case is:
@@ -110,17 +122,20 @@ if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
 # - Voltage: lowest
 # - Temperature: lowest (temperature inversion at 28nm and below)
 
-if {[file exists $vars(adk_dir)/stdcells-wc.lib]} {
-  set vars(libs_wc,timing)    [join "
-                                $vars(adk_dir)/stdcells-wc.lib
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-lvt-wc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-ulvt-wc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm-wc.lib]]
-                                [lsort [glob -nocomplain $vars(adk_dir)/iocells-wc.lib]]
-                                [lsort [glob -nocomplain inputs/*ss*.lib]]
-                                [lsort [glob -nocomplain inputs/*SS*.lib]]
-                              "]
-  lappend vars(library_sets)  "libs_wc"
+set list_libs_wc \
+    [join "
+        [lsort [glob -nocomplain $vars(adk_dir)/*-wc*.lib]]
+        [lsort [glob -nocomplain inputs/*ss*.lib]]
+        [lsort [glob -nocomplain inputs/*SS*.lib]]
+    "]
+
+if {[llength $list_libs_wc] > 0} {
+    set vars(libs_wc,timing) $list_libs_wc
+    lappend vars(library_sets)  "libs_wc"
+    puts "INFO: Found slow-slow libraries $vars(libs_wc,timing)"
+    foreach L $vars(libs_wc,timing) { puts "L_SS    $L" }
+} else {
+    puts "WARNING: No slow-slow library is found in ADK nor inputs"
 }
 
 set vars(lef_files) [join "
