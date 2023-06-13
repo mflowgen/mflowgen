@@ -118,6 +118,17 @@ class Step:
     test_args = ['test_node', 'default', 'attach_points', 'description']
     attach_points = ['INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
                      'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
+
+    if 'attach_point_tags' in data.keys():
+      # If attach_point_tags is a string, interpet as space-separated list
+      if type( data['attach_point_tags'] ) == str:
+        data['attach_point_tags'] = data['attach_point_tags'].split()
+      assert type( data['attach_point_tags'] ), \
+        'attach_point_tags must be YAML list or string'
+      for tag in data['attach_point_tags']:
+        assert tag in attach_points, \
+          f"{tag} is not a valid attach point tag. Must be one of {attach_points}."
+
     if 'tests' in data.keys():
       assert type( data['tests'] ) == list
       for test in data['tests']:
