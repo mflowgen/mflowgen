@@ -35,7 +35,7 @@ commands:
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report
-  - ln -sf ../_merged.v.sp design.schematic.spi
+  - ln -sf ../_merged.lvs.v.sp design.schematic.spi
   - ln -sf ../merged.lvs.v design_merged.lvs.v
 
 #-------------------------------------------------------------------------
