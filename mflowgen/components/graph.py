@@ -914,6 +914,10 @@ ranksep=0.8;
     for step_name, tests in tests.items():
       for test in tests:
         for attach_point in test['attach_points']:
+          assert attach_point in attach_point_map, \
+            f"Test {test['description']} from step {step_name}, specifies " \
+            f"attach point {attach_point}, but no such attach point tag " \
+            f"exists in graph."
           for flow_step in attach_point_map[attach_point]:
             # Create as many clones of the test node as needed
             # to connect to all test points
