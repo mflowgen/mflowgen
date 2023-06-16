@@ -88,7 +88,7 @@ set list_libs_tt \
 
 if {[llength $list_libs_tt] > 0} {
     set vars(libs_typical,timing) $list_libs_tt
-    puts "INFO: Found typical-typical libraries $vars(libs_typical,timing)"
+    puts "INFO: Found typical-typical libraries:"
     foreach L $vars(libs_typical,timing) { puts "L_TT    $L" }
 } else {
     puts "ERROR: No typical-typical library is found in ADK nor inputs"
@@ -110,7 +110,7 @@ set list_libs_bc \
 if {[llength $list_libs_bc] > 0} {
     set vars(libs_bc,timing) $list_libs_bc
     lappend vars(library_sets)  "libs_bc"
-    puts "INFO: Found fast-fast libraries $vars(libs_bc,timing)"
+    puts "INFO: Found fast-fast libraries:"
     foreach L $vars(libs_bc,timing) { puts "L_FF    $L" }
 } else {
     puts "WARNING: No fast-fast library is found in ADK nor inputs"
@@ -132,7 +132,7 @@ set list_libs_wc \
 if {[llength $list_libs_wc] > 0} {
     set vars(libs_wc,timing) $list_libs_wc
     lappend vars(library_sets)  "libs_wc"
-    puts "INFO: Found slow-slow libraries $vars(libs_wc,timing)"
+    puts "INFO: Found slow-slow libraries:"
     foreach L $vars(libs_wc,timing) { puts "L_SS    $L" }
 } else {
     puts "WARNING: No slow-slow library is found in ADK nor inputs"
@@ -140,7 +140,7 @@ if {[llength $list_libs_wc] > 0} {
 
 set vars(lef_files) [join "
                       $vars(adk_dir)/rtk-tech.lef
-                      $vars(adk_dir)/stdcells.lef
+                      [lsort [glob -nocomplain $vars(adk_dir)/stdcells.lef]]
                       [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lef]]
                       [lsort [glob -nocomplain $vars(adk_dir)/*.lef]]
                       [lsort [glob -nocomplain inputs/*.lef]]
@@ -609,6 +609,9 @@ if { $::env(express_flow) } {
 #  set vars(signoff,time_design_setup,skip) true
 #  set vars(signoff,time_design_hold,skip) true
 }
+
+# Tell Innovus not to use the cells defined in ADK
+set vars(dont_use_list) $ADK_DONT_USE_CELL_LIST
 
 # Allows user to override any of the defaults in this file
 if [file exists inputs/setup.tcl] {
