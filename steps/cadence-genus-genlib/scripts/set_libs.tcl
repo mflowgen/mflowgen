@@ -28,7 +28,7 @@ if {[llength $list_libs_tt] > 0} {
     puts "INFO: Found typical-typical libraries:"
     foreach L $vars(libs_typical,timing) { echo "L_TT    $L" }
 } else {
-    puts "ERROR: No typical-typical library is found in ADK nor inputs"
+    puts "WARNING: No typical-typical library is found in ADK nor inputs"
 }
 
 #-------------------------------------------------------------------------
