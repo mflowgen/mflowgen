@@ -610,9 +610,6 @@ if { $::env(express_flow) } {
 #  set vars(signoff,time_design_hold,skip) true
 }
 
-# Tell Innovus not to use the cells defined in ADK
-set vars(dont_use_list) $ADK_DONT_USE_CELL_LIST
-
 # Allows user to override any of the defaults in this file
 if [file exists inputs/setup.tcl] {
   source inputs/setup.tcl
