@@ -38,7 +38,9 @@ commands:
 
 parameters:
   order:
+    - pre-init.tcl
     - main.tcl
+    - dont-use.tcl
     - quality-of-life.tcl
     - floorplan.tcl
     - add-endcaps-welltaps.tcl
