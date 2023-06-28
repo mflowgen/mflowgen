@@ -56,6 +56,6 @@ postconditions:
 
   # Basic error checking
 
-  - assert 'error' not in File( 'logs/genus.log' )
+  - assert [x for x in File( 'logs/genus.log' ) if 'error' in x.lower() and not 'puts' in x and not 'echo' in x]
   - assert 'Unresolved references' not in File( 'logs/genus.log' )
   - assert 'Unable to resolve' not in File( 'logs/genus.log' )

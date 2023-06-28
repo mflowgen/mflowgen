@@ -87,7 +87,7 @@ postconditions:
   # Basic error checking
 
   - assert 'Cannot resolve reference' not in File( 'logs/genus.log' )
-  - assert 'Error   :' not in File( 'logs/genus.log' )
+  - assert [x for x in File( 'logs/genus.log' ) if 'error' in x.lower() and not 'puts' in x and not 'echo' in x]
 
   # Sanity check that there is a clock in the constraints
 
