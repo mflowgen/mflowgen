@@ -6,9 +6,6 @@
 # Author : Christopher Torng
 # Date   : March 26, 2018
 
-streamOut $vars(results_dir)/$vars(design).gds.gz \
-    -units 1000 \
-    -mapFile $vars(gds_layer_map)
 
 set merge_files \
     [concat \
@@ -16,9 +13,34 @@ set merge_files \
         [lsort [glob -nocomplain inputs/*.gds*]] \
     ]
 
-streamOut $vars(results_dir)/$vars(design)-merged.gds \
-    -mapFile $vars(gds_layer_map) \
-    -uniquifyCellNames \
-    -merge $merge_files
-               
+if { [info exists ADK_DBU_PRECISION] } { 
+    if { $ADK_DBU_PRECISION == "default" } {
+        streamOut $vars(results_dir)/$vars(design).gds.gz \
+            -mapFile $vars(gds_layer_map)
 
+        streamOut $vars(results_dir)/$vars(design)-merged.gds \
+            -mapFile $vars(gds_layer_map) \
+            -uniquifyCellNames \
+            -merge $merge_files
+    } else {
+        streamOut $vars(results_dir)/$vars(design).gds.gz \
+            -units $ADK_DBU_PRECISION \
+            -mapFile $vars(gds_layer_map)
+
+        streamOut $vars(results_dir)/$vars(design)-merged.gds \
+            -units $ADK_DBU_PRECISION \
+            -mapFile $vars(gds_layer_map) \
+            -uniquifyCellNames \
+            -merge $merge_files
+    }
+} else {
+    streamOut $vars(results_dir)/$vars(design).gds.gz \
+        -units 1000 \
+        -mapFile $vars(gds_layer_map)
+
+    streamOut $vars(results_dir)/$vars(design)-merged.gds \
+        -units 1000 \
+        -mapFile $vars(gds_layer_map) \
+        -uniquifyCellNames \
+        -merge $merge_files
+}
