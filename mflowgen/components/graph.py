@@ -661,7 +661,7 @@ ranksep=0.8;
 
       node_cfg           = {}
       node_cfg['dot_id'] = dot_format_fix( step_name )
-      node_cfg['name']   = '\n' + step_name + '\n\n'
+      node_cfg['name']   = step_name
       node_cfg['i']      = '{ ' + ' | '.join( i_port_strs ) + ' }'
       node_cfg['o']      = '{ ' + ' | '.join( o_port_strs ) + ' }'
 
