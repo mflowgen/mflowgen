@@ -187,6 +187,11 @@ class RunHandler:
 
     g = construct.construct()
 
+    # Add output targets node if the graph specifies outputs
+
+    if len(g.all_outputs()) > 0:
+      g.generate_output_step()
+
     # Generate the build files (e.g., Makefile) for the selected backend
     # build system
 
