@@ -20,23 +20,27 @@ class Step:
     # If this is a default step, then we use the top-level steps directory
 
     s._config = {}
-
-    if default:
-      yaml_path = '/'.join([
-        get_top_dir(),
-        'steps',
-        step_path,
-        'configure.yml'
-      ])
+    # If step_path is a dict, it directly defines the step config
+    # instead of using a YAML file
+    if type(step_path) == dict:
+      data = step_path
     else:
-      yaml_path = '/'.join([
-        step_path,
-        'configure.yml'
-      ])
+      if default:
+        yaml_path = '/'.join([
+          get_top_dir(),
+          'steps',
+          step_path,
+          'configure.yml'
+        ])
+      else:
+        yaml_path = '/'.join([
+          step_path,
+          'configure.yml'
+        ])
 
-    # Read the YAML data
+      # Read the YAML data
 
-    data = read_yaml( yaml_path )
+      data = read_yaml( yaml_path )
 
     # Check that this is a valid step configuration
 
@@ -115,10 +119,16 @@ class Step:
     # - YAML name      -- used to generate a parameterized YAML in a build
     #
 
-    s.step_dir = \
-      os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
+    # placeholders for now
+    if type(step_path) == dict:
+      print("not saving metadata")
+      s.step_dir = '.'
+      data['source'] = 'construct.py'
+    else:
+      s.step_dir = \
+        os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
 
-    data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
+      data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
 
     # Save the config
 

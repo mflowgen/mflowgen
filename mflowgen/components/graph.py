@@ -805,3 +805,23 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
+  
+  #-----------------------------------------------------------------------
+  # Output node generation for hierarchical support
+  #-----------------------------------------------------------------------
+
+  def generate_output_step( s ):
+    output_step_config = {}
+    graph_output_names = list(s._outputs.keys())
+    # Output step simply gathers together all the outputs
+    # from other steps in the graph.
+    output_step_config['inputs'] = graph_output_names
+    output_step_config['outputs'] = graph_output_names
+    output_step_config['name'] = 'outputs'
+    output_step_config['commands'] = ['ln -sf inputs outputs']
+    output_step = Step( output_step_config )
+
+    # Now that we've created the step, add it to the graph and connect
+    s.add_step( output_step )
+    for output_name, int_node_output in s._outputs.items():
+      s.connect( int_node_output, output_step.i( output_name ) )
