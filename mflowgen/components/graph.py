@@ -818,7 +818,9 @@ ranksep=0.8;
     output_step_config['inputs'] = graph_output_names
     output_step_config['outputs'] = graph_output_names
     output_step_config['name'] = 'outputs'
-    output_step_config['commands'] = ['ln -sf inputs outputs']
+    output_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    for output_name in s._outputs:
+      output_step_config['commands'].append(f"ln -sf ../inputs/{output_name} .")
     output_step = Step( output_step_config )
 
     # Now that we've created the step, add it to the graph and connect
