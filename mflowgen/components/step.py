@@ -119,11 +119,8 @@ class Step:
     # - YAML name      -- used to generate a parameterized YAML in a build
     #
 
-    # placeholders for now
     if type(step_path) == dict:
-      print("not saving metadata")
-      s.step_dir = '.'
-      data['source'] = 'construct.py'
+      data['source'] = 'auto-generated'
     else:
       s.step_dir = \
         os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
