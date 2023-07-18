@@ -19,6 +19,8 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
+    s._outputs = {}
+    s._output_steps = set()
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -127,6 +129,31 @@ class Graph:
       return s.sort_edges(s._edges_o[ step_name ])
     except KeyError:
       return []
+
+  def add_output( s, output_step, output_file, name ):
+    """Makes the output of a step in the graph into an output of the full
+    graph for when the graph is used as a subgraph in a hierarchical flow
+
+    Args:
+      output_step: Handle of step where graph output comes from
+      output_file: Name of output_step's output that we want to make a graph output
+      name: Name to assign to the graph-level output
+    """
+    assert name not in s._outputs.keys(), \
+      f"add_output -- Duplicate output \"{name}\"."
+    s._outputs[ name ] = output_step.o( output_file )
+    s._output_steps.add(output_step)
+    
+  def get_output( s, output_name ):
+    """Gets the output handle object with the given graph output name.
+
+    Args:
+      output_name: A string representing the name of the output assigned in from :py:meth:`Graph.add_output`
+    """
+    return s._outputs[ output_name ]
+  
+  def all_outputs( s ):
+    return sorted( s._outputs.keys() )
 
   # Quality-of-life utility function
 
