@@ -35,8 +35,9 @@ class RunHandler:
   #   - Read from the .mflowgen.yml metadata in the design directory
   #   - If it does not exist, then use "construct.py" as default
   #
-
-  def find_construct_path( s, design, update ):
+  
+  @staticmethod
+  def find_construct_path( design, update ):
 
     # Check for --update first
 
