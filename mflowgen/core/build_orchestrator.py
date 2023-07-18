@@ -357,7 +357,14 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
     # Get step directories
 
     for step_name in s.order:
-      s.step_dirs[ step_name ] = s.g.get_step( step_name ).get_dir()
+      try:
+        step_dir = s.g.get_step( step_name ).get_dir()
+      except AttributeError:
+        # If it's an auto-generated step that doesn't have a step_dir,
+        # we just create one in the build dir's metadata directory
+        step_dir = s.metadata_dir + '/' + step_name
+        os.mkdir( step_dir )
+      s.step_dirs[ step_name ] = step_dir 
 
     # Dump metadata about build vars and local connectivity to all steps
 
