@@ -58,9 +58,15 @@ class Subgraph(Step):
     data['outputs'] = g.all_outputs()
     data['commands'] = [ \
       f"mflowgen run --design {construct_path}",
-      'make outputs'
+      'make outputs',
+      'mkdir -p outputs',
+      'cd outputs',
+      'output_dir=$(find ../ -type d -regex "^../[0-9]+-outputs/outputs")'
     ]
 
+    for output in g.all_outputs():
+      data['commands'].append(f"ln -sf $(output_dir)/{output} .")
+    
     super().__init__(data)
 
   #-----------------------------------------------------------------------
