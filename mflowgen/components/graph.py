@@ -229,7 +229,7 @@ class Graph:
 
     # Get the step (in case the user provided step names instead)
 
-    if type( src ) != Step:
+    if (type( src ) != Step) and not issubclass( type( src ), Step ):
       src_step = s.get_step( src )
     else:
       src_step = src
@@ -238,7 +238,7 @@ class Graph:
       'connect_by_name -- ' \
       'Step "{}" not found in graph'.format( src_step_name )
 
-    if type( dst ) != Step:
+    if (type( dst ) != Step) and not issubclass( type( dst ), Step ):
       dst_step = s.get_step( dst )
     else:
       dst_step = dst
