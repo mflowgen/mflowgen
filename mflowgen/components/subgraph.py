@@ -18,20 +18,20 @@ from mflowgen.core.run import RunHandler as rh
 class Subgraph(Step):
 
   def __init__( s, graph_path, design_name ):
-
-    # Get the YAML file path
-
-    construct_path = rh.find_construct_path( graph_path, False ) 
     
+    # Get the construct.py file path
+
+    construct_path = rh.find_construct_path( graph_path, False )
+
     # Import the graph for this design (copied from RunHandler)
 
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
-    sys.path.append( c_dirname )
-
+    mod_spec = importlib.util.spec_from_file_location(c_basename, construct_path)
+    subgraph_construct_mod = importlib.util.module_from_spec(mod_spec)
     try:
-      construct = importlib.import_module( c_basename )
+      mod_spec.loader.exec_module(subgraph_construct_mod)
     except ModuleNotFoundError:
       print()
       print( bold( 'Error:' ), 'Could not open construct script at',
@@ -40,7 +40,7 @@ class Subgraph(Step):
       sys.exit( 1 )
 
     try:
-      construct.construct
+      subgraph_construct_mod.construct
     except AttributeError:
       print()
       print( bold( 'Error:' ), 'No module named "construct" in',
@@ -49,8 +49,7 @@ class Subgraph(Step):
       sys.exit( 1 )
 
     # Construct the graph
-
-    g = construct.construct()
+    g = subgraph_construct_mod.construct()
 
     # Generate step data
 
