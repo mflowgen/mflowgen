@@ -65,7 +65,7 @@ class Subgraph(Step):
     ]
 
     for output in g.all_outputs():
-      data['commands'].append(f"ln -sf $(output_dir)/{output} .")
+      data['commands'].append(f"ln -sf $output_dir/{output} .")
     
     super().__init__(data)
 
