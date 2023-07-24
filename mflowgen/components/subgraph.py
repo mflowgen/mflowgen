@@ -49,13 +49,13 @@ class Subgraph(Step):
       sys.exit( 1 )
 
     # Construct the graph
-    g = subgraph_construct_mod.construct()
+    s._graph = subgraph_construct_mod.construct()
 
     # Generate step data
 
     data = {}
     data['name'] = design_name
-    data['outputs'] = g.all_outputs()
+    data['outputs'] = s._graph.all_outputs()
     data['commands'] = [ \
       f"mflowgen run --design {construct_path}",
       'make outputs',
@@ -64,10 +64,18 @@ class Subgraph(Step):
       'output_dir=$(find ../ -type d -regex "^../[0-9]+-outputs/outputs")'
     ]
 
-    for output in g.all_outputs():
+    for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
     
     super().__init__(data)
+  
+  #-----------------------------------------------------------------------
+  # get_graph
+  #-----------------------------------------------------------------------
+
+  # Returns underlying graph object used to create Subgraph Step.
+  def get_graph( s ):
+    return s._graph
 
   #-----------------------------------------------------------------------
   # Clone
