@@ -67,7 +67,7 @@ class Subgraph(Step):
     data['postconditions'] = []
     for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
-      data['postconditions'].append(f"assert File( outputs/{output} )")
+      data['postconditions'].append(f"assert File( 'outputs/{output}' )")
     
     super().__init__(data)
   
