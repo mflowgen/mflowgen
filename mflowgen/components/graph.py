@@ -19,6 +19,7 @@ class Graph:
     s._edges_i = {}
     s._edges_o = {}
     s._steps   = {}
+    s._inputs  = {}
     s._outputs = {}
     s._output_steps = set()
 
@@ -129,6 +130,29 @@ class Graph:
       return s.sort_edges(s._edges_o[ step_name ])
     except KeyError:
       return []
+  
+  def add_input( s, input_step, input_file, name ):
+    """Makes the input of a step in the graph into an input of the full
+    graph for when the graph is used as a subgraph in a hierarchical flow
+
+    Args:
+      input_step: Handle of step where graph input connects to
+      input_file: Name of input_step's input that we want to connect igraph input
+      name: Name to assign to the graph-level input
+    """
+    assert name not in s._inputs.keys(), \
+      f"add_input -- Duplicate input \"{name}\"."
+    s._inputs[ name ] = input_step.i( input_file )
+    
+  def get_input( s, input_name ):
+    """Gets the input handle object with the given graph input name.
+    Args:
+      input_name: A string representing the name of the input assigned in from :py:meth:`Graph.add_input`
+    """
+    return s._inputs[ input_name ]
+  
+  def all_inputs( s ):
+    return sorted( s._inputs.keys() )
 
   def add_output( s, output_step, output_file, name ):
     """Makes the output of a step in the graph into an output of the full
@@ -805,6 +829,26 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
+  #-----------------------------------------------------------------------
+  # Input node generation for hierarchical support
+  #-----------------------------------------------------------------------
+
+  def generate_input_step( s ):
+    input_step_config = {}
+    graph_input_names = list(s._inputs.keys())
+    # Output step simply gathers together all the inputs
+    # from other steps in the graph.
+    input_step_config['outputs'] = graph_input_names
+    input_step_config['name'] = 'inputs'
+    input_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    for input_name in s._inputs:
+      input_step_config['commands'].append(f"ln -sf ../../inputs/{input_name} .")
+    input_step = Step( input_step_config )
+
+    # Now that we've created the step, add it to the graph and connect
+    s.add_step( input_step )
+    for input_name, int_node_input in s._inputs.items():
+      s.connect( input_step.o( input_name ), int_node_input )
   
   #-----------------------------------------------------------------------
   # Output node generation for hierarchical support

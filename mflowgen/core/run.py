@@ -187,6 +187,11 @@ class RunHandler:
     # Construct the graph
 
     g = construct.construct()
+    
+    # Add input node if the graph specifies inputs
+
+    if len(g.all_inputs()) > 0:
+      g.generate_input_step()
 
     # Add output targets node if the graph specifies outputs
 
