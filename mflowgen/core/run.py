@@ -133,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, backend='make' ):
+  def launch( s, help_, design, update=False, subgraph=False, backend='make' ):
 
     # Check that this design directory exists
 
@@ -142,7 +142,7 @@ class RunHandler:
                                'unless using --update or --demo' )
       sys.exit( 1 )
 
-    s.launch_run( design, update, backend )
+    s.launch_run( design, update, subgraph, backend )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -151,7 +151,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, backend ):
+  def launch_run( s, design, update, subgraph, backend ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -188,9 +188,12 @@ class RunHandler:
 
     g = construct.construct()
     
-    # Add input node if the graph specifies inputs
+    # Add input node if the graph is being instantiated as a subgraph
+    # within another graph and it specifies inputs. This enables graphs 
+    # with inputs to work both as subgraphs where a parent graph supplies
+    # inputs and as standalone graphs with no inputs.
 
-    if len(g.all_inputs()) > 0:
+    if subgraph and len(g.all_inputs()) > 0:
       g.generate_input_step()
 
     # Add output targets node if the graph specifies outputs

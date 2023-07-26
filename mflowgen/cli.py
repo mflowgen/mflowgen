@@ -61,15 +61,16 @@ class ArgumentParserWithCustomError(argparse.ArgumentParser):
 
 def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
-  p.add_argument( "-v", "--version", action="store_true"          )
-  p.add_argument( "-h", "--help",    action="store_true"          )
+  p.add_argument( "-v", "--version",  action="store_true"          )
+  p.add_argument( "-h", "--help",     action="store_true"          )
 
   # Run-related arguments
-  p.add_argument(       "--demo",    action="store_true"          )
-  p.add_argument(       "--design"                                )
-  p.add_argument(       "--update",  action="store_true"          )
-  p.add_argument(       "--backend", default="make",
-                                     choices=("make", "ninja")    )
+  p.add_argument(       "--demo",     action="store_true"          )
+  p.add_argument(       "--design"                                 )
+  p.add_argument(       "--update",   action="store_true"          )
+  p.add_argument(       "--subgraph", action="store_true"          )
+  p.add_argument(       "--backend",  default="make",
+                                      choices=("make", "ninja")    )
 
   # Stash-related arguments
   p.add_argument(       "args", type=str, nargs='*' ) # positional
@@ -139,10 +140,11 @@ def main():
   if legacy or opts.args and opts.args[0] == 'run':
     rhandler = RunHandler()
     rhandler.launch(
-      help_   = opts.help,
-      design  = opts.design,
-      update  = opts.update,
-      backend = opts.backend,
+      help_    = opts.help,
+      design   = opts.design,
+      update   = opts.update,
+      subgraph = opts.subgraph,
+      backend  = opts.backend,
     )
     return
 

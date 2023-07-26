@@ -58,7 +58,7 @@ class Subgraph(Step):
     data['inputs'] = s._graph.all_inputs()
     data['outputs'] = s._graph.all_outputs()
     data['commands'] = [ \
-      f"mflowgen run --design {construct_path}",
+      f"mflowgen run --subgraph --design {construct_path}",
       'make outputs',
       'mkdir -p outputs',
       'cd outputs',
