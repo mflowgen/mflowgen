@@ -119,8 +119,11 @@ class Step:
     # - YAML name      -- used to generate a parameterized YAML in a build
     #
 
+    # When we use a dict to define a Step, it should provide its own
+    # source directory. If not, we simply say it's an auto-generated step.
     if type(step_path) == dict:
-      data['source'] = 'auto-generated'
+      if not 'source' in step_path:
+        data['source'] = 'auto-generated'
     else:
       s.step_dir = \
         os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )

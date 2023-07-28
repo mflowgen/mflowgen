@@ -69,6 +69,8 @@ class Subgraph(Step):
     for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
       data['postconditions'].append(f"assert File( 'outputs/{output}' )")
+
+    data['source'] = c_dirname
     
     super().__init__(data)
   
