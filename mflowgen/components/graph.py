@@ -130,18 +130,17 @@ class Graph:
     except KeyError:
       return []
   
-  def add_input( s, input_step, input_file, name ):
+  def add_input( s, name, input_handle ):
     """Makes the input of a step in the graph into an input of the full
     graph for when the graph is used as a subgraph in a hierarchical flow
 
     Args:
-      input_step: Handle of step where graph input connects to
-      input_file: Name of input_step's input that we want to connect igraph input
       name: Name to assign to the graph-level input
+      input_file: Handle of a step's input that we want to connect to graph input
     """
     assert name not in s._inputs.keys(), \
       f"add_input -- Duplicate input \"{name}\"."
-    s._inputs[ name ] = input_step.i( input_file )
+    s._inputs[ name ] = input_handle
     
   def get_input( s, input_name ):
     """Gets the input handle object with the given graph input name.
@@ -153,18 +152,18 @@ class Graph:
   def all_inputs( s ):
     return sorted( s._inputs.keys() )
 
-  def add_output( s, output_step, output_file, name ):
+  def add_output( s, name, output_handle ):
     """Makes the output of a step in the graph into an output of the full
     graph for when the graph is used as a subgraph in a hierarchical flow
 
     Args:
-      output_step: Handle of step where graph output comes from
-      output_file: Name of output_step's output that we want to make a graph output
       name: Name to assign to the graph-level output
+      output_step: Handle of step where graph output comes from
+      output_handle: Handle of a step's output that we want to make a graph output
     """
     assert name not in s._outputs.keys(), \
       f"add_output -- Duplicate output \"{name}\"."
-    s._outputs[ name ] = output_step.o( output_file )
+    s._outputs[ name ] = output_handle
     
   def get_output( s, output_name ):
     """Gets the output handle object with the given graph output name.
