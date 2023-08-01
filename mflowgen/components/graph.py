@@ -21,7 +21,6 @@ class Graph:
     s._steps   = {}
     s._inputs  = {}
     s._outputs = {}
-    s._output_steps = set()
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -166,7 +165,6 @@ class Graph:
     assert name not in s._outputs.keys(), \
       f"add_output -- Duplicate output \"{name}\"."
     s._outputs[ name ] = output_step.o( output_file )
-    s._output_steps.add(output_step)
     
   def get_output( s, output_name ):
     """Gets the output handle object with the given graph output name.
