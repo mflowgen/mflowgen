@@ -130,17 +130,18 @@ class Graph:
     except KeyError:
       return []
   
-  def add_input( s, name, input_handle ):
+  def add_input( s, name, *args ):
     """Makes the input of a step in the graph into an input of the full
     graph for when the graph is used as a subgraph in a hierarchical flow
 
     Args:
       name: Name to assign to the graph-level input
-      input_file: Handle of a step's input that we want to connect to graph input
+      args: Handle(s) of a steps' inputs that we want to connect to graph input
     """
     assert name not in s._inputs.keys(), \
       f"add_input -- Duplicate input \"{name}\"."
-    s._inputs[ name ] = input_handle
+    for input_handle in args:
+      s._inputs[ name ] = input_handle
     
   def get_input( s, input_name ):
     """Gets the input handle object with the given graph input name.
