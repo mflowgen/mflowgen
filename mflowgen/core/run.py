@@ -164,10 +164,11 @@ class RunHandler:
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
-    sys.path.append( c_dirname )
+    mod_spec = importlib.util.spec_from_file_location( c_basename, construct_path )
+    graph_construct_mod = importlib.util.module_from_spec( mod_spec )
 
     try:
-      construct = importlib.import_module( c_basename )
+      mod_spec.loader.exec_module( graph_construct_mod )
     except ModuleNotFoundError:
       print()
       print( bold( 'Error:' ), 'Could not open construct script at',
@@ -176,7 +177,7 @@ class RunHandler:
       sys.exit( 1 )
 
     try:
-      construct.construct
+      graph_construct_mod.construct
     except AttributeError:
       print()
       print( bold( 'Error:' ), 'No module named "construct" in',
@@ -186,7 +187,7 @@ class RunHandler:
 
     # Construct the graph
 
-    g = construct.construct()
+    g = graph_construct_mod.construct()
     
     # Add input node if the graph is being instantiated as a subgraph
     # within another graph and it specifies inputs. This enables graphs 
@@ -216,6 +217,16 @@ class RunHandler:
 
     list_target   = backend + " list"
     status_target = backend + " status"
+    
+    # For all subgraphs in this graph, create step dir and configure them to run
+    for subgraph_step_name in g.all_subgraphs():
+      subgraph_step = g.get_step( subgraph_step_name )
+      subgraph_build_dir = b.get_build_dir( subgraph_step_name )
+      if not os.path.exists( subgraph_build_dir ):
+        os.mkdir( subgraph_build_dir )
+      os.chdir( subgraph_build_dir )
+      s.launch_run( subgraph_step.get_dir(), False, True, backend )
+      os.chdir( '..' )
 
     print( "Targets: run \"" + list_target   + "\" and \""
                              + status_target + "\"" )
