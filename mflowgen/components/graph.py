@@ -7,20 +7,22 @@
 
 import os
 
-from mflowgen.components.step import Step
-from mflowgen.components.edge import Edge
-from mflowgen.utils           import get_top_dir
+from mflowgen.components.step     import Step
+from mflowgen.components.subgraph import Subgraph
+from mflowgen.components.edge     import Edge
+from mflowgen.utils               import get_top_dir
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
 
   def __init__( s ):
 
-    s._edges_i = {}
-    s._edges_o = {}
-    s._steps   = {}
-    s._inputs  = {}
-    s._outputs = {}
+    s._edges_i   = {}
+    s._edges_o   = {}
+    s._steps     = {}
+    s._subgraphs = {}
+    s._inputs    = {}
+    s._outputs   = {}
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -99,6 +101,8 @@ class Graph:
       'add_step -- Duplicate step "{}", ' \
       'if this is intentional, first change the step name'.format( key )
     s._steps[ key ] = step
+    if type(step) == Subgraph:
+      s._subgraphs[ key ] = step
 
   def get_step( s, step_name ):
     """Gets the Step object with the given name.
@@ -110,6 +114,9 @@ class Graph:
 
   def all_steps( s ):
     return sorted( s._steps.keys() )
+
+  def all_subgraphs( s ):
+    return sorted( s._subgraphs.keys() )
 
   # Edges -- incoming and outgoing adjacency lists
   # Sort them for better debuggability / repeatability / causality
@@ -827,6 +834,7 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
+
   #-----------------------------------------------------------------------
   # Input node generation for hierarchical support
   #-----------------------------------------------------------------------
