@@ -124,6 +124,8 @@ class Step:
     if type(step_path) == dict:
       if not 'source' in step_path:
         data['source'] = 'auto-generated'
+      else:
+        s.step_dir = data['source']
     else:
       s.step_dir = \
         os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
