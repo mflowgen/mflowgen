@@ -351,8 +351,13 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
     # Determine unique build IDs and build directories
 
     s.set_unique_build_ids()
-    s.build_dirs = { step_name: build_id + '-' + step_name \
-                       for step_name, build_id in s.build_ids.items() }
+    s.build_dirs = {}
+    s.subgraph_dirs = {}
+    for step_name, build_id in s.build_ids.items():
+      dir_name = build_id + '-' + step_name
+      s.build_dirs[step_name] = dir_name
+      if step_name in s.g.all_subgraphs():
+        s.subgraph_dirs[step_name] = dir_name
 
     # Get step directories
 
@@ -505,7 +510,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
     # Pass useful data to the backend writer
 
-    s.w.save( s.order, s.build_dirs, s.step_dirs )
+    s.w.save( s.order, s.build_dirs, s.step_dirs, s.subgraph_dirs )
 
     # Backend writer prologue
 
