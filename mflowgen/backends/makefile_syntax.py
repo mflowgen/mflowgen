@@ -553,8 +553,9 @@ def make_graph( w ):
 #
 # Write out rules for printing build status
 #
-# - w     : instance of Writer
-# - steps : list of step names to print status for
+# - w         : instance of Writer
+# - steps     : list of step names to print status for
+# - subgraphs : list of subgraph step names to print status for
 #
 
 def make_status( w, steps, subgraphs=[] ):

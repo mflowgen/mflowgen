@@ -20,10 +20,11 @@
 # The status is generated from the dry run commands dumped by the build
 # tool (e.g., make -n).
 #
-#  -h --help     Display this message
-#  -v --verbose  Verbose mode
-#  -b --backend  Build tool (e.g., make)
-#  -s --steps    Comma-separated list of ordered steps (e.g., "2-foo,1-bar")
+#  -h --help       Display this message
+#  -v --verbose    Verbose mode
+#  -b --backend    Build tool (e.g., make)
+#  -s --steps      Comma-separated list of ordered steps (e.g., "2-foo,1-bar")
+#  -sg --subgraphs Comma-separated list of subgraphs (e.g., "3-gcd,4-tile")
 #
 # Author : Christopher Torng
 # Date   : November 3, 2019
