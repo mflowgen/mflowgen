@@ -466,11 +466,12 @@ def make_runtimes( w ):
 # Write out rule to list all steps
 #
 # - w             : instance of Writer
-# - build_dirs    : list of build directories
+# - steps         : list of build directories
 # - debug_targets : dict of debug targets with key (id) and value (target)
+# - subgraphs     : list of subgraph build directories
 #
 
-def make_list( w, build_dirs, debug_targets ):
+def make_list( w, steps, debug_targets, subgraphs ):
 
   # Split the build ID and step name from the build_dir
   #
@@ -483,16 +484,9 @@ def make_list( w, build_dirs, debug_targets ):
   #     ( '4', 'synopsys-dc-synthesis' )
   #
 
-  steps = []
-
-  for _ in sorted( build_dirs.values(), \
-                     key = lambda x: int(x.split('-')[0]) ):
-    tokens = _.split('-')
-    steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
-
-  steps_str = \
-    [ '"{: >3} : {}"'.format(x,y) for x, y in ( steps ) ]
-
+  steps_comma_separated = ','.join( steps )
+  subgraphs_comma_separated = ','.join( subgraphs )
+ 
   generic = [
     '"list      -- List all steps"',
     '"status    -- Print build status for each step"',
@@ -513,13 +507,18 @@ def make_list( w, build_dirs, debug_targets ):
   template_str += 'list:\n'
   template_str += '	{command}\n'
 
+  
+  list_command = get_top_dir() + '/mflowgen/scripts/mflowgen-list' \
+            ' --backend make -s ' + steps_comma_separated
+  if subgraphs:
+    list_command += ' -sg ' + subgraphs_comma_separated
+
   commands = [
     r'echo',
     r'echo Generic Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( generic ),
     r'echo',
-    r'echo Targets: && echo && ' + \
-      r'printf " - %s\\n" ' + ' '.join( steps_str ),
+    list_command,
     r'echo',
     r'echo Debug Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( debug_str ),
