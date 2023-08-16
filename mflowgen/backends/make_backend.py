@@ -32,10 +32,11 @@ class MakeBackend:
 
   # save
 
-  def save( s, order, build_dirs, step_dirs ):
-    s.order      = order
-    s.build_dirs = build_dirs
-    s.step_dirs  = step_dirs
+  def save( s, order, build_dirs, step_dirs, subgraph_dirs ):
+    s.order         = order
+    s.build_dirs    = build_dirs
+    s.step_dirs     = step_dirs
+    s.subgraph_dirs = subgraph_dirs
 
   # gen_header
 
@@ -580,6 +581,6 @@ class MakeBackend:
     s.w.comment( 'Status' )
     s.w.newline()
 
-    make_status( s.w, s.build_dirs.values() )
+    make_status( s.w, s.build_dirs.values(), s.subgraph_dirs.values() )
 
 
