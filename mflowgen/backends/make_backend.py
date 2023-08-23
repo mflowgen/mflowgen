@@ -301,6 +301,50 @@ class MakeBackend:
     #.....................................................................
 
     return targets
+  
+  # gen_step_execute_command_only
+  #
+  # Expected semantics
+  #
+  # - Run the {command}
+  # - Generate the {outputs}
+  # - This rule depends on {deps}
+  #
+  # Expected return
+  #
+  # - Return a list that can pass to another backend call as extra_deps
+  #
+
+  def gen_step_execute_command_only( s, outputs, command, deps, extra_deps, rule_name,
+                                                                         phony=False ):
+
+    all_deps = deps + extra_deps
+
+    rule = rule_name + '-commands-rule'
+    rule = rule.replace( '-', '_' )
+
+    # Stamp all outputs from execute
+
+    outputs = [ stamp( o, '.execstamp.' ) for o in outputs ]
+    # Stamp the build directory
+
+    outputs.insert( 0, rule_name + '/.execstamp' )
+
+    # Rules
+
+    targets = make_execute(
+      w            = s.w,
+      outputs      = outputs,
+      rule         = rule,
+      command      = command,
+      deps         = all_deps,
+      touch_target = not phony,
+    )
+
+    s.w.newline()
+    s.w.newline()
+
+    return targets
 
   # gen_step_collect_outputs_pre
   #

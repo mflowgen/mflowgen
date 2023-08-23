@@ -805,6 +805,9 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
             # Return to top so backends can assume we never changed directory
             'cd ..'
           ])
+          
+          full_name = f"{step_name}-{sg_step}"
+
           # Rule
           #
           # - Run the {command}
@@ -813,16 +816,15 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
           #
 
           rule = {
-            'outputs' : [],
-            'command' : commands,
-            'deps'    : [],
-            'phony'   : True,
+            'outputs'   : [],
+            'command'   : commands,
+            'deps'      : [],
+            'rule_name' : full_name,
+            'phony'     : True,
           }
 
           # Same extra_deps as containing subgraph (directory and inputs)
-          t = s.w.gen_step_execute( extra_deps = extra_deps, **rule )
-
-          full_name = f"{step_name}-{sg_step}"
+          t = s.w.gen_step_execute_command_only( extra_deps = extra_deps, **rule )
 
           backend_outputs[full_name]['execute'] = t
 
