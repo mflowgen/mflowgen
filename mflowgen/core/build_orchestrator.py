@@ -21,6 +21,11 @@ class BuildOrchestrator:
     s.g = graph
     s.w = backend_writer_cls()
 
+    # Store subgraph objects
+    s.sgs = {}
+    for sg in s.g.all_subgraphs():
+      s.sgs[sg] = s.g.get_step(sg).get_graph()
+
     # The 'build' method analyzes the user's step dependency graph in
     # order to populate the rules and high-level dependencies (e.g., this
     # step depends on that step) of the build system graph
@@ -538,6 +543,19 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
       s.w.gen_step_header( step_name )
 
+      # Create entries and headers for subgraph targets, too
+      if step_name in s.sgs:
+        for sg_step in s.sgs[step_name].all_steps():
+          full_name = f"{step_name}-{sg_step}"
+          
+          s.build_system_rules[ full_name ] = {}
+          s.build_system_deps[ full_name ] = {}
+
+          backend_outputs[ full_name ] = {}
+
+          s.w.gen_step_header( full_name )
+      
+
       #...................................................................
       # directory
       #...................................................................
@@ -768,6 +786,57 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['execute'].add(
         ( step_name, 'collect-inputs' )
       )
+      
+      # If the step dir is also a subgraph, generate commands to build
+      # targets within the subgraph
+      if step_name in s.sgs:
+        s.w.gen_step_execute_pre()
+        for sg_step in s.sgs[step_name].all_steps():
+          commands = ' && '.join([  
+            # FIRST set pipefail so we get correct error status at the end
+            'set -o pipefail',
+            # Step banner in big letters
+            get_top_dir() \
+                + '/mflowgen/scripts/mflowgen-letters -c -t ' + step_name,
+            # cd into the subgraph dir
+            'cd ' + build_dir,
+            # Make the specified target within the subgraph
+            'make ' + sg_step,
+            # Return to top so backends can assume we never changed directory
+            'cd ..'
+          ])
+          # Rule
+          #
+          # - Run the {command}
+          # - Generate the {outputs}
+          # - This rule depends on {deps}
+          #
+
+          rule = {
+            'outputs' : [],
+            'command' : commands,
+            'deps'    : [],
+            'phony'   : True,
+          }
+
+          # Same extra_deps as containing subgraph (directory and inputs)
+          t = s.w.gen_step_execute( extra_deps = extra_deps, **rule )
+
+          full_name = f"{step_name}-{sg_step}"
+
+          backend_outputs[full_name]['execute'] = t
+
+          s.build_system_rules[full_name] = rule
+
+          s.build_system_deps[full_name]['execute'] = set()
+          
+          s.build_system_deps[full_name]['execute'].add(
+            ( step_name, 'directory' )
+          )
+
+          s.build_system_deps[full_name]['execute'].add(
+            ( step_name, 'collect-inputs' )
+          )
 
       #...................................................................
       # collect-outputs
@@ -1002,6 +1071,31 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['alias'].add(
         ( step_name, 'post-conditions' )
       )
+      
+      # Aliases for subgraph steps
+      if step_name in s.sgs:
+        for sg_step in s.sgs[step_name].all_steps():
+          full_name = f"{step_name}-{sg_step}"
+          
+          extra_deps = set()
+          
+          for o in backend_outputs[full_name]['execute']:
+            extra_deps.add( o )
+
+          extra_deps = list(extra_deps)
+
+          s.build_system_rules[full_name]['alias'] = []
+          backend_outputs[full_name]['alias'] = []
+
+          rule = {
+            'alias' : full_name,
+            'deps' : []
+          }
+
+          t = s.w.gen_step_alias( extra_deps = extra_deps, **rule )
+          backend_outputs[step_name]['alias'] += t
+
+          s.build_system_rules[step_name]['alias'].append( rule )
 
       #...................................................................
       # debug
