@@ -144,9 +144,15 @@ class MakeBackend:
 
     return [ target ]
   
-  # gen_step_collect_inputs_pre
+  # gen_subgraph_dir
   #
-  # This runs at the very start of generating rules for collecting inputs
+  # Expected semantics
+  #
+  # - Create the {dst}
+  # - Configure {dst} as a build dir for {src}
+  # - Parameterize using the saved YAML in the metadata directory
+  # - This rule depends on {deps}
+  # - {sandbox} does nothing here
   
   def gen_subgraph_directory( s, dst, src, deps, extra_deps, sandbox ):
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )

@@ -430,8 +430,7 @@ endef
 define make-subgraph-dir
        mkdir -p $1
        chmod -R +w $1
-       cd $1
-       mflowgen run --design $2
+       cd $1 && mflowgen run --subgraph --design $2
        touch $3
 endef
 
