@@ -822,8 +822,17 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
             'rule_name' : full_name,
             'phony'     : True,
           }
+      
+          extra_deps = set()
 
-          # Same extra_deps as containing subgraph (directory and inputs)
+          #for o in backend_outputs[step_name]['directory']:
+          #  extra_deps.add( o )
+          for o in backend_outputs[step_name]['collect-inputs']:
+            extra_deps.add( o )
+
+          extra_deps = list( extra_deps )
+
+          # Ensure containing subgraph has inputs provided
           t = s.w.gen_step_execute_command_only( extra_deps = extra_deps, **rule )
 
           backend_outputs[full_name]['execute'] = t
@@ -832,10 +841,6 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
           s.build_system_deps[full_name]['execute'] = set()
           
-          s.build_system_deps[full_name]['execute'].add(
-            ( step_name, 'directory' )
-          )
-
           s.build_system_deps[full_name]['execute'].add(
             ( step_name, 'collect-inputs' )
           )
