@@ -1096,9 +1096,9 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
         }
 
         t = s.w.gen_step_alias( extra_deps = extra_deps, **rule )
-        backend_outputs[step_name]['alias'] += t
+        backend_outputs[full_name]['alias'] += t
 
-        s.build_system_rules[step_name]['alias'].append( rule )
+        s.build_system_rules[full_name]['alias'].append( rule )
         
         # ID-based subgraph step alias
         rule = {
@@ -1107,9 +1107,9 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
         }
 
         t = s.w.gen_step_alias( extra_deps = extra_deps, **rule )
-        backend_outputs[step_name]['alias'] += t
+        backend_outputs[full_name]['alias'] += t
 
-        s.build_system_rules[step_name]['alias'].append( rule )
+        s.build_system_rules[full_name]['alias'].append( rule )
 
       #...................................................................
       # debug
