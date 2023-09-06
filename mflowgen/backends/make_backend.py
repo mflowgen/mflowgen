@@ -12,6 +12,7 @@ import os
 
 from mflowgen.backends.makefile_syntax import Writer as MakeWriter
 from mflowgen.backends.makefile_syntax import make_cpdir, make_symlink
+from mflowgen.backends.makefile_syntax import make_subgraph_dir
 from mflowgen.backends.makefile_syntax import make_execute, make_stamp, make_alias
 from mflowgen.backends.makefile_syntax import make_common_rules, make_clean
 from mflowgen.backends.makefile_syntax import make_diff
@@ -129,6 +130,35 @@ class MakeBackend:
       src     = src,
       deps    = all_deps,
       sandbox = sandbox,
+    )
+
+    #.....................................................................
+    # Built-in toggle for enabling/disabling this rule
+    #.....................................................................
+    # Clean up from the above
+    s.w.write( 'endif' )
+    s.w.newline()
+    #.....................................................................
+
+    s.w.newline()
+
+    return [ target ]
+  
+  # gen_step_collect_inputs_pre
+  #
+  # This runs at the very start of generating rules for collecting inputs
+  
+  def gen_subgraph_directory( s, dst, src, deps, extra_deps, sandbox ):
+    s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
+    s.w.newline() 
+    
+    all_deps = deps + extra_deps
+    
+    target = make_subgraph_dir(
+      w       = s.w,
+      dst     = dst,
+      src     = src,
+      deps    = all_deps,
     )
 
     #.....................................................................

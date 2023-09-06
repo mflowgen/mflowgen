@@ -612,7 +612,10 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       # Use the backend writer to generate the rule, and then grab any
       # backend dependencies
 
-      t = s.w.gen_step_directory( extra_deps = extra_deps, **rule )
+      if step_name in s.sgs:
+        t = s.w.gen_subgraph_directory( extra_deps = extra_deps, **rule )
+      else:
+        t = s.w.gen_step_directory( extra_deps = extra_deps, **rule )
 
       backend_outputs[step_name]['directory'] = t
 
