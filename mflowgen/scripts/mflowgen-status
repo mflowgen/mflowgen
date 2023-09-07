@@ -20,11 +20,10 @@
 # The status is generated from the dry run commands dumped by the build
 # tool (e.g., make -n).
 #
-#  -h --help       Display this message
-#  -v --verbose    Verbose mode
-#  -b --backend    Build tool (e.g., make)
-#  -s --steps      Comma-separated list of ordered steps (e.g., "2-foo,1-bar")
-#  -sg --subgraphs Comma-separated list of subgraphs (e.g., "3-gcd,4-tile")
+#  -h --help     Display this message
+#  -v --verbose  Verbose mode
+#  -b --backend  Build tool (e.g., make)
+#  -s --steps    Comma-separated list of ordered steps (e.g., "2-foo,1-bar")
 #
 # Author : Christopher Torng
 # Date   : November 3, 2019
@@ -51,11 +50,10 @@ class ArgumentParserWithCustomError(argparse.ArgumentParser):
 
 def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
-  p.add_argument( "-v",  "--verbose",   action="store_true" )
-  p.add_argument( "-h",  "--help",      action="store_true" )
-  p.add_argument( "-b",  "--backend",   default="make"      )
-  p.add_argument( "-s",  "--steps",     required=True       )
-  p.add_argument( "-sg", "--subgraphs", required=False      )
+  p.add_argument( "-v", "--verbose", action="store_true" )
+  p.add_argument( "-h", "--help",    action="store_true" )
+  p.add_argument( "-b", "--backend", default="make"      )
+  p.add_argument( "-s", "--steps",   required=True       )
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -87,11 +85,6 @@ def main():
   # commands show that the output stamps need to be updated)
 
   steps = opts.steps.split(',')
-  # If subgraph arg is provided, store them
-  try:
-    subgraphs = opts.subgraphs.split(',')
-  except AttributeError:
-    subgraphs = []
 
   echo_green   = '\033[92m'
   echo_red     = '\033[91m'
@@ -106,28 +99,6 @@ def main():
   for s in steps:
     if any([ re.match( r'.*touch ' + s + '/.postconditions.stamp', l ) for l in lines ]):
       status[s] = build_str
-
-  # Get subgraph statuses
-  subgraph_strs = {}
-  for s in subgraphs:
-    os.chdir( s )
-    process = subprocess.Popen(['make', 'status'],
-               stdout=subprocess.PIPE,
-               stderr=subprocess.PIPE,
-               universal_newlines=True)
-    stdout, stderr = process.communicate()
-    stdout_lines = stdout.split('\n')
-    # Filter out lines that aren't step statuses
-    status_index = stdout_lines.index("Status:")
-    stdout_lines = stdout_lines[status_index+2:]
-    # Filter out trailing lines
-    empty_index = stdout_lines.index("")
-    stdout_lines = stdout_lines[0:empty_index]
-    # Join and indent lines to show hierarchy
-    status_str = '\n  '.join(stdout_lines)
-    status_str = '  ' + status_str
-    subgraph_strs[s] = status_str
-    os.chdir( '..' )
 
   # Check which steps are prebuilt (i.e., have a special '.prebuilt' file)
 
@@ -175,8 +146,6 @@ def main():
       'prebuilt' : prebuilt[step],
     }
     print( template_str.format( **d ) )
-    if step in subgraphs:
-      print(subgraph_strs[step])
 
   print()
 

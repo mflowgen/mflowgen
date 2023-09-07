@@ -525,12 +525,11 @@ def make_runtimes( w ):
 # Write out rule to list all steps
 #
 # - w             : instance of Writer
-# - steps         : list of build directories
+# - build_dirs    : list of build directories
 # - debug_targets : dict of debug targets with key (id) and value (target)
-# - subgraphs     : list of subgraph build directories
 #
 
-def make_list( w, steps, debug_targets, subgraphs ):
+def make_list( w, build_dirs, debug_targets ):
 
   # Split the build ID and step name from the build_dir
   #
@@ -543,9 +542,16 @@ def make_list( w, steps, debug_targets, subgraphs ):
   #     ( '4', 'synopsys-dc-synthesis' )
   #
 
-  steps_comma_separated = ','.join( steps )
-  subgraphs_comma_separated = ','.join( subgraphs )
- 
+  steps = []
+
+  for _ in sorted( build_dirs.values(), \
+                     key = lambda x: int(x.split('-')[0]) ):
+    tokens = _.split('-')
+    steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
+
+  steps_str = \
+    [ '"{: >3} : {}"'.format(x,y) for x, y in ( steps ) ]
+
   generic = [
     '"list      -- List all steps"',
     '"status    -- Print build status for each step"',
@@ -566,18 +572,13 @@ def make_list( w, steps, debug_targets, subgraphs ):
   template_str += 'list:\n'
   template_str += '	{command}\n'
 
-  
-  list_command = get_top_dir() + '/mflowgen/scripts/mflowgen-list' \
-            ' --backend make -s ' + steps_comma_separated
-  if subgraphs:
-    list_command += ' -sg ' + subgraphs_comma_separated
-
   commands = [
     r'echo',
     r'echo Generic Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( generic ),
     r'echo',
-    list_command,
+    r'echo Targets: && echo && ' + \
+      r'printf " - %s\\n" ' + ' '.join( steps_str ),
     r'echo',
     r'echo Debug Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( debug_str ),
@@ -612,15 +613,13 @@ def make_graph( w ):
 #
 # Write out rules for printing build status
 #
-# - w         : instance of Writer
-# - steps     : list of step names to print status for
-# - subgraphs : list of subgraph step names to print status for
+# - w     : instance of Writer
+# - steps : list of step names to print status for
 #
 
-def make_status( w, steps, subgraphs=[] ):
+def make_status( w, steps ):
 
   steps_comma_separated = ','.join( steps )
-  subgraphs_comma_separated = ','.join( subgraphs )
 
   template_str  = '.PHONY: status\n'
   template_str += '\n'
@@ -629,8 +628,6 @@ def make_status( w, steps, subgraphs=[] ):
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
             ' --backend make -s ' + steps_comma_separated
-  if subgraphs:
-    command += ' -sg ' + subgraphs_comma_separated
 
   w.write( template_str.format( command=command ) )
   w.newline()

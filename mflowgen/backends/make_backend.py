@@ -640,7 +640,7 @@ class MakeBackend:
     s.w.comment( 'List' )
     s.w.newline()
 
-    make_list( s.w, s.build_dirs.values(), s.debug_targets, s.subgraph_dirs.values() )
+    make_list( s.w, s.build_dirs, s.debug_targets )
 
     # Graph target
 
@@ -654,6 +654,6 @@ class MakeBackend:
     s.w.comment( 'Status' )
     s.w.newline()
 
-    make_status( s.w, s.build_dirs.values(), s.subgraph_dirs.values() )
+    make_status( s.w, s.build_dirs.values() )
 
 
