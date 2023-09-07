@@ -544,15 +544,15 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.w.gen_step_header( step_name )
 
       # Create entries and headers for subgraph targets, too
+      subgraph_target_names = [f"{step_name}-%", f"{build_id}-%"]
       if step_name in s.sgs:
-        full_name = f"{step_name}-%"
-        
-        s.build_system_rules[ full_name ] = {}
-        s.build_system_deps[ full_name ] = {}
+        for subgraph_target_name in subgraph_target_names:
+          s.build_system_rules[ subgraph_target_name ] = {}
+          s.build_system_deps[ subgraph_target_name ] = {}
 
-        backend_outputs[ full_name ] = {}
+          backend_outputs[ subgraph_target_name ] = {}
 
-        s.w.gen_step_header( full_name )
+          s.w.gen_step_header( subgraph_target_name )
       
 
       #...................................................................
@@ -806,40 +806,36 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
           # Return to top so backends can assume we never changed directory
           'cd ..'
         ])
-        
-        full_name = f"{step_name}-%"
+        for subgraph_target_name in subgraph_target_names:
+          # Rule
+          #
+          # - Run the {command}
+          # - Generate the {outputs}
+          # - This rule depends on {deps}
+          #
 
-        # Rule
-        #
-        # - Run the {command}
-        # - Generate the {outputs}
-        # - This rule depends on {deps}
-        #
+          rule = {
+            'command'   : commands,
+            'deps'      : [],
+            'rule_name' : subgraph_target_name,
+          }
 
-        rule = {
-          'outputs'   : [],
-          'command'   : commands,
-          'deps'      : [],
-          'rule_name' : full_name,
-          'phony'     : True,
-        }
+          # Same extra_deps as containing subgraph (directory and inputs)
+          t = s.w.gen_step_execute_command_only( extra_deps = extra_deps, **rule )
 
-        # Same extra_deps as containing subgraph (directory and inputs)
-        t = s.w.gen_step_execute_command_only( extra_deps = extra_deps, **rule )
+          backend_outputs[subgraph_target_name]['execute'] = t
 
-        backend_outputs[full_name]['execute'] = t
+          s.build_system_rules[subgraph_target_name] = rule
 
-        s.build_system_rules[full_name] = rule
+          s.build_system_deps[subgraph_target_name]['execute'] = set()
+          
+          s.build_system_deps[subgraph_target_name]['execute'].add(
+            ( step_name, 'directory' )
+          )
 
-        s.build_system_deps[full_name]['execute'] = set()
-        
-        s.build_system_deps[full_name]['execute'].add(
-          ( step_name, 'directory' )
-        )
-
-        s.build_system_deps[full_name]['execute'].add(
-          ( step_name, 'collect-inputs' )
-        )
+          s.build_system_deps[subgraph_target_name]['execute'].add(
+            ( step_name, 'collect-inputs' )
+          )
 
       #...................................................................
       # collect-outputs
@@ -1075,42 +1071,6 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
         ( step_name, 'post-conditions' )
       )
       
-      # Aliases for subgraph steps
-      if step_name in s.sgs:
-        full_name = f"{step_name}-%"
-        
-        extra_deps = set()
-        
-        for o in backend_outputs[full_name]['execute']:
-          extra_deps.add( o )
-
-        extra_deps = list(extra_deps)
-
-        s.build_system_rules[full_name]['alias'] = []
-        backend_outputs[full_name]['alias'] = []
-
-        # Name-based subgraph step alias
-        rule = {
-          'alias' : full_name,
-          'deps' : []
-        }
-
-        t = s.w.gen_step_alias( extra_deps = extra_deps, **rule )
-        backend_outputs[full_name]['alias'] += t
-
-        s.build_system_rules[full_name]['alias'].append( rule )
-        
-        # ID-based subgraph step alias
-        rule = {
-          'alias' : build_id + '-%',
-          'deps' : []
-        }
-
-        t = s.w.gen_step_alias( extra_deps = extra_deps, **rule )
-        backend_outputs[full_name]['alias'] += t
-
-        s.build_system_rules[full_name]['alias'].append( rule )
-
       #...................................................................
       # debug
       #...................................................................
