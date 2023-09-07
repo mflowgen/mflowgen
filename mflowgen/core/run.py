@@ -218,16 +218,6 @@ class RunHandler:
     list_target   = backend + " list"
     status_target = backend + " status"
     
-    # For all subgraphs in this graph, create step dir and configure them to run
-    for subgraph_step_name in g.all_subgraphs():
-      subgraph_step = g.get_step( subgraph_step_name )
-      subgraph_build_dir = b.get_build_dir( subgraph_step_name )
-      if not os.path.exists( subgraph_build_dir ):
-        os.mkdir( subgraph_build_dir )
-      os.chdir( subgraph_build_dir )
-      s.launch_run( subgraph_step.get_dir(), False, True, backend )
-      os.chdir( '..' )
-
     print( "Targets: run \"" + list_target   + "\" and \""
                              + status_target + "\"" )
     print()
