@@ -654,6 +654,6 @@ class MakeBackend:
     s.w.comment( 'Status' )
     s.w.newline()
 
-    make_status( s.w, s.build_dirs.values() )
+    make_status( s.w, s.build_dirs.values(), s.subgraph_dirs.values() )
 
 

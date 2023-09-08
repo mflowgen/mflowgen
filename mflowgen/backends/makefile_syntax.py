@@ -615,11 +615,13 @@ def make_graph( w ):
 #
 # - w     : instance of Writer
 # - steps : list of step names to print status for
+# - subgraphs : list of subgraphs in steps
 #
 
-def make_status( w, steps ):
+def make_status( w, steps, subgraphs ):
 
   steps_comma_separated = ','.join( steps )
+  subgraphs_comma_separated = ','.join( subgraphs )
 
   template_str  = '.PHONY: status\n'
   template_str += '\n'
@@ -627,7 +629,8 @@ def make_status( w, steps ):
   template_str += '	{command}\n'
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
-            ' --backend make -s ' + steps_comma_separated
+            ' --backend make -s ' + steps_comma_separated + \
+            ' --subgraphs ' + subgraphs_comma_separated
 
   w.write( template_str.format( command=command ) )
   w.newline()
