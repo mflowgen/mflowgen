@@ -54,7 +54,7 @@ def parse_cmdline():
   p.add_argument( "-h",  "--help",      action="store_true" )
   p.add_argument( "-b",  "--backend",   default="make"      )
   p.add_argument( "-s",  "--steps",     required=True       )
-  p.add_argument( "-sg", "--subgraphs", default=""          ) 
+  p.add_argument( "-g", "--subgraphs", default=""          ) 
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
