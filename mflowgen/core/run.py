@@ -35,8 +35,9 @@ class RunHandler:
   #   - Read from the .mflowgen.yml metadata in the design directory
   #   - If it does not exist, then use "construct.py" as default
   #
-
-  def find_construct_path( s, design, update ):
+  
+  @staticmethod
+  def find_construct_path( design, update ):
 
     # Check for --update first
 
@@ -132,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, backend='make' ):
+  def launch( s, help_, design, update=False, subgraph=False, backend='make' ):
 
     # Check that this design directory exists
 
@@ -141,7 +142,7 @@ class RunHandler:
                                'unless using --update or --demo' )
       sys.exit( 1 )
 
-    s.launch_run( design, update, backend )
+    s.launch_run( design, update, subgraph, backend )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -150,7 +151,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, backend ):
+  def launch_run( s, design, update, subgraph, backend ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -163,10 +164,11 @@ class RunHandler:
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
-    sys.path.append( c_dirname )
+    mod_spec = importlib.util.spec_from_file_location( c_basename, construct_path )
+    graph_construct_mod = importlib.util.module_from_spec( mod_spec )
 
     try:
-      construct = importlib.import_module( c_basename )
+      mod_spec.loader.exec_module( graph_construct_mod )
     except ModuleNotFoundError:
       print()
       print( bold( 'Error:' ), 'Could not open construct script at',
@@ -175,7 +177,7 @@ class RunHandler:
       sys.exit( 1 )
 
     try:
-      construct.construct
+      graph_construct_mod.construct
     except AttributeError:
       print()
       print( bold( 'Error:' ), 'No module named "construct" in',
@@ -185,7 +187,20 @@ class RunHandler:
 
     # Construct the graph
 
-    g = construct.construct()
+    g = graph_construct_mod.construct()
+    
+    # Add input node if the graph is being instantiated as a subgraph
+    # within another graph and it specifies inputs. This enables graphs 
+    # with inputs to work both as subgraphs where a parent graph supplies
+    # inputs and as standalone graphs with no inputs.
+
+    if subgraph and len(g.all_inputs()) > 0:
+      g.generate_input_step()
+
+    # Add output targets node if the graph specifies outputs
+
+    if len(g.all_outputs()) > 0:
+      g.generate_output_step()
 
     # Generate the build files (e.g., Makefile) for the selected backend
     # build system
@@ -202,7 +217,7 @@ class RunHandler:
 
     list_target   = backend + " list"
     status_target = backend + " status"
-
+    
     print( "Targets: run \"" + list_target   + "\" and \""
                              + status_target + "\"" )
     print()

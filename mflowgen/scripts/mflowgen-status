@@ -50,10 +50,11 @@ class ArgumentParserWithCustomError(argparse.ArgumentParser):
 
 def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
-  p.add_argument( "-v", "--verbose", action="store_true" )
-  p.add_argument( "-h", "--help",    action="store_true" )
-  p.add_argument( "-b", "--backend", default="make"      )
-  p.add_argument( "-s", "--steps",   required=True       )
+  p.add_argument( "-v",  "--verbose",   action="store_true" )
+  p.add_argument( "-h",  "--help",      action="store_true" )
+  p.add_argument( "-b",  "--backend",   default="make"      )
+  p.add_argument( "-s",  "--steps",     required=True       )
+  p.add_argument( "-g",  "--subgraphs", default=""          ) 
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -85,6 +86,7 @@ def main():
   # commands show that the output stamps need to be updated)
 
   steps = opts.steps.split(',')
+  subgraphs = opts.subgraphs.split(',')
 
   echo_green   = '\033[92m'
   echo_red     = '\033[91m'
@@ -101,11 +103,16 @@ def main():
       status[s] = build_str
 
   # Check which steps are prebuilt (i.e., have a special '.prebuilt' file)
+  # and check which steps are subgraphs
 
-  prebuilt_str = echo_bold + '(pre-built)' + echo_nocolor
+  prebuilt_str = echo_bold + ' (pre-built)' + echo_nocolor
   prebuilt = {}
+  subgraph_str = echo_bold + ' (subgraph)' + echo_nocolor
+  subgraph = {}
   for s in steps:
     prebuilt[s] = prebuilt_str if os.path.exists( s+'/.prebuilt' ) else ''
+    subgraph[s] = subgraph_str if s in subgraphs else ''
+  
 
   # Get the upcoming build order (by filtering the dry run commands for
   # commands that touch the stamp)
@@ -134,7 +141,7 @@ def main():
   print( 'Status:' )
   print()
 
-  template_str = ' - {status} -> {number:3} : {name} {prebuilt}'
+  template_str = ' - {status} -> {number:3} : {name}{prebuilt}{subgraph}'
 
   for step, step_status in sorted( status.items(), # sort numerical order
                               key=lambda x: int(x[0].split('-')[0]) ):
@@ -144,6 +151,7 @@ def main():
       'number'   : tokens[0],
       'name'     : '-'.join(tokens[1:]),
       'prebuilt' : prebuilt[step],
+      'subgraph' : subgraph[step]
     }
     print( template_str.format( **d ) )
 

@@ -7,18 +7,22 @@
 
 import os
 
-from mflowgen.components.step import Step
-from mflowgen.components.edge import Edge
-from mflowgen.utils           import get_top_dir
+from mflowgen.components.step     import Step
+from mflowgen.components.subgraph import Subgraph
+from mflowgen.components.edge     import Edge
+from mflowgen.utils               import get_top_dir
 
 class Graph:
   """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
 
   def __init__( s ):
 
-    s._edges_i = {}
-    s._edges_o = {}
-    s._steps   = {}
+    s._edges_i   = {}
+    s._edges_o   = {}
+    s._steps     = {}
+    s._subgraphs = {}
+    s._inputs    = {}
+    s._outputs   = {}
 
     # System paths to search for ADKs (i.e., analogous to python sys.path)
     #
@@ -97,6 +101,8 @@ class Graph:
       'add_step -- Duplicate step "{}", ' \
       'if this is intentional, first change the step name'.format( key )
     s._steps[ key ] = step
+    if type(step) == Subgraph:
+      s._subgraphs[ key ] = step
 
   def get_step( s, step_name ):
     """Gets the Step object with the given name.
@@ -108,6 +114,9 @@ class Graph:
 
   def all_steps( s ):
     return sorted( s._steps.keys() )
+
+  def all_subgraphs( s ):
+    return sorted( s._subgraphs.keys() )
 
   # Edges -- incoming and outgoing adjacency lists
   # Sort them for better debuggability / repeatability / causality
@@ -127,6 +136,53 @@ class Graph:
       return s.sort_edges(s._edges_o[ step_name ])
     except KeyError:
       return []
+  
+  def add_input( s, name, *args ):
+    """Makes the input of a step in the graph into an input of the full
+    graph for when the graph is used as a subgraph in a hierarchical flow
+
+    Args:
+      name: Name to assign to the graph-level input
+      args: Handle(s) of a steps' inputs that we want to connect to graph input
+    """
+    assert name not in s._inputs.keys(), \
+      f"add_input -- Duplicate input \"{name}\"."
+    for input_handle in args:
+      s._inputs[ name ] = input_handle
+    
+  def get_input( s, input_name ):
+    """Gets the input handle object with the given graph input name.
+    Args:
+      input_name: A string representing the name of the input assigned in from :py:meth:`Graph.add_input`
+    """
+    return s._inputs[ input_name ]
+  
+  def all_inputs( s ):
+    return sorted( s._inputs.keys() )
+
+  def add_output( s, name, output_handle ):
+    """Makes the output of a step in the graph into an output of the full
+    graph for when the graph is used as a subgraph in a hierarchical flow
+
+    Args:
+      name: Name to assign to the graph-level output
+      output_step: Handle of step where graph output comes from
+      output_handle: Handle of a step's output that we want to make a graph output
+    """
+    assert name not in s._outputs.keys(), \
+      f"add_output -- Duplicate output \"{name}\"."
+    s._outputs[ name ] = output_handle
+    
+  def get_output( s, output_name ):
+    """Gets the output handle object with the given graph output name.
+
+    Args:
+      output_name: A string representing the name of the output assigned in from :py:meth:`Graph.add_output`
+    """
+    return s._outputs[ output_name ]
+  
+  def all_outputs( s ):
+    return sorted( s._outputs.keys() )
 
   # Quality-of-life utility function
 
@@ -202,7 +258,7 @@ class Graph:
 
     # Get the step (in case the user provided step names instead)
 
-    if type( src ) != Step:
+    if (type( src ) != Step) and not issubclass( type( src ), Step ):
       src_step = s.get_step( src )
     else:
       src_step = src
@@ -211,7 +267,7 @@ class Graph:
       'connect_by_name -- ' \
       'Step "{}" not found in graph'.format( src_step_name )
 
-    if type( dst ) != Step:
+    if (type( dst ) != Step) and not issubclass( type( dst ), Step ):
       dst_step = s.get_step( dst )
     else:
       dst_step = dst
@@ -778,3 +834,46 @@ ranksep=0.8;
         del( edges[k] )
 
     return order
+
+  #-----------------------------------------------------------------------
+  # Input node generation for hierarchical support
+  #-----------------------------------------------------------------------
+
+  def generate_input_step( s ):
+    input_step_config = {}
+    graph_input_names = list(s._inputs.keys())
+    # Output step simply gathers together all the inputs
+    # from other steps in the graph.
+    input_step_config['outputs'] = graph_input_names
+    input_step_config['name'] = 'inputs'
+    input_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    for input_name in s._inputs:
+      input_step_config['commands'].append(f"ln -sf ../../inputs/{input_name} .")
+    input_step = Step( input_step_config )
+
+    # Now that we've created the step, add it to the graph and connect
+    s.add_step( input_step )
+    for input_name, int_node_input in s._inputs.items():
+      s.connect( input_step.o( input_name ), int_node_input )
+  
+  #-----------------------------------------------------------------------
+  # Output node generation for hierarchical support
+  #-----------------------------------------------------------------------
+
+  def generate_output_step( s ):
+    output_step_config = {}
+    graph_output_names = list(s._outputs.keys())
+    # Output step simply gathers together all the outputs
+    # from other steps in the graph.
+    output_step_config['inputs'] = graph_output_names
+    output_step_config['outputs'] = graph_output_names
+    output_step_config['name'] = 'outputs'
+    output_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    for output_name in s._outputs:
+      output_step_config['commands'].append(f"ln -sf ../inputs/{output_name} .")
+    output_step = Step( output_step_config )
+
+    # Now that we've created the step, add it to the graph and connect
+    s.add_step( output_step )
+    for output_name, int_node_output in s._outputs.items():
+      s.connect( int_node_output, output_step.i( output_name ) )

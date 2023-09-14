@@ -21,6 +21,11 @@ class BuildOrchestrator:
     s.g = graph
     s.w = backend_writer_cls()
 
+    # Store subgraph objects
+    s.sgs = {}
+    for sg in s.g.all_subgraphs():
+      s.sgs[sg] = s.g.get_step(sg).get_graph()
+
     # The 'build' method analyzes the user's step dependency graph in
     # order to populate the rules and high-level dependencies (e.g., this
     # step depends on that step) of the build system graph
@@ -351,13 +356,25 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
     # Determine unique build IDs and build directories
 
     s.set_unique_build_ids()
-    s.build_dirs = { step_name: build_id + '-' + step_name \
-                       for step_name, build_id in s.build_ids.items() }
+    s.build_dirs = {}
+    s.subgraph_dirs = {}
+    for step_name, build_id in s.build_ids.items():
+      dir_name = build_id + '-' + step_name
+      s.build_dirs[step_name] = dir_name
+      if step_name in s.g.all_subgraphs():
+        s.subgraph_dirs[step_name] = dir_name
 
     # Get step directories
 
     for step_name in s.order:
-      s.step_dirs[ step_name ] = s.g.get_step( step_name ).get_dir()
+      try:
+        step_dir = s.g.get_step( step_name ).get_dir()
+      except AttributeError:
+        # If it's an auto-generated step that doesn't have a step_dir,
+        # we just create one in the build dir's metadata directory
+        step_dir = s.metadata_dir + '/' + step_name
+        os.mkdir( step_dir )
+      s.step_dirs[ step_name ] = step_dir 
 
     # Dump metadata about build vars and local connectivity to all steps
 
@@ -498,7 +515,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
 
     # Pass useful data to the backend writer
 
-    s.w.save( s.order, s.build_dirs, s.step_dirs )
+    s.w.save( s.order, s.build_dirs, s.step_dirs, s.subgraph_dirs )
 
     # Backend writer prologue
 
@@ -525,6 +542,18 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       # Use the backend writer to generate the step header
 
       s.w.gen_step_header( step_name )
+
+      # Create entries and headers for subgraph targets, too
+      subgraph_target_names = [f"{step_name}-%", f"{build_id}-%"]
+      if step_name in s.sgs:
+        for subgraph_target_name in subgraph_target_names:
+          s.build_system_rules[ subgraph_target_name ] = {}
+          s.build_system_deps[ subgraph_target_name ] = {}
+
+          backend_outputs[ subgraph_target_name ] = {}
+
+          s.w.gen_step_header( subgraph_target_name )
+      
 
       #...................................................................
       # directory
@@ -582,7 +611,12 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       # Use the backend writer to generate the rule, and then grab any
       # backend dependencies
 
-      t = s.w.gen_step_directory( extra_deps = extra_deps, **rule )
+      if step_name in s.sgs:
+        # Sandbox arg not needed for subgraph directory
+        rule.pop('sandbox')
+        t = s.w.gen_subgraph_directory( extra_deps = extra_deps, **rule )
+      else:
+        t = s.w.gen_step_directory( extra_deps = extra_deps, **rule )
 
       backend_outputs[step_name]['directory'] = t
 
@@ -756,6 +790,54 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['execute'].add(
         ( step_name, 'collect-inputs' )
       )
+      
+      # If the step dir is also a subgraph, generate commands to build
+      # targets within the subgraph
+      if step_name in s.sgs:
+        s.w.gen_step_execute_pre()
+        commands = ' && '.join([  
+          # FIRST set pipefail so we get correct error status at the end
+          'set -o pipefail',
+          # Step banner in big letters
+          get_top_dir() \
+              + '/mflowgen/scripts/mflowgen-letters -c -t ' + step_name,
+          # cd into the subgraph dir
+          'cd ' + build_dir,
+          # Make the specified target within the subgraph
+          'make $*',
+          # Return to top so backends can assume we never changed directory
+          'cd ..'
+        ])
+        for subgraph_target_name in subgraph_target_names:
+          # Rule
+          #
+          # - Run the {command}
+          # - Generate the {outputs}
+          # - This rule depends on {deps}
+          #
+
+          rule = {
+            'command'   : commands,
+            'deps'      : [],
+            'rule_name' : subgraph_target_name,
+          }
+
+          # Same extra_deps as containing subgraph (directory and inputs)
+          t = s.w.gen_step_execute_command_only( extra_deps = extra_deps, **rule )
+
+          backend_outputs[subgraph_target_name]['execute'] = t
+
+          s.build_system_rules[subgraph_target_name] = rule
+
+          s.build_system_deps[subgraph_target_name]['execute'] = set()
+          
+          s.build_system_deps[subgraph_target_name]['execute'].add(
+            ( step_name, 'directory' )
+          )
+
+          s.build_system_deps[subgraph_target_name]['execute'].add(
+            ( step_name, 'collect-inputs' )
+          )
 
       #...................................................................
       # collect-outputs
@@ -990,7 +1072,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['alias'].add(
         ( step_name, 'post-conditions' )
       )
-
+      
       #...................................................................
       # debug
       #...................................................................

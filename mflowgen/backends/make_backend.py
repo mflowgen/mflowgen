@@ -12,6 +12,7 @@ import os
 
 from mflowgen.backends.makefile_syntax import Writer as MakeWriter
 from mflowgen.backends.makefile_syntax import make_cpdir, make_symlink
+from mflowgen.backends.makefile_syntax import make_subgraph_dir
 from mflowgen.backends.makefile_syntax import make_execute, make_stamp, make_alias
 from mflowgen.backends.makefile_syntax import make_common_rules, make_clean
 from mflowgen.backends.makefile_syntax import make_diff
@@ -32,10 +33,11 @@ class MakeBackend:
 
   # save
 
-  def save( s, order, build_dirs, step_dirs ):
-    s.order      = order
-    s.build_dirs = build_dirs
-    s.step_dirs  = step_dirs
+  def save( s, order, build_dirs, step_dirs, subgraph_dirs ):
+    s.order         = order
+    s.build_dirs    = build_dirs
+    s.step_dirs     = step_dirs
+    s.subgraph_dirs = subgraph_dirs
 
   # gen_header
 
@@ -128,6 +130,40 @@ class MakeBackend:
       src     = src,
       deps    = all_deps,
       sandbox = sandbox,
+    )
+
+    #.....................................................................
+    # Built-in toggle for enabling/disabling this rule
+    #.....................................................................
+    # Clean up from the above
+    s.w.write( 'endif' )
+    s.w.newline()
+    #.....................................................................
+
+    s.w.newline()
+
+    return [ target ]
+  
+  # gen_subgraph_dir
+  #
+  # Expected semantics
+  #
+  # - Create the {dst}
+  # - Configure {dst} as a build dir for {src}
+  # - Parameterize using the saved YAML in the metadata directory
+  # - This rule depends on {deps}
+  
+  def gen_subgraph_directory( s, dst, src, deps, extra_deps ):
+    s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
+    s.w.newline() 
+    
+    all_deps = deps + extra_deps
+    
+    target = make_subgraph_dir(
+      w       = s.w,
+      dst     = dst,
+      src     = src,
+      deps    = all_deps,
     )
 
     #.....................................................................
@@ -298,6 +334,43 @@ class MakeBackend:
     s.w.newline()
     s.w.newline()
     #.....................................................................
+
+    return targets
+  
+  # gen_step_execute_command_only
+  #
+  # Expected semantics
+  #
+  # - Run the {command}
+  # - This rule depends on {deps}
+  #
+  # Expected return
+  #
+  # - Return a list that can pass to another backend call as extra_deps
+  #
+
+  def gen_step_execute_command_only( s, command, deps, extra_deps, rule_name):
+
+    all_deps = deps + extra_deps
+
+    rule = rule_name + '-commands-rule'
+    rule = rule.replace( '-', '_' )
+
+    outputs = [rule_name]
+
+    # Rules
+
+    targets = make_execute(
+      w            = s.w,
+      outputs      = outputs,
+      rule         = rule,
+      command      = command,
+      deps         = all_deps,
+      touch_target = False,
+    )
+
+    s.w.newline()
+    s.w.newline()
 
     return targets
 
@@ -580,6 +653,6 @@ class MakeBackend:
     s.w.comment( 'Status' )
     s.w.newline()
 
-    make_status( s.w, s.build_dirs.values() )
+    make_status( s.w, s.build_dirs.values(), s.subgraph_dirs.values() )
 
 

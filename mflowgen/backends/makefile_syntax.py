@@ -102,6 +102,58 @@ def make_cpdir( w, dst, src, deps=None, sandbox=True ):
 
   return target
 
+# make_subgraph_dir
+#
+# creates a subgraph build directory
+#
+# - w       : instance of Writer
+# - dst     : path to build directory
+# - src     : path to subgraph source directory
+# - deps    : list, additional dependencies
+#
+
+def make_subgraph_dir( w, dst, src, deps=None ):
+
+  if deps:
+    assert type( deps ) == list, 'Expecting deps to be of type list'
+    deps.sort(); # Sort dep list for better debuggability.
+
+  # $1 -- dst
+  # $2 -- src
+  # $3 -- stamp
+
+  target = dst + '/.stamp'
+
+  # There may be many deps, so generate them on separate lines
+
+  if deps:
+    #deps = [ src ] + deps
+    deps = [ d for d in deps if ':' not in d ] # ignore colon files
+
+  if deps == None:
+    deps = ''
+
+  template_str = '{target}: {dep}\n'
+
+  for dep in deps:
+    w.write( template_str.format( target=target, dep=dep ) )
+
+  # Generate the build rule
+
+  template_str  = '{target}:\n'
+  template_str += '	$(call make-subgraph-dir,{dst},{src},{stamp})\n'
+
+  w.write(
+    template_str.format(
+      target = target,
+      dst    = dst,
+      src    = src,
+      stamp  = target,
+    )
+  )
+
+  return target
+
 # make_symlink
 #
 # Symlinks src to dst while handling stamping
@@ -375,6 +427,13 @@ define stamp
 	touch $1
 endef
 
+define make-subgraph-dir
+       mkdir -p $1
+       chmod -R +w $1
+       cd $1 && mflowgen run --subgraph --design $2
+       touch $3
+endef
+
 ''')
 
 # make_clean
@@ -556,11 +615,13 @@ def make_graph( w ):
 #
 # - w     : instance of Writer
 # - steps : list of step names to print status for
+# - subgraphs : list of subgraphs in steps
 #
 
-def make_status( w, steps ):
+def make_status( w, steps, subgraphs ):
 
   steps_comma_separated = ','.join( steps )
+  subgraphs_comma_separated = ','.join( subgraphs )
 
   template_str  = '.PHONY: status\n'
   template_str += '\n'
@@ -568,7 +629,8 @@ def make_status( w, steps ):
   template_str += '	{command}\n'
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
-            ' --backend make -s ' + steps_comma_separated
+            ' --backend make -s ' + steps_comma_separated + \
+            ' --subgraphs ' + subgraphs_comma_separated
 
   w.write( template_str.format( command=command ) )
   w.newline()

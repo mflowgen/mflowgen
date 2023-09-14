@@ -20,23 +20,27 @@ class Step:
     # If this is a default step, then we use the top-level steps directory
 
     s._config = {}
-
-    if default:
-      yaml_path = '/'.join([
-        get_top_dir(),
-        'steps',
-        step_path,
-        'configure.yml'
-      ])
+    # If step_path is a dict, it directly defines the step config
+    # instead of using a YAML file
+    if type(step_path) == dict:
+      data = step_path
     else:
-      yaml_path = '/'.join([
-        step_path,
-        'configure.yml'
-      ])
+      if default:
+        yaml_path = '/'.join([
+          get_top_dir(),
+          'steps',
+          step_path,
+          'configure.yml'
+        ])
+      else:
+        yaml_path = '/'.join([
+          step_path,
+          'configure.yml'
+        ])
 
-    # Read the YAML data
+      # Read the YAML data
 
-    data = read_yaml( yaml_path )
+      data = read_yaml( yaml_path )
 
     # Check that this is a valid step configuration
 
@@ -115,10 +119,18 @@ class Step:
     # - YAML name      -- used to generate a parameterized YAML in a build
     #
 
-    s.step_dir = \
-      os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
+    # When we use a dict to define a Step, it should provide its own
+    # source directory. If not, we simply say it's an auto-generated step.
+    if type(step_path) == dict:
+      if not 'source' in step_path:
+        data['source'] = 'auto-generated'
+      else:
+        s.step_dir = data['source']
+    else:
+      s.step_dir = \
+        os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
 
-    data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
+      data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
 
     # Save the config
 

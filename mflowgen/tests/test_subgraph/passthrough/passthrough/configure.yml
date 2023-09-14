@@ -1,0 +1,11 @@
+name: passthrough
+
+inputs:
+  - i
+
+outputs:
+  - o
+
+commands:
+  - mkdir -p outputs
+  - cd outputs && ln -sf ../inputs/i o
