@@ -3,8 +3,8 @@
 #=========================================================================
 # Dummy graph for testing graph construction with Subgraphs
 #
-# Author : Christopher Torng
-# Date   : June 2, 2019
+# Author : Alex Carsello
+# Date   : Sept. 14, 2023
 #
 
 import os
