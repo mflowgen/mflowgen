@@ -612,6 +612,8 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       # backend dependencies
 
       if step_name in s.sgs:
+        # Sandbox arg not needed for subgraph directory
+        rule.pop('sandbox')
         t = s.w.gen_subgraph_directory( extra_deps = extra_deps, **rule )
       else:
         t = s.w.gen_step_directory( extra_deps = extra_deps, **rule )

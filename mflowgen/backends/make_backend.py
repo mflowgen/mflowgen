@@ -152,9 +152,8 @@ class MakeBackend:
   # - Configure {dst} as a build dir for {src}
   # - Parameterize using the saved YAML in the metadata directory
   # - This rule depends on {deps}
-  # - {sandbox} does nothing here
   
-  def gen_subgraph_directory( s, dst, src, deps, extra_deps, sandbox ):
+  def gen_subgraph_directory( s, dst, src, deps, extra_deps ):
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
     s.w.newline() 
     
