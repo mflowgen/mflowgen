@@ -20,6 +20,7 @@ outputs:
   - design.checkpoint
   - design.gds.gz
   - design-merged.gds
+  - design-merged.oas
   - design.lvs.v
   - design.vcs.v
   - design.vcs.pg.v
@@ -46,6 +47,7 @@ commands:
   - ln -sf ../rcbest.spef.gz             design.rcbest.spef.gz
   - ln -sf ../results/*.gds.gz            design.gds.gz
   - ln -sf ../results/*-merged.gds        design-merged.gds
+  - ln -sf ../results/*-merged.oas        design-merged.oas
   - ln -sf ../results/*.lvs.v             design.lvs.v
   - ln -sf ../results/*.vcs.v             design.vcs.v
   - ln -sf ../results/*.vcs.pg.v          design.vcs.pg.v
