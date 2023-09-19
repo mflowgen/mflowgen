@@ -9,3 +9,6 @@
 if {[file exists $vars(adk_dir)/pdk-qrc-lef.map]} {
   setExtractRCMode -lefTechFileMap $vars(adk_dir)/pdk-qrc-lef.map
 }
+
+# Start Innovus in an assign-free flow
+set_db init_no_new_assigns true
