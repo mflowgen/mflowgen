@@ -14,9 +14,10 @@ if { [info exists ADK_DBU_PRECISION] } {
 
 streamOut $vars(results_dir)/$vars(design).gds.gz \
     -units ${stream_out_units} \
+    -dieAreaAsBoundary \
     -mapFile $vars(gds_layer_map)
 
-set merge_files \
+set merge_files_gds \
     [concat \
         [lsort [glob -nocomplain inputs/adk/*.gds*]] \
         [lsort [glob -nocomplain inputs/*.gds*]] \
@@ -24,6 +25,21 @@ set merge_files \
 
 streamOut $vars(results_dir)/$vars(design)-merged.gds \
     -units ${stream_out_units} \
+    -dieAreaAsBoundary \
     -mapFile $vars(gds_layer_map) \
     -uniquifyCellNames \
-    -merge $merge_files
+    -merge $merge_files_gds
+
+set merge_files_oas \
+    [concat \
+        [lsort [glob -nocomplain inputs/adk/*.oas*]] \
+        [lsort [glob -nocomplain inputs/*.oas*]] \
+    ]
+
+streamOut $vars(results_dir)/$vars(design)-merged.oas \
+    -units ${stream_out_units} \
+    -dieAreaAsBoundary \
+    -format oasis \
+    -mapFile $vars(gds_layer_map) \
+    -uniquifyCellNames \
+    -merge $merge_files_oas
