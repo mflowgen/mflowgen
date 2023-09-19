@@ -16,7 +16,12 @@
 #-------------------------------------------------------------------------
 
 set ptpx_additional_search_path   inputs/adk
-set ptpx_target_libraries         inputs/adk/stdcells.db
+set ptpx_target_libraries        [join "
+                                    [lsort [glob -nocomplain inputs/adk/stdcells.db]]
+                                    [lsort [glob -nocomplain inputs/adk/stdcells*-typical*.db]]
+                                    [lsort [glob -nocomplain inputs/adk/stdcells*-bc*.db]]
+                                    [lsort [glob -nocomplain inputs/adk/stdcells*-wc*.db]]
+                                 "]
 set ptpx_extra_link_libraries     [lsort [glob -nocomplain inputs/*.db]]
 
 #-------------------------------------------------------------------------
