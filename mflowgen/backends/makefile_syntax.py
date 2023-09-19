@@ -629,8 +629,9 @@ def make_status( w, steps, subgraphs ):
   template_str += '	{command}\n'
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
-            ' --backend make -s ' + steps_comma_separated + \
-            ' --subgraphs ' + subgraphs_comma_separated
+            ' --backend make -s ' + steps_comma_separated
+  if subgraphs:
+    command += ' --subgraphs ' + subgraphs_comma_separated
 
   w.write( template_str.format( command=command ) )
   w.newline()
