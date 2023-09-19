@@ -20,10 +20,12 @@ def test_subgraph_make_subtarget():
     configure_build_dir( dummy_construct_path, build_dir )
     subprocess.check_call( 'make passthrough-passthrough'.split(' ') )
 
+
 def test_subgraph_status():
   with tempfile.TemporaryDirectory() as build_dir:
     configure_build_dir( dummy_construct_path, build_dir )
     subprocess.check_call( 'make status'.split(' ') )
+
 
 def test_subgraph_subgraph_status():
   with tempfile.TemporaryDirectory() as build_dir:
