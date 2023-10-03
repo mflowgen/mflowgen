@@ -115,7 +115,7 @@ class Step:
 
     # Make sure that test specifications are valid
 
-    test_args = ['test_node', 'default', 'attach_points', 'description']
+    test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description']
     attach_points = ['INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
                      'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
 
@@ -137,6 +137,11 @@ class Step:
         for arg in test:
           assert arg in test_args, \
             f"{arg} isn't a valid test argument. Must be one of {test_args}."
+
+        # Test must define exactly one of test_node or test_graph
+        assert ( 'test_node' in test ) != ( 'test_graph' in test ), \
+          'Test must define exactly one of test_node or test_graph'
+        
         # Check that the attach points for each test are valid
         assert 'attach_points' in test, 'must specify attach points for test'
         for point in test['attach_points']:

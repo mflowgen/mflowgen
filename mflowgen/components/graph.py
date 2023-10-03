@@ -921,8 +921,12 @@ ranksep=0.8;
           for flow_step in attach_point_map[attach_point]:
             # Create as many clones of the test node as needed
             # to connect to all test points
-            test_step = Step( test['test_node'], default=test['default'] )
-            test_step.set_name(f"TEST-{test['description']}-test-{step_name}-AT-{attach_point}")
+            test_name = f"TEST-{test['description']}-test-{step_name}-AT-{attach_point}"
+            if 'test_node' in test:
+              test_step = Step( test['test_node'], default=test['default'] )
+              test_step.set_name( test_name )
+            else:
+              test_step = Subgraph( test['test_graph'], test_name )
             s.add_step(test_step)
             # Connect adk to test
             s.connect_by_name(adk, test_step)
