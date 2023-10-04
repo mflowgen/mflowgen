@@ -147,11 +147,12 @@ class Graph:
     """
     assert name not in s._inputs.keys(), \
       f"add_input -- Duplicate input \"{name}\"."
+    s._inputs[ name ] = []
     for input_handle in args:
-      s._inputs[ name ] = input_handle
+      s._inputs[ name ].append( input_handle )
     
   def get_input( s, input_name ):
-    """Gets the input handle object with the given graph input name.
+    """Gets the list of input handle objects connected to the given graph input name.
     Args:
       input_name: A string representing the name of the input assigned in from :py:meth:`Graph.add_input`
     """
@@ -174,7 +175,7 @@ class Graph:
     s._outputs[ name ] = output_handle
     
   def get_output( s, output_name ):
-    """Gets the output handle object with the given graph output name.
+    """Gets the output handle object connected to the given graph output name.
 
     Args:
       output_name: A string representing the name of the output assigned in from :py:meth:`Graph.add_output`
@@ -853,8 +854,9 @@ ranksep=0.8;
 
     # Now that we've created the step, add it to the graph and connect
     s.add_step( input_step )
-    for input_name, int_node_input in s._inputs.items():
-      s.connect( input_step.o( input_name ), int_node_input )
+    for input_name, int_node_inputs in s._inputs.items():
+      for int_node_input in int_node_inputs:
+        s.connect( input_step.o( input_name ), int_node_input )
   
   #-----------------------------------------------------------------------
   # Output node generation for hierarchical support
