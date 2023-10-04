@@ -1,7 +1,7 @@
 #=========================================================================
 # construct.py
 #=========================================================================
-# Dummy graph for testing graph construction with Subgraphs
+# Dummy subgraph that contains a passthrough node.
 #
 # Author : Alex Carsello
 # Date   : Sept. 8, 2023
