@@ -33,7 +33,8 @@ def test_subgraph_subgraph_status():
   with tempfile.TemporaryDirectory() as build_dir:
     configure_build_dir( dummy_construct_path, build_dir )
     subprocess.check_call( 'make passthrough-status'.split(' ') )
-  
+
+
 def test_subgraph_input_fanout():
   with tempfile.TemporaryDirectory() as build_dir:
     configure_build_dir( dummy_double_pt_construct_path, build_dir )
