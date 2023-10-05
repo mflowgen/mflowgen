@@ -116,7 +116,7 @@ class Step:
     # Make sure that test specifications are valid
 
     test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description']
-    attach_points = ['INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
+    attach_points = ['SYNTHESIS', 'INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
                      'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
 
     if 'attach_point_tags' in data.keys():

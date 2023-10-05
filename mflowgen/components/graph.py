@@ -930,5 +930,8 @@ ranksep=0.8;
             s.add_step(test_step)
             # Connect adk to test
             s.connect_by_name(adk, test_step)
+            # Attach synth steps to all test nodes so they have SDC
+            for synth_step in attach_point_map['SYNTHESIS']:
+              s.connect_by_name(synth_step, test_step) 
             # Connect specified attach_point step to test
             s.connect_by_name(flow_step, test_step)
