@@ -15,6 +15,7 @@ inputs:
   - adk
   - design.checkpoint
   - static_power_analysis_results
+  - design.sdc
 
 #-------------------------------------------------------------------------
 # Commands

@@ -15,6 +15,7 @@ inputs:
   - adk
   - design.checkpoint
   - design.spef.gz
+  - design.sdc
 
 outputs:
   - static_power_analysis_results
