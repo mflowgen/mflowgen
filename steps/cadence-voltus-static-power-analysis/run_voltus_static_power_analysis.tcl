@@ -10,8 +10,19 @@ read_design -physical_data inputs/design.checkpoint/save.enc.dat $design_name
 # Read in power intent
 #read_power_domain -cpf inputs/design.cpf
 
-# Read in parasitics
-read_spef -rc_corner typical -decoupled [glob inputs/*.spef.gz]
+set is_routed [dbGet top.statusRouted]
+
+# Spef only applicable in a routed design
+if {$is_routed} {
+    # Read in parasitics if provided. Otherwise, generate them.
+    set spef_file inputs/design.spef.gz
+    if {![file exists $spef_file]} {
+        set spef_file design.spef.gz
+        extract_rc
+        rc_out -rc_corner typical -spef $spef_file
+    }
+    read_spef -rc_corner typical -decoupled $spef_file
+}
 
 # Set power analysis mode
 set_power_analysis_mode \
