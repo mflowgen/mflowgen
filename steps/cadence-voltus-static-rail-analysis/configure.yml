@@ -17,6 +17,9 @@ inputs:
   - static_power_analysis_results
   - design.sdc
 
+outputs:
+  - static_rail_analysis_results
+
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
@@ -24,6 +27,8 @@ inputs:
 commands:
   - rm -rf *_
   - voltus -overwrite -64 -nowin -init run_voltus_static_rail_analysis.tcl -log logs/run.log
+  - mkdir -p outputs/static_rail_analysis_results
+  - cd outputs/static_rail_analysis_results && ln -sf ../../VDD_static_rail . && ln -sf ../../VSS_static_rail
 
 #-------------------------------------------------------------------------
 # Parameters
