@@ -912,6 +912,7 @@ ranksep=0.8;
     
     # Add each test at the specified attach points
     for step_name, tests in tests.items():
+      step = s.get_step(step_name)
       for test in tests:
         for attach_point in test['attach_points']:
           assert attach_point in attach_point_map, \
@@ -923,9 +924,20 @@ ranksep=0.8;
             # to connect to all test points
             test_name = f"TEST-{test['description']}-test-{step_name}-AT-{attach_point}"
             if 'test_node' in test:
+              # If test_node is a relative path and we're not using an mflowgen default
+              # step, ensure that it is relative to the containing step dir
+              if not os.path.isabs(test['test_node'][0]) and not test['default']:
+                node_path = f"{step.get_dir()}/{test['test_node']}"
+                test['test_node'] = os.abspath(node_path)
               test_step = Step( test['test_node'], default=test['default'] )
               test_step.set_name( test_name )
             else:
+              # If test_graph is a relative path, ensure that it is relative
+              # to the containing step dir
+              if not os.path.isabs(test['test_graph'][0]):
+                print(step.get_dir())
+                graph_path = f"{step.get_dir()}/{test['test_graph']}"
+                test['test_graph'] = os.path.abspath(graph_path)
               test_step = Subgraph( test['test_graph'], test_name )
             s.add_step(test_step)
             # Connect adk to test
