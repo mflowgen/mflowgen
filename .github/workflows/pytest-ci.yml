@@ -1,4 +1,4 @@
-name: Python application
+name: mflowgen pytest CI
 
 on:
   # Every push
