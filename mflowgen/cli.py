@@ -36,11 +36,12 @@ import argparse
 import os
 import sys
 
-from mflowgen           import __version__
-from mflowgen.demo      import DemoHandler
-from mflowgen.core      import RunHandler
-from mflowgen.stash     import StashHandler
-from mflowgen.mock      import MockHandler
+from mflowgen               import __version__
+from mflowgen.demo          import DemoHandler
+from mflowgen.core          import RunHandler
+from mflowgen.stash         import StashHandler
+from mflowgen.test_handler  import TestHandler
+from mflowgen.mock          import MockHandler
 
 # Path hack for now to find steps and adks
 
@@ -82,6 +83,10 @@ def parse_cmdline():
   p.add_argument(       "--hash"                                  )
   p.add_argument(       "--all",     action="store_true"          )
   p.add_argument(       "--verbose", action="store_true"          )
+
+  # Test-related arguments
+  p.add_argument( "-a", "--attach_points", type=int, nargs='*'    )
+
   opts = p.parse_args()
   if opts.help and not opts.args: p.error() # print help only if not stash
   return opts
@@ -131,6 +136,17 @@ def main():
       args  = opts.args[1:],
       help_ = opts.help,
       path  = opts.path,
+    )
+    return
+
+  # Dispatch to test handler
+  
+  if opts.args and opts.args[0] == 'test':
+    thandler = TestHandler()
+    thandler.launch(
+      step           = opts.step,
+      attach_points  = opts.attach_points,
+      help_          = opts.help,
     )
     return
 
