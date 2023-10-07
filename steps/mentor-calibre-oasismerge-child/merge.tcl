@@ -13,7 +13,7 @@
 
 set oas0    $env(design_oas)
 set oas1    $env(child_oas)
-set oasout  design_merged.oas
+set oasout  design-merged.oas
 
 set coord_x $env(coord_x)
 set coord_y $env(coord_y)

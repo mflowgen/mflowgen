@@ -18,11 +18,11 @@ name: mentor-calibre-oasismerge-child
 
 inputs:
   - adk
-  - design.oas
+  - design-merged.oas
   - child.oas
 
 outputs:
-  - design_merged.oas
+  - design-merged.oas
 
 #-------------------------------------------------------------------------
 # Commands
@@ -37,7 +37,7 @@ commands:
   - echo | calibredrv merge.tcl
   # Get the outputs
   - mkdir -p outputs && cd outputs
-  - ln -sf ../design_merged.oas
+  - ln -sf ../design-merged.oas
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -60,7 +60,7 @@ parameters:
 #-------------------------------------------------------------------------
 
 debug:
-  - calibredrv -m design_merged.oas \
+  - calibredrv -m design-merged.oas \
                -l inputs/adk/calibre.layerprops
 
 #-------------------------------------------------------------------------
@@ -75,7 +75,7 @@ preconditions:
 
 postconditions:
 
-  - assert File( 'outputs/design_merged.oas' )
+  - assert File( 'outputs/design-merged.oas' )
 
   # Duplicate structures
   #
