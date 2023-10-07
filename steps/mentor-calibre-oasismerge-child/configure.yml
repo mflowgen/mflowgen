@@ -1,0 +1,112 @@
+#=========================================================================
+# Mentor Calibre OASIS Merge -- Child
+#=========================================================================
+# Merges two OASIS files, with:
+#
+#   1. The child.oas merged as a child cell of design.oas
+#   2. The child.oas placed at (coord_x, coord_y) inside design.oas
+#
+# Author : Christopher Torng
+# Date   : November 5, 2019
+#
+
+name: mentor-calibre-oasismerge-child
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.oas
+  - child.oas
+
+outputs:
+  - design_merged.oas
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # For some reason, Calibre requires this directory to exist
+  - mkdir -p $HOME/.calibrewb_workspace/tmp
+  # Run the merge
+  # Need 'echo |' to stop calibredrv from hanging if the step is backgrounded,
+  # which is a known calibredrv bug noted in the manual (see calibr_drv_ref.pdf)
+  - echo | calibredrv merge.tcl
+  # Get the outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../design_merged.oas
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_oas: inputs/design.oas
+  child_oas: inputs/child.oas
+  # coord_x and coord_y
+  #
+  # Coordinates should be a floating point number (or integer) followed by
+  # the character 'u' for microns.
+  coord_x: 0.0u
+  coord_y: 0.0u
+  # flatten the child_oas into the design_oas
+  flatten_child: False
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  - calibredrv -m design_merged.oas \
+               -l inputs/adk/calibre.layerprops
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'calibredrv' )
+  - assert File( 'inputs/design.oas' )
+  #- assert File( 'inputs/child.oas' ) # commented, maybe merging with adk
+
+postconditions:
+
+  - assert File( 'outputs/design_merged.oas' )
+
+  # Duplicate structures
+  #
+  # GDS can be hierarchical, meaning they have holes where library cells
+  # (e.g., stdcell GDS) can be filled in. If library cell names conflict,
+  # there is a chance that one definition will overwrite the other and you
+  # will see a very weird GDS that may not be functional or DRC clean
+  # anymore (e.g., one SRAM macro may now be using another SRAM macro's
+  # bitcell array). If a conflict happens unexpectedly here and goes by
+  # undetected, it can take days or weeks to debug LVS before finally
+  # realizing it was an incorrect GDS merge.
+  #
+  # Assert here to make sure we detect it early. There is a choice for
+  # what to do next for the merged GDS: (1) use one library's version, (2)
+  # use the other library's version, (3) rename both and each reference
+  # their own version, (4) something else...
+
+  # More naming conflicts
+  #
+  # The "-mode reportconflictsonly" option will report whether name
+  # conflicts exist. The notice looks like this:
+  #
+  #     Note: cell {cell_name} already exists in foo.gds, conflicts
+  #       with {cell_name} from bar.gds.
+  #
+  # We have to make sure this does not happen.
+  #
+
+  # - "assert 'WARNING: Ignoring duplicate structure'
+  #     not in File( 'mflowgen-run.log' )"
+
+  # - "assert 'conflicts with' not in File( 'mflowgen-run.log' )"
+
+
