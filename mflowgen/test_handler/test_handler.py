@@ -211,6 +211,12 @@ class TestHandler:
           os.symlink( f"../../../{ap_step_data['build_dir']}/inputs/adk", 'adk' )
           # Grab design.sdc from synth step
           os.symlink( f"../../../{synth_step_data['build_dir']}/outputs/design.sdc", 'design.sdc' )
+          # Return to the test build dir
+          os.chdir('..')
+          # Finally, run the test
+          subprocess.check_call( 'make outputs'.split(' ') )
+          # Return to the main build dir
+          os.chdir('../..')
           
 
 
