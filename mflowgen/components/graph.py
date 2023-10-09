@@ -935,7 +935,6 @@ ranksep=0.8;
               # If test_graph is a relative path, ensure that it is relative
               # to the containing step dir
               if not os.path.isabs(test['test_graph'][0]):
-                print(step.get_dir())
                 graph_path = f"{step.get_dir()}/{test['test_graph']}"
                 test['test_graph'] = os.path.abspath(graph_path)
               test_step = Subgraph( test['test_graph'], test_name )
