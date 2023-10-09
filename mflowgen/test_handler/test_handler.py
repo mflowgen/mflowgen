@@ -151,6 +151,8 @@ class TestHandler:
     if not synth_step:
       print( 'Error: Graph must contain at least one step with the SYNTHESIS attach point tag ' \
              'in order for tests to run.' )
+
+    synth_step_data = s.get_step_data( synth_step )
   
     ap_list = attach_points 
     if not ap_list:
@@ -175,11 +177,41 @@ class TestHandler:
     for attach_point in ap_list:
       # Make attach point
       subprocess.check_call( f"make {attach_point}".split(' ') )
-      # Run the tests at the attach point
+      # Run the tests at the attach point if attach point provided in CLI or
+      # or if no ap CLI arg provided and test specfies this attach point
+      ap_step_data = s.get_step_data( attach_point )
       for test in tests:
-        print( f"Running test at attach point {attach_point}" )
-    
-    
+        run = False
+        if attach_points:
+          run = True
+        else:
+          for test_ap in test['attach_points']:
+            ap_id = ap_step_dict[test_ap]
+            if ap_id == attach_point:
+              run = True
+        if run:
+          print( f"Running test {test['description']} from step {step} at attach point {attach_point}" )
+          test_graph_path = test[ 'test_graph' ]
+          if not os.path.isabs( test_graph_path ):
+            test_graph_path = os.path.abspath( f"{step_under_test['source']}/{test_graph_path}" )
+          # First, prepare the test directory
+          test_dir_name = f"tests/test-{test['description']}-from-{step}-at-{attach_point}"
+          os.makedirs(test_dir_name, exist_ok=True)
+          os.chdir(test_dir_name)
+         
+          # Configure the test build dir
+          subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph".split(' ') )
+          subprocess.check_call( 'make clean-all'.split(' ') )
+          # Prepare the inputs
+          os.makedirs('inputs', exist_ok=True)
+          os.chdir('inputs')
+          # Grab design.checkpoint from the attach point step
+          os.symlink( f"../../../{ap_step_data['build_dir']}/outputs/design.checkpoint", 'design.checkpoint' )
+          # Grab adk (HACK because trying to only use build dir metadata, not the graph obj)
+          os.symlink( f"../../../{ap_step_data['build_dir']}/inputs/adk", 'adk' )
+          # Grab design.sdc from synth step
+          os.symlink( f"../../../{synth_step_data['build_dir']}/outputs/design.sdc", 'design.sdc' )
+          
 
 
   #-----------------------------------------------------------------------
