@@ -90,7 +90,7 @@ class TestHandler:
       
     # Loop over the tests to ensure that each provides a test graph
     # and collect the attach points if they're not provided in the cli args.
-    attach_point_tags = {}
+    attach_point_tags = set()
     for test in tests:
       try:
         test_graph = test['test_graph']
@@ -119,7 +119,7 @@ class TestHandler:
       # Each attach point tag we stored in the previous step
       if not attach_points:
         for ap_tag in attach_point_tags:
-          if ap_tag in step_tags:
+          if ap_tag in step_data['attach_point_tags']:
             ap_step_dict[ap_tag] = step_data[ 'build_id' ]
 
     if not synth_step:
