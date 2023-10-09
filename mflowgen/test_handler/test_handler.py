@@ -77,32 +77,6 @@ class TestHandler:
       print( 'Error: Must run mflowgen test inside configured build directory' )
       sys.exit( 1 )
     
-    construct_path = data['construct']
-    # Import the graph for this design (copied from RunHandler)
-    c_dirname  = os.path.dirname( construct_path )
-    c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
-    mod_spec = importlib.util.spec_from_file_location(c_basename, construct_path)
-    graph_construct_mod = importlib.util.module_from_spec(mod_spec)
-    try:
-      mod_spec.loader.exec_module(graph_construct_mod)
-    except ModuleNotFoundError:
-      print()
-      print( bold( 'Error:' ), 'Could not open construct script at',
-                                      '"{}"'.format( construct_path ) )
-      print()
-      sys.exit( 1 )
-    try:
-      graph_construct_mod.construct
-    except AttributeError:
-      print()
-      print( bold( 'Error:' ), 'No module named "construct" in',
-                                      '"{}"'.format( construct_path ) )
-      print()
-      sys.exit( 1 )
-    
-    # Construct the graph
-    s._graph = graph_construct_mod.construct()
-
     # Find specified step directory
     step_under_test = s.get_step_data( step )
     # Get test(s) we need to run
