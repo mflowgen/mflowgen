@@ -3,8 +3,8 @@
 #=========================================================================
 # Merges two OASIS files, with:
 #
-#   1. The child.oas merged as a child cell of design.oas
-#   2. The child.oas placed at (coord_x, coord_y) inside design.oas
+#   1. The child.oas merged as a child cell of design-merged.oas
+#   2. The child.oas placed at (coord_x, coord_y) inside design-merged.oas
 #
 # Author : Christopher Torng
 # Date   : November 5, 2019
@@ -44,7 +44,7 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  design_oas: inputs/design.oas
+  design_oas: inputs/design-merged.oas
   child_oas: inputs/child.oas
   # coord_x and coord_y
   #
@@ -70,7 +70,7 @@ debug:
 preconditions:
 
   - assert Tool( 'calibredrv' )
-  - assert File( 'inputs/design.oas' )
+  - assert File( 'inputs/design-merged.oas' )
   #- assert File( 'inputs/child.oas' ) # commented, maybe merging with adk
 
 postconditions:
