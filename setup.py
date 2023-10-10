@@ -56,7 +56,7 @@ setup(
 
   # Pip will block installation on unsupported versions of Python
 
-  python_requires = '>=3.6',
+  python_requires = '>=3.7',
 
   # Dependencies
 

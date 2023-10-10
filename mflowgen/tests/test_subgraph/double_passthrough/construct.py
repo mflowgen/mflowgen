@@ -1,10 +1,10 @@
 #=========================================================================
 # construct.py
 #=========================================================================
-# Dummy subgraph that contains a passthrough node.
+# Dummy Subgraph that fans input out to 2 passthrough nodes.
 #
 # Author : Alex Carsello
-# Date   : Sept. 8, 2023
+# Date   : Oct. 4, 2023
 #
 
 import os
@@ -41,7 +41,11 @@ def construct():
 
   # Custom steps
 
-  passthrough = Step( this_dir + '/passthrough' )
+  passthrough = Step( this_dir + '/../passthrough/passthrough' )
+  
+  # Clone of passthrough
+  passthrough_2 = passthrough.clone()
+  passthrough_2.set_name( 'passthrough_2' )
 
   # Default steps
 
@@ -49,18 +53,20 @@ def construct():
 
   # Subgraph Inputs
 
-  g.add_input( 'foo', passthrough.i( 'i' ) )
+  g.add_input( 'foo', passthrough.i( 'i' ), passthrough_2.i( 'i' ) )
   
   # Subgraph Outputs
 
   g.add_output( 'bar', passthrough.o( 'o' ) )
+  g.add_output( 'bar2', passthrough_2.o( 'o' ) )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info        )
-  g.add_step( passthrough )
+  g.add_step( info          )
+  g.add_step( passthrough   )
+  g.add_step( passthrough_2 )
 
   #-----------------------------------------------------------------------
   # Parameterize
