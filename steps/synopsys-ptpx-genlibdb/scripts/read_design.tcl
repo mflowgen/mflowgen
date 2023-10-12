@@ -32,7 +32,7 @@ link_design
 
 if {[ file exists $ptpx_sdc ]} {
     puts "\n  > Info: Sourcing $ptpx_sdc\"\n"
-    read_sdc -echo $ptpx_sdc
+    source -echo $ptpx_sdc
 }  else {
     puts "\n  > Warn: No sdc constraint file found\"\n"
 }
