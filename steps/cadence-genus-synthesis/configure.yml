@@ -31,7 +31,7 @@ commands:
   - genus -no_gui -f START.tcl -log logs/genus.log
   - mkdir -p outputs && cd outputs
   - ln -sf ../results_syn/syn_out.v design.v
-  - ln -sf ../results_syn/syn_out._default_constraint_mode_.sdc design.sdc
+  - ln -sf ../results_syn/syn_out.default_emulate_constraint_mode.sdc design.sdc
   - ln -sf ../results_syn/syn_out.sdf design.sdf
   - ln -sf ../results_syn/syn_out.spef design.spef
   - ln -sf ../name_map.rpt design.namemap
