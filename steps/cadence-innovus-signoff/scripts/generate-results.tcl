@@ -53,7 +53,14 @@ saveNetlist -excludeLeafCell                        \
 
 # Write netlist for GL simulation
 
-saveNetlist -excludeLeafCell $vars(results_dir)/$vars(design).vcs.v
+set gl_exclude_list ""
+foreach x $ADK_NETLIST_EXCLUDE_CELL_LIST {
+  append gl_exclude_list $x " "
+}
+
+saveNetlist -excludeLeafCell \
+            -excludeCellInst $gl_exclude_list \
+            $vars(results_dir)/$vars(design).vcs.v
 
 # Write netlist for Power-Ground Aware GL simulation
 
