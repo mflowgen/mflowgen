@@ -250,6 +250,8 @@ class TestHandler:
 
       # Run normal mflowgen test command on this step in this unit test graph
       subprocess.check_call( f"mflowgen test --step {unit_test_step_id}".split(' ') )
+      # Return to initial graph dir
+      os.chdir('../..')
 
     
   #-----------------------------------------------------------------------
