@@ -115,7 +115,7 @@ class Step:
 
     # Make sure that test specifications are valid
 
-    test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description']
+    test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description', 'unit_test_graph']
     attach_points = ['SYNTHESIS', 'INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
                      'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
 
