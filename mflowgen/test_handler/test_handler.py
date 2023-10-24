@@ -171,7 +171,7 @@ class TestHandler:
           if not os.path.isabs( test_graph_path ):
             test_graph_path = os.path.abspath( f"{step_under_test['source']}/{test_graph_path}" )
           # First, prepare the test directory
-          test_dir_name = f"tests/test-{test['description']}-from-{step}-at-{attach_point}"
+          test_dir_name = f"integration-tests/test-{test['description']}-from-{step}-at-{attach_point}"
           os.makedirs(test_dir_name, exist_ok=True)
           os.chdir(test_dir_name)
          
