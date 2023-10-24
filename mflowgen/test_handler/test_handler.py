@@ -56,13 +56,15 @@ class TestHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, step, attach_points ):
+  def launch( s, help_, step, attach_points, unit ):
 
     if help_:
       s.launch_help()
       return
-
-    s.launch_test( step, attach_points )
+    if unit:
+      s.launch_unit_test( step )
+    else:
+      s.launch_test( step, attach_points )
 
   #-----------------------------------------------------------------------
   # launch_test
@@ -191,9 +193,65 @@ class TestHandler:
           subprocess.check_call( 'make outputs'.split(' ') )
           # Return to the main build dir
           os.chdir('../..')
-          
 
+  #-----------------------------------------------------------------------
+  # launch_unit_test
+  #-----------------------------------------------------------------------
+ 
+  def launch_unit_test( s, step ):
+    yaml_path = './.mflowgen.yml'
+    # Get the graph object
+    try:
+      data = read_yaml( yaml_path )
+    except:
+      print( 'Error: Must run mflowgen test inside configured build directory' )
+      sys.exit( 1 )
+    
+    # Find specified step directory
+    step_under_test = s.get_step_data( step )
+    print( f"Running unit test for step {step}: {step_under_test['name']}" )
+    # Get test(s) we need to run
+    try:
+      tests = step_under_test[ 'tests' ]
+    except KeyError:
+      print( f"Error: Step {step} has no tests in this graph." )
+      print(step_under_test)
+      sys.exit(1)
 
+    for test in tests:
+      # Get the path to the unit test graph
+      unit_test_graph_path = test[ 'unit_test_graph' ]
+      if not os.path.isabs( unit_test_graph_path ):
+        unit_test_graph_path = os.path.abspath( f"{step_under_test['source']}/{unit_test_graph_path}" )
+
+      # Make a build dir to run the unit test
+      test_dir_name = f"unit-tests/test-{test['description']}-from-{step}"
+      os.makedirs(test_dir_name, exist_ok=True)
+      os.chdir(test_dir_name)
+
+      # Configure the test build dir to run the unit_test_graph
+      subprocess.check_call( f"mflowgen run --design {unit_test_graph_path}".split(' ') )
+      subprocess.check_call( 'make clean-all'.split(' ') )
+
+      # Get the step under test's build id in the unit test graph
+      step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
+      
+      for step_metadata_dir in step_metadata_dirs:
+        step_data = read_yaml( f"{step_metadata_dir}/configure.yml" )
+        if step_under_test['name'] == step_data['name']:
+          unit_test_step_id = step_data['build_id']
+          break
+
+      try:
+        unit_test_step_id
+      except NameError:
+        print( f"Error: Step under test {step_under_test['name']} is not present in its unit test graph" )
+        sys.exit(1)  
+
+      # Run normal mflowgen test command on this step in this unit test graph
+      subprocess.check_call( f"mflowgen test --step {unit_test_step_id}".split(' ') )
+
+    
   #-----------------------------------------------------------------------
   # launch_help
   #-----------------------------------------------------------------------
