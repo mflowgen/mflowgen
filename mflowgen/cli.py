@@ -67,13 +67,14 @@ def parse_cmdline():
   p.add_argument( "-h", "--help",     action="store_true"          )
 
   # Run-related arguments
-  p.add_argument(       "--demo",     action="store_true"          )
-  p.add_argument(       "--design"                                 )
-  p.add_argument(       "--update",   action="store_true"          )
-  p.add_argument(       "--test",     action="store_true"          )
-  p.add_argument(       "--subgraph", action="store_true"          )
-  p.add_argument(       "--backend",  default="make",
-                                      choices=("make", "ninja")    )
+  p.add_argument(       "--demo",       action="store_true"          )
+  p.add_argument(       "--design"                                   )
+  p.add_argument(       "--update",     action="store_true"          )
+  p.add_argument(       "--test",       action="store_true"          )
+  p.add_argument(       "--subgraph",   action="store_true"          )
+  p.add_argument(       "--backend",    default="make",
+                                        choices=("make", "ninja")    )
+  p.add_argument(       "--graph_args"                               )
 
   # Stash-related arguments
   p.add_argument(       "args", type=str, nargs='*' ) # positional
@@ -166,6 +167,7 @@ def main():
       test     = opts.test,
       subgraph = opts.subgraph,
       backend  = opts.backend,
+      graph_args = opts.graph_args,
     )
     return
 

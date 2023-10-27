@@ -133,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, test=False, subgraph=False, backend='make' ):
+  def launch( s, help_, design, update=False, test=False, subgraph=False, backend='make', graph_args='' ):
 
     # Check that this design directory exists
 
@@ -141,8 +141,14 @@ class RunHandler:
       print( ' Error: argument --design required',
                                'unless using --update or --demo' )
       sys.exit( 1 )
+    
+    # Convert the graph_args argument into a parameter dict
+    if graph_args:
+      graph_args_dict = eval(graph_args)
+    else:
+      graph_args_dict = {}
 
-    s.launch_run( design, update, test, subgraph, backend )
+    s.launch_run( design, update, test, subgraph, backend, graph_args_dict )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -151,7 +157,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, test, subgraph, backend ):
+  def launch_run( s, design, update, test, subgraph, backend, graph_args ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -160,7 +166,6 @@ class RunHandler:
     s.save_construct_path( construct_path )
 
     # Import the graph for this design
-
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
@@ -187,7 +192,7 @@ class RunHandler:
 
     # Construct the graph
 
-    g = graph_construct_mod.construct()
+    g = graph_construct_mod.construct(**graph_args)
     
     # Add input node if the graph is being instantiated as a subgraph
     # within another graph and it specifies inputs. This enables graphs 
