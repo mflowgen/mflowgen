@@ -129,6 +129,9 @@ class TestHandler:
              'in order for tests to run.' )
 
     synth_step_data = s.get_step_data( synth_step )
+    # Get design_name and clock_period param values from synth_step
+    design_name = synth_step_data['parameters']['design_name']
+    clock_period = synth_step_data['parameters']['clock_period']
   
     ap_list = attach_points 
     if not ap_list:
@@ -176,7 +179,7 @@ class TestHandler:
           os.chdir(test_dir_name)
          
           # Configure the test build dir
-          subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph".split(' ') )
+          subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph --graph_args {{'design_name':'{design_name}','clock_period':{clock_period}}}".split(' ') )
           subprocess.check_call( 'make clean-all'.split(' ') )
           # Prepare the inputs
           os.makedirs('inputs', exist_ok=True)
