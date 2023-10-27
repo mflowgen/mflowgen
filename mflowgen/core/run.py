@@ -35,7 +35,7 @@ class RunHandler:
   #   - Read from the .mflowgen.yml metadata in the design directory
   #   - If it does not exist, then use "construct.py" as default
   #
-  
+
   @staticmethod
   def find_construct_path( design, update ):
 
@@ -133,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, subgraph=False, backend='make' ):
+  def launch( s, help_, design, update=False, subgraph=False, backend='make', graph_args='' ):
 
     # Check that this design directory exists
 
@@ -142,7 +142,13 @@ class RunHandler:
                                'unless using --update or --demo' )
       sys.exit( 1 )
 
-    s.launch_run( design, update, subgraph, backend )
+    # Convert the graph_args argument into a parameter dict
+    if graph_args:
+      graph_args_dict = eval(graph_args)
+    else:
+      graph_args_dict = {}
+
+    s.launch_run( design, update, subgraph, backend, graph_args_dict )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -151,7 +157,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, subgraph, backend ):
+  def launch_run( s, design, update, subgraph, backend, graph_args ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -160,7 +166,6 @@ class RunHandler:
     s.save_construct_path( construct_path )
 
     # Import the graph for this design
-
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
@@ -187,10 +192,10 @@ class RunHandler:
 
     # Construct the graph
 
-    g = graph_construct_mod.construct()
-    
+    g = graph_construct_mod.construct(**graph_args)
+
     # Add input node if the graph is being instantiated as a subgraph
-    # within another graph and it specifies inputs. This enables graphs 
+    # within another graph and it specifies inputs. This enables graphs
     # with inputs to work both as subgraphs where a parent graph supplies
     # inputs and as standalone graphs with no inputs.
 
@@ -217,7 +222,7 @@ class RunHandler:
 
     list_target   = backend + " list"
     status_target = backend + " status"
-    
+
     print( "Targets: run \"" + list_target   + "\" and \""
                              + status_target + "\"" )
     print()
