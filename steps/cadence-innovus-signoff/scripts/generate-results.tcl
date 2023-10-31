@@ -53,14 +53,19 @@ saveNetlist -excludeLeafCell                        \
 
 # Write netlist for GL simulation
 
-set gl_exclude_list ""
-foreach x $ADK_NETLIST_EXCLUDE_CELL_LIST {
-  append gl_exclude_list $x " "
+if {[info exists ADK_NETLIST_EXCLUDE_CELL_LIST]} {
+    set gl_exclude_list ""
+    foreach x $ADK_NETLIST_EXCLUDE_CELL_LIST {
+      append gl_exclude_list $x " "
+    }
+    puts "The variable 'ADK_NETLIST_EXCLUDE_CELL_LIST' exists: $gl_exclude_list"
+    saveNetlist -excludeLeafCell \
+                -excludeCellInst $gl_exclude_list \
+                $vars(results_dir)/$vars(design).vcs.v
+} else {
+    puts "The variable 'ADK_NETLIST_EXCLUDE_CELL_LIST' does not exist"
+    saveNetlist -excludeLeafCell $vars(results_dir)/$vars(design).vcs.v
 }
-
-saveNetlist -excludeLeafCell \
-            -excludeCellInst $gl_exclude_list \
-            $vars(results_dir)/$vars(design).vcs.v
 
 # Write netlist for Power-Ground Aware GL simulation
 
