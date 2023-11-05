@@ -40,10 +40,23 @@ set merge_files_oas \
         [lsort [glob -nocomplain inputs/*.oas*]] \
     ]
 
+#######################################################
+#   Don't uniquify cell names to prevent DRC errors   #
+#######################################################
+# streamOut $vars(results_dir)/$vars(design)-merged.oas \
+#     -units ${stream_out_units} \
+#     -dieAreaAsBoundary \
+#     -format oasis \
+#     -mapFile $vars(gds_layer_map) \
+#     -uniquifyCellNames \ <--------------- remove this
+#     -merge $merge_files_oas
+#######################################################
+#   Don't uniquify cell names to prevent DRC errors   #
+#######################################################
+
 streamOut $vars(results_dir)/$vars(design)-merged.oas \
     -units ${stream_out_units} \
     -dieAreaAsBoundary \
     -format oasis \
     -mapFile $vars(gds_layer_map) \
-    -uniquifyCellNames \
     -merge $merge_files_oas
