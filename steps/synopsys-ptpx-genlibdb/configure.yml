@@ -35,6 +35,7 @@ commands:
 
 parameters:
   design_name: undefined
+  corner: typical
   order:
     - read_design.tcl
     - extract_model.tcl

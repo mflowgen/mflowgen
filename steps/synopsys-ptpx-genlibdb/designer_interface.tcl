@@ -16,22 +16,13 @@
 #-------------------------------------------------------------------------
 
 set ptpx_additional_search_path   inputs/adk
-set ptpx_target_libraries         \
-    [join "
-        [lsort [glob -nocomplain inputs/adk/stdcells.db]]
-	[lsort [glob -nocomplain inputs/adk/stdcells-lvt.db]]
-	[lsort [glob -nocomplain inputs/adk/stdcells-ulvt.db]]
-        [lsort [glob -nocomplain inputs/adk/stdcells-pm.db]]
-        [lsort [glob -nocomplain inputs/adk/iocells.db]]
-        [lsort [glob -nocomplain inputs/adk/*-typical*.db]]
-        [lsort [glob -nocomplain inputs/*tt*.db]]
-        [lsort [glob -nocomplain inputs/*TT*.db]]
-        [lsort [glob -nocomplain inputs/*-typical*.db]]
-    "]
-set ptpx_extra_link_libraries     [join "
-                                    [lsort [glob -nocomplain inputs/*.db]]
-                                    [lsort [glob -nocomplain inputs/adk/*.db]]
-                                "]
+set ptpx_target_libraries [join "
+    [lsort [glob -nocomplain inputs/adk/stdcells*-$::env(corner).db]]
+"]
+set ptpx_extra_link_libraries [join "
+    [lsort [glob -nocomplain inputs/adk/*-$::env(corner).db]]
+    [lsort [glob -nocomplain inputs/*-$::env(corner).db]]
+"]
 
 # Remove any elements of target libraries froim extra_link_libraries
 set exclusion_result {}

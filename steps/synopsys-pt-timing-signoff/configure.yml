@@ -38,4 +38,6 @@ commands:
 
 parameters:
   design_name: undefined
+  corner_setup: typical
+  corner_hold: bc
 
