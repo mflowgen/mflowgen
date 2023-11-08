@@ -307,7 +307,21 @@ class TestHandler:
   #-----------------------------------------------------------------------
 
   def launch_list( s, help_ ):
-    pass
+    print()
+    print( bold( 'Tests:' ) )
+    print()
+    step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
+    # Iterate over steps
+    for step_metadata_dir in step_metadata_dirs:
+      # At each step grab each test's description
+      step_data = read_yaml( f"{step_metadata_dir}/configure.yml" )
+      if 'tests' in step_data:
+        step_build_dir = step_data['build_dir']
+        print(f" - {step_build_dir}:")
+        for test in step_data['tests']:
+          print( f"   - {test['description']}" )
+
+    print()
 
   #-----------------------------------------------------------------------
   # launch_status
