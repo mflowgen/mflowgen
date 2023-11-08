@@ -30,6 +30,12 @@ class TestHandler:
 
   def __init__( s ):
     s.metadata_dir = '.mflowgen'
+    s.commands = [
+      'run',
+      'list',
+      'status',
+      'help'
+    ]
   
   #-----------------------------------------------------------------------
   # helpers
@@ -56,21 +62,45 @@ class TestHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, step, attach_points, unit ):
+  def launch( s, args, help_, step, attach_points, unit ):
 
-    if help_:
+    if help_ and not args:
       s.launch_help()
       return
-    if unit:
-      s.launch_unit_test( step )
-    else:
-      s.launch_test( step, attach_points )
+
+    try:
+      command = args[0]
+      assert command in s.commands # valid commands only
+    except Exception as e:
+      print( 'test: Unrecognized commands (see "mflowgen test help")' )
+      sys.exit( 1 )
+
+    if command == 'run'      : s.launch_run( help_, step, attach_points, unit )
+    elif command == 'list'   : s.launch_list( help_ )
+    elif command == 'status' : s.launch_status( help_ )
+    else                     : s.launch_help()
 
   #-----------------------------------------------------------------------
   # launch_test
   #-----------------------------------------------------------------------
 
-  def launch_test( s, step, attach_points ):
+  def launch_run( s, help_, step, attach_points, unit ):
+
+    # Help message
+
+    def print_help():
+      print()
+      print( bold( 'Usage:' ), 'mflowgen test run --step <step id> --attach_points <attach point ids>' )
+      print( bold( 'Example:' ), 'mflowgen test run --step 4 --attach_points 7,8'                      )
+      print()
+
+    if help_ or not step:
+      print_help()
+      return
+
+    if unit:
+      s.launch_unit_test( step )
+
     yaml_path = './.mflowgen.yml'
     # Get the graph object
     try:
@@ -252,7 +282,7 @@ class TestHandler:
         sys.exit(1)  
 
       # Run normal mflowgen test command on this step in this unit test graph
-      subprocess.check_call( f"mflowgen test --step {unit_test_step_id}".split(' ') )
+      subprocess.check_call( f"mflowgen test run --step {unit_test_step_id}".split(' ') )
       # Return to initial graph dir
       os.chdir('../..')
 
@@ -263,10 +293,25 @@ class TestHandler:
 
   def launch_help( s ):
     print()
-    print( bold( 'Test Options:' ) )
+    print( bold( 'Test Commands:' ) )
     print()
-    print( bold( ' --step :' ),          'The step whose tests you wish to run'                          )
-    print( bold( ' --attach_points :' ), 'Comma-separated list of attach points (locations to run test)' )
+    print( bold( ' -- run :'    ), 'Run the tests of a specifiedi step within this build directory' )
+    print( bold( ' -- list :'   ), 'List the tests available to run within this build directory'    )
+    print( bold( ' -- status :' ), 'Shows whether the available tests have passed/failed'           )
+    print()
+    print( 'Run any command with -h to see more details' )
     print()
 
+  #-----------------------------------------------------------------------
+  # launch_list
+  #-----------------------------------------------------------------------
 
+  def launch_list( s, help_ ):
+    pass
+
+  #-----------------------------------------------------------------------
+  # launch_status
+  #-----------------------------------------------------------------------
+
+  def launch_status( s, help_ ):
+    pass

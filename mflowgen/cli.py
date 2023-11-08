@@ -146,6 +146,7 @@ def main():
   if opts.args and opts.args[0] == 'test':
     thandler = TestHandler()
     thandler.launch(
+      args           = opts.args[1:],
       step           = opts.step,
       attach_points  = opts.attach_points,
       unit           = opts.unit,
