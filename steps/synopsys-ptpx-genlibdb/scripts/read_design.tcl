@@ -40,7 +40,7 @@ if {[ file exists $ptpx_sdc ]} {
 # Try to read the spef parasitic files
 
 if {[ file exists $ptpx_spef ]} {
-    puts "\n  > Info: Sourcing $ptpx_sdc\"\n"
+    puts "\n  > Info: Sourcing $ptpx_spef\"\n"
     read_parasitics -format spef $ptpx_spef
 }  else {
     puts "\n  > Warn: No spef parasitic file found\"\n"
