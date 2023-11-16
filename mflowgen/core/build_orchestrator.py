@@ -12,7 +12,7 @@ import re
 import shutil
 
 from mflowgen.assertions.assertion_helpers import dump_assertion_check_scripts
-from mflowgen.utils import get_top_dir, get_files_in_dir
+from mflowgen.utils import get_top_dir, get_files_in_dir, write_yaml
 
 class BuildOrchestrator:
 
@@ -249,6 +249,26 @@ class BuildOrchestrator:
 
   def dump_graphviz( s ):
     s.g.plot( dot_f = s.metadata_dir + '/graph.dot' )
+  
+  #-----------------------------------------------------------------------
+  # dump_attach_points
+  #-----------------------------------------------------------------------
+  # Dump a YAML file that maps attach points (i.e. PLACE, CTS, ROUTE) to
+  # specific steps in this build directory for use by the test handler.
+
+  def dump_attach_points( s ):
+    ap_dict = {}
+    steps = s.g.all_steps()
+    # Get the attach point tag for each step
+    for step_name in steps:
+      step = s.g.get_step( step_name )
+      for tag in step.get_attach_point_tags():
+        if tag in ap_dict:
+          ap_dict[tag].append( step_name )
+        else:
+          ap_dict[tag] = [ step_name ]
+
+    write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yaml' ) 
 
   #-----------------------------------------------------------------------
   # set_unique_build_ids
@@ -413,6 +433,11 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
     # Dump graphviz dot file to the metadata directory
 
     s.dump_graphviz()
+
+    # Dump attach point dict yaml file to metadata directory
+
+    s.dump_attach_points()
+
 
   #-----------------------------------------------------------------------
   # build
