@@ -268,7 +268,7 @@ class BuildOrchestrator:
         else:
           ap_dict[tag] = [ step_name ]
 
-    write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yaml' ) 
+    write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yml' ) 
 
   #-----------------------------------------------------------------------
   # set_unique_build_ids
