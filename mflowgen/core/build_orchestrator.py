@@ -262,11 +262,13 @@ class BuildOrchestrator:
     # Get the attach point tag for each step
     for step_name in steps:
       step = s.g.get_step( step_name )
+      build_id = s.build_ids[step_name]
+      full_name = f"{build_id}-{step_name}"
       for tag in step.get_attach_point_tags():
         if tag in ap_dict:
-          ap_dict[tag].append( step_name )
+          ap_dict[tag].append( full_name )
         else:
-          ap_dict[tag] = [ step_name ]
+          ap_dict[tag] = [ full_name ]
 
     write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yml' ) 
 
