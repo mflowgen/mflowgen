@@ -18,7 +18,7 @@ import glob
 
 from datetime       import datetime
 
-from mflowgen.utils import bold, yellow
+from mflowgen.utils import bold, red, yellow, green
 from mflowgen.utils import read_yaml
 
 
@@ -36,7 +36,7 @@ class TestHandler:
       'status',
       'help'
     ]
-  
+
   #-----------------------------------------------------------------------
   # helpers
   #-----------------------------------------------------------------------
@@ -108,7 +108,7 @@ class TestHandler:
     except:
       print( 'Error: Must run mflowgen test inside configured build directory' )
       sys.exit( 1 )
-    
+
     # Find specified step directory
     step_under_test = s.get_step_data( step )
     # Get test(s) we need to run
@@ -117,9 +117,9 @@ class TestHandler:
     except KeyError:
       print( f"Step {step} has no tests in this graph." )
       return
-    
+
     step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
-      
+
     # Loop over the tests to ensure that each provides a test graph
     # and collect the attach points if they're not provided in the cli args.
     attach_point_tags = set()
@@ -135,7 +135,7 @@ class TestHandler:
       if not attach_points:
         for ap in test['attach_points']:
           attach_point_tags.add( ap )
-     
+
     synth_step = None
     ap_step_dict = {}
     # Find a synth step since we need the sdc from this to run tests
@@ -162,11 +162,11 @@ class TestHandler:
     # Get design_name and clock_period param values from synth_step
     design_name = synth_step_data['parameters']['design_name']
     clock_period = synth_step_data['parameters']['clock_period']
-  
-    ap_list = attach_points 
+
+    ap_list = attach_points
     if not ap_list:
       ap_list = list( ap_step_dict.values() )
-       
+
     # Ensure that every attach point is valid
     for attach_point in ap_list:
       ap_data = s.get_step_data( attach_point )
@@ -182,7 +182,7 @@ class TestHandler:
               f"(design.checkpoint)")
         sys.exit(1)
 
-    subprocess.check_call( f"make {synth_step}".split(' ') )    
+    subprocess.check_call( f"make {synth_step}".split(' ') )
     for attach_point in ap_list:
       # Make attach point
       subprocess.check_call( f"make {attach_point}".split(' ') )
@@ -207,7 +207,7 @@ class TestHandler:
           test_dir_name = f"integration-tests/test-{test['description']}-from-{step}-at-{attach_point}"
           os.makedirs(test_dir_name, exist_ok=True)
           os.chdir(test_dir_name)
-         
+
           # Configure the test build dir
           subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph --graph_args {{'design_name':'{design_name}','clock_period':{clock_period}}}".split(' ') )
           subprocess.check_call( 'make clean-all'.split(' ') )
@@ -224,13 +224,15 @@ class TestHandler:
           os.chdir('..')
           # Finally, run the test
           subprocess.check_call( 'make outputs'.split(' ') )
+          # Create symink to test outputs for easy access
+          subprocess.check_call( 'ln -sf *-outputs/outputs test_outputs' )
           # Return to the main build dir
           os.chdir('../..')
 
   #-----------------------------------------------------------------------
   # launch_unit_test
   #-----------------------------------------------------------------------
- 
+
   def launch_unit_test( s, step ):
     yaml_path = './.mflowgen.yml'
     # Get the graph object
@@ -239,7 +241,7 @@ class TestHandler:
     except:
       print( 'Error: Must run mflowgen test inside configured build directory' )
       sys.exit( 1 )
-    
+
     # Find specified step directory
     step_under_test = s.get_step_data( step )
     print( f"Running unit test for step {step}: {step_under_test['name']}" )
@@ -268,7 +270,7 @@ class TestHandler:
 
       # Get the step under test's build id in the unit test graph
       step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
-      
+
       for step_metadata_dir in step_metadata_dirs:
         step_data = read_yaml( f"{step_metadata_dir}/configure.yml" )
         if step_under_test['name'] == step_data['name']:
@@ -279,14 +281,14 @@ class TestHandler:
         unit_test_step_id
       except NameError:
         print( f"Error: Step under test {step_under_test['name']} is not present in its unit test graph" )
-        sys.exit(1)  
+        sys.exit(1)
 
       # Run normal mflowgen test command on this step in this unit test graph
       subprocess.check_call( f"mflowgen test run --step {unit_test_step_id}".split(' ') )
       # Return to initial graph dir
       os.chdir('../..')
 
-    
+
   #-----------------------------------------------------------------------
   # launch_help
   #-----------------------------------------------------------------------
@@ -295,7 +297,7 @@ class TestHandler:
     print()
     print( bold( 'Test Commands:' ) )
     print()
-    print( bold( ' -- run :'    ), 'Run the tests of a specifiedi step within this build directory' )
+    print( bold( ' -- run :'    ), 'Run the tests of a specified step within this build directory' )
     print( bold( ' -- list :'   ), 'List the tests available to run within this build directory'    )
     print( bold( ' -- status :' ), 'Shows whether the available tests have passed/failed'           )
     print()
@@ -328,4 +330,36 @@ class TestHandler:
   #-----------------------------------------------------------------------
 
   def launch_status( s, help_ ):
-    pass
+    print()
+    print( bold( 'Test statuses:' ) )
+    print()
+    step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
+    ap_dict = read_yaml(f"{s.metadata_dir}/attach_points_dict.yml")
+    # Iterate over steps
+    for step_metadata_dir in step_metadata_dirs:
+      # At each step grab each test's description
+      step_data = read_yaml( f"{step_metadata_dir}/configure.yml" )
+      if 'tests' in step_data:
+        step_build_dir = step_data['build_dir']
+        step_build_id = step_data['build_id']
+        print(f" - {step_build_dir}:")
+        for test in step_data['tests']:
+          print( f"   - {test['description']}" )
+          for ap in test['attach_points']:
+            for ap_step in ap_dict[ap]:
+              ap_build_id = ap_step.split('-')[0]
+              test_outputs_dir = f"integration-tests/test-{test['description']}-from-{step_build_id}-at-{ap_build_id}/test_outputs"
+              test_result_file = f"{test_outputs_dir}/result"
+              if not os.path.exists(test_result_file):
+                status = yellow('Not run')
+              else:
+                with open(test_result_file) as f:
+                  result_line = f.readline().strip('\n')
+                if "PASS" in result_line:
+                  status = green('PASS')
+                else:
+                  status = red('FAIL')
+              print( f"     - {ap}: {status}" )
+    print()
+
+
