@@ -11,7 +11,7 @@ if { $uniquify_with_design_name == True } {
 }
 
 write_snapshot -directory results_syn -tag final
-write_design -innovus -basename results_syn/syn_out
+write_design -base_name results_syn/syn_out
 write_sdf > results_syn/syn_out.sdf
 write_spef > results_syn/syn_out.spef
 
