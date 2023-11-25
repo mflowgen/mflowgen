@@ -149,6 +149,20 @@ set vars(lef_files) [join "
                       [lsort [glob -nocomplain inputs/*.lef]]
                     "]
 
+#---------------------------------------------------------------------
+# Custom Tie Cell Settings
+#---------------------------------------------------------------------
+set vars(tie_cells,max_distance) $ADK_TIE_MAX_DISTANCE
+set vars(tie_cells,max_fanout)   $ADK_TIE_MAX_FANOUT
+
+#---------------------------------------------------------------------
+# MMMC Setup (Library Sets)
+#---------------------------------------------------------------------
+# library_set: socv (not sure if foundation flow supports it)
+set vars(libs_typical,socv) [glob -nocomplain $vars(adk_dir)/*.socv.setup]
+set vars(libs_bc,socv)      [glob -nocomplain $vars(adk_dir)/*.socv.hold]
+set vars(libs_wc,socv)      [glob -nocomplain $vars(adk_dir)/*.socv.setup]
+
 #-------------------------------------------------------------------------
 # RC Corners
 #-------------------------------------------------------------------------
@@ -211,29 +225,25 @@ if {[file exists $vars(adk_dir)/pdk-rcworst-qrcTechFile]} {
 # Delay Corners (OCV style)
 #-------------------------------------------------------------------------
 
-set vars(delay_corners)                      "delay_default"
+set vars(delay_corners)                      "delay_typical"
 
-set vars(delay_default,early_library_set)    libs_typical
-set vars(delay_default,late_library_set)     libs_typical
-set vars(delay_default,rc_corner)            typical
+set vars(delay_typical,early_library_set)    libs_typical
+set vars(delay_typical,late_library_set)     libs_typical
+set vars(delay_typical,rc_corner)            typical
 
 if {[lsearch -exact $vars(rc_corners) "rcbest"] != -1} {
   lappend vars(delay_corners) "delay_best"
-  set vars(delay_best,early_library_set)    libs_typical
-  set vars(delay_best,late_library_set)     libs_typical
+  set vars(delay_best,early_library_set)    libs_bc
+  set vars(delay_best,late_library_set)     libs_bc
   set vars(delay_best,rc_corner)            rcbest
 }
 
-# Use the best case for hold instead if the files are available
-
-if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
-  set vars(delay_default,early_library_set)    libs_bc
-  if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {
-    set vars(delay_best,early_library_set)    libs_bc
-  }
+if {[lsearch -exact $vars(rc_corners) "rcworst"] != -1} {
+  lappend vars(delay_corners) "delay_worst"
+  set vars(delay_worst,early_library_set)    libs_wc
+  set vars(delay_worst,late_library_set)     libs_wc
+  set vars(delay_worst,rc_corner)            rcworst
 }
-
-
 
 #-------------------------------------------------------------------------
 # Delay Corners (old bc_wc style)
@@ -268,7 +278,7 @@ set vars(constraints_default,post_cts_sdc)  $synthesis_sdc
 
 set vars(analysis_views)                       "analysis_default"
 
-set vars(analysis_default,delay_corner)        delay_default
+set vars(analysis_default,delay_corner)        delay_typical
 set vars(analysis_default,constraint_mode)     constraints_default
 
 if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {
