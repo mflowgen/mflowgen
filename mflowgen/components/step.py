@@ -116,18 +116,12 @@ class Step:
     # Make sure that test specifications are valid
 
     test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description', 'unit_test_graph']
-    attach_points = ['SYNTHESIS', 'INIT', 'POWER', 'PLACE', 'CTS', 'POSTCTS_HOLD', 'ROUTE', \
-                     'POSTROUTE', 'POSTROUTE_HOLD', 'SIGNOFF']
-
     if 'attach_point_tags' in data.keys():
       # If attach_point_tags is a string, interpet as space-separated list
       if type( data['attach_point_tags'] ) == str:
         data['attach_point_tags'] = data['attach_point_tags'].split()
       assert type( data['attach_point_tags'] ), \
         'attach_point_tags must be YAML list or string'
-      for tag in data['attach_point_tags']:
-        assert tag in attach_points, \
-          f"{tag} is not a valid attach point tag. Must be one of {attach_points}."
 
     if 'tests' in data.keys():
       assert type( data['tests'] ) == list
@@ -141,13 +135,9 @@ class Step:
         # Test must define exactly one of test_node or test_graph
         assert ( 'test_node' in test ) != ( 'test_graph' in test ), \
           'Test must define exactly one of test_node or test_graph'
-        
+
         # Check that the attach points for each test are valid
         assert 'attach_points' in test, 'must specify attach points for test'
-        for point in test['attach_points']:
-          assert point in attach_points, \
-            f"{point} is not a valid attach point. Must be one of {attach_points}"
-      
 
     # Save additional metadata aside from the YAML data
     #
@@ -593,13 +583,13 @@ class Step:
       return s._config['debug']
     else:
       return []
-  
+
   def get_tests( s ):
     if 'tests' in s._config.keys():
       return s._config['tests']
     else:
       return []
-  
+
   def get_attach_point_tags( s ):
     if 'attach_point_tags' in s._config.keys():
       return s._config['attach_point_tags']
