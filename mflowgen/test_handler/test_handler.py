@@ -13,13 +13,13 @@ import shutil
 import subprocess
 import sys
 import yaml
-import importlib.util
 import glob
 
 from datetime       import datetime
 
 from mflowgen.utils import bold, red, yellow, green
 from mflowgen.utils import read_yaml
+from mflowgen.components import Subgraph
 
 
 #-------------------------------------------------------------------------
@@ -176,13 +176,9 @@ class TestHandler:
         print(f"Error: Step {attach_point} is not a valid test attach " \
               f"point becase it does not have any outputs.")
         sys.exit(1)
-      if 'design.checkpoint' not in ap_outputs:
-        print(f"Error: Step {attach_point} is not a valid test attach " \
-              f"point because it does not produce an Innovus checkpoint " \
-              f"(design.checkpoint)")
-        sys.exit(1)
 
     subprocess.check_call( f"make {synth_step}".split(' ') )
+
     for attach_point in ap_list:
       # Make attach point
       subprocess.check_call( f"make {attach_point}".split(' ') )
@@ -214,12 +210,34 @@ class TestHandler:
           # Prepare the inputs
           os.makedirs('inputs', exist_ok=True)
           os.chdir('inputs')
-          # Grab design.checkpoint from the attach point step
-          os.symlink( f"../../../{ap_step_data['build_dir']}/outputs/design.checkpoint", 'design.checkpoint' )
-          # Grab adk (HACK because trying to only use build dir metadata, not the graph obj)
-          os.symlink( f"../../../{ap_step_data['build_dir']}/inputs/adk", 'adk' )
-          # Grab design.sdc from synth step
-          os.symlink( f"../../../{synth_step_data['build_dir']}/outputs/design.sdc", 'design.sdc' )
+
+          # Get the test's inputs from its graph
+          test_graph = Subgraph( test_graph_path, 'test', design_name=design_name, clock_period=clock_period ).get_graph()
+          test_inputs = test_graph.all_inputs()
+          ap_step_dir = f"../../../{ap_step_data['build_dir']}"
+          synth_step_dir = f"../../../{synth_step_data['build_dir']}"
+
+          # Connect each test input to something in the graph
+          for test_input in test_inputs:
+            # Some special cases
+            # ADK connection
+            if test_input == 'adk':
+              # Grab adk (HACK because trying to only use build dir metadata, not the graph obj)
+              os.symlink( f"{ap_step_dir}/inputs/adk", 'adk' )
+            # sdc from synth is frequently needed to open innovus design checkpoints
+            elif test_input == 'design.sdc':
+              # Grab design.sdc from synth step
+              os.symlink( f"{synth_step_dir}/outputs/design.sdc", 'design.sdc' )
+            # End special cases
+            # If the input we need is one of attach point's outputs, connect it
+            elif test_input in ap_step_data['outputs']:
+              os.symlink( f"{ap_step_dir}/outputs/{test_input}", test_input )
+            # If we get to this point, the attach point isn't compatible with the test so we can't run it
+            else:
+              print( f"Error: Test {test['description']} from step {step} is not compatible with attach point {attach_point} " \
+                     f"because there is no way to connect test input {test_input}." )
+              sys.exit(1)
+
           # Return to the test build dir
           os.chdir('..')
           # Finally, run the test
