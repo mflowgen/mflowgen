@@ -17,8 +17,8 @@ from mflowgen.core.run import RunHandler as rh
 
 class Subgraph(Step):
 
-  def __init__( s, graph_path, design_name ):
-    
+  def __init__( s, graph_path, subgraph_name, **kwargs ):
+
     # Get the construct.py file path
 
     construct_path = rh.find_construct_path( graph_path, False )
@@ -49,12 +49,12 @@ class Subgraph(Step):
       sys.exit( 1 )
 
     # Construct the graph
-    s._graph = subgraph_construct_mod.construct()
+    s._graph = subgraph_construct_mod.construct(**kwargs)
 
     # Generate step data
 
     data = {}
-    data['name'] = design_name
+    data['name'] = subgraph_name
     data['inputs'] = s._graph.all_inputs()
     data['outputs'] = s._graph.all_outputs()
     data['commands'] = [ \
@@ -71,9 +71,9 @@ class Subgraph(Step):
       data['postconditions'].append(f"assert File( 'outputs/{output}' )")
 
     data['source'] = c_dirname
-    
+
     super().__init__(data)
-  
+
   #-----------------------------------------------------------------------
   # get_graph
   #-----------------------------------------------------------------------
