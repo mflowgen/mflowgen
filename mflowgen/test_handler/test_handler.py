@@ -243,7 +243,8 @@ class TestHandler:
           # Finally, run the test
           subprocess.check_call( 'make outputs'.split(' ') )
           # Create symink to test outputs for easy access
-          subprocess.check_call( 'ln -sf *-outputs/outputs test_outputs' )
+          output_dir = glob.glob( '[0-9]*-outputs/outputs' )[0]
+          os.symlink( output_dir, 'test_outputs' )
           # Return to the main build dir
           os.chdir('../..')
 
