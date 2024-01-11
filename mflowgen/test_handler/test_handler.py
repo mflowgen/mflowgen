@@ -55,6 +55,45 @@ class TestHandler:
       print( f"Error: {step_index} is not a valid step id in this build directory" )
       sys.exit( 1 )
 
+  # gen_files_from_checkpoint
+  #
+  # Generates .gds, .v, .lef, .sdc, .sdf, .def files from Innovus checkpoint
+  #
+  # This helper function is run from within the test's input directory
+
+  def _gen_files_from_checkpoint( s, adk_path, foundation_flow_path, checkpoint_path ):
+    initial_dir = os.getcwd()
+    gen_files_dir = 'gen_input_files'
+    os.mkdir( gen_files_dir )
+    os.chdir( gen_files_dir )
+
+    # Get path to construct.py for gen_files subgraph
+    construct_path = os.path.dirname( os.path.abspath( __file__ ) ) + '/gen_design_files_subgraph/construct.py'
+    # Configure gen_files dir as subgraph build dir
+    subprocess.check_call( f"mflowgen run --design {construct_path} --subgraph".split(' ') )
+
+    # Provide the subgraph's input design.checkpoint
+    os.mkdir( 'inputs' )
+    os.chdir( 'inputs' )
+
+    # ADK
+    os.symlink( f"../../{adk_path}", 'adk' )
+    # Foundation Flow
+    os.symlink( f"../../{foundation_flow_path}", 'innovus-foundation-flow' )
+    # Innovus Checkpoint
+    os.symlink( f"../../{checkpoint_path}", 'design.checkpoint' )
+
+    os.chdir( '..' )
+
+    # Make subgraph outputs
+    subprocess.check_call( 'make outputs'.split(' ') )
+
+    # Change back to initial dir
+    os.chdir( initial_dir )
+
+    # Return the location of the subgraph outputs
+    return f"{gen_files_dir}/outputs"
+
 
   #-----------------------------------------------------------------------
   # launch
@@ -218,12 +257,14 @@ class TestHandler:
           synth_step_dir = f"../../../{synth_step_data['build_dir']}"
 
           # Connect each test input to something in the graph
+
+          adk_path = f"{ap_step_dir}/inputs/adk"
           for test_input in test_inputs:
             # Some special cases
             # ADK connection
             if test_input == 'adk':
               # Grab adk (HACK because trying to only use build dir metadata, not the graph obj)
-              os.symlink( f"{ap_step_dir}/inputs/adk", 'adk' )
+              os.symlink( adk_path, 'adk' )
             # sdc from synth is frequently needed to open innovus design checkpoints
             elif test_input == 'design.sdc':
               # Grab design.sdc from synth step
@@ -232,6 +273,16 @@ class TestHandler:
             # If the input we need is one of attach point's outputs, connect it
             elif test_input in ap_step_data['outputs']:
               os.symlink( f"{ap_step_dir}/outputs/{test_input}", test_input )
+            # If the input we need isn't one of the attach point's outputs, but there's an Innovus
+            # design.checkpoint in the outputs, we may be able to generate the test's inputs
+            elif 'design.checkpoint' in ap_step_data['outputs'] and any(ext in test_input for ext in ['.gds', '.v', '.lef', '.sdc', '.def']):
+              print(f"Generating test input file {test_input} from {ap_step_dir}/outputs/design.checkpoint")
+              # Generate the files
+              gen_files_dir = s._gen_files_from_checkpoint( adk_path,
+                                                            f"{ap_step_dir}/inputs/innovus-foundation-flow",
+                                                            f"{ap_step_dir}/outputs/design.checkpoint" )
+              # Symlink to newly generated files
+              os.symlink( f"{gen_files_dir}/{test_input}", test_input )
             # If we get to this point, the attach point isn't compatible with the test so we can't run it
             else:
               print( f"Error: Test {test['description']} from step {step} is not compatible with attach point {attach_point} " \
