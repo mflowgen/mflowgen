@@ -259,6 +259,7 @@ class TestHandler:
           # Connect each test input to something in the graph
 
           adk_path = f"{ap_step_dir}/inputs/adk"
+          inputs_to_be_generated = []
           for test_input in test_inputs:
             # Some special cases
             # ADK connection
@@ -274,20 +275,40 @@ class TestHandler:
             elif test_input in ap_step_data['outputs']:
               os.symlink( f"{ap_step_dir}/outputs/{test_input}", test_input )
             # If the input we need isn't one of the attach point's outputs, but there's an Innovus
-            # design.checkpoint in the outputs, we may be able to generate the test's inputs
-            elif 'design.checkpoint' in ap_step_data['outputs'] and any(ext in test_input for ext in ['.gds', '.v', '.lef', '.sdc', '.def']):
-              print(f"Generating test input file {test_input} from {ap_step_dir}/outputs/design.checkpoint")
-              # Generate the files
-              gen_files_dir = s._gen_files_from_checkpoint( adk_path,
-                                                            f"{ap_step_dir}/inputs/innovus-foundation-flow",
-                                                            f"{ap_step_dir}/outputs/design.checkpoint" )
-              # Symlink to newly generated files
-              os.symlink( f"{gen_files_dir}/{test_input}", test_input )
+            # design.checkpoint in the outputs, we can generate the test's inputs
+            elif 'design.checkpoint' in ap_step_data['outputs']:
+              generatable_inputs = [ 'design-merged.gds',
+                                     'design.lvs.v',
+                                     'design.vcs.v',
+                                     'design.vcs.pg.v',
+                                     'design.lef',
+                                     'design.pt.sdc',
+                                     'design.virtuoso.v',
+                                     'design.def.gz']
+              if test_input in generatable_inputs:
+                inputs_to_be_generated.append(test_input)
+                print(f"Generating test input file {test_input} from {ap_step_dir}/outputs/design.checkpoint")
+              else:
+                print( f"Error: Test {test['description']} from step {step} is not compatible with attach point {attach_point} " \
+                       f"because there is no way to connect test input {test_input} and cannot generate it from design.checkpoint." \
+                       f"\n\nList of generatable test inputs: {generatable_inputs}\n" )
+                sys.exit(1)
+
             # If we get to this point, the attach point isn't compatible with the test so we can't run it
             else:
               print( f"Error: Test {test['description']} from step {step} is not compatible with attach point {attach_point} " \
-                     f"because there is no way to connect test input {test_input}." )
+                     f"because there is no way to connect test input {test_input}.\n" )
               sys.exit(1)
+
+          # Generate any test inputs that need to be generated from design.checkpoint
+          if inputs_to_be_generated:
+            # Generate the files
+            gen_files_dir = s._gen_files_from_checkpoint( adk_path,
+                                                          f"{ap_step_dir}/inputs/innovus-foundation-flow",
+                                                          f"{ap_step_dir}/outputs/design.checkpoint" )
+            # Link generated files to test inputs
+            for test_input in inputs_to_be_generated:
+              os.symlink( f"{gen_files_dir}/{test_input}", test_input )
 
           # Return to the test build dir
           os.chdir('..')
