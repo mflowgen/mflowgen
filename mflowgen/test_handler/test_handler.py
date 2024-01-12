@@ -92,7 +92,7 @@ class TestHandler:
     os.chdir( initial_dir )
 
     # Return the location of the subgraph outputs
-    return f"{gen_files_dir}/outputs"
+    return f"{gen_files_dir}/2-outputs/outputs"
 
 
   #-----------------------------------------------------------------------
