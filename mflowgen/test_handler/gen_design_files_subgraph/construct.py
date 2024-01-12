@@ -38,7 +38,6 @@ def construct():
              )
 
   outputs = [
-    'design.gds.gz',
     'design-merged.gds',
     'design.lvs.v',
     'design.vcs.v',
