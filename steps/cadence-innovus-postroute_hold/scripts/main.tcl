@@ -24,6 +24,16 @@
 # violations are essentially unrecoverable after taping out.
 #
 
+# hack for intel 2023Q4 Opal tapeout
+set_interactive_constraint_modes [all_constraint_modes]
+set_multicycle_path -setup 3 -through [get_pins -hier global_buffer/reset]
+set_multicycle_path -hold 2 -through [get_pins -hier global_buffer/reset]
+set_multicycle_path -setup 3 -through [get_pins -hier Interconnect_inst0/reset]
+set_multicycle_path -hold 2 -through [get_pins -hier Interconnect_inst0/reset]
+set_multicycle_path -setup 3 -through [get_pins -hier Interconnect_inst0/stall*]
+set_multicycle_path -hold 2 -through [get_pins -hier Interconnect_inst0/stall*]
+set_interactive_constraint_modes {}
+
 # Enable verbose mode, which prints why hold violations were not fixed
 
 setOptMode -verbose true

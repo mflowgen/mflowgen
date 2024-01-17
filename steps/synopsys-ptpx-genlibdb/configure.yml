@@ -24,7 +24,9 @@ outputs:
 
 commands:
   - mkdir -p logs
-  - pt_shell -file START.tcl -output_log_file logs/pt.log
+  # - pt_shell -file START.tcl -output_log_file logs/pt.log
+  - export CUR_PATH=`pwd`
+  - ssh pohan@r7cad-intel16 -t "cd $CUR_PATH; module load base pts/M-2017.06; export design_name=$design_name; export corner=$corner; export order=$order; pt_shell -file START.tcl -output_log_file logs/pt.log"
   - mkdir -p outputs && cd outputs
   - ln -sf ../*.db  design.db
   - ln -sf ../*.lib design.lib
