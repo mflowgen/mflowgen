@@ -15,6 +15,7 @@ import sys
 import yaml
 
 from datetime       import datetime
+from functools      import reduce
 
 from mflowgen.utils import bold, yellow
 from mflowgen.utils import read_yaml, write_yaml
@@ -353,35 +354,56 @@ class StashHandler:
 
     print()
     print( bold( 'Stash List' ) )
-
-    template_str = \
-      ' - {hash_} [ {date} ] {author} {step} -- {msg}'
-
-    stashed_from_template_str = \
-      '     > {k:30} : {v}'
-
     print()
+
     if not s.stash:
       print( ' - ( the stash is empty )' )
+
     else:
       s.stash.reverse()  # print in reverse chronological order
       n_print = 10       # print first N items
       to_print = s.stash[:n_print] if not all_ else s.stash
+
+      # Template strings
+
+      author_len = reduce( lambda x, y: max(x,y),
+                     map( lambda x: len( x['author'] ), to_print ) )
+      step_len   = reduce( lambda x, y: max(x,y),
+                     map( lambda x: len( x['step'] ), to_print ) )
+      from_len   = len(
+                     reduce( lambda x, y: max(x,y),
+                       map( lambda x: max( x['stashed-from'].keys(), key=len ),
+                         to_print ) ) )
+
+      template_str = \
+        ' - {hash_} [ {date} ] {author:{author_len}} {step:{step_len}} -- {msg}'
+
+      stashed_from_template_str = \
+        '     > {k:{l}} : {v}'
+
+      # Print each entry in the stash
+
       for x in to_print:
+
         print( template_str.format(
-          hash_  = yellow( x[ 'hash' ] ),
-          date   = x[ 'date'   ],
-          author = x[ 'author' ],
-          step   = x[ 'step'   ],
-          msg    = x[ 'msg'    ],
+          hash_      = yellow( x[ 'hash' ] ),
+          date       = x[ 'date'   ],
+          author     = x[ 'author' ],
+          step       = x[ 'step'   ],
+          msg        = x[ 'msg'    ],
+          author_len = author_len,
+          step_len   = step_len,
         ) )
+
         if verbose and 'stashed-from' in x.keys(): # stashed from
           for k, v in x['stashed-from'].items():
-            print( stashed_from_template_str.format(k=k,v=v) )
+            print( stashed_from_template_str.format(k=k,v=v,l=from_len) )
           print()
+
       if not all_ and len(s.stash) > n_print:
         n_extra = len(s.stash) - n_print
         print( ' - (...) see', n_extra, 'more with --all' )
+
     print()
     print( bold( 'Stash:' ), s.get_stash_path() )
     print()
