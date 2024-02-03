@@ -150,6 +150,8 @@ class ParamHandler:
       [ _ for _ in os.listdir( metadata_dir ) if
           os.path.isdir( os.path.join( metadata_dir, _ ) ) ]
 
+    subdirs = [ _ for _ in subdirs if '-' in _ ] # must have a dash number
+
     # Sort alphanumerically
 
     subdirs = sorted( subdirs, key=lambda x: int(x.split('-')[0]) )
@@ -183,9 +185,9 @@ class ParamHandler:
 
     template_str = \
         bold( ' - Update: ' ) + \
-        '{node:{node_str_len}} -- ' + \
-        bold( 'params["{k}"] = "{v}" ' ) + \
-        '( was "{old}" )'
+        ' {node:{node_str_len}} -- ' + \
+        bold( ' params["{k}"] = "{v}" ' ) + \
+        ' ( was "{old}" )'
 
     # Loop over all nodes and update them with the new param
 
