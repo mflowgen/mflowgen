@@ -3,15 +3,15 @@ Modifying Parameters
 
 Parameters can be updated across the modular flow in the following ways:
 
-- Node-specific -- A node can specify a default setting for each parameter
+- **Node-specific** -- A node can specify a default setting for each parameter
   in its modular node specification file in YAML syntax.
 
-- Graph-specific -- At graph construction time, users can use the
-  Python-based graph building API (e.g., `set_param()`, `get_param()`, and
-  `update_params()` to modify any parameters in the graph.
+- **Graph-specific** -- At graph construction time, users can use the
+  Python-based graph building API (e.g., :py:meth:`set_param()`, :py:meth:`get_param()`, and
+  :py:meth:`update_params()` to modify any parameters in the graph.
 
-- Interactively -- At the command line, there is an additional command
-  space called `mflowgen param` that can update parameters at build time.
+- **Interactively** -- At the command line, there is an additional command
+  space called ``mflowgen param`` that can update parameters at build time.
 
 This section describes the interactive mode in more detail.
 
@@ -23,7 +23,7 @@ any node in the graph (or update all nodes). It looks like this:
     % mflowgen param update --key clock_period --value 2.0 --step 5
     % mflowgen param update  -k   clock_period  -v     2.0  -s 5
 
-Updating all nodes in the graph can use the --all flag:
+Updating all nodes in the graph can use the ``--all`` flag:
 
 .. code::
 
