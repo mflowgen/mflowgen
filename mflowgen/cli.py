@@ -3,7 +3,7 @@
 #=========================================================================
 #
 #  -h --help     Display this message
-#  -v --version  Version info
+#     --version  Version info
 #
 # mflowgen run (Run-related options)
 #
@@ -25,6 +25,13 @@
 #
 #  -p --path     string --  Path to step directory
 #
+# mflowgen param (Parameter-related options)
+#
+#  -k --key      string -- Parameter name
+#  -v --value    string -- New parameter value
+#  -s --step     int    -- Step number to update params for (or use --all)
+#     --all             -- Update param for all nodes in graph
+#
 
 #
 # Author : Christopher Torng
@@ -40,6 +47,7 @@ from mflowgen.demo      import DemoHandler
 from mflowgen.core      import RunHandler
 from mflowgen.stash     import StashHandler
 from mflowgen.mock      import MockHandler
+from mflowgen.param     import ParamHandler
 
 # Path hack for now to find steps and adks
 
@@ -61,7 +69,7 @@ class ArgumentParserWithCustomError(argparse.ArgumentParser):
 
 def parse_cmdline():
   p = ArgumentParserWithCustomError( add_help=False )
-  p.add_argument( "-v", "--version",  action="store_true"          )
+  p.add_argument(       "--version",  action="store_true"          )
   p.add_argument( "-h", "--help",     action="store_true"          )
 
   # Run-related arguments
@@ -80,6 +88,10 @@ def parse_cmdline():
   p.add_argument(       "--hash"                                  )
   p.add_argument(       "--all",     action="store_true"          )
   p.add_argument(       "--verbose", action="store_true"          )
+
+  # Params-related arguments
+  p.add_argument( "-k", "--key"                                   )
+  p.add_argument( "-v", "--value"                                 )
   opts = p.parse_args()
   if opts.help and not opts.args: p.error() # print help only if not stash
   return opts
@@ -132,6 +144,20 @@ def main():
     )
     return
 
+  # Dispatch to ParamHandler
+
+  if opts.args and opts.args[0] == 'param':
+    phandler = ParamHandler()
+    phandler.launch(
+      args  = opts.args[1:],
+      help_ = opts.help,
+      key   = opts.key,
+      value = opts.value,
+      step  = opts.step,
+      all_  = opts.all,
+    )
+    return
+
   # Dispatch to RunHandler
 
   legacy = \
@@ -151,7 +177,7 @@ def main():
   # Need arguments
 
   ArgumentParserWithCustomError().error(
-    'Command can be "mflowgen run" or "mflowgen stash" or "mflowgen mock"'
+    'Command can be "mflowgen run" or "mflowgen stash" or "mflowgen mock" or "mflowgen param"'
   )
 
 
