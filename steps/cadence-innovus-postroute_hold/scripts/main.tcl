@@ -38,6 +38,15 @@ setOptMode -usefulSkewPostRoute true
 setOptMode -holdTargetSlack  $::env(hold_target_slack)
 setOptMode -setupTargetSlack $::env(setup_target_slack)
 
+# Testing express flows
+
+set testing_express_flow $::env(testing_express_flow)
+set skip_opt false
+if {$testing_express_flow != "complete"} {
+  set skip_opt true
+  puts "Info: testing_express_flow param set to $testing_express_flow. Skipping postroute_hold"
+}
+
 # Set the RC extraction effort
 #
 # The signoff-quality timing engine is a standalone engine that is meant
@@ -57,7 +66,7 @@ if { $::env(signoff_engine) } {
 # "Generally, performance improvement will ... diminish beyond 8 CPUs."
 # ---
 # More details about the error, from run logs:
-# 
+#
 # Cadence Innovus(TM) Implementation System.
 # Version:        v19.10-p002_1, built Fri Apr 19 15:18:11 PDT 2019
 # ...
@@ -83,8 +92,9 @@ if {[getDistributeHost -mode] == "local"} {
 }
 
 # Run the final postroute hold fixing
-
-optDesign -postRoute -outDir reports -prefix postroute_hold -hold
+if {$skip_opt != true} {
+  optDesign -postRoute -outDir reports -prefix postroute_hold -hold
+}
 
 # Restore original multi settings
 
@@ -94,5 +104,5 @@ if {$need_restore_multi == true} {
     puts "\nInfo: Restored multi-cpu back to its original value '$ncpu'"
 }
 
-    
+
 
