@@ -161,7 +161,10 @@ def main():
       step           = opts.step,
       attach_points  = opts.attach_points,
       unit           = opts.unit,
-      help_          = opts.help,
+      help_          = opts.help
+    )
+    return
+
   # Dispatch to ParamHandler
 
   if opts.args and opts.args[0] == 'param':
