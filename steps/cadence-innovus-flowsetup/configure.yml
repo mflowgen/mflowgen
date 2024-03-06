@@ -34,6 +34,7 @@ parameters:
   design_name: design
   nthreads: 16        # multithreading available to the tool
   express_flow: False # enable express flow
+  testing_express_flow: complete # Various express flow modes available for tests
   skip_verify_connectivity: False
 
 #-------------------------------------------------------------------------

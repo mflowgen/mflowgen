@@ -575,10 +575,92 @@ if { $::env(skip_verify_connectivity) } {
 }
 
 #-------------------------------------------------------------------------
-# Reduced-effort flow that sacrifices timing to iterate more quickly
+# Reduced-effort flows that sacrifice timing to iterate more quickly
 #-------------------------------------------------------------------------
 
-if { $::env(express_flow) } {
+if { $::env(testing_express_flow) != "complete" } {
+  if { $::env(testing_express_flow) == "no_timing_opt" } {
+    # Standard effort, but removes steps that optimize
+    # setup or hold timing
+
+    # Skipping (see "Tags for Innovus Flow")
+    #
+    # set vars(step,command,skip) true
+
+    # PostCTSHold: Skip postcts hold fixing
+
+    set vars(postcts_hold,opt_design,skip) true
+
+    # PostRoute: Skip postroute setup and hold fixing
+
+    set vars(postroute,opt_design,skip) true
+
+  } elseif { $::env(testing_express_flow) == "low_effort" } {
+    # Builds on no_timing_opt_mode by also lowering
+    # various effort parameters
+    set vars(flow_effort)                 express
+    set vars(congestion_effort)           low
+    set vars(power_effort)                low
+    set vars(multi_cut_effort)            low
+    set vars(postroute_extraction_effort) medium
+
+    # Skipping (see "Tags for Innovus Flow")
+    #
+    # set vars(step,command,skip) true
+
+    # Route: Skip routing because express flow does not require route
+
+    set vars(route,route_design,skip) true
+    set vars(route,spread_wires,skip) true
+
+    # PostCTSHold: Skip postcts hold fixing
+
+    set vars(postcts_hold,opt_design,skip) true
+
+    # PostRoute: Skip postroute setup and hold fixing
+
+    set vars(postroute,opt_design,skip) true
+
+    # Signoff: Skip verification steps
+
+    set vars(signoff,verify_connectivity,skip) true
+    set vars(signoff,verify_geometry,skip) true
+    set vars(signoff,verify_process_antenna,skip) true
+
+  } elseif { $::env(testing_express_flow) == "fp_only" } {
+    # Further builds on low_effort mode by running place in floorplan mode
+    set vars(flow_effort)                 express
+    set vars(congestion_effort)           low
+    set vars(power_effort)                low
+    set vars(multi_cut_effort)            low
+    set vars(postroute_extraction_effort) medium
+
+    # Skipping (see "Tags for Innovus Flow")
+    #
+    # set vars(step,command,skip) true
+
+    # Route: Skip routing because express flow does not require route
+
+    set vars(route,route_design,skip) true
+    set vars(route,spread_wires,skip) true
+
+    # PostCTSHold: Skip postcts hold fixing
+
+    set vars(postcts_hold,opt_design,skip) true
+
+    # PostRoute: Skip postroute setup and hold fixing
+
+    set vars(postroute,opt_design,skip) true
+
+    # Signoff: Skip verification steps
+
+    set vars(signoff,verify_connectivity,skip) true
+    set vars(signoff,verify_geometry,skip) true
+    set vars(signoff,verify_process_antenna,skip) true
+
+  }
+
+} elseif { $::env(express_flow) } {
   set vars(flow_effort)                 express
   set vars(congestion_effort)           low
   set vars(power_effort)                low
