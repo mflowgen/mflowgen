@@ -12,7 +12,7 @@ import re
 import shutil
 
 from mflowgen.assertions.assertion_helpers import dump_assertion_check_scripts
-from mflowgen.utils import get_top_dir, get_files_in_dir, write_yaml
+from mflowgen.utils import get_top_dir, get_files_in_dir, write_yaml, serialize_list
 
 class BuildOrchestrator:
 
@@ -123,9 +123,8 @@ class BuildOrchestrator:
       params_str      = 'export {}={}'
       params_commands = []
       for k, v in params.items():
-        if type(v) is list: # can't export a list in bash, so need to serialize it
-          serialized_value = ",".join(v)
-          params_commands.append( params_str.format(k,serialized_value) )
+        if type(v) is list:
+          params_commands.append( params_str.format(k,serialize_list(v)) )
         else:
           params_commands.append( params_str.format(k,v) )
 
@@ -249,7 +248,7 @@ class BuildOrchestrator:
 
   def dump_graphviz( s ):
     s.g.plot( dot_f = s.metadata_dir + '/graph.dot' )
-  
+
   #-----------------------------------------------------------------------
   # dump_attach_points
   #-----------------------------------------------------------------------
@@ -270,7 +269,7 @@ class BuildOrchestrator:
         else:
           ap_dict[tag] = [ full_name ]
 
-    write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yml' ) 
+    write_yaml( ap_dict, s.metadata_dir + '/attach_points_dict.yml' )
 
   #-----------------------------------------------------------------------
   # set_unique_build_ids
@@ -396,7 +395,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
         # we just create one in the build dir's metadata directory
         step_dir = s.metadata_dir + '/' + step_name
         os.mkdir( step_dir )
-      s.step_dirs[ step_name ] = step_dir 
+      s.step_dirs[ step_name ] = step_dir
 
     # Dump metadata about build vars and local connectivity to all steps
 
@@ -580,7 +579,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
           backend_outputs[ subgraph_target_name ] = {}
 
           s.w.gen_step_header( subgraph_target_name )
-      
+
 
       #...................................................................
       # directory
@@ -817,12 +816,12 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['execute'].add(
         ( step_name, 'collect-inputs' )
       )
-      
+
       # If the step dir is also a subgraph, generate commands to build
       # targets within the subgraph
       if step_name in s.sgs:
         s.w.gen_step_execute_pre()
-        commands = ' && '.join([  
+        commands = ' && '.join([
           # FIRST set pipefail so we get correct error status at the end
           'set -o pipefail',
           # Step banner in big letters
@@ -857,7 +856,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
           s.build_system_rules[subgraph_target_name] = rule
 
           s.build_system_deps[subgraph_target_name]['execute'] = set()
-          
+
           s.build_system_deps[subgraph_target_name]['execute'].add(
             ( step_name, 'directory' )
           )
@@ -1099,7 +1098,7 @@ N. For a completely clean build, run the "clean-all" target.\n''' )
       s.build_system_deps[step_name]['alias'].add(
         ( step_name, 'post-conditions' )
       )
-      
+
       #...................................................................
       # debug
       #...................................................................

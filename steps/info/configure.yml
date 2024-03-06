@@ -12,12 +12,12 @@ name: info
 #-------------------------------------------------------------------------
 
 commands:
-  - echo "Design name      -- {design_name}"
-  - echo "Clock period     -- {clock_period}"
-  - echo "ADK              -- {adk}"
-  - echo "ADK view         -- {adk_view}"
+  - echo "Design name      -- $design_name"
+  - echo "Clock period     -- $clock_period"
+  - echo "ADK              -- $adk"
+  - echo "ADK view         -- $adk_view"
   - echo
-  - echo "Constructed from -- {construct_path}"
+  - echo "Constructed from -- $construct_path"
   - echo
 
 #-------------------------------------------------------------------------

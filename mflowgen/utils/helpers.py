@@ -63,6 +63,18 @@ def stamp( p, stamp='.stamp.' ):
   if p_dirname : return p_dirname + '/' + p_stamp
   else         : return p_stamp
 
+# serialize_list
+#
+# Takes a python list and returns a comma-separated string. This is used
+# in scenarios where we cannot export list variables into a bash
+# environment variable and we need to serialize it instead.
+#
+# - l : python list
+#
+
+def serialize_list( l ):
+  return ','.join( l )
+
 #-------------------------------------------------------------------------
 # YAML helper functions
 #-------------------------------------------------------------------------
