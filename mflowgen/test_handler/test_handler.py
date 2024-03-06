@@ -36,7 +36,12 @@ class TestHandler:
       'status',
       'help'
     ]
-
+    s.express_modes = {
+      'complete': 0,
+      'no_timing_opt': 1,
+      'low_effort': 2,
+      'fp_only': 3
+    }
   #-----------------------------------------------------------------------
   # helpers
   #-----------------------------------------------------------------------
@@ -159,9 +164,12 @@ class TestHandler:
 
     step_metadata_dirs = glob.glob(f"{s.metadata_dir}/[0-9]*-*")
 
-    # Loop over the tests to ensure that each provides a test graph
-    # and collect the attach points if they're not provided in the cli args.
+    # Loop over the tests to ensure that each provides a test graph,
+    # collect the attach points if they're not provided in the cli args,
+    # and determine which express mode to use to make the attach point
+    # targets in the design graph
     attach_point_tags = set()
+    express_mode = None
     for test in tests:
       try:
         test_graph = test['test_graph']
@@ -174,6 +182,19 @@ class TestHandler:
       if not attach_points:
         for ap in test['attach_points']:
           attach_point_tags.add( ap )
+      # If the test doesn't specify an express mode, we will assume that
+      # it must run on complete mode
+      try:
+        test_express_mode = test['express_mode']
+      except KeyError:
+        print(f"Info: no express mode provied for step {step} test." \
+              f"Express mode will be set to complete.")
+        test_express_mode = 'complete'
+      # We must set the overall express mode parameter to the most conservative setting of all the tests
+      # we are running
+      if express_mode == None or s.express_modes[test_express_mode] < s.express_modes[express_mode]:
+        express_mode = test_express_mode
+
 
     synth_step = None
     ap_step_dict = {}
@@ -219,6 +240,9 @@ class TestHandler:
     subprocess.check_call( f"make {synth_step}".split(' ') )
 
     for attach_point in ap_list:
+      # Set parameter for express mode setting
+      print(f"Info: Running graph with test express mode setting: {express_mode}")
+      subprocess.check_call( f"mflowgen param update -k testing_express_flow -v {express_mode} --all".split(' ') )
       # Make attach point
       subprocess.check_call( f"make {attach_point}".split(' ') )
       # Run the tests at the attach point if attach point provided in CLI or
