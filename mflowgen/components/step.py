@@ -115,7 +115,7 @@ class Step:
 
     # Make sure that test specifications are valid
 
-    test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description', 'unit_test_graph']
+    test_args = ['test_node', 'test_graph', 'default', 'attach_points', 'description', 'express_mode', 'unit_test_graph']
     if 'attach_point_tags' in data.keys():
       # If attach_point_tags is a string, interpet as space-separated list
       if type( data['attach_point_tags'] ) == str:
@@ -135,6 +135,12 @@ class Step:
         # Test must define exactly one of test_node or test_graph
         assert ( 'test_node' in test ) != ( 'test_graph' in test ), \
           'Test must define exactly one of test_node or test_graph'
+
+        # Check that the express mode is valid
+        express_modes = ['complete', 'no_timing_opt', 'low_effort', 'fp_only']
+
+        if 'express_mode' in test:
+          assert test['express_mode'] in express_modes
 
         # Check that the attach points for each test are valid
         assert 'attach_points' in test, 'must specify attach points for test'
