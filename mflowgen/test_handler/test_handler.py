@@ -106,7 +106,7 @@ class TestHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, args, help_, step, attach_points, unit ):
+  def launch( s, args, help_, step, attach_points, unit, express ):
 
     if help_ and not args:
       s.launch_help()
@@ -119,7 +119,7 @@ class TestHandler:
       print( 'test: Unrecognized commands (see "mflowgen test help")' )
       sys.exit( 1 )
 
-    if command == 'run'      : s.launch_run( help_, step, attach_points, unit )
+    if command == 'run'      : s.launch_run( help_, step, attach_points, unit, express )
     elif command == 'list'   : s.launch_list( help_ )
     elif command == 'status' : s.launch_status( help_ )
     else                     : s.launch_help()
@@ -128,7 +128,7 @@ class TestHandler:
   # launch_test
   #-----------------------------------------------------------------------
 
-  def launch_run( s, help_, step, attach_points, unit ):
+  def launch_run( s, help_, step, attach_points, unit, express ):
 
     # Help message
 
@@ -169,7 +169,12 @@ class TestHandler:
     # and determine which express mode to use to make the attach point
     # targets in the design graph
     attach_point_tags = set()
-    express_mode = None
+
+    if express:
+      express_mode = None
+    else:
+      express_mode = 'complete'
+
     for test in tests:
       try:
         test_graph = test['test_graph']
@@ -237,12 +242,14 @@ class TestHandler:
               f"point becase it does not have any outputs.")
         sys.exit(1)
 
+    # Set parameter for express mode setting
+    print(f"Info: Running graph with test express mode setting: {express_mode}")
+    subprocess.check_call( f"mflowgen param update -k testing_express_flow -v {express_mode} --all".split(' ') )
+
+    # Ensure that the synthesis step is already made
     subprocess.check_call( f"make {synth_step}".split(' ') )
 
     for attach_point in ap_list:
-      # Set parameter for express mode setting
-      print(f"Info: Running graph with test express mode setting: {express_mode}")
-      subprocess.check_call( f"mflowgen param update -k testing_express_flow -v {express_mode} --all".split(' ') )
       # Make attach point
       subprocess.check_call( f"make {attach_point}".split(' ') )
       # Run the tests at the attach point if attach point provided in CLI or

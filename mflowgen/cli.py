@@ -96,6 +96,7 @@ def parse_cmdline():
   # Test-related arguments
   p.add_argument( "-a", "--attach_points", type=int, nargs='*'    )
   p.add_argument( "-u", "--unit", action="store_true"             )
+  p.add_argument( "-e", "--express", action="store_true"             )
 
   # Params-related arguments
   p.add_argument( "-k", "--key"                                   )
@@ -161,6 +162,7 @@ def main():
       step           = opts.step,
       attach_points  = opts.attach_points,
       unit           = opts.unit,
+      express        = opts.express,
       help_          = opts.help
     )
     return
