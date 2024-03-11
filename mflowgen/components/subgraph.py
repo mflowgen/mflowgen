@@ -59,18 +59,22 @@ class Subgraph(Step):
     data['outputs'] = s._graph.all_outputs()
     data['commands'] = [ \
       f"mflowgen run --subgraph --design {construct_path}",
+      'mflowgen param update -k testing_express_flow -v $testing_express_flow --all',
       'make outputs',
       'mkdir -p outputs',
       'cd outputs',
       'output_dir=$(find ../ -type d -regex "^../[0-9]+-outputs/outputs")'
     ]
 
+    data['parameters'] = { 'testing_express_flow': 'complete' }
     data['postconditions'] = []
     for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
       data['postconditions'].append(f"assert File( 'outputs/{output}' )")
 
     data['source'] = c_dirname
+
+    print(f"Subgraph commands: {data['commands']}")
 
     super().__init__(data)
 
