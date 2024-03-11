@@ -635,6 +635,11 @@ if { $::env(testing_express_flow) != "complete" } {
     set vars(multi_cut_effort)            low
     set vars(postroute_extraction_effort) medium
 
+    # Insert custom code that sets placement to floorplanning mode
+    set vars(pre_place_tcl)               $vars(custom_scripts_dir)/pre_place_fp_mode.tcl
+    # Use placeDesign instead of place_opt for fp_mode
+    set vars(place_opt_design)            false
+
     # Skipping (see "Tags for Innovus Flow")
     #
     # set vars(step,command,skip) true
