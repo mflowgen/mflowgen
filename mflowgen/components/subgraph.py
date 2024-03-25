@@ -10,6 +10,7 @@ import importlib.util
 import os
 import sys
 import yaml
+from inspect import signature
 
 from mflowgen.utils import get_top_dir, read_yaml, write_yaml
 from mflowgen.components.step import Step
@@ -18,7 +19,7 @@ from mflowgen.core.run import RunHandler as rh
 class Subgraph(Step):
 
   def __init__( s, graph_path, design_name ):
-    
+
     # Get the construct.py file path
 
     construct_path = rh.find_construct_path( graph_path, False )
@@ -51,6 +52,28 @@ class Subgraph(Step):
     # Construct the graph
     s._graph = subgraph_construct_mod.construct()
 
+    # Extract the graph's arg names and defaults so we can
+    # make them parameters of the Step
+    sig_param_dict = signature(subgraph_construct_mod.construct).parameters
+    step_param_dict = {}
+    for name, param in sig_param_dict.items():
+      default = param.default
+      # Handle case where the param doesn't have a default arg
+      if default == param.empty:
+        default == 'undefined'
+      step_param_dict[name] = default
+
+    # Generate run command that passes graph arg for each param
+    run_cmd = f"mflowgen run --subgraph --design {construct_path} --graph_args {{{{"
+    for param in step_param_dict:
+      run_cmd += f"{param}:${param},"
+    # Replace last comma with close bracket for kwarg dict
+    if run_cmd[-1] == ',':
+      run_cmd = run_cmd[:-1]
+
+    run_cmd += '}}'
+
+
     # Generate step data
 
     data = {}
@@ -58,22 +81,23 @@ class Subgraph(Step):
     data['inputs'] = s._graph.all_inputs()
     data['outputs'] = s._graph.all_outputs()
     data['commands'] = [ \
-      f"mflowgen run --subgraph --design {construct_path}",
+      run_cmd,
       'make outputs',
       'mkdir -p outputs',
       'cd outputs',
       'output_dir=$(find ../ -type d -regex "^../[0-9]+-outputs/outputs")'
     ]
 
+    data['parameters'] = step_param_dict
     data['postconditions'] = []
     for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
       data['postconditions'].append(f"assert File( 'outputs/{output}' )")
 
     data['source'] = c_dirname
-    
+
     super().__init__(data)
-  
+
   #-----------------------------------------------------------------------
   # get_graph
   #-----------------------------------------------------------------------
