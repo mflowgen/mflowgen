@@ -166,6 +166,7 @@ class RunHandler:
     s.save_construct_path( construct_path )
 
     # Import the graph for this design
+
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
