@@ -6,12 +6,13 @@ import glob
 this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 dummy_construct_path = f"{this_dir}/dummy"
 dummy_double_pt_construct_path = f"{this_dir}/dummy_double_passthrough"
+dummy_param_construct_path = f"{this_dir}/dummy_w_param"
 
 def configure_build_dir( construct_path, build_dir ):
   os.chdir( build_dir )
   subprocess.check_call( f"mflowgen run --design {construct_path}".split(' ') )
-  
- 
+
+
 def test_subgraph_creation():
   with tempfile.TemporaryDirectory() as build_dir:
     configure_build_dir( dummy_construct_path, build_dir )
@@ -43,3 +44,7 @@ def test_subgraph_input_fanout():
     pt_2_inputs_dir = glob.glob( f"{build_dir}/*-double_passthrough/*-passthrough_2/inputs" )[0]
     assert os.path.exists( f"{pt_1_inputs_dir}/i" )
     assert os.path.exists( f"{pt_2_inputs_dir}/i" )
+
+def test_subgraph_param_passing():
+  with tempfile.TemporaryDirectory() as build_dir:
+    configure_build_dir( dummy_param_construct_path, build_dir )
