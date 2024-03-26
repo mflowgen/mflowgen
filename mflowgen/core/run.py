@@ -133,7 +133,7 @@ class RunHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, subgraph=False, backend='make', graph_args='' ):
+  def launch( s, help_, design, update=False, subgraph=False, backend='make', graph_kwargs='' ):
 
     # Check that this design directory exists
 
@@ -142,13 +142,13 @@ class RunHandler:
                                'unless using --update or --demo' )
       sys.exit( 1 )
 
-    # Convert the graph_args argument into a parameter dict
-    if graph_args:
-      graph_args_dict = eval(graph_args)
+    # Convert the graph_kwargs argument into a parameter dict
+    if graph_kwargs:
+      graph_kwargs_dict = eval(graph_kwargs)
     else:
-      graph_args_dict = {}
+      graph_kwargs_dict = {}
 
-    s.launch_run( design, update, subgraph, backend, graph_args_dict )
+    s.launch_run( design, update, subgraph, backend, graph_kwargs_dict )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -157,7 +157,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, subgraph, backend, graph_args ):
+  def launch_run( s, design, update, subgraph, backend, graph_kwargs ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -193,7 +193,7 @@ class RunHandler:
 
     # Construct the graph
 
-    g = graph_construct_mod.construct(**graph_args)
+    g = graph_construct_mod.construct(**graph_kwargs)
 
     # Add input node if the graph is being instantiated as a subgraph
     # within another graph and it specifies inputs. This enables graphs

@@ -64,7 +64,7 @@ class Subgraph(Step):
       step_param_dict[name] = default
 
     # Generate run command that passes graph arg for each param
-    run_cmd = f"mflowgen run --subgraph --design {construct_path} --graph-args {{{{"
+    run_cmd = f"mflowgen run --subgraph --design {construct_path} --graph-kwargs {{{{"
     for param in step_param_dict:
       run_cmd += f"{param}:${param},"
     # Replace last comma with close bracket for kwarg dict
