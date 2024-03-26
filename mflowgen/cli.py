@@ -79,7 +79,7 @@ def parse_cmdline():
   p.add_argument(       "--subgraph",   action="store_true"          )
   p.add_argument(       "--backend",    default="make",
                                         choices=("make", "ninja")    )
-  p.add_argument(       "--graph_args"                               )
+  p.add_argument(       "--graph-args"                               )
 
   # Stash-related arguments
   p.add_argument(       "args", type=str, nargs='*' ) # positional
