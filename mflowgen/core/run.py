@@ -115,16 +115,17 @@ class RunHandler:
 
   # save_construct_path
   #
-  # Save the path to the construct script for future use of --update
+  # Save the path to the construct script and graph_kwargs for future use of --update
   #
 
-  def save_construct_path( s, construct_path ):
+  def save_construct_path( s, construct_path, graph_kwargs ):
     yaml_path = '.mflowgen.yml'
     try:
       data = read_yaml( yaml_path )
     except Exception:
       data = {}
     data['construct'] = construct_path
+    data['graph_kwargs'] = graph_kwargs
     write_yaml( data = data, path = yaml_path )
 
   #-----------------------------------------------------------------------
@@ -163,7 +164,22 @@ class RunHandler:
     # to the construct script for future use of --update
 
     construct_path = s.find_construct_path( design, update )
-    s.save_construct_path( construct_path )
+
+    # If update is true and no new graph_kwargs are provided,
+    # look for the previous graph_kwargs
+
+    if update and not graph_kwargs:
+      try:
+        data = read_yaml( '.mflowgen.yml' ) # get metadata
+        graph_kwargs = data['graph_kwargs']
+      except Exception:
+        print()
+        print( bold( 'Error:' ), 'No pre-existing build in current',
+                                    'directory for running --update' )
+        print()
+        sys.exit( 1 )
+
+    s.save_construct_path( construct_path, graph_kwargs )
 
     # Import the graph for this design
 
