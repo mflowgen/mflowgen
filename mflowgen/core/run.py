@@ -244,4 +244,12 @@ class RunHandler:
                              + status_target + "\"" )
     print()
 
+    if graph_kwargs:
+      print( "Non-default graph kwargs:" )
+      print()
+      for key, val in graph_kwargs.items():
+        print( f"  -{key}: {val}" )
+
+      print()
+
 
