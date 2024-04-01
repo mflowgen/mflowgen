@@ -11,6 +11,7 @@ import importlib.util
 import os
 import sys
 import yaml
+import ast
 
 from mflowgen.core.build_orchestrator import BuildOrchestrator
 from mflowgen.backends                import MakeBackend, NinjaBackend
@@ -145,7 +146,7 @@ class RunHandler:
 
     # Convert the graph_kwargs argument into a parameter dict
     if graph_kwargs:
-      graph_kwargs_dict = eval(graph_kwargs)
+      graph_kwargs_dict = ast.literal_eval(graph_kwargs)
     else:
       graph_kwargs_dict = {}
 
