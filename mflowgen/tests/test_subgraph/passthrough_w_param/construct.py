@@ -11,7 +11,7 @@ import os
 
 from mflowgen.components import Graph, Step, Subgraph
 
-def construct(test_param='foo'):
+def construct(test_param='foo', test_param_2='bar'):
 
   g = Graph()
 

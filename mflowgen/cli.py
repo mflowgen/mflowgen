@@ -82,7 +82,7 @@ def parse_cmdline():
   p.add_argument(       "--subgraph",   action="store_true"          )
   p.add_argument(       "--backend",    default="make",
                                         choices=("make", "ninja")    )
-  p.add_argument(       "--graph_args"                               )
+  p.add_argument(       "--graph-kwargs"                             )
 
   # Stash-related arguments
   p.add_argument(       "args", type=str, nargs='*' ) # positional
@@ -189,13 +189,13 @@ def main():
   if legacy or opts.args and opts.args[0] == 'run':
     rhandler = RunHandler()
     rhandler.launch(
-      help_    = opts.help,
-      design   = opts.design,
-      update   = opts.update,
-      test     = opts.test,
-      subgraph = opts.subgraph,
-      backend  = opts.backend,
-      graph_args = opts.graph_args,
+      help_        = opts.help,
+      design       = opts.design,
+      update       = opts.update,
+      test         = opts.test,
+      subgraph     = opts.subgraph,
+      backend      = opts.backend,
+      graph_kwargs = opts.graph_kwargs,
     )
     return
 
