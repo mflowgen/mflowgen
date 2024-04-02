@@ -275,7 +275,7 @@ class TestHandler:
           os.chdir(test_dir_name)
 
           # Configure the test build dir
-          subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph --graph_args {{'design_name':'{design_name}','clock_period':{clock_period}}}".split(' ') )
+          subprocess.check_call( f"mflowgen run --design {test_graph_path} --subgraph --graph-kwargs {{'design_name':'{design_name}','clock_period':{clock_period}}}".split(' ') )
           subprocess.check_call( 'make clean-all'.split(' ') )
           # Prepare the inputs
           os.makedirs('inputs', exist_ok=True)
