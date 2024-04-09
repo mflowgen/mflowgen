@@ -30,6 +30,9 @@ def construct():
   g.add_input( 'design.checkpoint', \
                gen_files.i( 'design.checkpoint' ) \
              )
+  g.add_input( 'design.sdc', \
+               gen_files.i( 'design.sdc' ) \
+             )
   g.add_input( 'innovus-foundation-flow', \
                gen_files.i( 'innovus-foundation-flow' ) \
              )

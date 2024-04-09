@@ -15,6 +15,7 @@ inputs:
   - adk
   - design.checkpoint
   - innovus-foundation-flow
+  - design.sdc # sometimes needed to open checkpoint
 
 outputs:
   - design-merged.gds

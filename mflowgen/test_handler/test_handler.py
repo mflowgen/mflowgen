@@ -66,7 +66,7 @@ class TestHandler:
   #
   # This helper function is run from within the test's input directory
 
-  def _gen_files_from_checkpoint( s, adk_path, foundation_flow_path, checkpoint_path ):
+  def _gen_files_from_checkpoint( s, adk_path, foundation_flow_path, checkpoint_path, sdc_path):
     initial_dir = os.getcwd()
     gen_files_dir = 'gen_input_files'
     os.mkdir( gen_files_dir )
@@ -87,6 +87,8 @@ class TestHandler:
     os.symlink( f"../../{foundation_flow_path}", 'innovus-foundation-flow' )
     # Innovus Checkpoint
     os.symlink( f"../../{checkpoint_path}", 'design.checkpoint' )
+    # SDC
+    os.symlink( f"../../{sdc_path}", 'design.sdc' )
 
     os.chdir( '..' )
 
@@ -336,7 +338,8 @@ class TestHandler:
             # Generate the files
             gen_files_dir = s._gen_files_from_checkpoint( adk_path,
                                                           f"{ap_step_dir}/inputs/innovus-foundation-flow",
-                                                          f"{ap_step_dir}/outputs/design.checkpoint" )
+                                                          f"{ap_step_dir}/outputs/design.checkpoint",
+                                                          f"{synth_step_dir}/outputs/design.sdc" )
             # Link generated files to test inputs
             for test_input in inputs_to_be_generated:
               os.symlink( f"{gen_files_dir}/{test_input}", test_input )
