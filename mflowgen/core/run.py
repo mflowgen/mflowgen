@@ -145,6 +145,7 @@ class RunHandler:
       sys.exit( 1 )
 
     # Convert the graph_kwargs argument into a parameter dict
+
     if graph_kwargs:
       graph_kwargs_dict = ast.literal_eval(graph_kwargs)
     else:
