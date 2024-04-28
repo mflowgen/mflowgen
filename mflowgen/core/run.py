@@ -116,16 +116,29 @@ class RunHandler:
 
   # save_construct_path
   #
-  # Save the path to the construct script and graph_kwargs for future use of --update
+  # Save the path to the construct script for future use of --update
   #
 
-  def save_construct_path( s, construct_path, graph_kwargs ):
+  def save_construct_path( s, construct_path ):
     yaml_path = '.mflowgen.yml'
     try:
       data = read_yaml( yaml_path )
     except Exception:
       data = {}
     data['construct'] = construct_path
+    write_yaml( data = data, path = yaml_path )
+
+  # save_graph_kwargs
+  #
+  # Save graph_kwargs for future use of --update
+  #
+
+  def save_graph_kwargs( s, graph_kwargs ):
+    yaml_path = '.mflowgen.yml'
+    try:
+      data = read_yaml( yaml_path )
+    except Exception:
+      data = {}
     data['graph_kwargs'] = graph_kwargs
     write_yaml( data = data, path = yaml_path )
 
@@ -181,7 +194,8 @@ class RunHandler:
         print()
         sys.exit( 1 )
 
-    s.save_construct_path( construct_path, graph_kwargs )
+    s.save_construct_path( construct_path )
+    s.save_graph_kwargs( graph_kwargs )
 
     # Import the graph for this design
 
