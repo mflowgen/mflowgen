@@ -114,6 +114,29 @@ class RunHandler:
 
     return construct_path
 
+  # find_graph_kwargs
+  #
+  # Locate the graph_kwargs
+  #
+  # If update is true and no new graph_kwargs are provided,
+  # look for the previous graph_kwargs
+  #
+
+  @staticmethod
+  def find_graph_kwargs( graph_kwargs, update ):
+    if update and not graph_kwargs:
+      try:
+        data = read_yaml( '.mflowgen.yml' ) # get metadata
+        graph_kwargs = data['graph_kwargs']
+      except Exception:
+        print()
+        print( bold( 'Error:' ), 'No pre-existing build in current',
+                                    'directory for running --update' )
+        print()
+        sys.exit( 1 )
+
+    return graph_kwargs
+
   # save_construct_path
   #
   # Save the path to the construct script for future use of --update
@@ -179,23 +202,14 @@ class RunHandler:
     # to the construct script for future use of --update
 
     construct_path = s.find_construct_path( design, update )
+    s.save_construct_path( construct_path )
 
     # If update is true and no new graph_kwargs are provided,
-    # look for the previous graph_kwargs
+    # look for the previous graph_kwargs. Then save the kwargs
+    # for future use of --update
 
-    if update and not graph_kwargs:
-      try:
-        data = read_yaml( '.mflowgen.yml' ) # get metadata
-        graph_kwargs = data['graph_kwargs']
-      except Exception:
-        print()
-        print( bold( 'Error:' ), 'No pre-existing build in current',
-                                    'directory for running --update' )
-        print()
-        sys.exit( 1 )
-
-    s.save_construct_path( construct_path )
-    s.save_graph_kwargs( graph_kwargs )
+    found_graph_kwargs = s.find_graph_kwargs( graph_kwargs, update )
+    s.save_graph_kwargs( found_graph_kwargs )
 
     # Import the graph for this design
 
