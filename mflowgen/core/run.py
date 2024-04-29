@@ -239,7 +239,7 @@ class RunHandler:
 
     # Construct the graph
 
-    g = graph_construct_mod.construct(**graph_kwargs)
+    g = graph_construct_mod.construct(**found_graph_kwargs)
 
     # Add input node if the graph is being instantiated as a subgraph
     # within another graph and it specifies inputs. This enables graphs
@@ -274,10 +274,10 @@ class RunHandler:
                              + status_target + "\"" )
     print()
 
-    if graph_kwargs:
+    if found_graph_kwargs:
       print( "Non-default graph kwargs:" )
       print()
-      for key, val in graph_kwargs.items():
+      for key, val in found_graph_kwargs.items():
         print( f"  -{key}: {val}" )
 
       print()
