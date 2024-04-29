@@ -96,6 +96,28 @@ class Subgraph(Step):
     run_cmd += '}}'
 
 
+    # Extract the graph's arg names and defaults so we can
+    # make them parameters of the Step
+    sig_param_dict = signature(subgraph_construct_mod.construct).parameters
+    step_param_dict = {}
+    for name, param in sig_param_dict.items():
+      default = param.default
+      # Handle case where the param doesn't have a default arg
+      if default == param.empty:
+        default == 'undefined'
+      step_param_dict[name] = default
+
+    # Generate run command that passes graph arg for each param
+    run_cmd = f"mflowgen run --subgraph --design {construct_path} --graph-kwargs {{{{"
+    for param in step_param_dict:
+      run_cmd += f"{param}:${param},"
+    # Replace last comma with close bracket for kwarg dict
+    if run_cmd[-1] == ',':
+      run_cmd = run_cmd[:-1]
+
+    run_cmd += '}}'
+
+
     # Generate step data
 
     data = {}

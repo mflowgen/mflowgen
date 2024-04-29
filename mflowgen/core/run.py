@@ -114,6 +114,29 @@ class RunHandler:
 
     return construct_path
 
+  # find_graph_kwargs
+  #
+  # Locate the graph_kwargs
+  #
+  # If update is true and no new graph_kwargs are provided,
+  # look for the previous graph_kwargs
+  #
+
+  @staticmethod
+  def find_graph_kwargs( graph_kwargs, update ):
+    if update and not graph_kwargs:
+      try:
+        data = read_yaml( '.mflowgen.yml' ) # get metadata
+        graph_kwargs = data['graph_kwargs']
+      except Exception:
+        print()
+        print( bold( 'Error:' ), 'No pre-existing build in current',
+                                    'directory for running --update' )
+        print()
+        sys.exit( 1 )
+
+    return graph_kwargs
+
   # save_construct_path
   #
   # Save the path to the construct script and graph_kwargs for future use of --update
@@ -129,13 +152,27 @@ class RunHandler:
     data['graph_kwargs'] = graph_kwargs
     write_yaml( data = data, path = yaml_path )
 
+  # save_graph_kwargs
+  #
+  # Save graph_kwargs for future use of --update
+  #
+
+  def save_graph_kwargs( s, graph_kwargs ):
+    yaml_path = '.mflowgen.yml'
+    try:
+      data = read_yaml( yaml_path )
+    except Exception:
+      data = {}
+    data['graph_kwargs'] = graph_kwargs
+    write_yaml( data = data, path = yaml_path )
+
   #-----------------------------------------------------------------------
   # launch
   #-----------------------------------------------------------------------
   # Dispatch function for commands
   #
 
-  def launch( s, help_, design, update=False, test=False, subgraph=False, backend='make', graph_kwargs='' ):
+  def launch( s, help_, design, update=False, subgraph=False, backend='make', graph_kwargs='' ):
 
     # Check that this design directory exists
 
@@ -145,12 +182,13 @@ class RunHandler:
       sys.exit( 1 )
 
     # Convert the graph_kwargs argument into a parameter dict
+
     if graph_kwargs:
       graph_kwargs_dict = ast.literal_eval(graph_kwargs)
     else:
       graph_kwargs_dict = {}
 
-    s.launch_run( design, update, test, subgraph, backend, graph_kwargs_dict )
+    s.launch_run( design, update, subgraph, backend, graph_kwargs_dict )
 
   #-----------------------------------------------------------------------
   # launch_run
@@ -159,7 +197,7 @@ class RunHandler:
   # graph description.
   #
 
-  def launch_run( s, design, update, test, subgraph, backend, graph_kwargs ):
+  def launch_run( s, design, update, subgraph, backend, graph_kwargs ):
 
     # Find the construct script (and check for --update) and save the path
     # to the construct script for future use of --update
@@ -167,22 +205,14 @@ class RunHandler:
     construct_path = s.find_construct_path( design, update )
 
     # If update is true and no new graph_kwargs are provided,
-    # look for the previous graph_kwargs
+    # look for the previous graph_kwargs. Then save the kwargs
+    # for future use of --update
 
-    if update and not graph_kwargs:
-      try:
-        data = read_yaml( '.mflowgen.yml' ) # get metadata
-        graph_kwargs = data['graph_kwargs']
-      except Exception:
-        print()
-        print( bold( 'Error:' ), 'No pre-existing build in current',
-                                    'directory for running --update' )
-        print()
-        sys.exit( 1 )
-
-    s.save_construct_path( construct_path, graph_kwargs )
+    found_graph_kwargs = s.find_graph_kwargs( graph_kwargs, update )
+    s.save_graph_kwargs( found_graph_kwargs )
 
     # Import the graph for this design
+
     c_dirname  = os.path.dirname( construct_path )
     c_basename = os.path.splitext( os.path.basename( construct_path ) )[0]
 
@@ -209,7 +239,7 @@ class RunHandler:
 
     # Construct the graph
 
-    g = graph_construct_mod.construct(**graph_kwargs)
+    g = graph_construct_mod.construct(**found_graph_kwargs)
 
     # Add input node if the graph is being instantiated as a subgraph
     # within another graph and it specifies inputs. This enables graphs
@@ -248,10 +278,10 @@ class RunHandler:
                              + status_target + "\"" )
     print()
 
-    if graph_kwargs:
+    if found_graph_kwargs:
       print( "Non-default graph kwargs:" )
       print()
-      for key, val in graph_kwargs.items():
+      for key, val in found_graph_kwargs.items():
         print( f"  -{key}: {val}" )
 
       print()
