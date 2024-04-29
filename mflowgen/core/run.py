@@ -254,10 +254,6 @@ class RunHandler:
     if len(g.all_outputs()) > 0:
       g.generate_output_step()
 
-    # Automatically connect any tests supplied by nodes in the graph
-    if test == True:
-      g.add_tests()
-
     # Generate the build files (e.g., Makefile) for the selected backend
     # build system
 
