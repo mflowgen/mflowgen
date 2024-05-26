@@ -124,6 +124,8 @@ class Subgraph(Step):
     data['name'] = subgraph_name
     data['inputs'] = s._graph.all_inputs()
     data['outputs'] = s._graph.all_outputs()
+    # Set subgraph tag to block so tests and automatically grab outputs when necessary
+    data['attach_point_tags'] = ['BLOCK']
     data['commands'] = [ \
       run_cmd,
       'mflowgen param update -k testing_express_flow -v $testing_express_flow --all',
