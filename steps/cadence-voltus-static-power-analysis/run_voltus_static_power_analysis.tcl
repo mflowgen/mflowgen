@@ -29,7 +29,7 @@ set_power_analysis_mode \
     -reset
 
 set_power_analysis_mode \
-    -analysis_view              analysis_default \
+    -analysis_view              [lindex [all_setup_analysis_views] 0] \
     -write_static_currents      true \
     -create_binary_db           true \
     -method                     static
