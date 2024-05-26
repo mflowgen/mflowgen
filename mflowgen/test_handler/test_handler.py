@@ -29,7 +29,7 @@ from mflowgen.components import Subgraph
 class TestHandler:
 
   def __init__( s ):
-    s.metadata_dir = '.mflowgen'
+    s.metadata_dir = os.path.abspath('.mflowgen')
     s.commands = [
       'run',
       'list',
@@ -52,6 +52,7 @@ class TestHandler:
 
   def get_step_data( s, step_index ):
     step_metadata_dir = glob.glob( f"{s.metadata_dir}/{step_index}-*" )
+    print(step_metadata_dir)
     try:
       step_metadata_dir = step_metadata_dir[0]
       step_data = read_yaml( f"{step_metadata_dir}/configure.yml" )
@@ -214,6 +215,7 @@ class TestHandler:
 
 
     synth_step = None
+    flowsetup_step = None
     block_steps = []
     ap_step_dict = {}
     # Find a synth step since we need the sdc from this to run tests
@@ -225,6 +227,8 @@ class TestHandler:
         continue
       if 'SYNTHESIS' in step_ap_tags:
         synth_step = step_data[ 'build_id' ]
+      elif 'FLOWSETUP' in step_ap_tags:
+        flowsetup_step = step_data[ 'build_id' ]
       elif 'BLOCK' in step_ap_tags:
         block_steps.append( step_data[ 'build_id' ] )
       # If the user didn't provide an attach point arg, find the step that corresponds to
@@ -331,6 +335,11 @@ class TestHandler:
                 # Add every output of the block to the test inputs
                 for block_output in block['outputs']:
                   os.symlink(f"{block_step_dir}/outputs/{block_output}", f"./blocks/{block_output}")
+            # We can get the foundation flow from a FLOWSETUP step if the attach point doesn't provide it
+            elif test_input == 'innovus-foundation-flow' and 'innovus-foundation-flow' not in ap_step_data['outputs']:
+              flowsetup_step_data = s.get_step_data(flowsetup_step)
+              flowsetup_step_dir = f"../../../{flowsetup_step_data['build_dir']}"
+              os.symlink( f"{flowsetup_step_dir}/outputs/innovus-foundation-flow", 'innovus-foundation-flow' )
             # End special cases
             # If the input we need is one of attach point's outputs, connect it
             elif test_input in ap_step_data['outputs']:
