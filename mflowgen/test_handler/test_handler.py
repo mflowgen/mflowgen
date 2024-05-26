@@ -66,7 +66,7 @@ class TestHandler:
   #
   # This helper function is run from within the test's input directory
 
-  def _gen_files_from_checkpoint( s, adk_path, foundation_flow_path, checkpoint_path, sdc_path):
+  def _gen_files_from_checkpoint( s, adk_path, foundation_flow_path, checkpoint_path, sdc_path, block_step_data_dicts):
     initial_dir = os.getcwd()
     gen_files_dir = 'gen_input_files'
     os.mkdir( gen_files_dir )
@@ -89,6 +89,16 @@ class TestHandler:
     os.symlink( f"../../{checkpoint_path}", 'design.checkpoint' )
     # SDC
     os.symlink( f"../../{sdc_path}", 'design.sdc' )
+
+    # Blocks
+    os.mkdir('./blocks')
+    # For each block
+    for block in block_step_data_dicts:
+      block_step_dir = f"../../../../../../{block['build_dir']}"
+      # Add every output of the block to the test inputs
+      for block_output in block['outputs']:
+        os.symlink(f"{block_step_dir}/outputs/{block_output}", f"./blocks/{block_output}")
+
 
     os.chdir( '..' )
 
@@ -204,6 +214,7 @@ class TestHandler:
 
 
     synth_step = None
+    block_steps = []
     ap_step_dict = {}
     # Find a synth step since we need the sdc from this to run tests
     for step_metadata_dir in step_metadata_dirs:
@@ -214,6 +225,8 @@ class TestHandler:
         continue
       if 'SYNTHESIS' in step_ap_tags:
         synth_step = step_data[ 'build_id' ]
+      elif 'BLOCK' in step_ap_tags:
+        block_steps.append( step_data[ 'build_id' ] )
       # If the user didn't provide an attach point arg, find the step that corresponds to
       # Each attach point tag we stored in the previous step
       if not attach_points:
@@ -229,6 +242,12 @@ class TestHandler:
     # Get design_name and clock_period param values from synth_step
     design_name = synth_step_data['parameters']['design_name']
     clock_period = synth_step_data['parameters']['clock_period']
+
+    # Get data dicts for block steps
+    block_step_data_dicts = []
+    for block_step in block_steps:
+      block_step_data_dicts.append( s.get_step_data( block_step ) )
+
 
     ap_list = attach_points
     if not ap_list:
@@ -303,6 +322,15 @@ class TestHandler:
             elif test_input == 'design.sdc':
               # Grab design.sdc from synth step
               os.symlink( f"{synth_step_dir}/outputs/design.sdc", 'design.sdc' )
+            # For hierarchical designs, we'll put all block outputs in an input directory called blocks
+            elif test_input == 'blocks':
+              os.mkdir('./blocks')
+              # For each block
+              for block in block_step_data_dicts:
+                block_step_dir = f"../../../{block['build_dir']}"
+                # Add every output of the block to the test inputs
+                for block_output in block['outputs']:
+                  os.symlink(f"{block_step_dir}/outputs/{block_output}", f"./blocks/{block_output}")
             # End special cases
             # If the input we need is one of attach point's outputs, connect it
             elif test_input in ap_step_data['outputs']:
@@ -339,7 +367,8 @@ class TestHandler:
             gen_files_dir = s._gen_files_from_checkpoint( adk_path,
                                                           f"{ap_step_dir}/inputs/innovus-foundation-flow",
                                                           f"{ap_step_dir}/outputs/design.checkpoint",
-                                                          f"{synth_step_dir}/outputs/design.sdc" )
+                                                          f"{synth_step_dir}/outputs/design.sdc",
+                                                          block_step_data_dicts )
             # Link generated files to test inputs
             for test_input in inputs_to_be_generated:
               os.symlink( f"{gen_files_dir}/{test_input}", test_input )
