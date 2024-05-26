@@ -23,6 +23,7 @@ def construct():
 
   # Default steps
   gen_files = Step( 'cadence-innovus-gen-design-files', default=True )
+  gen_files.extend_inputs(['blocks'])
 
   # Add graph inputs and outputs so this can be used in hierarchical flows
 
@@ -38,6 +39,9 @@ def construct():
              )
   g.add_input( 'adk', \
                gen_files.i( 'adk' ) \
+             )
+  g.add_input( 'blocks', \
+               gen_files.i( 'blocks' ) \
              )
 
   outputs = [
