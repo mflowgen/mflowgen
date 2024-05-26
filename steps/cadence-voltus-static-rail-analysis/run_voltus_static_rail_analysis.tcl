@@ -18,7 +18,7 @@ set macro_pg_libs [glob -nocomplain inputs/*.cl]
 set_rail_analysis_mode \
     -method                     static \
     -accuracy                   xd \
-    -analysis_view              analysis_default \
+    -analysis_view              [lindex [all_setup_analysis_views] 0 \
     -power_grid_library "$techonly_pg_lib $stdcell_pg_libs $macro_pg_libs" \
     -enable_rlrp_analysis       true \
     -verbosity true
@@ -26,11 +26,11 @@ set_rail_analysis_mode \
 #    -use_em_view_list           ../data/voltus/em_view.list \
 
 # Since we're not using a CPF file, specify pg nets
-set_pg_nets -net VDD        -voltage 0.8 -threshold 0.71 
-set_pg_nets -net VSS        -voltage 0.0 -threshold 0.09 
+set_pg_nets -net VDD        -voltage 0.8 -threshold 0.71
+set_pg_nets -net VSS        -voltage 0.0 -threshold 0.09
 
 set_power_data -reset
-set current_files [glob inputs/static_power_analysis_results/static_*.ptiavg] 
+set current_files [glob inputs/static_power_analysis_results/static_*.ptiavg]
 set_power_data -format current -scale 1 $current_files
 
 # Auto fetch power pad locations and run rail analysis for each net
