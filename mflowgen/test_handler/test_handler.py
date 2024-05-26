@@ -327,7 +327,7 @@ class TestHandler:
               os.mkdir('./blocks')
               # For each block
               for block in block_step_data_dicts:
-                block_step_dir = f"../../../{block['build_dir']}"
+                block_step_dir = f"../../../../{block['build_dir']}"
                 # Add every output of the block to the test inputs
                 for block_output in block['outputs']:
                   os.symlink(f"{block_step_dir}/outputs/{block_output}", f"./blocks/{block_output}")
