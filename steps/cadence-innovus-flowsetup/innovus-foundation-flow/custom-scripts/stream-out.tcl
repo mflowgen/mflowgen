@@ -6,7 +6,7 @@
 # Author : Christopher Torng
 # Date   : March 26, 2018
 
-if { [info exists ADK_DBU_PRECISION] } { 
+if { [info exists ADK_DBU_PRECISION] } {
     set stream_out_units $ADK_DBU_PRECISION
 } else {
     set stream_out_units 1000
@@ -20,6 +20,7 @@ set merge_files \
     [concat \
         [lsort [glob -nocomplain inputs/adk/*.gds*]] \
         [lsort [glob -nocomplain inputs/*.gds*]] \
+        [lsort [glob -nocomplain inputs/blocks/*.gds*]] \
     ]
 
 streamOut $vars(results_dir)/$vars(design)-merged.gds \
