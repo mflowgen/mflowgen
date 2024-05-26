@@ -18,7 +18,7 @@ set macro_pg_libs [glob -nocomplain inputs/*.cl]
 set_rail_analysis_mode \
     -method                     static \
     -accuracy                   xd \
-    -analysis_view              [lindex [all_setup_analysis_views] 0 \
+    -analysis_view              [lindex [all_setup_analysis_views] 0] \
     -power_grid_library "$techonly_pg_lib $stdcell_pg_libs $macro_pg_libs" \
     -enable_rlrp_analysis       true \
     -verbosity true
