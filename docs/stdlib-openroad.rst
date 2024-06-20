@@ -1,15 +1,15 @@
-Common Library Nodes -- OpenROAD Flow Scripts
+Integration with OpenROAD
 ==========================================================================
 
 We are excited to partner with `the OpenROAD Project
-<https://theopenroadproject.org>`__ as well as `the OpenROAD Flow Scripts
+<https://theopenroadproject.org>`__ and `the OpenROAD Flow Scripts
 (ORFS) <https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts>`__
 RTL-GDSII flow for rapid architecture and design space exploration, early
 prediction of QoR, and detailed physical design implementation.
 
-The mflowgen common library integrates the following modular nodes that
-are based on ORFS and rely only on a ``Docker <https://www.docker.com>`__
-installation:
+The mflowgen common library provides the following modular nodes in the
+common library based on ORFS. They rely only on a working `Docker
+<https://www.docker.com>`__ installation:
 
 +-----------+-------------------------+------------------------------------------------------------------------------+
 | **Tool**  | **Node**                | **Description**                                                              |
@@ -30,31 +30,34 @@ installation:
 +-----------+-------------------------+------------------------------------------------------------------------------+
 
 Refer to the `OpenROAD documentation <https://openroad.readthedocs.io>`__
-for more information on the tools.
+for more information on the tools used in each stage of the flow.
 
-To experiment with the mflowgen and OpenROAD flow, you can create a new
-build using the GcdUnit pipe cleaner as a demo:
+To experiment with this flow, use the GcdUnit pipe cleaner as a demo:
+
+.. code:: bash
 
     % cd $top
     % mkdir build-openroad && cd build-openroad
     % mflowgen run --design ../designs/GcdUnit/construct-openroad.py
 
-Here is the list of steps:
+You can then show the nodes present in this basic demo graph:
 
 .. code:: bash
 
     % make status
-     Status:
-      - **build** -> 0 : info
-      - **build** -> 1 : orfs-docker-setup
-      - **build** -> 2 : orfs-yosys-synthesis
-      - **build** -> 3 : orfs-openroad-floorplan
-      - **build** -> 4 : orfs-openroad-place
-      - **build** -> 5 : orfs-openroad-cts
-      - **build** -> 6 : orfs-openroad-route
-      - **build** -> 7 : orfs-openroad-finish
 
-The basic demo graph can be visualized as well:
+     Status:
+
+      - build -> 0 : info
+      - build -> 1 : orfs-docker-setup
+      - build -> 2 : orfs-yosys-synthesis
+      - build -> 3 : orfs-openroad-floorplan
+      - build -> 4 : orfs-openroad-place
+      - build -> 5 : orfs-openroad-cts
+      - build -> 6 : orfs-openroad-route
+      - build -> 7 : orfs-openroad-finish
+
+You can also visualize the basic demo graph to inspect its connectivity:
 
 .. code:: bash
 
@@ -64,24 +67,26 @@ The basic demo graph can be visualized as well:
 .. image:: _static/images/stdlib/openroad-demo-graph.png
   :width: 400px
 
-Feel free to cross-check the construct-openroad.py, the graph visualization, and
+You can cross-check the construct-openroad.py, the graph visualization, and
 the `step configuration files
 <https://github.com/mflowgen/mflowgen/tree/master/steps>`_ to see which
 files are passing between which steps.
 
-The integration uses a base docker image that has the OpenROAD tool
-environment installed as a vehicle for executing the tools. The base image
-is passed into each of the downstream nodes based on the ORFS flow. You
-may also notice that each node consumes and produces flow checkpoint
-tarballs, which initialize the flow state in the Docker container before
-the node executes. There are no new Docker images produced, which makes
-this approach fast and clean, despite being a modular approach that
-repeatedly goes in and out of docker containers.
+At a high level, the flow relies on setting up a base docker image that
+has the OpenROAD tool environment installed (``orfs-docker-setup``). This
+base image is passed into each of the downstream nodes and used as a
+vehicle for executing the tools. Each node consumes and produces flow
+checkpoint tarballs, which are used to initialize the state of the flow in
+a clean Docker container before the node executes. There are no new Docker
+images produced, which makes this approach fast and clean, despite being a
+modular approach that repeatedly goes in and out of docker containers.
+
+The following information shows how you can inspect the inputs and outputs
+of the ``orfs-openroad-cts`` node as an example:
 
 .. code:: bash
 
-    % make info-5  # Inspects the details for node orfs-openroad-cts
-    % ( ... open graph.pdf ... )
+    % make info-5  # Inspects the details for orfs-openroad-cts node
 
 .. image:: _static/images/stdlib/openroad-demo-node.png
   :width: 400px
@@ -90,18 +95,18 @@ You can run the entire flow to the end:
 
 .. code:: bash
 
-    % make 7  # See "make status", this corresponds to orfs-openroad-finish
+    % make 7  # See "make status", corresponds to orfs-openroad-finish node
 
-You can then find all of the results in the outputs directory of that
-node, specifically in the flow checkpoint tarball. For example,
-"7-orfs-openroad-finish/flow/results/nangate45/gcd/base/6_final.gds" has
+You can find the results in the outputs directory of the node,
+specifically in the flow checkpoint tarball. For example,
+``7-orfs-openroad-finish/flow/results/nangate45/gcd/base/6_final.gds`` has
 the final layout:
 
 .. image:: _static/images/stdlib/openroad-demo-layout.jpg
   :width: 400px
 
-Also, note that each node supports debug targets to drop you into the
-Docker container shell:
+Each node also supports debug targets to drop you into the Docker
+container shell:
 
 .. code::
 
@@ -109,7 +114,6 @@ Docker container shell:
 
     root@b11dbe7cd067:/OpenROAD-flow-scripts# ...
 
-The integration of mflowgen with OpenROAD flow scripts will allow mflowgen
-users to customize new functionality based on these open-source nodes,
-while continuing to track the ORFS upstream.
+The integration of mflowgen with OpenROAD flow scripts opens the door for mflowgen
+users to customize new functionality based on these open-source nodes.
 
