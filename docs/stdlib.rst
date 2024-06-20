@@ -33,4 +33,5 @@ will be using the GcdUnit design as a pipecleaner.
    stdlib-mentor-drc
    stdlib-mentor-lvs
    stdlib-nodes
+   stdlib-openroad
 
