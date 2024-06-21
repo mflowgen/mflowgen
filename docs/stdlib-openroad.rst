@@ -37,8 +37,8 @@ To experiment with this flow, use the GcdUnit pipe cleaner as a demo:
 .. code:: bash
 
     % cd $top
-    % mkdir build-openroad && cd build-openroad
-    % mflowgen run --design ../designs/GcdUnit/construct-openroad.py
+    % mkdir build-open && cd build-open
+    % mflowgen run --design ../designs/GcdUnit/construct-open.py
 
 You can then show the nodes present in this basic demo graph:
 
@@ -68,7 +68,7 @@ You can also visualize the basic demo graph to inspect its connectivity:
 .. image:: _static/images/stdlib/openroad-demo-graph.jpg
   :width: 400px
 
-You can cross-check the construct-openroad.py, the graph visualization, and
+You can cross-check the ``construct-open.py``, the graph visualization, and
 the `step configuration files
 <https://github.com/mflowgen/mflowgen/tree/master/steps>`_ to see which
 files are passing between which steps.
@@ -128,7 +128,7 @@ You can pass your own design into the flow by creating your own custom
 example provided in the `demo orfs-design node
 <https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/orfs-design>`_
 and see how it is used in the `demo graph
-<https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/construct-openroad.py>`_
+<https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/construct-open.py>`_
 that you just ran. Refer to the OpenROAD Flow Scripts Documentation
 `Adding New Designs
 <https://openroad-flow-scripts.readthedocs.io/en/latest/user/AddingNewDesign.html>`_
