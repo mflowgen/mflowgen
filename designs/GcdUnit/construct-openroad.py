@@ -28,6 +28,9 @@ def construct():
     'clock_period'   : 2.0,
     'adk'            : adk_name,
     'adk_view'       : adk_view,
+    # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
+    # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
+    'orfs_image'     : 'mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6',
   }
 
   #-----------------------------------------------------------------------
@@ -43,7 +46,7 @@ def construct():
 
   # Custom steps
 
-#  rtl = Step( this_dir + '/rtl' )
+  design = Step( this_dir + '/orfs-design' )
 
   # Default steps
 
@@ -61,6 +64,7 @@ def construct():
   #-----------------------------------------------------------------------
 
   g.add_step( info     )
+  g.add_step( design   )
   g.add_step( docker   )
   g.add_step( synth    )
   g.add_step( fplan    )
@@ -72,6 +76,8 @@ def construct():
   #-----------------------------------------------------------------------
   # Graph -- Add edges
   #-----------------------------------------------------------------------
+
+  g.connect_by_name( design,  synth  )
 
   g.connect_by_name( docker,  synth  )
   g.connect_by_name( docker,  fplan  )
