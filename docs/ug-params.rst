@@ -50,7 +50,7 @@ push timing on just the synthesis node:
        was "1.0" )
 
 The parameter updates are only applied if the key is defined and exists for
-that step.
+that node.
 
 Also note that if you call "mflowgen run" again, these interactive parameter
 updates are not preserved and must be run again.

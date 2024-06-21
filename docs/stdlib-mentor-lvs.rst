@@ -2,7 +2,7 @@ Layout-vs-Schematic (LVS)
 ==========================================================================
 
 Next we run LVS also with Mentor Calibre (i.e., the ``mentor-calibre-lvs``
-step). You can run the design up to this step like this:
+node). You can run the design up to this node like this:
 
 .. code:: bash
 
@@ -26,7 +26,7 @@ Here are the inputs, outputs, and scripts and what they do.
 | input  | design.lvs.v      | The post-place-and-route gate-level netlist with      |
 |        |                   | physical-only cells removed.                          |
 +--------+-------------------+-------------------------------------------------------+
-| input  | adk               | This step uses the Calibre LVS rule deck from the ADK.|
+| input  | adk               | This node uses the Calibre LVS rule deck from the ADK.|
 +--------+-------------------+-------------------------------------------------------+
 
 Open the LVS report to check the comparison result:
@@ -40,7 +40,7 @@ Open the LVS report to check the comparison result:
 .. image:: _static/images/stdlib/lvs.jpg
   :width: 400px
 
-If you see a mismatch, open the debug target for this step to bring up the
+If you see a mismatch, open the debug target for this node to bring up the
 GDS viewer GUI (Calibre DESIGNrev). After the layout loads, press $>$ many
 times to increase the depth and see inside all the cells.
 

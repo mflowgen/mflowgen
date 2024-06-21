@@ -2,14 +2,14 @@ Synthesis
 ==========================================================================
 
 We use Synopsys DC to synthesize a single RTL netlist file into gates. You
-can run the design up to this step like this:
+can run the design up to this node like this:
 
 .. code:: bash
 
     % cd $top/build
     % make synopsys-dc-synthesis
 
-Here are the inputs, outputs, and scripts in the synthesis step and what they
+Here are the inputs, outputs, and scripts in the synthesis node and what they
 do.
 
 +--------+-------------------------+------------------------------------------------------------------------+
@@ -47,7 +47,7 @@ a good first-order estimate). The setup timing report contains the full
 trace for the most critical timing paths, with the critical path listed
 first.
 
-.. Here is a list of checks you will want to run through before moving on to the next step:
+.. Here is a list of checks you will want to run through before moving on to the next node:
 ..
 .. - ``reports/foo`` -- foo bar.
 ..

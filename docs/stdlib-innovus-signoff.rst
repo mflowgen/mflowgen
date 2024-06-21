@@ -6,7 +6,7 @@ run detailed route (i.e., the ``cadence-innovus-route`` node) and loop
 until timing is met or until the tool quits (i.e., the
 ``cadence-innovus-postroute`` node). Then the final timing analysis is run
 and output files are written out (i.e., the ``cadence-innovus-signoff``
-node). You can run the design up to this step like this:
+node). You can run the design up to this node like this:
 
 .. code:: bash
 
