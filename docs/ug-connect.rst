@@ -1,9 +1,9 @@
-Connecting Steps Together
+Connecting Nodes Together
 ==========================================================================
 
 .. currentmodule:: mflowgen.components
 
-There are two ways to connect two steps in a graph (i.e., to draw edges
+There are two ways to connect two nodes in a graph (i.e., to draw edges
 between nodes):
 
 1. With :py:meth:`Graph.connect_by_name`
@@ -11,16 +11,16 @@ between nodes):
 2. With :py:meth:`Graph.connect`, :py:meth:`Step.o`, and :py:meth:`Step.i`
 
 :py:meth:`Graph.connect_by_name` tries to automatically connect outputs of
-one step to inputs of the other step if the files have the same name.
+one node to inputs of the other node if the files have the same name.
 Multiple edges can be drawn with a single call.
 
-:py:meth:`Graph.connect` explicitly connects a single output of a step
-(specified by :py:meth:`Step.o`) to a single input of another step
+:py:meth:`Graph.connect` explicitly connects a single output of a node
+(specified by :py:meth:`Step.o`) to a single input of another node
 (specified by :py:meth:`Step.i`). Only a single edge is drawn.
 
 Graph building is generally cleaner when connecting by name. The more
 explicit connect API is useful when names do not match and it is
-inconvenient to adjust step configurations to make them match.
+inconvenient to adjust node configurations to make them match.
 
 Automatic Connection by Name
 --------------------------------------------------------------------------
@@ -81,7 +81,7 @@ We can read this clearly: Connect **rtl output** "GcdUnit.v" to **dc
 input** "design.v".
 
 :py:meth:`Step.o` and :py:meth:`Step.i` are helper methods necessary for
-differentiating outputs from inputs within a step. For example, the
+differentiating outputs from inputs within a node. For example, the
 synthesis node has an input file "design.v" (i.e., the RTL design) and
 also an output file "design.v" (i.e., the synthesized netlist) with the
 same name.

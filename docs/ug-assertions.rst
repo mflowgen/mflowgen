@@ -1,9 +1,9 @@
 Assertions
 ==========================================================================
 
-Similar to how assertions can catch runtime exceptions in software,
+Similar to how assertions can catch run-time exceptions in software,
 mflowgen allows you to define Python snippets that assert preconditions
-and postconditions before and after steps to catch unexpected situations
+and postconditions before and after nodes to catch unexpected situations
 at build time. Assertions are in Python to keep them concise and yet
 powerful. The assertions are collected and run with `pytest`_ to allow
 customization and user extensibility.
@@ -16,7 +16,7 @@ customization and user extensibility.
 
 .. We can now add assertions throughout our PD flows. This can be a very powerful time saver. Each bug takes hours or days of detective work. I think if we intelligently put effort into certain assertions, you can save big chunks of time over the next weeks and months.
 
-These assertions can be statically defined in a step configuration file or
+These assertions can be statically defined in a node configuration file or
 defined at graph construction time. For example, say we have a simple
 synthesis node with a configuration like this:
 
@@ -97,14 +97,14 @@ running ``% which foo`` on the command line.
 Adding Assertions When Constructing Your Graph
 --------------------------------------------------------------------------
 
-The assertions defined in a step configuration file can be extended at
+The assertions defined in a node configuration file can be extended at
 graph construction time, meaning you can add your own design-specific
-assertions in each step. You can use the
+assertions in each node. You can use the
 :py:mod:`Step.extend_preconditions` and
 :py:mod:`Step.extend_postconditions` methods to extend either list.
 
 For example, say we wanted to add a check for clock-gating cells as a
-postcondition in our synthesis step. We can assert that this cell appears
+postcondition in our synthesis node. We can assert that this cell appears
 in the gate-level netlist like this:
 
 .. code:: python
@@ -119,7 +119,7 @@ Escaping Special Characters
 
 Certain characters are special in YAML syntax and must be escaped if you
 want to use them. For example, the following postcondition in the Mentor
-Calibre GDS merge step (i.e., "mentor-calibre-gdsmerge") asserts that the
+Calibre GDS merge node (i.e., "mentor-calibre-gdsmerge") asserts that the
 report does not warn about duplicate module definitions (a dangerous
 warning that can corrupt your layout):
 
@@ -241,7 +241,7 @@ You can write a Python helper function that extracts the 94.12% figure:
 
       return percentage
 
-Then you can assert a postcondition in the step configuration for a
+Then you can assert a postcondition in the node configuration for a
 clock-gating percentage of at least 80%:
 
 .. code:: python
@@ -257,8 +257,8 @@ clock-gating percentage of at least 80%:
 Using Custom pytest Files
 --------------------------------------------------------------------------
 
-You can write your own pytest functions and include them in your Step (or
-attach them as inputs). Then you can drop them in your step configuration
+You can write your own pytest functions and include them in your node (or
+attach them as inputs). Then you can drop them in your node configuration
 file using the ``pytest:`` key as special syntax:
 
 .. code:: yaml
@@ -273,20 +273,20 @@ other assertions.
 Assertion Scripts in mflowgen
 --------------------------------------------------------------------------
 
-When executing a step, mflowgen generates two scripts,
+When executing a node, mflowgen generates two scripts,
 ``mflowgen-check-preconditions.py`` and
 ``mflowgen-check-postconditions.py``, puts them in the build directory,
-and then runs these scripts before and after executing the step. At
-runtime if the postcondition check fails, re-running the step (e.g.,
+and then runs these scripts before and after executing the node. At
+run time if the postcondition check fails, re-running the node (e.g.,
 ``make 4``) will only re-run the postcondition check. It will **not**
-re-execute the step. This gives you the chance to enter the sandbox and
+re-execute the node. This gives you the chance to enter the sandbox and
 fix things until the postconditions pass. The build status will not be
 marked "done" until all postcondition checks pass.
 
 .. note::
 
-    To completely re-run a step, you should clean that step. For example
-    if synthesis is step 4, ``make clean-4`` and ``make 4`` will do a
+    To completely re-run a node, you should clean that node. For example
+    if synthesis is node 4, ``make clean-4`` and ``make 4`` will do a
     clean rebuild of synthesis.
 
 The two assertion scripts can also be run independently with pytest. The

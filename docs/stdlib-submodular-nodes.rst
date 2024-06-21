@@ -3,20 +3,20 @@
 Sub-Modular Node Design
 ==========================================================================
 
-The mflowgen steps we provide for DC synthesis and Innovus place-and-route
-steps are designed to be submodular. This means that each step (which is
+The mflowgen nodes we provide for DC synthesis and Innovus place-and-route
+nodes are designed to be submodular. This means that each node (which is
 already modular on its own) is further split into individual scripts for
 various purposes (e.g., reporting, setting up variables and margins,
 tweaking constraints). An mflowgen parameter called ``order`` then allows
-the user to parameterize how the step is run from a Python interface. For
+the user to parameterize how the node is run from a Python interface. For
 example, the user can remove a script that is not needed for their design,
 add an additional custom script for their design, or simply define a
 reordering of the existing scripts.
 
-Take a look at the design initialization step (i.e.,
+Take a look at the design initialization node (i.e.,
 ``cadence-innovus-init``), which is responsible for reading in the
 post-synthesis design files from Synopsys DC and executing floorplanning.
-This `step configuration file
+This `node configuration file
 <https://github.com/mflowgen/mflowgen/blob/master/steps/cadence-innovus-init/configure.yml>`__
 lists the following inputs and outputs:
 
@@ -29,7 +29,7 @@ lists the following inputs and outputs:
 +--------+-------------------------+------------------------------------------------------------------------+
 | input  | design.sdc              | Constraints dumped from synthesis.                                     |
 +--------+-------------------------+------------------------------------------------------------------------+
-| output | design.checkpoint       | The working Innovus database after the step finishes.                  |
+| output | design.checkpoint       | The working Innovus database after the node finishes.                  |
 +--------+-------------------------+------------------------------------------------------------------------+
 
 The configuration file also defines the ``order`` parameter, which lists
@@ -53,7 +53,7 @@ can be found in the ``scripts`` subdirectory):
 The order parameter determines the order in which the scripts are run. For
 example, floorplanning (``floorplan.tcl``) will be executed after we read
 in the design (``main.tcl``) and set up quality-of-life variables
-(``quality-of-life.tcl``), with reporting done at the end of the step
+(``quality-of-life.tcl``), with reporting done at the end of the node
 (``reporting.tcl``). The order parameter can be accessed as a normal
 python list in your mflowgen graph defined in construct.py. For example,
 the parameter can be printed like this:
@@ -68,10 +68,10 @@ the parameter can be printed like this:
 
 The commands run Innovus with a special script that simply loops through
 the order parameter and runs each item one by one. It searches for each
-script in both the step's local ``scripts`` directory (for the default
+script in both the node's local ``scripts`` directory (for the default
 versions of the scripts) as well as the ``inputs`` directory (where the
 user can supply custom versions of the scripts) with priority given to the
-inputs. This allows users to extend the step with new scripts.
+inputs. This allows users to extend the node with new scripts.
 
 .. note::
 
@@ -83,7 +83,7 @@ inputs. This allows users to extend the step with new scripts.
     "inputs/foo.tcl" is run and "scripts/foo.tcl" is ignored.
 
 For example, if we had a node called ``custom-init`` that provided
-``new-last-step.tcl`` as an output, we could parameterize the init step to
+``new-last-step.tcl`` as an output, we could parameterize the init node to
 append the new script at the end:
 
 - main.tcl
@@ -95,10 +95,10 @@ append the new script at the end:
 - **new-last-step.tcl** (a new custom script)
 
 The mflowgen construct script would use the mflowgen API for extending the
-list of inputs in a step (i.e., ``extend_inputs()``) and extend the init
-step inputs with the list of all outputs of our custom node (i.e.,
+list of inputs in a node (i.e., ``extend_inputs()``) and extend the init
+node inputs with the list of all outputs of our custom node (i.e.,
 ``all_outputs()``). Running ``make graph`` would then produce a graph with
-a new input edge into the init step like this:
+a new input edge into the init node like this:
 
 .. image:: _static/images/stdlib/custom-init.jpg
   :width: 400px
@@ -117,7 +117,7 @@ The mflowgen construct script that does the above would look like this:
     g.add_step( custom_init )
     g.connect_by_name( custom_init, init )
 
-Finally, we would parameterize the order of the init step to include the
+Finally, we would parameterize the order of the init node to include the
 new input script:
 
 .. code:: python
@@ -130,6 +130,6 @@ new input script:
 
 Note that we could simply have replaced the entire init node with our own
 custom version. However, it can be very useful to reuse the majority of an
-existing step while tweaking just a small part of it.
+existing node while tweaking just a small part of it.
 
 

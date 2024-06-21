@@ -1,11 +1,11 @@
-Stashing Pre-Built Steps for Sharing
+Stashing Pre-Built Nodes for Sharing
 ==========================================================================
 
-mflowgen supports stashing to help you share pre-built steps between people
+mflowgen supports stashing to help you share pre-built nodes between people
 working on the same graph.
 
 For example, here is a "make status" printout for the GcdUnit design with
-most steps already built:
+most nodes already built:
 
 .. image:: _static/images/stash-demo-0.jpg
   :width: 300px
@@ -33,7 +33,7 @@ The stash contents are empty at the start:
 
     Stash: /tmp/2020-0317-mflowgen-stash-588e56
 
-We can stash our synthesis step with a message like this:
+We can stash our synthesis node with a message like this:
 
 .. code:: bash
 
@@ -42,13 +42,13 @@ We can stash our synthesis step with a message like this:
 
 .. note::
 
-    Only the outputs of a step are stashed by default. Saving the outputs
-    is often far smaller compared to saving the entire build of a step.
-    You can use the optional ``--all`` flag to save an entire step,
+    Only the outputs of a node are stashed by default. Saving the outputs
+    is often far smaller compared to saving the entire build of a node.
+    You can use the optional ``--all`` flag to save an entire node,
     including all of its inputs, logs, and intermediate files. Note that
     this can be very slow if there are many small files to copy.
 
-Now the stash contents show the pre-built synthesis step tagged with a
+Now the stash contents show the pre-built synthesis node tagged with a
 "4d1c23" hash:
 
 .. code:: bash
@@ -61,7 +61,7 @@ Now the stash contents show the pre-built synthesis step tagged with a
 
     Stash: /tmp/2020-0317-mflowgen-stash-588e56
 
-You can stash other steps, and you can stash the same step multiple times
+You can stash other nodes, and you can stash the same node multiple times
 (they all get a different hash in the stash for uniqueness).
 
 Now say we cleaned our copy of synthesis for whatever reason:
@@ -89,10 +89,10 @@ the pre-built stashed copy like this:
 
 Synthesis is now back and it is marked "pre-built", meaning it is forced
 always up-to-date until you remove it or run its clean target. Pulling
-does **not** remove the step from the stash. You can pull the same stashed
-step as many times as you want. Pulling will overwrite the existing step
+does **not** remove the node from the stash. You can pull the same stashed
+node as many times as you want. Pulling will overwrite the existing node
 of the same name in your current directory. You can also "stash pop" to
-pull a pre-built step and then drop it from the stash.
+pull a pre-built node and then drop it from the stash.
 
 .. note::
 
@@ -102,10 +102,10 @@ pull a pre-built step and then drop it from the stash.
     intended for temporarily "shelving" your own versions for yourself to
     use.
 
-It can be particularly useful for teams to share pre-built steps to enable
+It can be particularly useful for teams to share pre-built nodes to enable
 others to start from an intermediate point in a fresh build. For example,
 we could stash pull on synthesis and continue onwards from there to do PnR
-without re-executing any of the earlier steps in the flow.
+without re-executing any of the earlier nodes in the flow.
 
 First we link a build to a stash directory:
 
@@ -127,7 +127,7 @@ Then we pull:
 .. image:: _static/images/stash-demo-3.jpg
   :width: 300px
 
-The upstream nodes are not built yet, but the pre-built synthesis step is
+The upstream nodes are not built yet, but the pre-built synthesis node is
 forced up-to-date (until cleaned). This means we can continue the flow
 from this point and never worry about managing the pre-built copy or its
 predecessors.
@@ -139,9 +139,9 @@ Also note that you can drop something from the stash like this:
     % mflowgen stash drop --hash 4d1c23
     Dropped step "synopsys-dc-synthesis" with hash "4d1c23"
 
-As a final note, be aware that some steps *cannot* be shared if they
+As a final note, be aware that some nodes *cannot* be shared if they
 contain hardcoded paths, which may break when executed from another
-location. Ideally, steps should be designed to be as portable as possible,
+location. Ideally, nodes should be designed to be as portable as possible,
 but this is not always feasible.
 
 
