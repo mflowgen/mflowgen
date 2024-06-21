@@ -8,7 +8,8 @@ internally when you call the various methods that make connections between
 nodes in your graph.
 
 Note that for general discussion, we use the words "step" and "node"
-interchangeably in the following documentation.
+interchangeably in the following documentation. However, the python code
+defines a :py:mod:`Step` class.
 
 .. toctree::
    :maxdepth: 2

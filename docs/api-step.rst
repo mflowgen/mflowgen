@@ -5,6 +5,10 @@ Class Step
 A Graph is composed of nodes and edges (i.e., `Step` and `Edge`
 objects).
 
+Note that for general discussion, we use the words "step" and "node"
+interchangeably in the following documentation. However, the python code
+defines a :py:mod:`Step` class.
+
 .. py:class:: Step( step_path, default=False )
   :noindex:
 
