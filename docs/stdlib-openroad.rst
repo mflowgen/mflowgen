@@ -80,8 +80,7 @@ vehicle for executing the tools. We host these base images on the mflowgen
 Docker Hub with releases tagged with the date and the originating commit
 of the ORFS repo.
 
-- `mflowgen Docker Hub
-<https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general>`_
+- `mflowgen Docker Hub <https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general>`_
 - Example Tag: 2024-0621-f0caba6
 
 Each node consumes and produces flow checkpoint tarballs, which are used
@@ -128,7 +127,10 @@ You can pass your own design into the flow by creating your own custom
 ``orfs-design`` node and connecting it to the synthesis node. See the
 example provided in the `demo orfs-design node
 <https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/orfs-design>`_
-and refer to the OpenROAD Flow Scripts Documentation `Adding New Designs
+and see how it is used in the `demo graph
+<https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/construct-openroad.py>`_
+that you just ran. Refer to the OpenROAD Flow Scripts Documentation
+`Adding New Designs
 <https://openroad-flow-scripts.readthedocs.io/en/latest/user/AddingNewDesign.html>`_
 for further details.
 
