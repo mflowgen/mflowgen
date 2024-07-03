@@ -28,6 +28,7 @@ outputs:
 commands:
   - echo -e "\n- Pulling orfs docker image -- $orfs_image\n"
   - docker pull $orfs_image
+  # - echo -e "\n- design_name -- $design_name adk_name -- $adk"
   - echo -e "\n- Saving orfs docker image as tarball for output\n"
   - docker save -o orfs-docker-image.tar $orfs_image
 #  - docker rmi $orfs_image # Comment this out for performance
@@ -39,6 +40,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  design_name: undefined
+  clock_period: 1.0
+  adk: undefined
   # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
   # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
   orfs_image: mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6

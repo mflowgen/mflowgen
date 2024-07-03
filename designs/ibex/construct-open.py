@@ -19,13 +19,12 @@ def construct():
   # Parameters
   #-----------------------------------------------------------------------
 
-  # adk_name = 'freepdk-45nm'
   adk_name = 'nangate45'
   adk_view = 'view-tiny'
 
   parameters = {
     'construct_path' : __file__,
-    'design_name'    : 'gcd',
+    'design_name'    : 'ibex',
     'clock_period'   : 2.0,
     'adk'            : adk_name,
     'adk_view'       : adk_view,
