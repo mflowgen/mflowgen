@@ -46,6 +46,7 @@ parameters:
     - clean-cellpad.tcl
     - reporting.tcl
   cell_padding: 2 # how much padding to add to specified cells
+  padding: False
 
 #-------------------------------------------------------------------------
 # Debug
