@@ -69,7 +69,7 @@ if {[info exists ADK_NETLIST_EXCLUDE_CELL_LIST]} {
 
 # Write netlist for Power-Ground Aware GL simulation
 
-saveNetlist -includePowerGround -excludeLeafCell $vars(results_dir)/$vars(design).vcs.pg.v
+saveNetlist -includePowerGround -excludeLeafCell -excludeCellInst $gl_exclude_list $vars(results_dir)/$vars(design).vcs.pg.v
 
 
 # Write LEF for hierarchical bottom-up design
