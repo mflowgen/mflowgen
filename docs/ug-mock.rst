@@ -1,30 +1,30 @@
-Mock Graphs for Modular Step Development
+Mock Graphs for Modular Node Development
 ==========================================================================
 
-Developing a step can be difficult when its inputs are generated as part
+Developing a node can be difficult when its inputs are generated as part
 of a larger flow and you are not yet sure what the commands should be. In
-this situation, it may not make sense to hook a partially developed step
+this situation, it may not make sense to hook a partially developed node
 into a full flow to debug the issues. Instead, you can tell mflowgen to
-mock up a graph where you can provide inputs and test the step in
+mock up a graph where you can provide inputs and test the node in
 isolation.
 
 The mock-up contains the "design-under-test" node and a "mock-push" node
-that automatically provides placeholder outputs matching your step's
+that automatically provides placeholder outputs matching your node's
 inputs. For example, the "synopsys-dc-synthesis" node in its mock-up graph
 would look like this:
 
 .. image:: _static/images/mock-synthesis.jpg
   :width: 300px
 
-You could make sure your step works by spinning in a normal mflowgen
+You could make sure your node works by spinning in a normal mflowgen
 environment with full access to normal build targets (e.g., make status).
-You would provide inputs and iterate on developing your step. You could
+You would provide inputs and iterate on developing your node. You could
 test the commands, the inputs and outputs, the preconditions and
 postconditions, and the parameters before connecting it in a larger flow.
 
-As an example, say we are developing and testing a new step "test" that
+As an example, say we are developing and testing a new node "test" that
 simply reads a file (i.e, "input-foo") and generates a file (i.e,
-"output-bar"). Its step configuration file looks like this:
+"output-bar"). Its node configuration file looks like this:
 
 .. code:: yaml
 
@@ -42,7 +42,7 @@ simply reads a file (i.e, "input-foo") and generates a file (i.e,
     outputs:
       - output-bar
 
-You can tell mflowgen to mock up a graph for this step:
+You can tell mflowgen to mock up a graph for this node:
 
 .. code::
 
@@ -94,8 +94,8 @@ Running the "make graph" target would generate this graph:
   :width: 150px
 
 The mock files in "mock-push/outputs" can be replaced with real files. You
-could then clean and re-run your step as you develop. Remember to pull
-your changes back into the source copy of your step.
+could then clean and re-run your node as you develop. Remember to pull
+your changes back into the source copy of your node.
 
 
 

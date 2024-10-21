@@ -1,7 +1,10 @@
 Design Initialization and Floorplanning
 ==========================================================================
 
-The first step during place and route is called ``init`` (i.e., the ``cadence-innovus-init`` step) and reads in the design from synthesis before executing floorplanning. You can run the design up to the init step like this:
+The first step during place and route is called ``init`` (i.e., the
+``cadence-innovus-init`` node) and reads in the design from synthesis
+before executing floorplanning. You can run the design up to the init node
+like this:
 
 .. code:: bash
 
@@ -77,7 +80,7 @@ the next step:
   errors at this stage will be related to reading the technology files and
   libraries.
 
-- Check the floorplan in the GUI -- Run the debug target on this step and
+- Check the floorplan in the GUI -- Run the debug target on this node and
   bring up the GUI. GcdUnit does not have any macros, but this is
   generally the time to make sure that the macros are placed at reasonable
   locations and orientations (e.g., pins facing the core area, no narrow

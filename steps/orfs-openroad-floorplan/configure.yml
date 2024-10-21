@@ -1,0 +1,105 @@
+#=========================================================================
+# OpenROAD Flow Scripts
+#=========================================================================
+# Mirror nodes that track ORFS flow scripts
+#
+# Author : Christopher Torng
+# Date   : June 17, 2024
+#
+
+name: orfs-openroad-floorplan
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - orfs-docker-image.tar
+  - flow-checkpoint.tar.gz
+
+outputs:
+  - flow-checkpoint.tar.gz
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # Pre -- Load the base docker image
+  - echo -e "\n- Loading orfs docker image ...\n"
+  - docker load -i inputs/orfs-docker-image.tar
+  # Pre -- Create a docker container
+  - echo -e "\n- Creating orfs docker container ...\n"
+  - CONTAINER=$(docker run -it -d $orfs_image)
+  - echo -e "\n- Created orfs docker container with Container ID -- $CONTAINER\n"
+  # Pre -- Get the flow snapshot data into the docker container
+  - echo -e "\n- Moving flow checkpoint into orfs docker container -- $CONTAINER\n"
+  - docker cp -aL inputs/flow-checkpoint.tar.gz $CONTAINER:/OpenROAD-flow-scripts
+  - docker exec $CONTAINER bash -c "rm -rf flow && tar xzvf flow-checkpoint.tar.gz"
+  # Execute
+  - echo -e "\n- Executing flow commands inside orfs docker container -- $CONTAINER\n"
+  - docker exec $CONTAINER bash -c "cd flow && make floorplan DESIGN_CONFIG=./designs/$orfs_platform/$design_name/config.mk"
+  # Post -- Get the flow snapshot data out of the docker container
+  - echo -e "\n- Moving flow checkpoint out of orfs docker container -- $CONTAINER\n"
+  - docker cp -a $CONTAINER:/OpenROAD-flow-scripts/flow .
+  # Post -- Remove containers and images
+  - echo -e "\n- Cleaning up docker containers and images\n"
+  - docker rm -f $CONTAINER
+#  - docker rmi $orfs_image # Comment this out for performance
+  # Post -- Produce output flow checkpoint
+  - echo -e "\n- Preparing outputs\n"
+  - tar czvf flow-checkpoint.tar.gz flow/
+  - cd outputs && ln -sf ../flow-checkpoint.tar.gz
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  clock_period: 1.0
+  orfs_platform: undefined
+  # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
+  # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
+  orfs_image: mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6
+
+#-------------------------------------------------------------------------
+# Debug
+#-------------------------------------------------------------------------
+
+debug:
+  # Pre -- Load the base docker image
+  - echo -e "\n- Loading orfs docker image ...\n"
+  - docker load -i inputs/orfs-docker-image.tar
+  # Pre -- Create a docker container
+  - echo -e "\n- Creating orfs docker container ...\n"
+  - CONTAINER=$(docker run -it -d $orfs_image)
+  - echo -e "\n- Created orfs docker container with Container ID -- $CONTAINER\n"
+  # Pre -- Get the flow snapshot data into the docker container
+  - echo -e "\n- Moving flow checkpoint into orfs docker container -- $CONTAINER\n"
+  - docker exec $CONTAINER bash -c "rm -rf flow-checkpoint.tar.gz"
+  - docker cp -aL outputs/flow-checkpoint.tar.gz $CONTAINER:/OpenROAD-flow-scripts
+  - docker exec $CONTAINER bash -c "rm -rf flow && tar xzvf flow-checkpoint.tar.gz"
+  # Execute -- Drop the user into the docker container
+  - echo -e "\n- Dropping user into orfs docker container -- $CONTAINER\n"
+  - docker exec -it $CONTAINER bash || true
+  # Post -- Remove containers and images
+  - echo -e "\n- Cleaning up docker containers and images\n"
+  - docker rm -f $CONTAINER &
+#  - docker rmi $orfs_image & # Comment this out for performance
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'docker' ) # tool check
+  - assert File( 'inputs/orfs-docker-image.tar' )  # must exist
+  - assert File( 'inputs/flow-checkpoint.tar.gz' )  # must exist
+
+postconditions:
+
+  - assert File( 'outputs/flow-checkpoint.tar.gz' )  # must exist
+
+

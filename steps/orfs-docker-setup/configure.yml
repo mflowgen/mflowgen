@@ -1,0 +1,58 @@
+#=========================================================================
+# OpenROAD Flow Scripts
+#=========================================================================
+# Mirror nodes that track ORFS flow scripts
+#
+# This flow setup node produces a base docker image as a tarball, which
+# contains the OpenROAD flow scripts environment. The image contains all
+# of the installed tools and is passed to all downstream ORFS mflowgen
+# nodes.
+#
+# Author : Christopher Torng
+# Date   : June 17, 2024
+#
+
+name: orfs-docker-setup
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+outputs:
+  - orfs-docker-image.tar
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - echo -e "\n- Pulling orfs docker image -- $orfs_image\n"
+  - docker pull $orfs_image
+  - echo -e "\n- Saving orfs docker image as tarball for output\n"
+  - docker save -o orfs-docker-image.tar $orfs_image
+#  - docker rmi $orfs_image # Comment this out for performance
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../orfs-docker-image.tar
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
+  # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
+  orfs_image: mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'docker' ) # tool check
+
+postconditions:
+
+  - assert File( 'outputs/orfs-docker-image.tar' )  # must exist
+
+

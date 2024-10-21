@@ -2,8 +2,8 @@ Clock Tree Synthesis
 ==========================================================================
 
 The next step is clock tree synthesis (i.e., the ``cadence-innovus-cts``
-step), which skew-balances the clock tree. You can run the design up to
-this step like this:
+node), which skew-balances the clock tree. You can run the design up to
+this node like this:
 
 .. code:: bash
 
@@ -14,9 +14,9 @@ Here are the inputs, outputs, and scripts and what they do. Again, you
 should not need to change any of these.
 
 +--------+--------------------+---------------------------------------------------------+
-| input  | design.checkpoint  | The working Innovus database from the previous step.    |
+| input  | design.checkpoint  | The working Innovus database from the previous node.    |
 +--------+--------------------+---------------------------------------------------------+
-| output | design.checkpoint  | The working Innovus database after the step finishes.   |
+| output | design.checkpoint  | The working Innovus database after the node finishes.   |
 +--------+--------------------+---------------------------------------------------------+
 | script | setup-ccopt.tcl    | These are options for clock tree optimization that you  |
 |        |                    | will probably not need to touch.                        |

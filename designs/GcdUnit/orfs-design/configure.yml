@@ -1,0 +1,47 @@
+#=========================================================================
+# OpenROAD Flow Scripts
+#=========================================================================
+# This node outputs design files as a gzipped tarball for consumption by
+# downstream OpenROAD Flow Scripts nodes.
+#
+# A design node in the OpenROAD Flow Scripts methodology has the following
+# hierarchy:
+#
+#     orfs-design
+#     ├── nangate45
+#     │   └── gcd
+#     │       ├── config.mk
+#     │       ├── constraint.sdc
+#     │       ├── metadata-base-ok.json
+#     │       └── rules-base.json
+#     └── src
+#         └── gcd
+#             ├── gcd.v
+#             └── README.md
+#
+# These files will be placed into the "flow/design" directory within the
+# downstream docker container. Please refer to the OpenROAD Flow Scripts
+# documentation for details on what each file does.
+#
+# Author : Christopher Torng
+# Date   : June 17, 2024
+#
+
+name: orfs-design
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+outputs:
+  - orfs-design
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../orfs-design
+
+

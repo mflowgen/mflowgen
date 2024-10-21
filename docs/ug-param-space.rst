@@ -26,7 +26,7 @@ input datasets both for testing and for energy and timing estimation.
 .. times with tweaked clock periods ...
 
 As a simple example, suppose we would like to sweep the `clock_period`
-parameter in the `open-yosys-synthesis` step in this graph:
+parameter in the `open-yosys-synthesis` node in this graph:
 
 .. image:: _static/images/example-params-1.jpg
   :width: 200px
@@ -37,7 +37,7 @@ each parameter value in the list:
 .. code:: python
 
     g = Graph()
-    (... add steps and connect them together ... )
+    (... add nodes and connect them together ... )
     g.param_space( 'open-yosys-synthesis', 'clock_period', [ 0.5, 1.0, 1.5 ] )
 
 The expansion propagates to all downstream nodes, resulting in three
@@ -70,7 +70,7 @@ parameter sweeping can be flexibly applied anywhere in the physical design
 flow in a very simple manner:
 
 1. Replace some code with a variable anywhere in your scripts
-2. Identify this variable as a parameter (i.e., in the step's configure.yml)
+2. Identify this variable as a parameter (i.e., in the node's configure.yml)
 3. Use the `param_space()` mflowgen API to perform a sweep of that variable
 
 This support is useful for automating design-space exploration sweeps

@@ -2,8 +2,8 @@ Power Strategy
 ==========================================================================
 
 The next step is the power strategy (i.e., the ``cadence-innovus-power``
-step), which sets up the power rings, stripes, and grid. You can run the
-design up to this step like this:
+node), which sets up the power rings, stripes, and grid. You can run the
+design up to this node like this:
 
 .. code:: bash
 
@@ -14,9 +14,9 @@ Here is a list of what the defaults inputs, outputs, and scripts are and
 what they do:
 
 +--------+-------------------------------+-------------------------------------------------------+
-| input  | design.checkpoint             | The working Innovus database from the previous step.  |
+| input  | design.checkpoint             | The working Innovus database from the previous node.  |
 +--------+-------------------------------+-------------------------------------------------------+
-| output | design.checkpoint             | The working Innovus database after the step finishes. |
+| output | design.checkpoint             | The working Innovus database after the node finishes. |
 +--------+-------------------------------+-------------------------------------------------------+
 | script | globalnetconnect.tcl          | Logically connects power nets (e.g., VDD and VSS) to  |
 |        |                               | pins on cells in the design, even if their pins are   |

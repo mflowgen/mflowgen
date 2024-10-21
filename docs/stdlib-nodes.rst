@@ -23,16 +23,22 @@ List of mflowgen Common Library Nodes
 +-----------------------------+-------+------------------------------------------------------+
 | Synopsys VCS                | 2     | RTL- and gate-level simulation, vcd2saif             |
 +-----------------------------+-------+------------------------------------------------------+
-| Mentore Calibre             | 7     | DRC, LVS, GDS merging, metal fill,                   |
+| Mentor  Calibre             | 7     | DRC, LVS, GDS merging, metal fill,                   |
 |                             |       | convert verilog2spice, drawing chip art              |
 +-----------------------------+-------+------------------------------------------------------+
+| Open-Source                 | 7     | Synthesis (yosys), floorplan (OpenROAD)              |
+| (based on OpenROAD)         |       | place (OpenROAD), cts (OpenROAD)                     |
+|                             |       | route (OpenROAD), finish (OpenROAD)                  |
+|                             |       | docker-based flow setup                              |
++-----------------------------+-------+------------------------------------------------------+
 | Open-Source                 | 8     | Synthesis (yosys), place (graywolf),                 |
-|                             |       | place (RePlAcE), route (qrouter)                     |
+| (not based on OpenROAD)     |       | place (RePlAcE), route (qrouter)                     |
 |                             |       | LVS (netgen), DRC (magic)                            |
 |                             |       | gds2spice and def2spice (magic)                      |
 +-----------------------------+-------+------------------------------------------------------+
-| **Total # of Nodes**        | 44    |                                                      |
+| **Total # of Nodes**        | 51    |                                                      |
 +-----------------------------+-------+------------------------------------------------------+
 | Open-Source Technologies    | 2     | SkyWater 130nm, FreePDK45 with                       |
 |                             |       | NanGate Open Cell Library                            |
 +-----------------------------+-------+------------------------------------------------------+
+

@@ -2,22 +2,22 @@ Design Rule Check (DRC)
 ==========================================================================
 
 Here we run DRC with Mentor Calibre (i.e., the ``mentor-calibre-drc``
-step). You can run the design up to this step like this:
+node). You can run the design up to this node like this:
 
 .. code:: bash
 
     % cd $top/build
     % make mentor-calibre-drc
 
-Here are the two inputs to this step:
+Here are the two inputs to this node:
 
 +--------+-------------------+------------------------------------------------------------------------------+
 | input  | design_merged.gds | A merged GDS containing the Innovus GDS, the stdcell GDS, and any macro GDS. |
 +--------+-------------------+------------------------------------------------------------------------------+
-| input  | adk               | This step uses the Calibre DRC rule deck from the ADK.                       |
+| input  | adk               | This node uses the Calibre DRC rule deck from the ADK.                       |
 +--------+-------------------+------------------------------------------------------------------------------+
 
-You should see zero total results generated at the end of the log from this step:
+You should see zero total results generated at the end of the log from this node:
 
 .. code::
 
@@ -26,7 +26,7 @@ You should see zero total results generated at the end of the log from this step
     --- TOTAL RESULTS GENERATED = 0 (0)
     --- DRC RESULTS DATABASE FILE = drc.results (ASCII)
 
-If you see any results, open the debug target for this step to bring up
+If you see any results, open the debug target for this node to bring up
 the GDS viewer GUI (Calibre DESIGNrev) and inspect each violation. After
 the layout loads, press ``>`` many times to increase the depth and see
 inside all the cells. To show layout of macros press Shift + f.

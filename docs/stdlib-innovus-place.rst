@@ -1,22 +1,22 @@
 Placement
 ==========================================================================
 
-The next step is placement (i.e., the ``cadence-innovus-place`` step),
+The next step is placement (i.e., the ``cadence-innovus-place`` node),
 which iterates on different placements with the global router. You can run
-the design up to this step like this:
+the design up to this node like this:
 
 .. code:: bash
 
     % cd $top/build
     % make cadence-innovus-place
 
-Here are the inputs, outputs, and scripts in the place step and what they
+Here are the inputs, outputs, and scripts in the place node and what they
 do.
 
 +--------+-------------------------------+---------------------------------------------------------+
-| input  | design.checkpoint             | The working Innovus database from the previous step.    |
+| input  | design.checkpoint             | The working Innovus database from the previous node.    |
 +--------+-------------------------------+---------------------------------------------------------+
-| output | design.checkpoint             | The working Innovus database after the step finishes.   |
+| output | design.checkpoint             | The working Innovus database after the node finishes.   |
 +--------+-------------------------------+---------------------------------------------------------+
 | script | setup-cellpad.tcl             | Sets up padding next to each DFF to reserve space for   |
 |        |                               | buffers during timing optimization. Without padding in  |

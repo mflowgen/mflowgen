@@ -10,7 +10,7 @@ Cadence Virtuoso) to design both analog and digital circuits. Later in our
 flow, we will be leveraging the Calibre design-rule check (DRC) and
 layout-vs-schematic (LVS) rule decks that come with the FreePDK45 kit to verify
 our design. You can find more details about FreePDK45 `here
-<https://www.eda.ncsu.edu/wiki/FreePDK45:Contents>`__).
+<https://www.eda.ncsu.edu/wiki/FreePDK45:Contents>`__.
 
 Digital synthesis tools work with libraries of pre-drawn and pre-characterized
 standard cells (often provided by IP vendors like ARM). The Nangate Open Cell

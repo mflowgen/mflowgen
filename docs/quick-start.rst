@@ -47,7 +47,7 @@ The greatest common divisor design has three demo graphs in
 2. ``construct-commercial.py`` -- Commercial toolflow based on
    Synopsys, Cadence, and Mentor tools
 
-3. ``construct-commercial-full.py`` -- Commercial toolflow with more steps
+3. ``construct-commercial-full.py`` -- Commercial toolflow with more nodes
    expanded for greater observability
 
 All three flows use the 45nm ASIC design kit based on FreePDK45 and the
@@ -76,7 +76,7 @@ You can show information about the currently configured flow:
 
     % make info      # <-- shows which design is being targeted
     % make list      # <-- shows most things you can do
-    % make status    # <-- prints the build status of each step
+    % make status    # <-- prints the build status of each node
     % make graph     # <-- dumps a graphviz PDF of the configured flow
 
 Now run synthesis and check the outputs of the sandbox to inspect
@@ -88,7 +88,7 @@ list`` for the build target name.
     % make open-yosys-synthesis
     % cat *-open-yosys-synthesis/outputs/synth.stats.txt
 
-You can also run steps using the number from ``make list``:
+You can also run nodes using the number from ``make list``:
 
 .. code:: bash
 
@@ -131,7 +131,7 @@ The yosys area report will look something like this:
 
        Chip area for this module: 932.330000
 
-Report runtimes to check how long each step has taken:
+Report run times to check how long each node has taken:
 
 .. code:: bash
 

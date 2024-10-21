@@ -7,6 +7,10 @@ Class Graph
 A Graph is composed of nodes and edges (i.e., :py:mod:`Step` and
 :py:mod:`Edge` objects).
 
+Note that for general discussion, we use the words "step" and "node"
+interchangeably in the following documentation. However, the python code
+defines a :py:mod:`Step` class.
+
 .. autoclass:: Graph
 
 ADK-related
@@ -18,7 +22,7 @@ The following methods help interface with the ADK.
 
   .. automethod:: Graph.get_adk_step
 
-Adding Steps
+Adding Nodes
 --------------------------------------------------------------------------
 
   .. automethod:: Graph.add_step
@@ -27,12 +31,12 @@ Adding Steps
 
   .. automethod:: Graph.all_steps()
 
-Connecting Steps Together
+Connecting Nodes Together
 --------------------------------------------------------------------------
 
 The :py:meth:`Graph.connect_by_name` method is preferred when possible to
 keep code clean. This requires setting up nodes such that the inputs and
-outputs are name-matched (e.g., stepA has output `foo` and stepB has input
+outputs are name-matched (e.g., nodeA has output `foo` and nodeB has input
 `foo`).
 
   .. automethod:: Graph.connect( l_handle, r_handle )

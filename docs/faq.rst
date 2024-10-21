@@ -1,7 +1,7 @@
 Frequently Asked Questions
 ==========================================================================
 
-My builds are continuing on to the next step despite errors in this step?
+My builds are continuing on to the next node despite errors in this node?
 --------------------------------------------------------------------------
 
 Builds will stop for errors if the shell exit status (i.e., ``$?``) is
@@ -30,9 +30,9 @@ You can check the exit status like this:
     % echo $?
     0
 
-If you add the command ``exit 1`` to a step (i.e., exiting with an error)
+If you add the command ``exit 1`` to a node (i.e., exiting with an error)
 then the entire build will error out and will certainly not continue to
-the next steps. For example, say we added this to the synthesis step:
+the next nodes. For example, say we added this to the synthesis node:
 
 .. code::
 
@@ -51,7 +51,7 @@ There would be an error and the build would not continue:
     % make 4
     make: *** [4-synopsys-dc-synthesis/.execstamp] Error 1
 
-Remember you can check ``make status`` to see whether a step will build or
+Remember you can check ``make status`` to see whether a node will build or
 not. By adding ``exit 1``, the synthesis status will never be "done"
 (in green). It will always show "build" (in red):
 
@@ -63,7 +63,7 @@ not. By adding ``exit 1``, the synthesis status will never be "done"
 
 Most issues arise when you are calling a script which has errors but does
 not propagate the exit code to the caller. For example, say the synthesis
-step runs a script called ``run.sh``:
+node runs a script called ``run.sh``:
 
 .. code::
 
@@ -81,8 +81,8 @@ The script has the following contents:
     % non_existent_command
     % echo "hi"  # <-- valid with no errors... masks exit status of script
 
-Upon running this step, you will see the error but the script will continue on to
-print "hi" and execute future steps:
+Upon running this node, you will see the error but the script will continue on to
+print "hi" and execute future nodes:
 
 .. code::
 

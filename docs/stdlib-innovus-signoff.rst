@@ -1,12 +1,12 @@
 Route, Postroute, and Signoff
 ==========================================================================
 
-The final steps are less involved from a designer perspective. These steps
-run detailed route (i.e., the ``cadence-innovus-route`` step) and loop
+The final nodes are less involved from a designer perspective. These nodes
+run detailed route (i.e., the ``cadence-innovus-route`` node) and loop
 until timing is met or until the tool quits (i.e., the
-``cadence-innovus-postroute`` step). Then the final timing analysis is run
+``cadence-innovus-postroute`` node). Then the final timing analysis is run
 and output files are written out (i.e., the ``cadence-innovus-signoff``
-step). You can run the design up to this step like this:
+node). You can run the design up to this node like this:
 
 .. code:: bash
 
@@ -19,13 +19,13 @@ Here are the inputs, outputs, and scripts and what they do. You should not
 expect to change these.
 
 +--------+----------------------+---------------------------------------------------------+
-| input  | design.checkpoint    | The working Innovus database from the previous step.    |
+| input  | design.checkpoint    | The working Innovus database from the previous node.    |
 +--------+----------------------+---------------------------------------------------------+
-| output | design.checkpoint    | The working Innovus database after the step finishes.   |
+| output | design.checkpoint    | The working Innovus database after the node finishes.   |
 +--------+----------------------+---------------------------------------------------------+
 | output | design.gds.gz        | The GDS layout with all wires and empty                 |
 |        |                      | holes for the stdcells. The GDS merge                   |
-|        |                      | step that comes next will combine this                  |
+|        |                      | node that comes next will combine this                  |
 |        |                      | one with the stdcell.gds in the ADK (and                |
 |        |                      | any SRAM gds) to create the final GDS.                  |
 +--------+----------------------+---------------------------------------------------------+
@@ -80,7 +80,7 @@ Here is a list of checks you will want to run through:
 
 - Pull up the GUI -- This is a good chance to just look at your final
   layout and check if anything odd catches your eye. Feel free to do any
-  of the checks from previous steps again.
+  of the checks from previous nodes again.
 
 
 

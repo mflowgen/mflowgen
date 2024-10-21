@@ -1,13 +1,13 @@
 The Innovus Foundation Flow
 ==========================================================================
 
-Relevant mflowgen step: ``cadence-innovus-flowsetup``
+Relevant mflowgen node: ``cadence-innovus-flowsetup``
 
 Cadence Innovus comes with its own flow generator called the Innovus Foundation
-Flow. The mflowgen steps that we provide for Innovus use the foundation flow to
+Flow. The mflowgen nodes that we provide for Innovus use the foundation flow to
 generate a base set of scripts that execute each of the major steps in place
 and route (e.g., init, place, cts, route, postroute, signoff). Each script is
-connected to a downstream mflowgen step that wraps the script and enhances it
+connected to a downstream mflowgen node that wraps the script and enhances it
 for convenience and debuggability.
 
 There is a major benefit to relying on the Cadence Innovus Foundation Flow for
@@ -20,7 +20,7 @@ maintenance costs of our own.
 
 You can dump the foundation flow yourself by running the ``writeFlowTemplate``
 command in an Innovus shell. This is essentially what the
-``cadence-innovus-flowsetup`` node is responsible for (see the `step
+``cadence-innovus-flowsetup`` node is responsible for (see the `node
 configuration file
 <https://github.com/mflowgen/mflowgen/blob/master/steps/cadence-innovus-flowsetup/configure.yml>`__).
 Feel free to open Innovus and run it yourself:
