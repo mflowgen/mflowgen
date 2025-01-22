@@ -108,7 +108,8 @@
 #   + $clog2((p_i_nbits / 8))) - 1):p_i_nbits] == 0) ? (p_i_nbits / 8) :
 #   imemreq0_msg[((p_i_nbits  ...
 
-- -error=CAWM-L
+#- -error=CAWM-L
+- -warn=CAWM-L
 
 # Suppress or limit some lint and warnings
 #
