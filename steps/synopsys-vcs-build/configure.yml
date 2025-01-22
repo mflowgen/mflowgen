@@ -1,7 +1,7 @@
 #=========================================================================
-# Synopsys VCS -- Sim
+# Synopsys VCS -- Build
 #=========================================================================
-# This step is a sim node for Synopsys VCS simulations
+# This step is a build node for Synopsys VCS simulations
 #
 # The mflowgen nodes that handle VCS simulations are:
 #
@@ -40,38 +40,55 @@
 # Date   : January 20, 2025
 #
 
-name: synopsys-vcs-sim
+name: synopsys-vcs-build
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
 inputs:
-  - simv
-  - simv.daidir
+  - adk
+  - opts.yml
+  - files
+  - files-order.yml
 
 outputs:
-  - sim.log
+  - simv
+  - simv.daidir
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Prepare simulator
-  - ln -sf inputs/simv
-  - ln -sf inputs/simv.daidir
-  # Run simulator
-  - ./simv | tee sim.log
+  - mkdir -p logs
+  # Gather all VCS options into "mflowgen-vcs-cmd-opts.txt"
+  - python yml2str.py --infile inputs/opts.yml
+                      --outfile mflowgen-vcs-cmd-opts.txt
+                      --line
+  # Gather all VCS file list orderings into "mflowgen-vcs-cmd-files.txt"
+  - ln -sf inputs/files
+  - find -L inputs/adk -name *.v > mflowgen-vcs-cmd-files.txt # adk
+  - python yml2str.py --infile inputs/files-order.yml
+                      --outfile mflowgen-vcs-cmd-files.txt
+                      --line --append
+  # Save VCS command to file
+  - CMD="vcs -full64 -top $top_name -file mflowgen-vcs-cmd-opts.txt -file mflowgen-vcs-cmd-files.txt"
+  - echo $CMD > mflowgen-vcs-cmd.txt
+  # Begin VCS build
+  - $CMD
   # Prepare outputs
   - mkdir -p outputs && cd outputs
-  - ln -sf ../sim.log
+  - ln -sf ../simv
+  - ln -sf ../simv.daidir
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
-#parameters: []
+parameters:
+  # Top module name in testbench to pass to VCS as -top
+  top_name: top
 
 #-------------------------------------------------------------------------
 # Assertions
@@ -80,7 +97,11 @@ commands:
 preconditions:
 
   - assert Tool( 'vcs' )                 # tool check
-  - assert File( 'inputs/simv' )         # must exist
-  - assert File( 'inputs/simv.daidir' )  # must exist
+  - assert File( 'inputs/adk' )          # must exist
+
+postconditions:
+
+  - assert File( 'outputs/simv' )        # must exist
+  - assert File( 'outputs/simv.daidir' ) # must exist
 
 

@@ -1,7 +1,7 @@
 #=========================================================================
-# Synopsys VCS -- Sim
+# Synopsys VCS -- RTL Options
 #=========================================================================
-# This step is a sim node for Synopsys VCS simulations
+# This step provides RTL options for Synopsys VCS simulations
 #
 # The mflowgen nodes that handle VCS simulations are:
 #
@@ -40,47 +40,33 @@
 # Date   : January 20, 2025
 #
 
-name: synopsys-vcs-sim
+name: synopsys-vcs-rtl-opts
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
 inputs:
-  - simv
-  - simv.daidir
+  - opts.yml
 
 outputs:
-  - sim.log
+  - opts.yml
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Prepare simulator
-  - ln -sf inputs/simv
-  - ln -sf inputs/simv.daidir
-  # Run simulator
-  - ./simv | tee sim.log
-  # Prepare outputs
+  - python combine_opts.py --out opts.yml
   - mkdir -p outputs && cd outputs
-  - ln -sf ../sim.log
+  - ln -sf ../opts.yml
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
-#parameters: []
-
-#-------------------------------------------------------------------------
-# Assertions
-#-------------------------------------------------------------------------
-
-preconditions:
-
-  - assert Tool( 'vcs' )                 # tool check
-  - assert File( 'inputs/simv' )         # must exist
-  - assert File( 'inputs/simv.daidir' )  # must exist
+parameters:
+  # List of extra opts -- Delete the empty [] and use -dash items below
+  extra_opts: []
 
 

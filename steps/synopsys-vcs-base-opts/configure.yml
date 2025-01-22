@@ -1,7 +1,7 @@
 #=========================================================================
-# Synopsys VCS -- Sim
+# Synopsys VCS -- Base Options
 #=========================================================================
-# This step is a sim node for Synopsys VCS simulations
+# This step provides common options for Synopsys VCS simulations
 #
 # The mflowgen nodes that handle VCS simulations are:
 #
@@ -35,52 +35,27 @@
 # to be reused for both RTL and gate-level simulations. The difference is
 # in whether rtl-opts or gls-opts is connected, as well as which design
 # files are funneled into the build node.
+# files are given to the build node as inputs.
 #
 # Author : Christopher Torng
 # Date   : January 20, 2025
 #
 
-name: synopsys-vcs-sim
+name: synopsys-vcs-base-opts
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
-inputs:
-  - simv
-  - simv.daidir
-
 outputs:
-  - sim.log
+  - opts.yml
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Prepare simulator
-  - ln -sf inputs/simv
-  - ln -sf inputs/simv.daidir
-  # Run simulator
-  - ./simv | tee sim.log
-  # Prepare outputs
   - mkdir -p outputs && cd outputs
-  - ln -sf ../sim.log
-
-#-------------------------------------------------------------------------
-# Parameters
-#-------------------------------------------------------------------------
-
-#parameters: []
-
-#-------------------------------------------------------------------------
-# Assertions
-#-------------------------------------------------------------------------
-
-preconditions:
-
-  - assert Tool( 'vcs' )                 # tool check
-  - assert File( 'inputs/simv' )         # must exist
-  - assert File( 'inputs/simv.daidir' )  # must exist
+  - ln -sf ../opts.yml
 
 
