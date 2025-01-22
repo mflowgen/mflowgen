@@ -1,0 +1,54 @@
+#=========================================================================
+# gls-opts.yml
+#=========================================================================
+# Author : Christopher Torng
+# Date   : January 20, 2025
+
+# Performance options for GLS simulation
+
+- -hsopt
+
+# Initialize uninitialized registers
+#
+# This can be set to random, ones, or zeroes (only for registers, not
+# memories). Note that this option masks X's on initialization and
+# provides just one specific initial condition, which may no longer be
+# reflective of what will happen in real hardware. While it is okay to use
+# this option to debug, it is safer to have it off before tapeout.
+
+#- +vcs+initreg+random
+
+# Enable SDF annotation
+#
+# The -sdf option needs to know the path to the design under test as a dot
+# path (e.g., "top.dut") that will be sdf annotated. This is left as a
+# parameter that must be available when this option is parsed at build
+# time. Right now it is just a string.
+
+- +neg_tchk -negdelay
+- +overlap +pathpulse
+- +sdfverbose
+- +csdf+precompile
+
+# IMPORTANT -- Please SDF annotate in testbench
+#
+# Although it is possible to do SDF annotation with the -sdf option on the
+# command line, it is better practice to use $sdf_annotate directly in
+# your testbench for better control over which module you are annotating.
+#
+# Note that this also means that SDF annotation happens at sim time and
+# not at compile time.
+#
+# Please do it similar to this:
+#
+#     `ifdef VCS_GLS_SDF
+#     initial begin
+#       $sdf_annotate( "inputs/design.sdf", top.dut, , sdfannotate.log );
+#     end
+#     `endif
+#
+
+- +define+VCS_GLS_SDF
+#- -sdf max:top.dut:inputs/design.sdf
+
+
