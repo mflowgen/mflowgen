@@ -39,7 +39,8 @@
 #
 #     `ifdef VCS_GLS_SDF
 #     initial begin
-#       $sdf_annotate( "inputs/design.sdf", top.dut, , "sdfannotate.log" );
+#       $sdf_annotate( "path/to/design.sdf", top.dut, ,
+#                      "sdfannotate.log", "MAXIMUM" );
 #     end
 #     `endif
 #
@@ -68,4 +69,20 @@
 # general to be properly supported by SDF annotation tools.
 
 - +warn=SDFCOM_RCI:5
+
+# SDFCOM_NTCDTL -- NTC Delay is larger than ModPath Delay
+#
+#   Negative timing checks allow moving the setuphold window to the left
+#   of or right of (and no longer including) the reference edge. When
+#   these adjustments are greater than what IOPATH statements specify the
+#   delay should be, SDF annotation becomes pessimistic and effectively
+#   lets the negative timing check delay win. This warning says that this
+#   is happening. Just acknowledge that if these timing checks fire, it
+#   may be based on this pessimistic delay assumption.
+
+# For some reason, limiting these messages to 5 does not actually work and
+# we still get all the messages. We will just comment this out for now.
+
+#- +warn=SDFCOM_NTCDTL:5
+
 
