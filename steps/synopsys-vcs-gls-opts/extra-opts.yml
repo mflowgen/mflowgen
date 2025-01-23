@@ -50,10 +50,10 @@
 
 # Up-hierarchy Interconnect Delay
 
-+warn=SDFCOM_UHICD:5
+- +warn=SDFCOM_UHICD:5
 
 # Cannot find timing check (sdf asks for a check not present in stdcells v)
 
-+warn=SDFCOM_CFTC:5
+- +warn=SDFCOM_CFTC:5
 
 
