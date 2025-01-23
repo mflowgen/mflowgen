@@ -42,8 +42,8 @@
 # -file" at the command line and not "-f" or "-F" or else the variable may
 # not expand properly.
 
-#- -assert enablediag
 #- +define+ASSERT_ON
+- -assert svaext
 - -y $VCS_HOME/packages/sva
 - +incdir+$VCS_HOME/packages/sva
 
@@ -109,7 +109,6 @@
 #   imemreq0_msg[((p_i_nbits  ...
 
 #- -error=CAWM-L
-- -warn=CAWM-L
 
 # Suppress or limit some lint and warnings
 #
