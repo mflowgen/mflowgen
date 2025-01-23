@@ -28,7 +28,7 @@
 - +neg_tchk -negdelay
 - +overlap +pathpulse
 - +sdfverbose
-- +csdf+precompile
+#- -sdfretain
 
 # IMPORTANT -- Please SDF annotate in testbench
 #
@@ -36,19 +36,24 @@
 # command line, it is better practice to use $sdf_annotate directly in
 # your testbench for better control over which module you are annotating.
 #
-# Note that this also means that SDF annotation happens at sim time and
-# not at compile time.
-#
 # Please do it similar to this:
 #
 #     `ifdef VCS_GLS_SDF
 #     initial begin
-#       $sdf_annotate( "inputs/design.sdf", top.dut, , sdfannotate.log );
+#       $sdf_annotate( "inputs/design.sdf", top.dut, , "sdfannotate.log" );
 #     end
 #     `endif
 #
 
 - +define+VCS_GLS_SDF
 #- -sdf max:top.dut:inputs/design.sdf
+
+# Up-hierarchy Interconnect Delay
+
++warn=SDFCOM_UHICD:5
+
+# Cannot find timing check (sdf asks for a check not present in stdcells v)
+
++warn=SDFCOM_CFTC:5
 
 
