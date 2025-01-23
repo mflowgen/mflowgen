@@ -6,7 +6,7 @@
 
 # Performance options for GLS simulation
 
-- -hsopt
+- -hsopt=gates
 
 # Initialize uninitialized registers
 #
