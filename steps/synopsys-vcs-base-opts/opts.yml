@@ -143,6 +143,14 @@
 - +lint=ONGS:5
 - +lint=UI:5
 
+# SystemVerilog Assertions
+#
+# - SVA-DAU -- Deferred assertion used
+#     - Low useful information from this message
+#
+
+- +lint=SVA-DAU:5
+
 # Others we may want to suppress
 
 #- +lint=ZERO:5

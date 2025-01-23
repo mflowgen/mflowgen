@@ -28,7 +28,6 @@
 - +neg_tchk -negdelay
 - +overlap +pathpulse
 - +sdfverbose
-#- -sdfretain
 
 # IMPORTANT -- Please SDF annotate in testbench
 #
@@ -45,8 +44,10 @@
 #     `endif
 #
 
-- +define+VCS_GLS_SDF
 #- -sdf max:top.dut:inputs/design.sdf
+- +define+VCS_GLS_SDF
+
+# Suppress or limit some lint and warnings
 
 # Up-hierarchy Interconnect Delay
 
@@ -56,4 +57,15 @@
 
 - +warn=SDFCOM_CFTC:5
 
+# Duplicate Timing Check is disabled
+
+- +warn=DDTC:5
+
+# SDFCOM_RCI -- RETAIN clause ignored
+#
+# The -sdfretain option causes VCS build to fail with an error but with no
+# error message, so we disable it. The retain feature seems rare in
+# general to be properly supported by SDF annotation tools.
+
+- +warn=SDFCOM_RCI:5
 
