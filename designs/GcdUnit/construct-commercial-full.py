@@ -81,7 +81,7 @@ def construct():
   drc            = Step( 'mentor-calibre-drc',              default=True )
   lvs            = Step( 'mentor-calibre-lvs',              default=True )
   debugcalibre   = Step( 'cadence-innovus-debug-calibre',   default=True )
-  vcs_sim        = Step( 'synopsys-vcs-sim',                default=True )
+  vcs_sim        = Step( 'synopsys-vcs-sim-old',            default=True )
   power_est      = Step( 'synopsys-pt-power',               default=True )
   fm             = Step( 'synopsys-formality-verification', default=True )
 

@@ -28,9 +28,46 @@
 - -l logs/vcs.log
 
 # Enable dumping waveforms
+#
+# - +pp    : enables write capability on registers and variables,
+#            callbacks for the entire design, driver capability, and
+#            assertion debug capability
+# - +dmptf : enables dumping of ports and internal nodes/memories of
+#            tasks/ functions.
+# - +cell  : enables debug capabilities for celldefine modules
+#
+# Dumping of multi-dimensional memory arrays is enabled by default with
+# -debug_access, but you must also enable it in your testbench with system
+# tasks like $vcdplusmemon.
 
-- -debug_acc+pp+dmptf
+- -debug_access+pp+dmptf
 - -debug_region+cell+encrypt
+
+# Memories and multi-dimensional arrays (MDAs)
+#
+# - Without these flags, you will not be able to inspect unpacked arrays
+#   such as "logic [31:0] mem [0:15]" in your waveform viewer
+#
+# - 2010s and prior: +memcbk (deprecated) was previously used in the 2010s
+#   and prior to enable callbacks for dumping memories and multi-dimensional
+#   arrays
+#
+# - 2020s: -debug_access now enables callbacks for memories by default,
+#   and no additional options are needed
+#
+# System tasks to dump the memory arrays in VCD / VPD / FSDB
+#
+# - For VCD, use +vcs+dumparrays at simulation time like this:
+#     - ./simv +vcs+dumparrays
+#
+# - For VPD, use the $vcdplusmemon() system task in your test bench
+#     - $vcdplusmemon();
+#
+# - For FSDB, add "+mda" to $fsdbDumpvars in your test bench like this:
+#     - $fsdbDumpvars(0, top, "+mda");
+#
+
+#- +memcbk
 
 # Enable Verdi knowledge database (KDB)
 
