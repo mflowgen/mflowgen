@@ -1,0 +1,19 @@
+name: orfs-custom2
+
+inputs:
+  - flow-checkpoint.tar.gz
+
+outputs:
+  - flow-checkpoint.tar.gz
+
+commands:
+  - tar xzvf inputs/flow-checkpoint.tar.gz
+  # Execute parse-connectivity
+  - python3 ./parse-connectivity.py
+  # Post -- Produce output flow checkpoint
+  - echo -e "\n- Preparing outputs\n"
+  - tar czvf flow-checkpoint.tar.gz flow/
+  - cd outputs && ln -sf ../flow-checkpoint.tar.gz
+  
+
+

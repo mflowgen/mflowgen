@@ -1,0 +1,34 @@
+# ==============================================================================
+#     ____  ____ _       ____________ 
+#    / __ \/ __ \ |     / / ____/ __ \
+#   / /_/ / / / / | /| / / __/ / /_/ /
+#  / ____/ /_/ /| |/ |/ / /___/ _, _/ 
+# /_/    \____/ |__/|__/_____/_/ |_|  
+#
+.PHONY: power
+power: $(RESULTS_DIR)/power-output.odb \
+	   $(RESULTS_DIR)/power-output.sdc
+
+# ==============================================================================
+
+# PDN generation
+#-------------------------------------------------------------------------------
+$(eval $(call do-step,power-output,$(RESULTS_DIR)/power-input.odb $(PDN_TCL),pdn))
+
+$(eval $(call do-copy,power-output,power-input.sdc,,.sdc))
+
+# $(eval $(call do-copy,power-output,power-output.odb))
+
+PHONY: do-power
+do-power:
+	mkdir -p $(LOG_DIR) $(REPORTS_DIR)
+	$(UNSET_AND_MAKE) do-2p5_1_power do-2p5_power
+
+.PHONY: clean_power
+clean_power:
+	rm -f $(RESULTS_DIR)/2p5_*power*.odb $(RESULTS_DIR)/2p5_power.sdc $(RESULTS_DIR)/2p5_*.v $(RESULTS_DIR)/2p5_*.def
+	rm -f $(REPORTS_DIR)/2p5_*
+	rm -f $(LOG_DIR)/2p5_*
+
+
+	

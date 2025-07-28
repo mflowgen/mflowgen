@@ -3,11 +3,11 @@
 #=========================================================================
 # Mirror nodes that track ORFS flow scripts
 #
-# Author : Christopher Torng
-# Date   : June 17, 2024
+# Author : Dolendra Vikas Addepalli, Christopher Torng
+# Date   : Sep 30, 2024
 #
 
-name: orfs-openroad-cts
+name: orfs-openroad-power
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
@@ -38,7 +38,7 @@ commands:
   - docker exec $CONTAINER bash -c "rm -rf flow && tar xzvf flow-checkpoint.tar.gz"
   # Execute
   - echo -e "\n- Executing flow commands inside orfs docker container -- $CONTAINER\n"
-  - docker exec $CONTAINER bash -c "cd flow && make cts DESIGN_CONFIG=./designs/$adk/$design_name/config.mk"
+  - docker exec $CONTAINER bash -c "cd flow && make power DESIGN_CONFIG=./designs/$adk/$design_name/config.mk"
   # Post -- Get the flow snapshot data out of the docker container
   - echo -e "\n- Moving flow checkpoint out of orfs docker container -- $CONTAINER\n"
   - docker cp -a $CONTAINER:/OpenROAD-flow-scripts/flow .

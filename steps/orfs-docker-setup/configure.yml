@@ -28,9 +28,21 @@ outputs:
 commands:
   - echo -e "\n- Pulling orfs docker image -- $orfs_image\n"
   - docker pull $orfs_image
+  - CONTAINER=$(docker run -it -d $orfs_image)
+  # copy makefile patch scripts to docker
+  - echo -e "\n- Moving makefile-patch-scripts folder to container\n"
+  - docker cp ./makefile-patch-scripts $CONTAINER:/OpenROAD-flow-scripts/
+  # run makefile-patches.py
+  - echo -e "\n- Exe python makefile patches\n"
+  - docker exec $CONTAINER bash -c "cd makefile-patch-scripts && python3 makefile-patches.py"
+  # - docker cp $CONTAINER:/OpenROAD-flow-scripts/flow/Makefile ../../split_scripts # just to debug the script performance
+  # commit the patches
+  - echo -e "\n- Commit the makefile-patches to the image\n"
+  - docker commit $CONTAINER $orfs_image
   - echo -e "\n- Saving orfs docker image as tarball for output\n"
   - docker save -o orfs-docker-image.tar $orfs_image
-#  - docker rmi $orfs_image # Comment this out for performance
+  - docker rm -f $CONTAINER
+  # - docker rmi -f $orfs_image # Comment this out for performance
   - mkdir -p outputs && cd outputs
   - ln -sf ../orfs-docker-image.tar
 
@@ -39,6 +51,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  design_name: undefined
+  clock_period: 1.0
+  adk: undefined
   # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
   # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
   orfs_image: mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6

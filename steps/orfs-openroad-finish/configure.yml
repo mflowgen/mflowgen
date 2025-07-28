@@ -38,7 +38,7 @@ commands:
   - docker exec $CONTAINER bash -c "rm -rf flow && tar xzvf flow-checkpoint.tar.gz"
   # Execute
   - echo -e "\n- Executing flow commands inside orfs docker container -- $CONTAINER\n"
-  - docker exec $CONTAINER bash -c "cd flow && make finish DESIGN_CONFIG=./designs/$orfs_platform/$design_name/config.mk"
+  - docker exec $CONTAINER bash -c "cd flow && make finish DESIGN_CONFIG=./designs/$adk/$design_name/config.mk"
   # Post -- Get the flow snapshot data out of the docker container
   - echo -e "\n- Moving flow checkpoint out of orfs docker container -- $CONTAINER\n"
   - docker cp -a $CONTAINER:/OpenROAD-flow-scripts/flow .
@@ -58,7 +58,7 @@ commands:
 parameters:
   design_name: undefined
   clock_period: 1.0
-  orfs_platform: undefined
+  adk: undefined
   # Pick an image from Docker Hub "mflowgen/openroad-flow-scripts-base"
   # - https://hub.docker.com/repository/docker/mflowgen/openroad-flow-scripts-base/general
   orfs_image: mflowgen/openroad-flow-scripts-base:2024-0621-f0caba6
