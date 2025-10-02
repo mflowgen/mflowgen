@@ -1,0 +1,161 @@
+#=========================================================================
+# opts.yml
+#=========================================================================
+# Author : Christopher Torng
+# Date   : January 20, 2025
+
+#-------------------------------------------------------------------------
+# Common options
+#-------------------------------------------------------------------------
+
+# These are the common options used across all VCS simulation
+
+- -sverilog +v2k +vc -notice -V
+- +vcs+lic+wait +vcs+loopreport
+- +libext+.v
+- +libext+.sv
+- +noportcoerce
+
+# Specify the simulator binary and simulator compile directory
+
+- -o simv
+- -Mdir=csrc
+
+# Dump the bill of materials, file list, and logs that are useful to
+# double-check which files were used
+
+- -metadump
+- -l logs/vcs.log
+
+# Enable dumping waveforms
+
+- -debug_acc+pp+dmptf
+- -debug_region+cell+encrypt
+
+# Enable Verdi knowledge database (KDB)
+
+- -kdb
+
+# Enable SystemVerilog assertions
+#
+# Note that because we use a variable here $VCS_HOME, you must use "vcs
+# -file" at the command line and not "-f" or "-F" or else the variable may
+# not expand properly.
+
+#- +define+ASSERT_ON
+- -assert svaext
+- -y $VCS_HOME/packages/sva
+- +incdir+$VCS_HOME/packages/sva
+
+# Useful diagnostics
+#
+# - timescale : shows timescales for all modules to check for consistency
+# - env       : dumps the environment vars at time of simulation
+
+- -diag timescale
+- -diag env
+
+# The timescale may need to be tweaked so that the timescales in all IP
+# verilog match and use consistent units for their "pound-delays"
+
+- -timescale=1ns/1ps
+
+# X-propagation mode
+#
+# - xmerge mode assigns X to outputs when any inputs are X (pessimistic)
+# - tmerge mode simulates different 0/1 scenarios and assigns X if results
+#   along these paths can be different
+# - vmerge mode is normal Verilog x-optimism
+#
+# Depending on how you use X's (e.g., as bugs to be propagated, as dont
+# cares, to make RTL sims mimic gate-level sims), choose a mode.
+
+- -xprop=xmerge
+
+#-------------------------------------------------------------------------
+# Lints and errors
+#-------------------------------------------------------------------------
+# Enable certain error-checking cases
+#
+# If there are problems with the verilog config, modules will be mapped to
+# the wrong verilog source definitions. They are warnings by default, but
+# they should be errors, so we enable errors for these cases here:
+#
+# - Warning-[CIRNU] Config instance rule not used
+#   Instance 'top.th.swshim.dut' may not exist in the scope of the sign
+#   for which the configuration was attempted.
+#
+
+- -error=CIRNU
+
+# Enable error-checking when ports and connections mismatch in bit-width
+#
+# This is very important to double-check on parameterized input and output
+# ports. Ignoring this warning caused bugs in every tests related to data
+# caches. We configured the test memory to have data interface with 32-bit
+# bit-width. This caused the memory to slice the wrong bits from incoming
+# requests. Since the very first bits are data and data is 128-bit for the
+# other end of the interface, the test memory was extracting the data as
+# different request fields. Since request for memory reads have X's in the
+# data and thus the memory read request will be all X's for all fields
+# including address. So we want to catch these warning:
+#
+# Lint-[CAWM-L] Width mismatch
+# ../rtl-handoff/vc/vc-TestMemory_1i1d.v, 94
+#   Continuous assignment width mismatch
+#   5 bits (lhs) versus 32 bits (rhs).
+#   Source info: assign imemreq0_msg_len_modified_M = ((imemreq0_msg[((p_i_nbits
+#   + $clog2((p_i_nbits / 8))) - 1):p_i_nbits] == 0) ? (p_i_nbits / 8) :
+#   imemreq0_msg[((p_i_nbits  ...
+
+#- -error=CAWM-L
+
+# Suppress or limit some lint and warnings
+#
+# - VCDE -- Verilog compiler directive encountered
+#     - Low useful information from this message
+#
+# - NS -- Null statement
+#     - Low useful information from this message
+#     - Warns about statements that do nothing
+#
+# - TFIPC -- Too few instance port connections
+#     - Low useful information from this message
+#     - Module defines more ports than are connected
+#     - Gate-level netlists with stdcells will trigger tons of these
+#
+# - VNGS -- Variable never gets set
+#     - Low useful information from this message
+#     - Gate-level netlists with UNCONNECTED will trigger tons of these
+#
+# - ONGS -- Output never gets set
+#     - Low useful information from this message
+#
+# - UI -- Unused input
+#     - Low useful information from this message
+#
+
+- +lint=all,noVCDE,noIWU,noOUDPE
+- +lint=NS:5
+- +lint=TFIPC:5
+- +lint=TFIPC-L:5
+- +lint=VNGS:5
+- +lint=ONGS:5
+- +lint=UI:5
+
+# SystemVerilog Assertions
+#
+# - SVA-DAU -- Deferred assertion used
+#     - Low useful information from this message
+#
+
+- +lint=SVA-DAU:5
+
+# Others we may want to suppress
+
+#- +lint=ZERO:5
+#- +warn=IWNF:5
+#- +lint=SVA-NSVU:5
+#- +lint=SVA-UA:5
+
+

@@ -1,0 +1,72 @@
+#=========================================================================
+# Synopsys VCS -- RTL Options
+#=========================================================================
+# This step provides RTL options for Synopsys VCS simulations
+#
+# The mflowgen nodes that handle VCS simulations are:
+#
+#     - synopsys-vcs-base-opts
+#     - synopsys-vcs-rtl-opts
+#     - synopsys-vcs-gls-opts
+#     - synopsys-vcs-file-funnel
+#     - synopsys-vcs-build
+#     - synopsys-vcs-sim
+#
+# The mflowgen common library breaks up a VCS build into two parts:
+# options and files.
+#
+# Options -- The synopsys-vcs-base-opts node provides a set of common VCS
+# options listed within a single YAML file output. Other nodes such as
+# synopsys-vcs-rtl-opts and synopsys-vcs-gls-opts can further transform
+# these options by accepting the YAML input, adding more options, and
+# making a new YAML output.
+#
+# Files -- The synopsys-vcs-file-funnel node takes all files, and creates
+# the authoritative file list for simulation. It then funnels the files
+# into the build.
+#
+# The VCS build happens in the synopsys-vcs-build node, a simple node
+# that combines the options and the files and runs compilation.
+#
+# The VCS simulation is executed by the synopsys-vcs-sim node, which
+# accepts a built simulator and runs tests with it.
+#
+# This approach allows the same mflowgen nodes (building and simulating)
+# to be reused for both RTL and gate-level simulations. The difference is
+# in whether rtl-opts or gls-opts is connected, as well as which design
+# files are funneled into the build node.
+#
+# Author : Christopher Torng
+# Date   : January 20, 2025
+#
+
+name: synopsys-vcs-rtl-opts
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - opts.yml
+
+outputs:
+  - opts.yml
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  - python combine_opts.py --out opts.yml
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../opts.yml
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  # List of extra opts -- Delete the empty [] and use -dash items below
+  extra_opts: []
+
+

@@ -1,0 +1,88 @@
+#=========================================================================
+# gls-opts.yml
+#=========================================================================
+# Author : Christopher Torng
+# Date   : January 20, 2025
+
+# Performance options for GLS simulation
+
+- -hsopt=gates
+
+# Initialize uninitialized registers
+#
+# This can be set to random, ones, or zeroes (only for registers, not
+# memories). Note that this option masks X's on initialization and
+# provides just one specific initial condition, which may no longer be
+# reflective of what will happen in real hardware. While it is okay to use
+# this option to debug, it is safer to have it off before tapeout.
+
+#- +vcs+initreg+random
+
+# Enable SDF annotation
+#
+# The -sdf option needs to know the path to the design under test as a dot
+# path (e.g., "top.dut") that will be sdf annotated. This is left as a
+# parameter that must be available when this option is parsed at build
+# time. Right now it is just a string.
+
+- +neg_tchk -negdelay
+- +overlap +pathpulse
+- +sdfverbose
+
+# IMPORTANT -- Please SDF annotate in testbench
+#
+# Although it is possible to do SDF annotation with the -sdf option on the
+# command line, it is better practice to use $sdf_annotate directly in
+# your testbench for better control over which module you are annotating.
+#
+# Please do it similar to this:
+#
+#     `ifdef VCS_GLS_SDF
+#     initial begin
+#       $sdf_annotate( "path/to/design.sdf", top.dut, ,
+#                      "sdfannotate.log", "MAXIMUM" );
+#     end
+#     `endif
+#
+
+#- -sdf max:top.dut:inputs/design.sdf
+- +define+VCS_GLS_SDF
+
+# Suppress or limit some lint and warnings
+
+# Up-hierarchy Interconnect Delay
+
+- +warn=SDFCOM_UHICD:5
+
+# Cannot find timing check (sdf asks for a check not present in stdcells v)
+
+- +warn=SDFCOM_CFTC:5
+
+# Duplicate Timing Check is disabled
+
+- +warn=DDTC:5
+
+# SDFCOM_RCI -- RETAIN clause ignored
+#
+# The -sdfretain option causes VCS build to fail with an error but with no
+# error message, so we disable it. The retain feature seems rare in
+# general to be properly supported by SDF annotation tools.
+
+- +warn=SDFCOM_RCI:5
+
+# SDFCOM_NTCDTL -- NTC Delay is larger than ModPath Delay
+#
+#   Negative timing checks allow moving the setuphold window to the left
+#   of or right of (and no longer including) the reference edge. When
+#   these adjustments are greater than what IOPATH statements specify the
+#   delay should be, SDF annotation becomes pessimistic and effectively
+#   lets the negative timing check delay win. This warning says that this
+#   is happening. Just acknowledge that if these timing checks fire, it
+#   may be based on this pessimistic delay assumption.
+
+# For some reason, limiting these messages to 5 does not actually work and
+# we still get all the messages. We will just comment this out for now.
+
+#- +warn=SDFCOM_NTCDTL:5
+
+

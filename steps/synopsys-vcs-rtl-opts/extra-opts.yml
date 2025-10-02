@@ -1,0 +1,24 @@
+#=========================================================================
+# rtl-opts.yml
+#=========================================================================
+# Author : Christopher Torng
+# Date   : January 20, 2025
+
+# Performance options for RTL simulation
+
+- -rad
+
+# Disable timing checks
+
+- +notimingcheck +nospecify
+
+# Initialize uninitialized registers
+#
+# This can be set to random, ones, or zeroes (only for registers, not
+# memories). Note that this option masks X's on initialization and
+# provides just one specific initial condition, which may no longer be
+# reflective of what will happen in real hardware. While it is okay to use
+# this option to debug, it is safer to have it off before tapeout.
+
+#- +vcs+initreg+random
+
