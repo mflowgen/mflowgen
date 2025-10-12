@@ -43,7 +43,7 @@ commands:
   - cd outputs
   - ln -sf ../checkpoints/design.checkpoint
   - ln -sf ../typical.spef.gz             design.spef.gz
-  - ln -sf ../rcbest.spef.gz             design.rcbest.spef.gz
+  - ln -sf ../rcbest.spef.gz              design.rcbest.spef.gz
   - ln -sf ../results/*.gds.gz            design.gds.gz
   - ln -sf ../results/*-merged.gds        design-merged.gds
   - ln -sf ../results/*.lvs.v             design.lvs.v

@@ -29,5 +29,8 @@ link_design
 
 # Read in the SDC and parasitics
 
-read_sdc -echo $ptpx_sdc
+# read_sdc -echo $ptpx_sdc
+source $ptpx_sdc
+
 read_parasitics -format spef $ptpx_spef
+

@@ -58,7 +58,6 @@ saveNetlist -excludeLeafCell $vars(results_dir)/$vars(design).vcs.v
 
 saveNetlist -includePowerGround -excludeLeafCell $vars(results_dir)/$vars(design).vcs.pg.v
 
-
 # Write LEF for hierarchical bottom-up design
 
 write_lef_abstract                                                       \
@@ -70,6 +69,7 @@ write_lef_abstract                                                       \
 
 # Save DEF for use in running DC again
 
-defOut -routing $vars(results_dir)/$vars(design).def.gz
+defOut -routing -allLayers $vars(results_dir)/$vars(design).def.gz
+
 
 

@@ -1,8 +1,8 @@
 #=========================================================================
 # Constraints
 #=========================================================================
-# Author : Christopher Torng
-# Date   : November 1, 2019
+# Author : Alex Carsello
+# Date   : Nov 1, 2019
 #
 
 name: constraints
@@ -21,4 +21,3 @@ outputs:
 parameters:
   clock_period: 1.0
   design_name: undefined
-

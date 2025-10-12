@@ -11,7 +11,7 @@ if {[info exists ADK_WELL_TAP_CELL] && [expr {$ADK_WELL_TAP_CELL ne ""}]} {
              -prefix       WELLTAP \
              -cellInterval $ADK_WELL_TAP_INTERVAL \
              -checkerboard
-  
+
   verifyWellTap -cells [list $ADK_WELL_TAP_CELL] \
                 -report reports/welltap.rpt \
                 -rule   [ expr $ADK_WELL_TAP_INTERVAL/2 ]

@@ -1,36 +1,25 @@
 #=========================================================================
-# Synopsys PT Timing Signoff
+# Synopsys DC lib2db
 #=========================================================================
-# Author : Alex Carsello
-# Date   : January 31, 2020
-#
 
-name: synopsys-pt-timing-signoff
+name: synopsys-dc-lib2db
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
-# We will also get SPEF files for any blocks in the design.
-# These will be added as inputs in construct.py.
 inputs:
-  - adk
-  - design.vcs.v
-  - design.pt.sdc
-  - design.spef.gz
+  - design.lib
 
 outputs:
-  - design.sdf
+  - design.db
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  - mkdir -p reports
-  - pt_shell -file pt.tcl
-  - mkdir -p outputs && cd outputs
-  - ln -sf ../design.sdf design.sdf
+  - make
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -38,6 +27,16 @@ commands:
 
 parameters:
   design_name: undefined
-  corner_setup: typical
-  corner_hold: bc
+
+#-------------------------------------------------------------------------
+# Assertions
+#-------------------------------------------------------------------------
+
+preconditions:
+
+  - assert Tool( 'dc_shell' )                # tool check
+  - assert File( 'inputs/design.lib' )       # must exist
+
+postconditions:
+  - assert File( 'outputs/design.db' )       # must exist
 

@@ -82,6 +82,7 @@ set list_libs_tt \
         [lsort [glob -nocomplain $vars(adk_dir)/stdcells-pm.lib]]
         [lsort [glob -nocomplain $vars(adk_dir)/iocells.lib]]
         [lsort [glob -nocomplain $vars(adk_dir)/*-typical*.lib]]
+        [lsort [glob -nocomplain inputs/*-typical*.lib]]
         [lsort [glob -nocomplain inputs/*tt*.lib]]
         [lsort [glob -nocomplain inputs/*TT*.lib]]
     "]
@@ -103,6 +104,7 @@ if {[llength $list_libs_tt] > 0} {
 set list_libs_bc \
     [join "
         [lsort [glob -nocomplain $vars(adk_dir)/*-bc*.lib]]
+        [lsort [glob -nocomplain inputs/*-bc*.lib]]
         [lsort [glob -nocomplain inputs/*ff*.lib]]
         [lsort [glob -nocomplain inputs/*FF*.lib]]
     "]
@@ -125,6 +127,7 @@ if {[llength $list_libs_bc] > 0} {
 set list_libs_wc \
     [join "
         [lsort [glob -nocomplain $vars(adk_dir)/*-wc*.lib]]
+        [lsort [glob -nocomplain inputs/*-wc*.lib]]
         [lsort [glob -nocomplain inputs/*ss*.lib]]
         [lsort [glob -nocomplain inputs/*SS*.lib]]
     "]
@@ -153,16 +156,16 @@ set vars(lef_files) [join "
 set vars(rc_corners) ""
 
 if {[file exists $vars(adk_dir)/rtk-typical.captable]} {
-  lappend vars(rc_corners)        "typical"
   set vars(typical,cap_table)     $vars(adk_dir)/rtk-typical.captable
   set vars(typical,T)             25
+  lappend vars(rc_corners)        "typical"
 }
 
 # RC best corner
 
 if {[file exists $vars(adk_dir)/rtk-rcbest.captable]} {
   set vars(rcbest,cap_table)      $vars(adk_dir)/rtk-rcbest.captable
-  #set vars(rcbest,T)              25
+  set vars(rcbest,T)              -40
   lappend vars(rc_corners)        "rcbest"
 }
 
@@ -170,7 +173,7 @@ if {[file exists $vars(adk_dir)/rtk-rcbest.captable]} {
 
 if {[file exists $vars(adk_dir)/rtk-rcworst.captable]} {
   set vars(rcworst,cap_table)     $vars(adk_dir)/rtk-rcworst.captable
-  #set vars(rcworst,T)             25
+  set vars(rcworst,T)             125
   lappend vars(rc_corners)        "rcworst"
 }
 
@@ -190,7 +193,7 @@ if {[file exists $vars(adk_dir)/pdk-typical-qrcTechFile]} {
 
 if {[file exists $vars(adk_dir)/pdk-rcbest-qrcTechFile]} {
   set vars(rcbest,qx_tech_file)     $vars(adk_dir)/pdk-rcbest-qrcTechFile
-  #set vars(rcbest,T)                25
+  set vars(rcbest,T)                -40
   if {[lsearch -exact $vars(rc_corners) "rcbest"] == -1} {
     lappend vars(rc_corners)        "rcbest"
   }
@@ -198,7 +201,7 @@ if {[file exists $vars(adk_dir)/pdk-rcbest-qrcTechFile]} {
 
 if {[file exists $vars(adk_dir)/pdk-rcworst-qrcTechFile]} {
   set vars(rcworst,qx_tech_file)    $vars(adk_dir)/pdk-rcworst-qrcTechFile
-  #set vars(rcworst,T)               25
+  set vars(rcworst,T)               125
   if {[lsearch -exact $vars(rc_corners) "rcworst"] == -1} {
     lappend vars(rc_corners)        "rcworst"
   }
@@ -208,29 +211,25 @@ if {[file exists $vars(adk_dir)/pdk-rcworst-qrcTechFile]} {
 # Delay Corners (OCV style)
 #-------------------------------------------------------------------------
 
-set vars(delay_corners)                      "delay_default"
+set vars(delay_corners)                      "delay_typical"
 
-set vars(delay_default,early_library_set)    libs_typical
-set vars(delay_default,late_library_set)     libs_typical
-set vars(delay_default,rc_corner)            typical
+set vars(delay_typical,early_library_set)    libs_typical
+set vars(delay_typical,late_library_set)     libs_typical
+set vars(delay_typical,rc_corner)            typical
 
 if {[lsearch -exact $vars(rc_corners) "rcbest"] != -1} {
   lappend vars(delay_corners) "delay_best"
-  set vars(delay_best,early_library_set)    libs_typical
-  set vars(delay_best,late_library_set)     libs_typical
-  set vars(delay_best,rc_corner)            rcbest
+  set vars(delay_best,early_library_set)     libs_bc
+  set vars(delay_best,late_library_set)      libs_bc
+  set vars(delay_best,rc_corner)             rcbest
 }
 
-# Use the best case for hold instead if the files are available
-
-if {[file exists $vars(adk_dir)/stdcells-bc.lib]} {
-  set vars(delay_default,early_library_set)    libs_bc
-  if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {
-    set vars(delay_best,early_library_set)    libs_bc
-  }
+if {[lsearch -exact $vars(rc_corners) "rcworst"] != -1} {
+  lappend vars(delay_corners) "delay_worst"
+  set vars(delay_worst,early_library_set)    libs_wc
+  set vars(delay_worst,late_library_set)     libs_wc
+  set vars(delay_worst,rc_corner)            rcworst
 }
-
-
 
 #-------------------------------------------------------------------------
 # Delay Corners (old bc_wc style)
@@ -265,7 +264,7 @@ set vars(constraints_default,post_cts_sdc)  $synthesis_sdc
 
 set vars(analysis_views)                       "analysis_default"
 
-set vars(analysis_default,delay_corner)        delay_default
+set vars(analysis_default,delay_corner)        delay_typical
 set vars(analysis_default,constraint_mode)     constraints_default
 
 if {[lsearch -exact $vars(delay_corners) "delay_best"] != -1} {

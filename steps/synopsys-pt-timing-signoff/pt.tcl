@@ -11,29 +11,32 @@ source -echo -verbose scripts/read_design.tcl
 
 # Please do not modify the sdir variable.
 # Doing so may cause script to fail.
-set sdir "." 
+
+set sdir "."
 
 set report_default_significant_digits 3
 
-##################################################################
-#    Constraint Analysis Section
-##################################################################
+#-------------------------------------------------------------------------
+# Constraint Analysis Section
+#-------------------------------------------------------------------------
+
 check_constraints -verbose > reports/check_constraints.report
 
-##################################################################
-#    Update_timing and check_timing Section                      #
-##################################################################
+#-------------------------------------------------------------------------
+# Update_timing and check_timing Section
+#-------------------------------------------------------------------------
 
 update_timing -full
 
 check_timing -verbose > reports/check_timing.report
 
-##################################################################
-#    Report_timing Section                                       #
-##################################################################
+#-------------------------------------------------------------------------
+# Report_timing Section
+#-------------------------------------------------------------------------
+
 report_global_timing > reports/report_global_timing.report
 
-report_clock -skew -attribute > reports/report_clock.report 
+report_clock -skew -attribute > reports/report_clock.report
 
 report_analysis_coverage > reports/report_analysis_coverage.report
 

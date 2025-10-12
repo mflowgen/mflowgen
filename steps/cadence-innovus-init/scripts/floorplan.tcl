@@ -13,7 +13,7 @@
 # rectangular chip with a height that is twice the width.
 
 set core_aspect_ratio   1.00; # Aspect ratio 1.0 for a square chip
-set core_density_target 0.70; # Placement density of 70% is reasonable
+set core_density_target $::env(core_density_target); # Placement density of 70% is reasonable
 
 # Make room in the floorplan for the core power ring
 

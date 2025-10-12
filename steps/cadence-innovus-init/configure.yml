@@ -37,6 +37,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  # Placement density of 70% is reasonable
+  core_density_target: 0.70
+  # Subscript execute order
   order:
     - pre-init.tcl
     - main.tcl

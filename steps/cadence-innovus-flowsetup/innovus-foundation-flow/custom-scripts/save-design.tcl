@@ -26,6 +26,7 @@ set innovus_checkpoint_path checkpoints/design.checkpoint/save.enc
 #   -relativePath : tries to use relative paths from the cwd
 #   -user_path    : tries to use original user path
 #   -tgz          : compress into tarball with gzip (implies -libs)
+#   -tcon         : directly copies the sdc file instead of using symlinks
 #
 #   also related is "setImportMode -syncRelativePath true"
 #
@@ -40,10 +41,10 @@ set version [ string range [ getVersion ] 0 1 ]
 
 if {[ expr $version >= 19 ]} {
   # Innovus 19 has an option that may be portable if user gave a good path
-  saveDesign $innovus_checkpoint_path -user_path
+  saveDesign $innovus_checkpoint_path -user_path -tcon
 } else {
   # Innovus 18 still has portability issues with absolute-path symlinks
-  saveDesign $innovus_checkpoint_path -relativePath
+  saveDesign $innovus_checkpoint_path -relativePath -tcon
 }
 
 #-------------------------------------------------------------------------
