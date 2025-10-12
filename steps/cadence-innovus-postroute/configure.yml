@@ -25,8 +25,8 @@ outputs:
 
 commands:
   - ln -sf inputs/innovus-foundation-flow
-  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
-
+  - if [[ "x$enable_gui" == "xTrue" ]]; then gui_flag=""; else gui_flag="-nowin"; fi
+  - innovus -overwrite -64 $gui_flag -init START.tcl -log logs/run.log
   # Outputs
   - cd outputs
   - ln -sf ../checkpoints/design.checkpoint
@@ -36,12 +36,15 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
-  useful_skew: True
-  hold_target_slack: 0.005
-  setup_target_slack: 0.000
+  # Enable Innovus GUI
+  enable_gui: true
+  # Subscript execute order
   order:
     - setup-optmode.tcl
     - main.tcl
+  useful_skew: True
+  hold_target_slack: 0.005
+  setup_target_slack: 0.000
 
 #-------------------------------------------------------------------------
 # Debug

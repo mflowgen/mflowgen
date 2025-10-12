@@ -26,8 +26,8 @@ outputs:
 
 commands:
   - ln -sf inputs/innovus-foundation-flow
-  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
-
+  - if [[ "x$enable_gui" == "xTrue" ]]; then gui_flag=""; else gui_flag="-nowin"; fi
+  - innovus -overwrite -64 $gui_flag -init START.tcl -log logs/run.log
   # Outputs
   - cd outputs
   - ln -sf ../checkpoints/design.checkpoint
@@ -37,6 +37,9 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  # Enable Innovus GUI
+  enable_gui: true
+  # Subscript execute order
   order:
     - main.tcl
 

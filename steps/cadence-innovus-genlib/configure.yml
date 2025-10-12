@@ -19,19 +19,24 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
-- ln -sf inputs/innovus-foundation-flow
-- innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
-- cd outputs
-- ln -sf ../checkpoints/design.checkpoint
-- ln -sf ../design.lib design.lib
+  - ln -sf inputs/innovus-foundation-flow
+  - if [[ "x$enable_gui" == "xTrue" ]]; then gui_flag=""; else gui_flag="-nowin"; fi
+  - innovus -overwrite -64 $gui_flag -init START.tcl -log logs/run.log
+  # Outputs
+  - cd outputs
+  - ln -sf ../checkpoints/design.checkpoint
+  - ln -sf ../design.lib design.lib
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
 parameters:
+  # Enable Innovus GUI
+  enable_gui: true
+  # Subscript execute order
   order:
-  - extract_model.tcl
+    - extract_model.tcl
 
 #-------------------------------------------------------------------------
 # Debug

@@ -26,8 +26,8 @@ outputs:
 
 commands:
   - ln -sf inputs/innovus-foundation-flow
-  - innovus -overwrite -64 -nowin -init START.tcl -log logs/run.log
-
+  - if [[ "x$enable_gui" == "xTrue" ]]; then gui_flag=""; else gui_flag="-nowin"; fi
+  - innovus -overwrite -64 $gui_flag -init START.tcl -log logs/run.log
   # Outputs
   - cd outputs
   - ln -sf ../checkpoints/design.checkpoint
@@ -37,12 +37,15 @@ commands:
 #-------------------------------------------------------------------------
 
 parameters:
+  # Enable Innovus GUI
+  enable_gui: true
   # Enable useful clock skew -- [ True | False ]
   useful_skew: True
   # Useful clock skew effort -- [ none | standard | medium | extreme ]
   # - Note: This is ignored if useful_skew is False
   # - Note: This flag is passed to "setOptMode -usefulSkewCCOpt"
   useful_skew_ccopt_effort: standard
+  # Subscript execute order
   order:
     - setup-ccopt.tcl
     - main.tcl
