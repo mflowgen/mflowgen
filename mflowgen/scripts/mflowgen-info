@@ -2,11 +2,11 @@
 #=========================================================================
 # mflowgen-info
 #=========================================================================
-# Reads the configure.yml of an mflowgen step and pretty prints content.
+# Reads the configure.yml of an mflowgen node and pretty prints content.
 #
 #  -h --help     Display this message
 #  -v --verbose  Verbose mode
-#  -y --config   Path to the step configure.yml to parse
+#  -y --config   Path to the node configure.yml to parse
 #     --simple   Simpler visualization without connectivity info
 #
 # Author : Christopher Torng
@@ -152,24 +152,24 @@ def main():
   #  edges_i:
   #    adk:
   #    - f: adk
-  #      step: 1-freepdk-45nm
+  #      node: 1-freepdk-45nm
   #    constraints.tcl:
   #    - f: constraints.tcl
-  #      step: 2-constraints
+  #      node: 2-constraints
   #    design.v:
   #    - f: design.v
-  #      step: 3-rtl
+  #      node: 3-rtl
   #  edges_o:
   #    design.sdc:
   #    - f: design.sdc
-  #      step: 5-cadence-innovus-flowsetup
+  #      node: 5-cadence-innovus-flowsetup
   #    - f: design.sdc
-  #      step: 6-cadence-innovus-place-route
+  #      node: 6-cadence-innovus-place-route
   #    design.v:
   #    - f: design.v
-  #      step: 5-cadence-innovus-flowsetup
+  #      node: 5-cadence-innovus-flowsetup
   #    - f: design.v
-  #      step: 6-cadence-innovus-place-route
+  #      node: 6-cadence-innovus-place-route
   #
 
   try:
@@ -257,18 +257,18 @@ def main():
   #
   # otherwise try to also add connectivity information:
   #
-  #            + 7-baz-step
+  #            + 7-baz-node
   #            + baz.txt
   #            |
-  #            |                + 3-bar-step
+  #            |                + 3-bar-node
   #            |                + bar.txt
   #            |                |
-  #            |                |                    + 4-foo-step
+  #            |                |                    + 4-foo-node
   #            |                |                    + foo.txt
   #            |                |                    |
   #            V                V                    V
   #     +-----------------------------------------------+
-  #     |                   step                        |
+  #     |                   node                        |
   #     +-----------------------------------------------+
   #              |           |
   #              |           V
@@ -327,6 +327,21 @@ def main():
     edges_i_f = [ _[0] for _ in edges_i_items ]
     edges_o_f = [ _[0] for _ in edges_o_items ]
 
+    # Support reading configurations with both "steps" and "nodes" keys
+    # to be backwards compatible with deprecated step terminology
+    #
+    # Someday, just directly assign node_t to 'node'
+
+    node_t = 'node'
+    edges_i_tmp = [ _[1] for _ in edges_i_items ]
+    if edges_i_tmp:
+      if 'step' in edges_i_tmp[0][0].keys():
+        node_t = 'step'
+    edges_o_tmp = [ _[1] for _ in edges_o_items ]
+    if edges_o_tmp:
+      if 'step' in edges_o_tmp[0][0].keys():
+        node_t = 'step'
+
     # Mark which incoming edges exist
 
     exists_i = [ True if i in edges_i_f else False for i in inputs  ]
@@ -346,13 +361,13 @@ def main():
     #
 
     nth_input = 0
-    for input_, steps in edges_i_items:
+    for input_, nodes in edges_i_items:
       l = exists_str.replace( 'x', '|', nth_input ).replace( 'x', '+', 1 )
       index = l.index( '+' )
       plus_line_str = l[:index] + '+'
       pipe_line_str = l[:index] + '|'
-      for s in steps:
-        input_arrows.append( plus_line_str + ' ' + s['step'] )
+      for s in nodes:
+        input_arrows.append( plus_line_str + ' ' + s[node_t] )
         input_arrows.append( plus_line_str + ' ' + s['f']    )
         input_arrows.append( pipe_line_str                   )
       nth_input += 1
@@ -393,7 +408,7 @@ def main():
     output_arrows.append( first_row )
 
     nth_output = 0
-    for output, steps in edges_o_items[::-1]:
+    for output, nodes in edges_o_items[::-1]:
       l = exists_str.replace( 'x', ' ', nth_output )
       l = l.replace( 'x', '+', 1 )
       l = l.replace( 'x', '|' )
@@ -402,13 +417,13 @@ def main():
       plus_line_str  = l[:index] + '+'
       arrow_line_str = l[:index] + 'V'
       for j, s in enumerate( \
-                    sorted( steps, key=lambda x: \
-                      int(x['step'].split('-')[0]) ) ):
+                    sorted( nodes, key=lambda x: \
+                      int(x[node_t].split('-')[0]) ) ):
         if j == 0:
           output_arrows.append( arrow_line_str                )
         else:
           output_arrows.append( plus_line_str                 )
-        output_arrows.append( plus_line_str + ' ' + s['step'] )
+        output_arrows.append( plus_line_str + ' ' + s[node_t] )
         output_arrows.append( plus_line_str + ' ' + s['f']    )
       nth_output += 1
 

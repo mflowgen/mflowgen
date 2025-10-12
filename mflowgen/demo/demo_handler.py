@@ -50,7 +50,7 @@ class DemoHandler:
     print( bold( '  %' ), 'mkdir build && cd build' )
     print( bold( '  %' ), 'mflowgen run --design ../GcdUnit' )
     print()
-    print( bold( '  %' ), 'make list     # See all steps' )
+    print( bold( '  %' ), 'make list     # See all nodes' )
     print( bold( '  %' ), 'make status   # See build status' )
     print()
     print( 'You can also generate a PDF of the graph with graphviz.' )

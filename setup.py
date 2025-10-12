@@ -45,7 +45,7 @@ setup(
   #
 
   packages = find_packages(
-    exclude = [ 'adks', 'designs', 'docs', 'requirements', 'steps' ],
+    exclude = [ 'adks', 'designs', 'docs', 'requirements', 'steps', 'nodes' ],
   ) + ['.'],
 
   # BSD 3-Clause License:

@@ -37,8 +37,8 @@ We can stash our synthesis node with a message like this:
 
 .. code:: bash
 
-    % mflowgen stash push --step 4 -m "Pushing synthesis as a test"
-    Stashed step 4 "synopsys-dc-synthesis" as author "ctorng"
+    % mflowgen stash push --node 4 -m "Pushing synthesis as a test"
+    Stashed node 4 "synopsys-dc-synthesis" as author "ctorng"
 
 .. note::
 
@@ -80,7 +80,7 @@ the pre-built stashed copy like this:
 .. code:: bash
 
     % mflowgen stash pull --hash 4d1c23
-    Pulled step "synopsys-dc-synthesis" from stash into "4-synopsys-dc-synthesis"
+    Pulled node "synopsys-dc-synthesis" from stash into "4-synopsys-dc-synthesis"
 
     % make status
 
@@ -137,7 +137,7 @@ Also note that you can drop something from the stash like this:
 .. code:: bash
 
     % mflowgen stash drop --hash 4d1c23
-    Dropped step "synopsys-dc-synthesis" with hash "4d1c23"
+    Dropped node "synopsys-dc-synthesis" with hash "4d1c23"
 
 As a final note, be aware that some nodes *cannot* be shared if they
 contain hardcoded paths, which may break when executed from another

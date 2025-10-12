@@ -522,7 +522,7 @@ def make_runtimes( w ):
 
 # make_list
 #
-# Write out rule to list all steps
+# Write out rule to list all nodes
 #
 # - w             : instance of Writer
 # - build_dirs    : list of build directories
@@ -531,7 +531,7 @@ def make_runtimes( w ):
 
 def make_list( w, build_dirs, debug_targets ):
 
-  # Split the build ID and step name from the build_dir
+  # Split the build ID and node name from the build_dir
   #
   # For example, this:
   #
@@ -542,24 +542,24 @@ def make_list( w, build_dirs, debug_targets ):
   #     ( '4', 'synopsys-dc-synthesis' )
   #
 
-  steps = []
+  nodes = []
 
   for _ in sorted( build_dirs.values(), \
                      key = lambda x: int(x.split('-')[0]) ):
     tokens = _.split('-')
-    steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
+    nodes.append( ( tokens[0], '-'.join(tokens[1:]) ) )
 
-  steps_str = \
-    [ '"{: >3} : {}"'.format(x,y) for x, y in ( steps ) ]
+  nodes_str = \
+    [ '"{: >3} : {}"'.format(x,y) for x, y in ( nodes ) ]
 
   generic = [
-    '"list      -- List all steps"',
-    '"status    -- Print build status for each step"',
-    '"runtimes  -- Print runtimes for each step"',
-    '"graph     -- Generate a PDF of the step dependency graph"',
+    '"list      -- List all nodes"',
+    '"status    -- Print build status for each node"',
+    '"runtimes  -- Print runtimes for each node"',
+    '"graph     -- Generate a PDF of the node dependency graph"',
     '"clean-all -- Remove all build directories"',
     '"clean-N   -- Clean target N"',
-    '"info-N    -- Print configured info for step N"',
+    '"info-N    -- Print configured info for node N"',
     '"diff-N    -- Diff target N"',
   ]
 
@@ -578,7 +578,7 @@ def make_list( w, build_dirs, debug_targets ):
       r'printf " - %s\\n" ' + ' '.join( generic ),
     r'echo',
     r'echo Targets: && echo && ' + \
-      r'printf " - %s\\n" ' + ' '.join( steps_str ),
+      r'printf " - %s\\n" ' + ' '.join( nodes_str ),
     r'echo',
     r'echo Debug Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( debug_str ),
@@ -614,13 +614,13 @@ def make_graph( w ):
 # Write out rules for printing build status
 #
 # - w     : instance of Writer
-# - steps : list of step names to print status for
-# - subgraphs : list of subgraphs in steps
+# - nodes : list of node names to print status for
+# - subgraphs : list of subgraphs in nodes
 #
 
-def make_status( w, steps, subgraphs ):
+def make_status( w, nodes, subgraphs ):
 
-  steps_comma_separated = ','.join( steps )
+  nodes_comma_separated = ','.join( nodes )
   subgraphs_comma_separated = ','.join( subgraphs )
 
   template_str  = '.PHONY: status\n'
@@ -629,7 +629,7 @@ def make_status( w, steps, subgraphs ):
   template_str += '	{command}\n'
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
-            ' --backend make -s ' + steps_comma_separated
+            ' --backend make -s ' + nodes_comma_separated
   if subgraphs:
     command += ' --subgraphs ' + subgraphs_comma_separated
 
@@ -638,7 +638,7 @@ def make_status( w, steps, subgraphs ):
 
 # make_info
 #
-# Write out rules for printing step info
+# Write out rules for printing node info
 #
 # - w         : instance of Writer
 # - build_dir : build_dir for this info target
@@ -647,7 +647,7 @@ def make_status( w, steps, subgraphs ):
 def make_info( w, build_dir ):
 
   build_id      = build_dir.split('-')[0]              # <- first number
-  step_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
+  node_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
   target        = 'info-' + build_id
 
   template_str  = '.PHONY: {target}\n'
@@ -656,7 +656,7 @@ def make_info( w, build_dir ):
   template_str += '	{command}\n'
 
   command = '@' + get_top_dir() + '/mflowgen/scripts/mflowgen-letters' \
-      + ' -c -t ' + step_name
+      + ' -c -t ' + node_name
 
   command = command + ' && ' + get_top_dir() \
       + '/mflowgen/scripts/mflowgen-info'    \

@@ -8,15 +8,15 @@ between nodes):
 
 1. With :py:meth:`Graph.connect_by_name`
 
-2. With :py:meth:`Graph.connect`, :py:meth:`Step.o`, and :py:meth:`Step.i`
+2. With :py:meth:`Graph.connect`, :py:meth:`Node.o`, and :py:meth:`Node.i`
 
 :py:meth:`Graph.connect_by_name` tries to automatically connect outputs of
 one node to inputs of the other node if the files have the same name.
 Multiple edges can be drawn with a single call.
 
 :py:meth:`Graph.connect` explicitly connects a single output of a node
-(specified by :py:meth:`Step.o`) to a single input of another node
-(specified by :py:meth:`Step.i`). Only a single edge is drawn.
+(specified by :py:meth:`Node.o`) to a single input of another node
+(specified by :py:meth:`Node.i`). Only a single edge is drawn.
 
 Graph building is generally cleaner when connecting by name. The more
 explicit connect API is useful when names do not match and it is
@@ -36,11 +36,11 @@ synthesis node.
 
     g = Graph()
 
-    rtl = Step( ...  get rtl  ... )
-    dc  = Step( ... get synth ... )
+    rtl = Node( ...  get rtl  ... )
+    dc  = Node( ... get synth ... )
 
-    g.add_step( rtl )
-    g.add_step( dc  )
+    g.add_node( rtl )
+    g.add_node( dc  )
 
 The RTL node has an output "design.v" and the synthesis node takes an
 input "design.v". Since these names match, we can use
@@ -71,7 +71,7 @@ node's input "design.v". Since these names do not match, connecting by
 name will not automatically draw any edges.
 
 We can connect explicitly using :py:meth:`Graph.connect`,
-:py:meth:`Step.o`, and :py:meth:`Step.i`:
+:py:meth:`Node.o`, and :py:meth:`Node.i`:
 
 .. code:: python
 
@@ -80,7 +80,7 @@ We can connect explicitly using :py:meth:`Graph.connect`,
 We can read this clearly: Connect **rtl output** "GcdUnit.v" to **dc
 input** "design.v".
 
-:py:meth:`Step.o` and :py:meth:`Step.i` are helper methods necessary for
+:py:meth:`Node.o` and :py:meth:`Node.i` are helper methods necessary for
 differentiating outputs from inputs within a node. For example, the
 synthesis node has an input file "design.v" (i.e., the RTL design) and
 also an output file "design.v" (i.e., the synthesized netlist) with the

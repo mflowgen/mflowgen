@@ -2,8 +2,8 @@
 Class Edge
 --------------------------------------------------------------------------
 
-A Graph is composed of nodes and edges (i.e., `Step` and `Edge`
-objects).
+A Graph is composed of nodes and edges (i.e., :py:mod:`Node` and
+:py:mod:`Edge` objects).
 
 .. py:class:: Edge( src, dst )
   :noindex:

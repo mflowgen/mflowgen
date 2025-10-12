@@ -1,7 +1,7 @@
 #=========================================================================
 # mock-push
 #=========================================================================
-# Mock up a step with outputs matching the inputs of the target step
+# Mock up a node with outputs matching the inputs of the target node
 #
 # Author : Christopher Torng
 # Date   : March 17, 2020

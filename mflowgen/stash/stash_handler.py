@@ -23,8 +23,8 @@ from mflowgen.utils import read_yaml, write_yaml
 #-------------------------------------------------------------------------
 # Stash Management
 #-------------------------------------------------------------------------
-# Stashes are directories with (1) pre-built steps and (2) a stash
-# metadata YAML. The stashed steps are both date-stamped and hash-stamped
+# Stashes are directories with (1) pre-built nodes and (2) a stash
+# metadata YAML. The stashed nodes are both date-stamped and hash-stamped
 # to prevent name conflicts:
 #
 #     % ls -1
@@ -38,14 +38,14 @@ from mflowgen.utils import read_yaml, write_yaml
 #       dir: 2020-0315-synopsys-dc-synthesis-4d7fdb
 #       hash: 4d7fdb
 #       msg: foo
-#       step: synopsys-dc-synthesis
+#       node: synopsys-dc-synthesis
 #
 #     - author: ctorng
 #       date: 2020-0314
 #       dir: 2020-0314-synopsys-dc-synthesis-2e78ac
 #       hash: 2e78ac
 #       msg: bar
-#       step: synopsys-dc-synthesis
+#       node: synopsys-dc-synthesis
 #
 # The stash can live anywhere in the file system, so in order to link a
 # build directory to a particular stash, we store the path locally in a
@@ -91,6 +91,15 @@ class StashHandler:
     except FileNotFoundError:
       s.stash = []
 
+    # Support reading configurations with both "steps" and "nodes" keys
+    # to be backwards compatible with deprecated step terminology
+    #
+    # Someday, just directly assign s.node_t to 'node'
+
+    s.node_t = 'node'
+    if s.stash:
+      if 'step' in s.stash[0].keys():
+        s.node_t = 'step'
   #-----------------------------------------------------------------------
   # helpers
   #-----------------------------------------------------------------------
@@ -98,7 +107,7 @@ class StashHandler:
   # gen_unique_hash
   #
   # Generate a unique six-character hexadecimal hash that is not currently
-  # in use across all steps in the currently linked stash.
+  # in use across all nodes in the currently linked stash.
   #
   # - E.g., "3e5ab4"
   #
@@ -199,7 +208,7 @@ class StashHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, args, help_, path, step, msg, hash_, all_, verbose ):
+  def launch( s, args, help_, path, node, msg, hash_, all_, verbose ):
 
     if help_ and not args:
       s.launch_help()
@@ -224,7 +233,7 @@ class StashHandler:
     if   command == 'init' : s.launch_init( help_, path )
     elif command == 'link' : s.launch_link( help_, path )
     elif command == 'list' : s.launch_list( help_, verbose, all_ )
-    elif command == 'push' : s.launch_push( help_, step, msg, all_ )
+    elif command == 'push' : s.launch_push( help_, node, msg, all_ )
     elif command == 'pull' : s.launch_pull( help_, hash_ )
     elif command == 'pop'  : s.launch_pop ( help_, hash_ )
     elif command == 'drop' : s.launch_drop( help_, hash_ )
@@ -336,10 +345,10 @@ class StashHandler:
       print()
       print( bold( 'Usage:' ), 'mflowgen stash list [--verbose] [--all]' )
       print()
-      print( 'Lists all pre-built steps stored in the mflowgen stash'    )
+      print( 'Lists all pre-built nodes stored in the mflowgen stash'    )
       print( 'that the current build graph is linked to. The --verbose'  )
-      print( 'flag prints metadata about where each stashed step was'    )
-      print( 'stashed from. Use --all to print all steps in the stash.'  )
+      print( 'flag prints metadata about where each stashed node was'    )
+      print( 'stashed from. Use --all to print all nodes in the stash.'  )
       print()
 
     if help_:
@@ -368,15 +377,15 @@ class StashHandler:
 
       author_len = reduce( lambda x, y: max(x,y),
                      map( lambda x: len( x['author'] ), to_print ) )
-      step_len   = reduce( lambda x, y: max(x,y),
-                     map( lambda x: len( x['step'] ), to_print ) )
+      node_len   = reduce( lambda x, y: max(x,y),
+                     map( lambda x: len( x[s.node_t] ), to_print ) )
       from_len   = len(
                      reduce( lambda x, y: max(x,y),
                        map( lambda x: max( x['stashed-from'].keys(), key=len ),
                          to_print ) ) )
 
       template_str = \
-        ' - {hash_} [ {date} ] {author:{author_len}} {step:{step_len}} -- {msg}'
+        ' - {hash_} [ {date} ] {author:{author_len}} {node:{node_len}} -- {msg}'
 
       stashed_from_template_str = \
         '     > {k:{l}} : {v}'
@@ -389,10 +398,10 @@ class StashHandler:
           hash_      = yellow( x[ 'hash' ] ),
           date       = x[ 'date'   ],
           author     = x[ 'author' ],
-          step       = x[ 'step'   ],
+          node       = x[ s.node_t ],
           msg        = x[ 'msg'    ],
           author_len = author_len,
-          step_len   = step_len,
+          node_len   = node_len,
         ) )
 
         if verbose and 'stashed-from' in x.keys(): # stashed from
@@ -413,12 +422,12 @@ class StashHandler:
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Copies the target step build directory to the stash
-  #     - if "all_" is True, then stash the entire step, not just outputs
+  # - Copies the target node build directory to the stash
+  #     - if "all_" is True, then stash the entire node, not just outputs
   # - Updates the metadata YAML in the stash directory
   #
 
-  def launch_push( s, help_, step, msg, all_ ):
+  def launch_push( s, help_, node, msg, all_ ):
 
     try:
       author = os.environ[ 'USER' ]
@@ -430,22 +439,22 @@ class StashHandler:
     def print_help():
       print()
       print( bold( 'Usage:' ), 'mflowgen stash push',
-                                  '--step/-s <int> --message/-m "<str>"',
+                                  '--node/-n <int> --message/-m "<str>"',
                                   '[--all]'                              )
       print()
       print( bold( 'Example:' ), 'mflowgen stash push',
-                                    '--step 5 -m "foo bar"'              )
+                                    '--node 5 -m "foo bar"'              )
       print()
-      print( 'Pushes a built step to the mflowgen stash. The given step' )
+      print( 'Pushes a built node to the mflowgen stash. The given node' )
       print( 'is copied to the stash, preserving all permissions and'    )
       print( 'following all symlinks. By default, only the outputs of a' )
-      print( 'step are stashed, but the entire step can be stashed with' )
+      print( 'node are stashed, but the entire node can be stashed with' )
       print( '--all. The stashed copy is given a hash stamp and is'      )
       print( 'marked as authored by $USER (' + author + '). An optional' )
       print( 'message can also be attached to each push.'                )
       print()
 
-    if help_ or step==None or not msg:
+    if help_ or node==None or not msg:
       print_help()
       return
 
@@ -453,37 +462,37 @@ class StashHandler:
 
     s.verify_stash()
 
-    # Get step to push
+    # Get node to push
     #
     # Check the current directory and search for a dirname matching the
-    # given step number.
+    # given node number.
     #
-    # - E.g., if "step" is 5 then look for any sub-directory that starts
+    # - E.g., if "node" is 5 then look for any sub-directory that starts
     #   with "5-". If there is a directory called
-    #   '4-synopsys-dc-synthesis' then "step_name" will be
+    #   '5-synopsys-dc-synthesis' then "node_name" will be
     #   "synopsys-dc-synthesis"
     #
 
     build_dirs = os.listdir( '.' )
-    targets = [ _ for _ in build_dirs if _.startswith( str(step)+'-' ) ]
+    targets = [ _ for _ in build_dirs if _.startswith( str(node)+'-' ) ]
 
     try:
       push_target = targets[0]
     except IndexError:
-      print( bold( 'Error:' ), 'No build directory found for step',
-                                  '{}'.format( step ) )
+      print( bold( 'Error:' ), 'No build directory found for node',
+                                  '{}'.format( node ) )
       sys.exit( 1 )
 
-    # Create a unique name for the stashed copy of this step
+    # Create a unique name for the stashed copy of this node
 
     today       = datetime.today()
     datestamp   = datetime.strftime( today, '%Y-%m%d' )
     hashstamp   = s.gen_unique_hash()
-    step_name   = '-'.join( push_target.split('-')[1:] )
+    node_name   = '-'.join( push_target.split('-')[1:] )
 
-    dst_dirname = '-'.join( [ datestamp, step_name, hashstamp ] )
+    dst_dirname = '-'.join( [ datestamp, node_name, hashstamp ] )
 
-    # Try to get some information to help describe "where this step came
+    # Try to get some information to help describe "where this node came
     # from"
 
     def get_shell_output( cmd ):
@@ -577,7 +586,7 @@ class StashHandler:
       # symlinks, which is fine for our use case. Dangling symlinks can
       # happen in a few situations:
       #
-      #  1. In inputs, if users cleaned earlier dependent steps. In this
+      #  1. In inputs, if users cleaned earlier dependent nodes. In this
       #  situation, we are just doing our best to copy what is available.
       #
       #  2. Some symlink to somewhere we do not have permission to view.
@@ -597,7 +606,7 @@ class StashHandler:
       'dir'          : dst_dirname,
       'hash'         : hashstamp,
       'author'       : author,
-      'step'         : step_name,
+      s.node_t       : node_name,
       'msg'          : msg,
       'stashed-from' : stashed_from,
     }
@@ -605,8 +614,8 @@ class StashHandler:
     s.stash.append( push_metadata )
     s.update_stash()
 
-    # Try adding the metadata to the stashed step itself, so that when the
-    # step gets pulled somewhere, we have all of its metadata to know
+    # Try adding the metadata to the stashed node itself, so that when the
+    # node gets pulled somewhere, we have all of its metadata to know
     # where it came from
 
     try:
@@ -620,9 +629,9 @@ class StashHandler:
       pass
 
     print(
-      'Stashed step {step} "{step_name}" as author "{author}"'.format(
-      step      = step,
-      step_name = step_name,
+      'Stashed node {node} "{node_name}" as author "{author}"'.format(
+      node      = node,
+      node_name = node_name,
       author    = author,
     ) )
 
@@ -631,7 +640,7 @@ class StashHandler:
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Copies the stashed step to the current directory
+  # - Copies the stashed node to the current directory
   #
 
   def launch_pull( s, help_, hash_ ):
@@ -644,16 +653,16 @@ class StashHandler:
       print()
       print( bold( 'Example:' ), 'mflowgen stash pull --hash 3e5ab4'     )
       print()
-      print( 'Pulls a pre-built step from the stash matching the given'  )
-      print( 'hash. This command copies the pre-built step from the'     )
+      print( 'Pulls a pre-built node from the stash matching the given'  )
+      print( 'hash. This command copies the pre-built node from the'     )
       print( 'stash using archive mode (preserves all permissions). The' )
-      print( 'new step replaces the same step in the existing graph.'    )
+      print( 'new node replaces the same node in the existing graph.'    )
       print( 'For example if the existing graph marks'                   )
-      print( '"synopsys-dc-synthesis" as step 4 and a pre-built'         )
+      print( '"synopsys-dc-synthesis" as node 4 and a pre-built'         )
       print( '"synopsys-dc-synthesis" is pulled from the stash, the'     )
       print( 'existing build directory is removed and the pre-built'     )
-      print( 'version replaces it as step 4. The status of the'          )
-      print( 'pre-built step is forced to be up to date until the step'  )
+      print( 'version replaces it as node 4. The status of the'          )
+      print( 'pre-built node is forced to be up to date until the node'  )
       print( 'is cleaned.'                                               )
       print()
 
@@ -665,23 +674,23 @@ class StashHandler:
 
     s.verify_stash()
 
-    # Get the step metadata
+    # Get the node metadata
 
     ind  = s.get_hash_index_in_stash( hash_ )
     data = s.stash[ ind ]
-    step = data[ 'step' ]
+    node = data[ s.node_t ]
 
-    # Get the build directory for the matching configured step
+    # Get the build directory for the matching configured node
     #
     # Currently this is done by just looking at the directory names in the
     # hidden mflowgen metadata directory, which has all the build
     # directories for the current configuration.
     #
 
-    existing_steps = os.listdir( '.mflowgen' )
+    existing_nodes = os.listdir( '.mflowgen' )
 
-    m = [ re.match( r'^(\d+)-' + step + '$', _ ) \
-            for _ in existing_steps ]  # e.g., "4-synopsys-dc-synthesis"
+    m = [ re.match( r'^(\d+)-' + node + '$', _ ) \
+            for _ in existing_nodes ]  # e.g., "4-synopsys-dc-synthesis"
     m = [ _ for _ in m if _ ]          # filter for successful matches
     m = [ _.group(0) for _ in m if _ ] # get build directories
 
@@ -689,7 +698,7 @@ class StashHandler:
       assert len( m ) > 0   # Assert for at least one match
     except AssertionError:
       print( bold( 'Error:' ), 'The currently configured graph',
-              'does not contain step "{}"'.format( step ) )
+              'does not contain node "{}"'.format( node ) )
       sys.exit( 1 )
 
     build_dir = m[0]
@@ -717,14 +726,14 @@ class StashHandler:
       print( bold( 'Error:' ), 'Failed to complete stash pull' )
       raise
 
-    # Mark the new step as pre-built with a ".prebuilt" flag
+    # Mark the new node as pre-built with a ".prebuilt" flag
 
     with open( build_dir + '/.prebuilt', 'w' ) as fd: # touch
       pass
 
     print(
-      'Pulled step "{step}" from stash into "{dir_}"'.format(
-      step = step,
+      'Pulled node "{node}" from stash into "{dir_}"'.format(
+      node = node,
       dir_ = build_dir,
     ) )
 
@@ -743,7 +752,7 @@ class StashHandler:
       print()
       print( bold( 'Example:' ), 'mflowgen stash pop --hash 3e5ab4'     )
       print()
-      print( 'Pulls a pre-built step from the stash and then drops it'  )
+      print( 'Pulls a pre-built node from the stash and then drops it'  )
       print( 'from the stash. This command literally runs pull and'     )
       print( 'drop one after the other.'                                )
       print()
@@ -760,7 +769,7 @@ class StashHandler:
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Deletes a stashed step from the stash directory
+  # - Deletes a stashed node from the stash directory
   # - Updates the metadata YAML in the stash directory
   #
 
@@ -774,7 +783,7 @@ class StashHandler:
       print()
       print( bold( 'Example:' ), 'mflowgen stash drop --hash 3e5ab4'   )
       print()
-      print( 'Removes the step with the given hash from the stash.'    )
+      print( 'Removes the node with the given hash from the stash.'    )
       print()
 
     if help_ or not hash_:
@@ -785,7 +794,7 @@ class StashHandler:
 
     s.verify_stash()
 
-    # Get the step metadata
+    # Get the node metadata
 
     ind  = s.get_hash_index_in_stash( hash_ )
     data = s.stash[ ind ]
@@ -806,8 +815,8 @@ class StashHandler:
     s.update_stash()
 
     print(
-      'Dropped step "{step_name}" with hash "{hash_}"'.format(
-      step_name = data[ 'step' ],
+      'Dropped node "{node_name}" with hash "{hash_}"'.format(
+      node_name = data[ s.node_t ],
       hash_     = hash_,
     ) )
 
@@ -822,11 +831,11 @@ class StashHandler:
     print( bold( ' - init :' ), 'Initialize a stash'                                )
     print( bold( ' - link :' ), 'Link the current build graph to an existing stash' )
     print()
-    print( bold( ' - list :' ), 'List all pre-built steps in the stash'             )
+    print( bold( ' - list :' ), 'List all pre-built nodes in the stash'             )
     print()
-    print( bold( ' - push :' ), 'Push a built step to the stash'                    )
-    print( bold( ' - pull :' ), 'Pull a built step from the stash'                  )
-    print( bold( ' - drop :' ), 'Remove a built step from the stash'                )
+    print( bold( ' - push :' ), 'Push a built node to the stash'                    )
+    print( bold( ' - pull :' ), 'Pull a built node from the stash'                  )
+    print( bold( ' - drop :' ), 'Remove a built node from the stash'                )
     print()
     print( 'Run any command with -h to see more details'                 )
     print()

@@ -32,8 +32,8 @@ from mflowgen.utils import read_yaml, write_yaml
 # On the command line, we want a simple interface to update any node in
 # the graph (or to update all nodes). It looks like this:
 #
-#     % mflowgen param update --step 5 --key clock_period --value 2.0
-#     % mflowgen param update  -s 5     -k   clock_period  -v     2.0
+#     % mflowgen param update --node 5 --key clock_period --value 2.0
+#     % mflowgen param update  -n 5     -k   clock_period  -v     2.0
 #
 # Updating all nodes can use the --all flag like this:
 #
@@ -63,7 +63,7 @@ class ParamHandler:
   # Dispatch function for commands
   #
 
-  def launch( s, args, help_, key, value, step, all_ ):
+  def launch( s, args, help_, key, value, node, all_ ):
 
     if help_ and not args:
       s.launch_help()
@@ -85,7 +85,7 @@ class ParamHandler:
       # users can see what they should be doing instead.
       help_ = True
 
-    if   command == 'update' : s.launch_update( help_, key, value, step, all_ )
+    if   command == 'update' : s.launch_update( help_, key, value, node, all_ )
     else                     : s.launch_help()
 
   #-----------------------------------------------------------------------
@@ -93,12 +93,12 @@ class ParamHandler:
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Updates the configure.yml for the step given by --step
+  # - Updates the configure.yml for the node given by --node
   # - Sets "parameters[key] = value"
   # - If --all is given, we update all nodes in the graph
   #
 
-  def launch_update( s, help_, key, value, step, all_ ):
+  def launch_update( s, help_, key, value, node, all_ ):
 
     # Help message
 
@@ -107,26 +107,24 @@ class ParamHandler:
       print( bold( 'Usage:' ), 'mflowgen param update',
                                   '--key/-k <str>',
                                   '--value/-v <str>',
-                                  '[--step/-s <int>]',
+                                  '[--node/-n <int>]',
                                   '[--all]'                              )
       print()
       print( bold( 'Example:' ), 'mflowgen param update',
                                   '--key clock_period --value 2.0',
                                   '--all'                                )
       print()
-      print( 'Updates a parameter for the given step in the build graph.')
-      print( 'The parameter update is only applied if the key is defined')
-      print( 'and exists for that step. The --all option applies the'    )
-      print( 'update to all nodes in the currently configured build.'    )
-      print()
-      print( 'Parameters in list form must be updated in the format of'  )
-      print( 'a comma-separated string.'                                 )
-      print()
-      print( 'If you call "mflowgen run" again, these interactive'       )
-      print( 'parameter updates are not preserved and must be run again.')
+      print( 'Interactively updates a parameter for the given node in'   )
+      print( 'the build graph. The update is only applied if the node'   )
+      print( 'defines the key. The --all option applies the update to'   )
+      print( 'all nodes in the currently configured build. Parameters'   )
+      print( 'that are of type list can be updated by formatting as a'   )
+      print( 'comma-separated string. Note that after updating a graph'  )
+      print( 'with "mflowgen run --update", these interactive parameter' )
+      print( 'updates are not preserved.'                                )
       print()
 
-    if help_ or not key or not value or not (step is not None or all_):
+    if help_ or not key or not value or not (node is not None or all_):
       print_help()
       return
 
@@ -159,12 +157,12 @@ class ParamHandler:
     # Assemble the list of nodes we should update
     #
     # - If the --all flag was given, keep this full list
-    # - If a specific step was given, filter down to that one
+    # - If a specific node was given, filter down to that one
 
     if all_:
       to_update = subdirs
     else:
-      to_update = [ _ for _ in subdirs if _.startswith( str(step)+'-' ) ]
+      to_update = [ _ for _ in subdirs if _.startswith( str(node)+'-' ) ]
 
     # Make sure we have nodes left to update
 
@@ -172,10 +170,10 @@ class ParamHandler:
       print()
       print( bold( 'Error:' ), 'There are no nodes to update' )
       print()
-    elif not to_update and step:
+    elif not to_update and node:
       print()
-      print( bold( 'Error:' ), 'Could not find step',
-              '"{}" in the current build'.format( step ) )
+      print( bold( 'Error:' ), 'Could not find node',
+              '"{}" in the current build'.format( node ) )
       print()
 
     # Template string
@@ -195,8 +193,8 @@ class ParamHandler:
 
     for subdir in to_update:
 
-      subdir_id   = subdir.split('-')[0]            # step number
-      subdir_name = '-'.join(subdir.split('-')[1:]) # step name
+      subdir_id   = subdir.split('-')[0]            # node number
+      subdir_name = '-'.join(subdir.split('-')[1:]) # node name
 
       # Paths to metadata files
 
@@ -215,7 +213,7 @@ class ParamHandler:
         data = read_yaml( config_yaml_path )
       except Exception as e:
         print()
-        print( bold( 'Error:' ), 'Metadata is corrupt for step',
+        print( bold( 'Error:' ), 'Metadata is corrupt for node',
                 '"{}"'.format( subdir_id ) )
         print()
         raise
@@ -263,7 +261,7 @@ class ParamHandler:
               f.write( ''.join( f_lines ) )
 
       except Exception as e:
-        print( bold( 'Error:' ), 'Metadata is corrupt for step',
+        print( bold( 'Error:' ), 'Metadata is corrupt for node',
                 '"{}"'.format( subdir_id ) )
 
 

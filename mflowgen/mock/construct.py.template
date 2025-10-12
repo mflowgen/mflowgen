@@ -4,7 +4,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step
+from mflowgen.components import Graph, Node
 
 def construct():
 
@@ -16,8 +16,8 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  push = Step( this_dir + '/mock-push' )
-  dut  = Step( '{path}'  )  # Step under test
+  push = Node( this_dir + '/mock-push' )
+  dut  = Node( '{path}'  )  # Node under test
 
   #-----------------------------------------------------------------------
   # Adjust push node
@@ -40,8 +40,8 @@ def construct():
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( push )
-  g.add_step( dut  )
+  g.add_node( push )
+  g.add_node( dut  )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges

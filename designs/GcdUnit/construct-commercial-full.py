@@ -9,7 +9,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step
+from mflowgen.components import Graph, Node
 
 def construct():
 
@@ -49,41 +49,41 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  # ADK step
+  # ADK node
 
   g.set_adk( adk_name )
-  adk = g.get_adk_step()
+  adk = g.get_adk_node()
 
-  # Custom steps
+  # Custom nodes
 
-  rtl            = Step( this_dir + '/rtl'         )
-  testbench      = Step( this_dir + '/testbench'   )
-  constraints    = Step( this_dir + '/constraints' )
+  rtl            = Node( this_dir + '/rtl'         )
+  testbench      = Node( this_dir + '/testbench'   )
+  constraints    = Node( this_dir + '/constraints' )
 
-  # Default steps
+  # Default nodes
 
-  info           = Step( 'info',                            default=True )
-  synth          = Step( 'synopsys-dc-synthesis',           default=True )
-#  synth          = Step( 'cadence-genus-synthesis',         default=True )
-  iflow          = Step( 'cadence-innovus-flowsetup',       default=True )
-  init           = Step( 'cadence-innovus-init',            default=True )
-  power          = Step( 'cadence-innovus-power',           default=True )
-  place          = Step( 'cadence-innovus-place',           default=True )
-  cts            = Step( 'cadence-innovus-cts',             default=True )
-  postcts_hold   = Step( 'cadence-innovus-postcts_hold',    default=True )
-  route          = Step( 'cadence-innovus-route',           default=True )
-  postroute      = Step( 'cadence-innovus-postroute',       default=True )
-  postroute_hold = Step( 'cadence-innovus-postroute_hold',  default=True )
-  signoff        = Step( 'cadence-innovus-signoff',         default=True )
-  pt_signoff     = Step( 'synopsys-pt-timing-signoff',      default=True )
-  genlibdb       = Step( 'synopsys-ptpx-genlibdb',          default=True )
-  gdsmerge       = Step( 'mentor-calibre-gdsmerge',         default=True )
-  drc            = Step( 'mentor-calibre-drc',              default=True )
-  lvs            = Step( 'mentor-calibre-lvs',              default=True )
-  debugcalibre   = Step( 'cadence-innovus-debug-calibre',   default=True )
-  vcs_sim        = Step( 'synopsys-vcs-sim-old',            default=True )
-  power_est      = Step( 'synopsys-pt-power',               default=True )
-  fm             = Step( 'synopsys-formality-verification', default=True )
+  info           = Node( 'info',                            default=True )
+  synth          = Node( 'synopsys-dc-synthesis',           default=True )
+#  synth          = Node( 'cadence-genus-synthesis',         default=True )
+  iflow          = Node( 'cadence-innovus-flowsetup',       default=True )
+  init           = Node( 'cadence-innovus-init',            default=True )
+  power          = Node( 'cadence-innovus-power',           default=True )
+  place          = Node( 'cadence-innovus-place',           default=True )
+  cts            = Node( 'cadence-innovus-cts',             default=True )
+  postcts_hold   = Node( 'cadence-innovus-postcts_hold',    default=True )
+  route          = Node( 'cadence-innovus-route',           default=True )
+  postroute      = Node( 'cadence-innovus-postroute',       default=True )
+  postroute_hold = Node( 'cadence-innovus-postroute_hold',  default=True )
+  signoff        = Node( 'cadence-innovus-signoff',         default=True )
+  pt_signoff     = Node( 'synopsys-pt-timing-signoff',      default=True )
+  genlibdb       = Node( 'synopsys-ptpx-genlibdb',          default=True )
+  gdsmerge       = Node( 'mentor-calibre-gdsmerge',         default=True )
+  drc            = Node( 'mentor-calibre-drc',              default=True )
+  lvs            = Node( 'mentor-calibre-lvs',              default=True )
+  debugcalibre   = Node( 'cadence-innovus-debug-calibre',   default=True )
+  vcs_sim        = Node( 'synopsys-vcs-sim-old',            default=True )
+  power_est      = Node( 'synopsys-pt-power',               default=True )
+  fm             = Node( 'synopsys-formality-verification', default=True )
 
   #-----------------------------------------------------------------------
   # Modify Nodes
@@ -101,31 +101,31 @@ def construct():
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info              )
-  g.add_step( rtl               )
-  g.add_step( constraints       )
-  g.add_step( synth             )
-  g.add_step( iflow             )
-  g.add_step( init              )
-  g.add_step( power             )
-  g.add_step( place             )
-  g.add_step( cts               )
-  g.add_step( postcts_hold      )
-  g.add_step( route             )
-  g.add_step( postroute         )
-  g.add_step( postroute_hold    )
-  g.add_step( signoff           )
-  g.add_step( pt_signoff        )
-  g.add_step( genlibdb          )
-  g.add_step( gdsmerge          )
-  g.add_step( drc               )
-  g.add_step( lvs               )
-  g.add_step( debugcalibre      )
-  g.add_step( testbench         )
-  g.add_step( vcs_sim           )
-  g.add_step( power_est         )
-  g.add_step( verif_post_synth  )
-  g.add_step( verif_post_layout )
+  g.add_node( info              )
+  g.add_node( rtl               )
+  g.add_node( constraints       )
+  g.add_node( synth             )
+  g.add_node( iflow             )
+  g.add_node( init              )
+  g.add_node( power             )
+  g.add_node( place             )
+  g.add_node( cts               )
+  g.add_node( postcts_hold      )
+  g.add_node( route             )
+  g.add_node( postroute         )
+  g.add_node( postroute_hold    )
+  g.add_node( signoff           )
+  g.add_node( pt_signoff        )
+  g.add_node( genlibdb          )
+  g.add_node( gdsmerge          )
+  g.add_node( drc               )
+  g.add_node( lvs               )
+  g.add_node( debugcalibre      )
+  g.add_node( testbench         )
+  g.add_node( vcs_sim           )
+  g.add_node( power_est         )
+  g.add_node( verif_post_synth  )
+  g.add_node( verif_post_layout )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges

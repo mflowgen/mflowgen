@@ -1,7 +1,7 @@
 #=========================================================================
 # mock_handler.py
 #=========================================================================
-# Sets up a mock graph to "unit test" a step in an mflowgen environment
+# Sets up a mock graph to "unit test" a node in an mflowgen environment
 #
 # Author : Christopher Torng
 # Date   : March 17, 2020
@@ -62,8 +62,8 @@ class MockHandler:
   #-----------------------------------------------------------------------
   # Internally, this command does the following:
   #
-  # - Reads a step configure.yml
-  # - Copies in a template construct.py and fills it in with step info
+  # - Reads a node configure.yml
+  # - Copies in a template construct.py and fills it in with node info
   # - Launches "mflowgen run" on the mock graph to create the environment
   #
 
@@ -74,27 +74,27 @@ class MockHandler:
     def print_help():
       print()
       print( bold( 'Usage:' ), 'mflowgen mock init',
-                                  '--path/-p <path/to/step/dir>'       )
+                                  '--path/-p <path/to/node/dir>'       )
       print()
       print( bold( 'Example:' )                                        )
       print()
-      print( '  % cd mflowgen/steps'                                   )
+      print( '  % cd mflowgen/nodes'                                   )
       print( '  % mkdir build && cd build'                             )
       print( '  % mflowgen mock init --path ../synopsys-dc-synthesis'  )
       print()
-      print( 'Creates a mock-up graph to help develop a modular step.' )
+      print( 'Creates a mock-up graph to help develop a modular node.' )
       print( 'The mock-up contains the "design-under-test" node and a' )
       print( '"push" node that connects to the inputs. You can place'  )
-      print( 'inputs to your step in this node with full access to'    )
+      print( 'inputs to your node in the push node and then access'    )
       print( 'normal build targets (e.g., make status) to make sure'   )
-      print( 'your step works.'                                        )
+      print( 'your node works.'                                        )
       print()
 
     if help_ or not path:
       print_help()
       return
 
-    # Make sure we are not building while nested inside the step itself
+    # Make sure we are not building while nested inside the node itself
     #
     # This will lead to a possibly infinite recursive copy
     #
@@ -108,18 +108,18 @@ class MockHandler:
       print()
       sys.exit( 1 )
 
-    # Make sure the given path points to a step with a configure.yml
+    # Make sure the given path points to a node with a configure.yml
 
     try:
       assert os.path.exists( path + '/configure.yml' )
     except AssertionError:
       print()
       print( bold( 'Error:' ), 'Option --path must point to a directory' )
-      print( 'that has a step configuration file "configure.yml"'        )
+      print( 'that has a node configuration file "configure.yml"'        )
       print()
       sys.exit( 1 )
 
-    # Copy the construct.py template and mock-push step to the current
+    # Copy the construct.py template and mock-push node to the current
     # directory
 
     mock_src_dir = os.path.dirname( __file__ )
@@ -148,7 +148,7 @@ class MockHandler:
       print( bold( 'Error:' ), 'Failed to copy from mflowgen src' )
       raise
 
-    # Fill in the construct.py template for the given step
+    # Fill in the construct.py template for the given node
 
     with open( 'construct.py', 'w' ) as f1:
       with open( construct_template_dst ) as f2:
@@ -168,7 +168,7 @@ class MockHandler:
     print()
     print( bold( 'Mock Commands' ) )
     print()
-    print( bold( ' - init :' ), 'Initialize a mock-up for a step'        )
+    print( bold( ' - init :' ), 'Initialize a mock-up for a node'        )
     print()
     print( 'Run any command with -h to see more details'                 )
     print()

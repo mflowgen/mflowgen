@@ -100,8 +100,8 @@ Adding Assertions When Constructing Your Graph
 The assertions defined in a node configuration file can be extended at
 graph construction time, meaning you can add your own design-specific
 assertions in each node. You can use the
-:py:mod:`Step.extend_preconditions` and
-:py:mod:`Step.extend_postconditions` methods to extend either list.
+:py:mod:`Node.extend_preconditions` and
+:py:mod:`Node.extend_postconditions` methods to extend either list.
 
 For example, say we wanted to add a check for clock-gating cells as a
 postcondition in our synthesis node. We can assert that this cell appears
@@ -109,7 +109,7 @@ in the gate-level netlist like this:
 
 .. code:: python
 
-    dc = Step( 'synopsys-dc-synthesis', default=True )
+    dc = Node( 'synopsys-dc-synthesis', default=True )
     dc.extend_postconditions([
       "assert 'CKGATE' in File( 'outputs/design.v' )"
     ])
@@ -299,7 +299,7 @@ re-run the check yourself with default pytest options:
     % cd 4-synopsys-dc-synthesis
     % ./mflowgen-check-preconditions.py
 
-        > Checking preconditions for step "synopsys-dc-synthesis"
+        > Checking preconditions for node "synopsys-dc-synthesis"
 
     pytest -q -rA --disable-warnings --tb=no --color=no ./mflowgen-check-preconditions.py
     F...                                                                                      [100%]

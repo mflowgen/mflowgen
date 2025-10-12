@@ -2,7 +2,7 @@
 #=========================================================================
 # mflowgen-status
 #=========================================================================
-# Print build status for each step
+# Print build status for each node
 #
 # The output should look something like this:
 #
@@ -23,7 +23,7 @@
 #  -h --help     Display this message
 #  -v --verbose  Verbose mode
 #  -b --backend  Build tool (e.g., make)
-#  -s --steps    Comma-separated list of ordered steps (e.g., "2-foo,1-bar")
+#  -n --nodes    Comma-separated list of ordered nodes (e.g., "2-foo,1-bar")
 #
 # Author : Christopher Torng
 # Date   : November 3, 2019
@@ -53,8 +53,9 @@ def parse_cmdline():
   p.add_argument( "-v",  "--verbose",   action="store_true" )
   p.add_argument( "-h",  "--help",      action="store_true" )
   p.add_argument( "-b",  "--backend",   default="make"      )
-  p.add_argument( "-s",  "--steps",     required=True       )
-  p.add_argument( "-g",  "--subgraphs", default=""          ) 
+  p.add_argument( "-s",  "--steps"                          ) # legacy
+  p.add_argument( "-n",  "--nodes"                          )
+  p.add_argument( "-g",  "--subgraphs", default=""          )
   opts = p.parse_args()
   if opts.help: p.error()
   return opts
@@ -66,6 +67,12 @@ def parse_cmdline():
 def main():
 
   opts = parse_cmdline()
+
+  # Support both opts.node (-n --node) and opts.step (-s --step) flags for
+  # nodes to be backwards compatible with deprecated step terminology
+
+  if opts.steps:
+    opts.nodes = opts.steps
 
   # Dump dry run commands from build tool
 
@@ -82,10 +89,10 @@ def main():
     text = ''.join( map( chr, text ) )
   lines = text.split('\n')
 
-  # Identify steps that must be rebuilt (i.e., check if the dry run
+  # Identify nodes that must be rebuilt (i.e., check if the dry run
   # commands show that the output stamps need to be updated)
 
-  steps = opts.steps.split(',')
+  nodes = opts.nodes.split(',')
   subgraphs = opts.subgraphs.split(',')
 
   echo_green   = '\033[92m'
@@ -96,23 +103,22 @@ def main():
   done_str  = echo_green + 'done ' + echo_nocolor
   build_str = echo_red   + 'build' + echo_nocolor
 
-  status = { s: done_str for s in steps }
+  status = { s: done_str for s in nodes }
 
-  for s in steps:
+  for s in nodes:
     if any([ re.match( r'.*touch ' + s + '/.postconditions.stamp', l ) for l in lines ]):
       status[s] = build_str
 
-  # Check which steps are prebuilt (i.e., have a special '.prebuilt' file)
-  # and check which steps are subgraphs
+  # Check which nodes are prebuilt (i.e., have a special '.prebuilt' file)
+  # and check which nodes are subgraphs
 
   prebuilt_str = echo_bold + ' (pre-built)' + echo_nocolor
   prebuilt = {}
   subgraph_str = echo_bold + ' (subgraph)' + echo_nocolor
   subgraph = {}
-  for s in steps:
+  for s in nodes:
     prebuilt[s] = prebuilt_str if os.path.exists( s+'/.prebuilt' ) else ''
     subgraph[s] = subgraph_str if s in subgraphs else ''
-  
 
   # Get the upcoming build order (by filtering the dry run commands for
   # commands that touch the stamp)
@@ -132,8 +138,8 @@ def main():
   print( 'Upcoming build order:' )
   print()
 
-  for step in order:
-    print( ' - ' + step )
+  for node in order:
+    print( ' - ' + node )
 
   # Report status
 
@@ -143,15 +149,15 @@ def main():
 
   template_str = ' - {status} -> {number:3} : {name}{prebuilt}{subgraph}'
 
-  for step, step_status in sorted( status.items(), # sort numerical order
+  for node, node_status in sorted( status.items(), # sort numerical order
                               key=lambda x: int(x[0].split('-')[0]) ):
-    tokens = step.split('-')
+    tokens = node.split('-')
     d = {
-      'status'   : step_status,
+      'status'   : node_status,
       'number'   : tokens[0],
       'name'     : '-'.join(tokens[1:]),
-      'prebuilt' : prebuilt[step],
-      'subgraph' : subgraph[step]
+      'prebuilt' : prebuilt[node],
+      'subgraph' : subgraph[node]
     }
     print( template_str.format( **d ) )
 

@@ -1,5 +1,5 @@
 #=========================================================================
-# step.py
+# node.py
 #=========================================================================
 # Author : Christopher Torng
 # Date   : June 2, 2019
@@ -11,30 +11,30 @@ import yaml
 
 from mflowgen.utils import get_top_dir, read_yaml, write_yaml
 
-class Step:
+class Node:
 
-  def __init__( s, step_path, default=False ):
+  def __init__( s, node_path, default=False ):
 
     # Get the YAML file path
     #
-    # If this is a default step, then we use the top-level steps directory
+    # If this is a default node, then we use the top-level nodes directory
 
     s._config = {}
-    # If step_path is a dict, it directly defines the step config
+    # If node_path is a dict, it directly defines the node config
     # instead of using a YAML file
-    if type(step_path) == dict:
-      data = step_path
+    if type(node_path) == dict:
+      data = node_path
     else:
       if default:
         yaml_path = '/'.join([
           get_top_dir(),
-          'steps',
-          step_path,
+          'nodes',
+          node_path,
           'configure.yml'
         ])
       else:
         yaml_path = '/'.join([
-          step_path,
+          node_path,
           'configure.yml'
         ])
 
@@ -42,11 +42,11 @@ class Step:
 
       data = read_yaml( yaml_path )
 
-    # Check that this is a valid step configuration
+    # Check that this is a valid node configuration
 
     assert 'name' in data.keys(), \
-      'Step -- ' \
-      'Step YAML must have a "name" field: {}'.format( yaml_path )
+      'Node -- ' \
+      'Node YAML must have a "name" field: {}'.format( yaml_path )
 
     # Remove empty inputs and outputs
 
@@ -63,8 +63,8 @@ class Step:
     if 'outputs' in data.keys():
       for idx, o in enumerate( data['outputs'] ):
         if type(o) == dict:
-          assert len( o.keys()   ) == 1, 'Step -- Invalid output'
-          assert len( o.values() ) == 1, 'Step -- Invalid output'
+          assert len( o.keys()   ) == 1, 'Node -- Invalid output'
+          assert len( o.values() ) == 1, 'Node -- Invalid output'
 
     # If commands are empty, replace with 'pass'
 
@@ -82,7 +82,7 @@ class Step:
     #
 
     assert type( data['commands'] ) == list, \
-      'Step -- YAML "commands" must be a list: {}'.format( yaml_path )
+      'Node -- YAML "commands" must be a list: {}'.format( yaml_path )
 
     for i, c in enumerate( data['commands'] ):
       if type( c ) == bool:
@@ -115,19 +115,19 @@ class Step:
 
     # Save additional metadata aside from the YAML data
     #
-    # - Step directory -- we copy this when we instance a step in a build
+    # - Node directory -- we copy this when we instance a node in a build
     # - YAML name      -- used to generate a parameterized YAML in a build
     #
 
-    # When we use a dict to define a Step, it should provide its own
-    # source directory. If not, we simply say it's an auto-generated step.
-    if type(step_path) == dict:
-      if not 'source' in step_path:
+    # When we use a dict to define a Node, it should provide its own
+    # source directory. If not, we simply say it's an auto-generated node.
+    if type(node_path) == dict:
+      if not 'source' in node_path:
         data['source'] = 'auto-generated'
       else:
-        s.step_dir = data['source']
+        s.node_dir = data['source']
     else:
-      s.step_dir = \
+      s.node_dir = \
         os.path.relpath( os.path.dirname( yaml_path ), os.getcwd() )
 
       data['source'] = os.path.dirname( os.path.abspath( yaml_path ) )
@@ -141,10 +141,10 @@ class Step:
   #-----------------------------------------------------------------------
 
   def clone( s ):
-    new_step = Step.__new__( Step )
-    new_step._config = copy.deepcopy( s._config )
-    new_step.step_dir  = s.step_dir
-    return new_step
+    new_node = Node.__new__( Node )
+    new_node._config = copy.deepcopy( s._config )
+    new_node.node_dir  = s.node_dir
+    return new_node
 
   #-----------------------------------------------------------------------
   # API to help build graphs interactively
@@ -155,9 +155,9 @@ class Step:
   def get_input_handle( s, f ):
 
     assert s._config['inputs'], \
-      'get_input_handle -- This step has no inputs'
+      'get_input_handle -- This node has no inputs'
     assert f in s._config['inputs'], \
-      'get_input_handle -- No input "%s" found in the step' % f
+      'get_input_handle -- No input "%s" found in the node' % f
 
     handle = ( s._config['name'], 'inputs', f )
 
@@ -166,12 +166,12 @@ class Step:
   def get_output_handle( s, f ):
 
     assert s._config['outputs'], \
-      'get_output_handle -- This step has no outputs'
+      'get_output_handle -- This node has no outputs'
 
     outputs = s.all_outputs()
 
     assert f in outputs, \
-      'get_output_handle -- No output "%s" found in the step' % f
+      'get_output_handle -- No output "%s" found in the node' % f
 
     handle = ( s._config['name'], 'outputs', f )
 
@@ -185,7 +185,7 @@ class Step:
   def o( s, name ):
     return s.get_output_handle( name )
 
-  # All handles at once to make it easy to connect between steps by name
+  # All handles at once to make it easy to connect between nodes by name
 
   def all_input_handles( s ):
     if 'inputs' not in s._config.keys():
@@ -274,33 +274,33 @@ class Step:
 
   def set_param( s, param, value ):
     try:
-      step_params = s._config['parameters']
+      node_params = s._config['parameters']
     except KeyError:
       raise KeyError( 'set_param -- ' \
-        'No parameter "%s" in step "%s"' % ( param, s.get_name() ) )
+        'No parameter "%s" in node "%s"' % ( param, s.get_name() ) )
     try:
-      step_params[param]
-      step_params[param] = value
+      node_params[param]
+      node_params[param] = value
     except KeyError:
       raise KeyError( 'set_param -- ' \
-        'No parameter "%s" in step "%s" (available parameters: %s)' % \
-          ( param, s.get_name(), step_params.keys() ) )
+        'No parameter "%s" in node "%s" (available parameters: %s)' % \
+          ( param, s.get_name(), node_params.keys() ) )
 
   def get_param( s, param ):
     assert 'parameters' in s._config.keys(), \
       'get_param -- ' \
-      'No parameter "%s" in step "%s"' % ( param, s.get_name() )
+      'No parameter "%s" in node "%s"' % ( param, s.get_name() )
     assert param in s._config['parameters'].keys(), \
       'get_param -- ' \
-      'No parameter "%s" in step "%s" (options: %s)' % \
+      'No parameter "%s" in node "%s" (options: %s)' % \
         ( param, s.get_name(), s._config['parameters'].keys() )
     return s._config['parameters'][param]
 
   # update_params
   #
-  # Take the {params} dict and update the params of this step. If
+  # Take the {params} dict and update the params of this node. If
   # {allow_new} is true, then params that are not yet defined are also
-  # added to this step, otherwise only params that are already defined are
+  # added to this node, otherwise only params that are already defined are
   # updated.
   #
 
@@ -364,7 +364,7 @@ class Step:
         except KeyError as e:
           cause = e.args[0]
           raise KeyError( 'Error: Unrecognized parameter "' + cause + '"'
-            ' in commands for step "' + s.get_name() + '"!' +
+            ' in commands for node "' + s.get_name() + '"!' +
             ' Please escape literal curly braces with double braces' )
         except AttributeError as e:
           print( '\nError: Perhaps a command was interpreted as a dict\n')
@@ -547,7 +547,7 @@ class Step:
   #-----------------------------------------------------------------------
 
   def get_dir( s ):
-    return s.step_dir
+    return s.node_dir
 
   def get_commands( s ):
     return s._config['commands']
@@ -591,7 +591,7 @@ class Step:
       path = build_dir + '/configure.yml',
     )
 
-  # The sandbox flag will copy the source step directory if true (default)
+  # The sandbox flag will copy the source node directory if true (default)
   # or symlink the source files into the build directory if false
 
   def set_sandbox( s, val ):
@@ -603,4 +603,7 @@ class Step:
     except KeyError:
       return True
 
+# Make 'Step' an identical reference to the 'Node' class object
+
+Step = Node
 

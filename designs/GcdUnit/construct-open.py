@@ -9,7 +9,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step
+from mflowgen.components import Graph, Node
 
 def construct():
 
@@ -40,39 +40,39 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  # ADK step
+  # ADK node
 
 #  g.set_adk( adk_name )
-#  adk = g.get_adk_step()
+#  adk = g.get_adk_node()
 
-  # Custom steps
+  # Custom nodes
 
-  design = Step( this_dir + '/orfs-design' )
+  design = Node( this_dir + '/orfs-design' )
 
-  # Default steps
+  # Default nodes
 
-  info   = Step( 'info',                    default=True )
-  docker = Step( 'orfs-docker-setup',       default=True)
-  synth  = Step( 'orfs-yosys-synthesis',    default=True)
-  fplan  = Step( 'orfs-openroad-floorplan', default=True)
-  place  = Step( 'orfs-openroad-place',     default=True)
-  cts    = Step( 'orfs-openroad-cts',       default=True)
-  route  = Step( 'orfs-openroad-route',     default=True)
-  finish = Step( 'orfs-openroad-finish',    default=True)
+  info   = Node( 'info',                    default=True )
+  docker = Node( 'orfs-docker-setup',       default=True)
+  synth  = Node( 'orfs-yosys-synthesis',    default=True)
+  fplan  = Node( 'orfs-openroad-floorplan', default=True)
+  place  = Node( 'orfs-openroad-place',     default=True)
+  cts    = Node( 'orfs-openroad-cts',       default=True)
+  route  = Node( 'orfs-openroad-route',     default=True)
+  finish = Node( 'orfs-openroad-finish',    default=True)
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info     )
-  g.add_step( design   )
-  g.add_step( docker   )
-  g.add_step( synth    )
-  g.add_step( fplan    )
-  g.add_step( place    )
-  g.add_step( cts      )
-  g.add_step( route    )
-  g.add_step( finish   )
+  g.add_node( info     )
+  g.add_node( design   )
+  g.add_node( docker   )
+  g.add_node( synth    )
+  g.add_node( fplan    )
+  g.add_node( place    )
+  g.add_node( cts      )
+  g.add_node( route    )
+  g.add_node( finish   )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges

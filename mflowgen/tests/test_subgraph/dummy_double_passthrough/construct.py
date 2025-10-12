@@ -11,7 +11,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step, Subgraph
+from mflowgen.components import Graph, Node, Subgraph
 
 def construct():
 
@@ -36,32 +36,32 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  # ADK step
+  # ADK node
 
   g.set_adk( adk_name )
-  adk = g.get_adk_step()
+  adk = g.get_adk_node()
 
-  # Custom steps
+  # Custom nodes
 
-  dummy_input  = Step( this_dir + '/../dummy/dummy_input'  )
-  dummy_output = Step( this_dir + '/../dummy/dummy_output' )
+  dummy_input  = Node( this_dir + '/../dummy/dummy_input'  )
+  dummy_output = Node( this_dir + '/../dummy/dummy_output' )
 
   # Subgraphs
 
   passthrough_subgraph = Subgraph( this_dir + '/../double_passthrough', 'double_passthrough' )
 
-  # Default steps
+  # Default nodes
 
-  info    = Step( 'info',                 default=True )
+  info    = Node( 'info',                 default=True )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info                 )
-  g.add_step( dummy_input          )
-  g.add_step( passthrough_subgraph )
-  g.add_step( dummy_output         )
+  g.add_node( info                 )
+  g.add_node( dummy_input          )
+  g.add_node( passthrough_subgraph )
+  g.add_node( dummy_output         )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges

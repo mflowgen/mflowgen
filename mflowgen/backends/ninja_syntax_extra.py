@@ -351,7 +351,7 @@ def ninja_runtimes( w ):
 
   w.rule(
     name        = 'runtimes',
-    description = 'runtimes: Listing runtimes for each step',
+    description = 'runtimes: Listing runtimes for each node',
     command     = get_top_dir() + '/mflowgen/scripts/mflowgen-runtimes',
   )
   w.newline()
@@ -364,7 +364,7 @@ def ninja_runtimes( w ):
 
 # ninja_list
 #
-# Write out ninja rule to list all steps
+# Write out ninja rule to list all nodes
 #
 # - w             : instance of ninja_syntax Writer
 # - build_dirs    : list of build directories
@@ -373,7 +373,7 @@ def ninja_runtimes( w ):
 
 def ninja_list( w, build_dirs, debug_targets ):
 
-  # Split the build ID and step name from the build_dir
+  # Split the build ID and node name from the build_dir
   #
   # For example, this:
   #
@@ -384,24 +384,24 @@ def ninja_list( w, build_dirs, debug_targets ):
   #     ( '4', 'synopsys-dc-synthesis' )
   #
 
-  steps = []
+  nodes = []
 
   for _ in sorted( build_dirs.values(), \
                      key = lambda x: int(x.split('-')[0]) ):
     tokens = _.split('-')
-    steps.append( ( tokens[0], '-'.join(tokens[1:]) ) )
+    nodes.append( ( tokens[0], '-'.join(tokens[1:]) ) )
 
-  steps_str = \
-    [ '"{: >3} : {}"'.format(x,y) for x, y in ( steps ) ]
+  nodes_str = \
+    [ '"{: >3} : {}"'.format(x,y) for x, y in ( nodes ) ]
 
   generic = [
-    '"list      -- List all steps"',
-    '"status    -- Print build status for each step"',
-    '"runtimes  -- Print runtimes for each step"',
-    '"graph     -- Generate a PDF of the step dependency graph"',
+    '"list      -- List all nodes"',
+    '"status    -- Print build status for each node"',
+    '"runtimes  -- Print runtimes for each node"',
+    '"graph     -- Generate a PDF of the node dependency graph"',
     '"clean-all -- Remove all build directories"',
     '"clean-N   -- Clean target N"',
-    '"info-N    -- Print configured info for step N"',
+    '"info-N    -- Print configured info for node N"',
     '"diff-N    -- Diff target N"',
   ]
 
@@ -415,7 +415,7 @@ def ninja_list( w, build_dirs, debug_targets ):
       r'printf " - %s\\n" ' + ' '.join( generic ),
     r'echo',
     r'echo Targets: && echo && ' + \
-      r'printf " - %s\\n" ' + ' '.join( steps_str ),
+      r'printf " - %s\\n" ' + ' '.join( nodes_str ),
     r'echo',
     r'echo Debug Targets: && echo && ' + \
       r'printf " - %s\\n" ' + ' '.join( debug_str ),
@@ -509,18 +509,18 @@ def ninja_graph_detailed( w, build_dirs ):
 # Write out rules for printing build status
 #
 # - w : instance of ninja_syntax Writer
-# - steps : list of step names to print status for
+# - nodes : list of node names to print status for
 #
 
-def ninja_status( w, steps ):
+def ninja_status( w, nodes ):
 
-  steps_comma_separated = ','.join( steps )
+  nodes_comma_separated = ','.join( nodes )
 
   w.rule(
     name        = 'status',
-    description = 'status: Listing status for each step',
+    description = 'status: Listing status for each node',
     command     = get_top_dir() + '/mflowgen/scripts/mflowgen-status' \
-                  ' --backend ninja -s ' + steps_comma_separated
+                  ' --backend ninja -s ' + nodes_comma_separated
   )
   w.newline()
 
@@ -532,7 +532,7 @@ def ninja_status( w, steps ):
 
 # ninja_info
 #
-# Write out rules for printing step info
+# Write out rules for printing node info
 #
 # - w         : instance of Writer
 # - build_dir : build_dir for this info target
@@ -541,11 +541,11 @@ def ninja_status( w, steps ):
 def ninja_info( w, build_dir ):
 
   build_id      = build_dir.split('-')[0]              # <- first number
-  step_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
+  node_name     = '-'.join( build_dir.split('-')[1:])  # <- remainder
   target        = 'info-' + build_id
 
   command = get_top_dir() + '/mflowgen/scripts/mflowgen-letters' \
-      + ' -c -t ' + step_name
+      + ' -c -t ' + node_name
 
   command = command + ' && ' + get_top_dir() \
       + '/mflowgen/scripts/mflowgen-info'    \
@@ -553,7 +553,7 @@ def ninja_info( w, build_dir ):
 
   w.rule(
     name        = target,
-    description = 'List info for the step',
+    description = 'List info for the node',
     command     = command
   )
   w.newline()

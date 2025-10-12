@@ -13,10 +13,10 @@ import yaml
 from inspect import signature
 
 from mflowgen.utils import get_top_dir, read_yaml, write_yaml
-from mflowgen.components.step import Step
+from mflowgen.components.node import Node
 from mflowgen.core.run import RunHandler as rh
 
-class Subgraph(Step):
+class Subgraph(Node):
 
   def __init__( s, graph_path, design_name ):
 
@@ -53,19 +53,19 @@ class Subgraph(Step):
     s._graph = subgraph_construct_mod.construct()
 
     # Extract the graph's arg names and defaults so we can
-    # make them parameters of the Step
+    # make them parameters of the Node
     sig_param_dict = signature(subgraph_construct_mod.construct).parameters
-    step_param_dict = {}
+    node_param_dict = {}
     for name, param in sig_param_dict.items():
       default = param.default
       # Handle case where the param doesn't have a default arg
       if default == param.empty:
         default == 'undefined'
-      step_param_dict[name] = default
+      node_param_dict[name] = default
 
     # Generate run command that passes graph arg for each param
     run_cmd = f"mflowgen run --subgraph --design {construct_path} --graph-kwargs {{{{"
-    for param in step_param_dict:
+    for param in node_param_dict:
       run_cmd += f"{param}:${param},"
     # Replace last comma with close bracket for kwarg dict
     if run_cmd[-1] == ',':
@@ -74,7 +74,7 @@ class Subgraph(Step):
     run_cmd += '}}'
 
 
-    # Generate step data
+    # Generate node data
 
     data = {}
     data['name'] = design_name
@@ -88,7 +88,7 @@ class Subgraph(Step):
       'output_dir=$(find ../ -type d -regex "^../[0-9]+-outputs/outputs")'
     ]
 
-    data['parameters'] = step_param_dict
+    data['parameters'] = node_param_dict
     data['postconditions'] = []
     for output in s._graph.all_outputs():
       data['commands'].append(f"ln -sf $output_dir/{output} .")
@@ -102,7 +102,7 @@ class Subgraph(Step):
   # get_graph
   #-----------------------------------------------------------------------
 
-  # Returns underlying graph object used to create Subgraph Step.
+  # Returns underlying graph object used to create Subgraph Node.
   def get_graph( s ):
     return s._graph
 

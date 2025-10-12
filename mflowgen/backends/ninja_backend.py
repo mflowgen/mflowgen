@@ -31,10 +31,10 @@ class NinjaBackend:
 
   # save
 
-  def save( s, order, build_dirs, step_dirs ):
+  def save( s, order, build_dirs, node_dirs ):
     s.order      = order
     s.build_dirs = build_dirs
-    s.step_dirs  = step_dirs
+    s.node_dirs  = node_dirs
 
   # gen_header
 
@@ -55,25 +55,25 @@ class NinjaBackend:
   def gen_prologue( s ):
     ninja_common_rules( s.w )
 
-  # gen_step_header
+  # gen_node_header
 
-  def gen_step_header( s, step_name ):
+  def gen_node_header( s, node_name ):
 
     s.w.comment( '-'*72 )
-    s.w.comment( step_name )
+    s.w.comment( node_name )
     s.w.comment( '-'*72 )
     s.w.newline()
 
-  # gen_step_directory_pre
+  # gen_node_directory_pre
   #
-  # This runs at the very start of generating rules for the step directory
+  # This runs at the very start of generating rules for the node directory
 
-  def gen_step_directory_pre( s ):
+  def gen_node_directory_pre( s ):
 
     s.w.comment( 'build dir' )
     s.w.newline()
 
-  # gen_step_directory
+  # gen_node_directory
   #
   # Expected semantics
   #
@@ -88,7 +88,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_directory( s, dst, src, deps, extra_deps, sandbox ):
+  def gen_node_directory( s, dst, src, deps, extra_deps, sandbox ):
 
     all_deps = deps + extra_deps
 
@@ -105,16 +105,16 @@ class NinjaBackend:
 
     return [ target ]
 
-  # gen_step_collect_inputs_pre
+  # gen_node_collect_inputs_pre
   #
   # This runs at the very start of generating rules for collecting inputs
 
-  def gen_step_collect_inputs_pre( s ):
+  def gen_node_collect_inputs_pre( s ):
 
     s.w.comment( 'collect inputs' )
     s.w.newline()
 
-  # gen_step_collect_inputs
+  # gen_node_collect_inputs
   #
   # Expected semantics
   #
@@ -126,7 +126,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_inputs( s, dst, src, deps, extra_deps ):
+  def gen_node_collect_inputs( s, dst, src, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -143,16 +143,16 @@ class NinjaBackend:
 
     return [ target ]
 
-  # gen_step_execute_pre
+  # gen_node_execute_pre
   #
   # This runs at the very start of generating rules for execute
 
-  def gen_step_execute_pre( s ):
+  def gen_node_execute_pre( s ):
 
     s.w.comment( 'execute' )
     s.w.newline()
 
-  # gen_step_execute
+  # gen_node_execute
   #
   # Expected semantics
   #
@@ -165,7 +165,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_execute( s, outputs, command, deps, extra_deps,
+  def gen_node_execute( s, outputs, command, deps, extra_deps,
                                                      phony=False ):
 
     all_deps = deps + extra_deps
@@ -204,16 +204,16 @@ class NinjaBackend:
 
     return targets
 
-  # gen_step_collect_outputs_pre
+  # gen_node_collect_outputs_pre
   #
   # This runs at the very start of generating rules for collecting outputs
 
-  def gen_step_collect_outputs_pre( s ):
+  def gen_node_collect_outputs_pre( s ):
 
     s.w.comment( 'collect outputs' )
     s.w.newline()
 
-  # gen_step_collect_outputs_tagged
+  # gen_node_collect_outputs_tagged
   #
   # Expected semantics
   #
@@ -225,7 +225,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_outputs_tagged( s, dst, src, deps, extra_deps ):
+  def gen_node_collect_outputs_tagged( s, dst, src, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -240,7 +240,7 @@ class NinjaBackend:
 
     return [ target ]
 
-  # gen_step_collect_outputs_untagged
+  # gen_node_collect_outputs_untagged
   #
   # Expected semantics
   #
@@ -252,7 +252,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_outputs_untagged( s, f, deps, extra_deps ):
+  def gen_node_collect_outputs_untagged( s, f, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -266,16 +266,16 @@ class NinjaBackend:
 
     return [ target ]
 
-  # gen_step_post_conditions_pre
+  # gen_node_post_conditions_pre
   #
   # This runs at the very start of generating rules for post-conditions
 
-  def gen_step_post_conditions_pre( s ):
+  def gen_node_post_conditions_pre( s ):
 
     s.w.comment( 'post-conditions' )
     s.w.newline()
 
-  # gen_step_post_conditions
+  # gen_node_post_conditions
   #
   # Expected semantics
   #
@@ -287,7 +287,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_post_conditions( s, command, deps, extra_deps ):
+  def gen_node_post_conditions( s, command, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -323,20 +323,20 @@ class NinjaBackend:
 
     return targets
 
-  # gen_step_alias_pre
+  # gen_node_alias_pre
   #
   # This runs at the very start of generating rules for aliases
 
-  def gen_step_alias_pre( s ):
+  def gen_node_alias_pre( s ):
 
     s.w.comment( 'alias' )
     s.w.newline()
 
-  # gen_step_alias
+  # gen_node_alias
   #
   # Expected semantics
   #
-  # - Create an alias called {alias} for this step
+  # - Create an alias called {alias} for this node
   # - This rule depends on {deps}
   #
   # Expected return
@@ -344,7 +344,7 @@ class NinjaBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_alias( s, alias, deps, extra_deps ):
+  def gen_node_alias( s, alias, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -358,16 +358,16 @@ class NinjaBackend:
 
     return [ target ]
 
-  # gen_step_debug_pre
+  # gen_node_debug_pre
   #
   # This runs at the very start of generating rules for debug commands
 
-  def gen_step_debug_pre( s ):
+  def gen_node_debug_pre( s ):
 
     s.w.comment( 'debug' )
     s.w.newline()
 
-  # gen_step_debug
+  # gen_node_debug
   #
   # Expected semantics
   #
@@ -380,7 +380,7 @@ class NinjaBackend:
   # - None
   #
 
-  def gen_step_debug( s, target, command, build_id ):
+  def gen_node_debug( s, target, command, build_id ):
 
     # Rules
 
@@ -436,20 +436,20 @@ class NinjaBackend:
     s.w.comment( 'Diff' )
     s.w.newline()
 
-    for step_name in s.order:
-      src     = s.step_dirs[ step_name ]
-      dst     = s.build_dirs[ step_name ]
+    for node_name in s.order:
+      src     = s.node_dirs[ node_name ]
+      dst     = s.build_dirs[ node_name ]
       idx     = dst.split('-')[0].lstrip('./')
       name    = 'diff-' + idx
       ninja_diff( s.w, name=name, src=src, dst=dst )
 
     # Clean subtargets (e.g., clean-0, clean-1)
 
-    for step_name, d in sorted( s.build_dirs.items(),
+    for node_name, d in sorted( s.build_dirs.items(),
                                   key=lambda x: x[1] ):
       idx     = d.split('-')[0]
       name_n  = 'clean-' + idx
-      name_s  = 'clean-' + step_name
+      name_s  = 'clean-' + node_name
       command = 'rm -rf ./' + d
       ninja_clean( s.w, name=name_n, command=command )
       # Named clean subtargets (e.g., clean-foo, clean-bar)
@@ -460,8 +460,8 @@ class NinjaBackend:
     s.w.comment( 'Info' )
     s.w.newline()
 
-    for step_name in s.order:
-      ninja_info( s.w, build_dir=s.build_dirs[ step_name ] )
+    for node_name in s.order:
+      ninja_info( s.w, build_dir=s.build_dirs[ node_name ] )
 
     # Runtime target
 

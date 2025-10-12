@@ -247,12 +247,12 @@ class RunHandler:
     # inputs and as standalone graphs with no inputs.
 
     if subgraph and len(g.all_inputs()) > 0:
-      g.generate_input_step()
+      g.generate_input_node()
 
     # Add output targets node if the graph specifies outputs
 
     if len(g.all_outputs()) > 0:
-      g.generate_output_step()
+      g.generate_output_node()
 
     # Generate the build files (e.g., Makefile) for the selected backend
     # build system

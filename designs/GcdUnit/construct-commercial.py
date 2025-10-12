@@ -9,7 +9,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step
+from mflowgen.components import Graph, Node
 
 def construct():
 
@@ -37,43 +37,43 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  # ADK step
+  # ADK node
 
   g.set_adk( adk_name )
-  adk = g.get_adk_step()
+  adk = g.get_adk_node()
 
-  # Custom steps
+  # Custom nodes
 
-  rtl = Step( this_dir + '/rtl' )
+  rtl = Node( this_dir + '/rtl' )
 
-  # Default steps
+  # Default nodes
 
-  info         = Step( 'info',                          default=True )
-  constraints  = Step( 'constraints',                   default=True )
-  dc           = Step( 'synopsys-dc-synthesis',         default=True )
-  iflow        = Step( 'cadence-innovus-flowsetup',     default=True )
-  placeroute   = Step( 'cadence-innovus-place-route',   default=True )
-  genlibdb     = Step( 'synopsys-ptpx-genlibdb',        default=True )
-  gdsmerge     = Step( 'mentor-calibre-gdsmerge',       default=True )
-  drc          = Step( 'mentor-calibre-drc',            default=True )
-  lvs          = Step( 'mentor-calibre-lvs',            default=True )
-  debugcalibre = Step( 'cadence-innovus-debug-calibre', default=True )
+  info         = Node( 'info',                          default=True )
+  constraints  = Node( 'constraints',                   default=True )
+  dc           = Node( 'synopsys-dc-synthesis',         default=True )
+  iflow        = Node( 'cadence-innovus-flowsetup',     default=True )
+  placeroute   = Node( 'cadence-innovus-place-route',   default=True )
+  genlibdb     = Node( 'synopsys-ptpx-genlibdb',        default=True )
+  gdsmerge     = Node( 'mentor-calibre-gdsmerge',       default=True )
+  drc          = Node( 'mentor-calibre-drc',            default=True )
+  lvs          = Node( 'mentor-calibre-lvs',            default=True )
+  debugcalibre = Node( 'cadence-innovus-debug-calibre', default=True )
 
   #-----------------------------------------------------------------------
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info         )
-  g.add_step( rtl          )
-  g.add_step( constraints  )
-  g.add_step( dc           )
-  g.add_step( iflow        )
-  g.add_step( placeroute   )
-  g.add_step( genlibdb     )
-  g.add_step( gdsmerge     )
-  g.add_step( drc          )
-  g.add_step( lvs          )
-  g.add_step( debugcalibre )
+  g.add_node( info         )
+  g.add_node( rtl          )
+  g.add_node( constraints  )
+  g.add_node( dc           )
+  g.add_node( iflow        )
+  g.add_node( placeroute   )
+  g.add_node( genlibdb     )
+  g.add_node( gdsmerge     )
+  g.add_node( drc          )
+  g.add_node( lvs          )
+  g.add_node( debugcalibre )
 
   #-----------------------------------------------------------------------
   # Graph -- Add edges

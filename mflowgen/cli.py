@@ -15,7 +15,7 @@
 # mflowgen stash (Stash-related options)
 #
 #  -p --path     string --  Path for stash init, stash link
-#  -s --step     int    --  Step number for stash push
+#  -n --node     int    --  Node number for stash push
 #  -m --msg      string --  Push message for stash push
 #     --hash     string --  Hash for stash pull, stash pop, stash drop
 #     --all
@@ -23,13 +23,13 @@
 #
 # mflowgen mock (Mock-related options)
 #
-#  -p --path     string --  Path to step directory
+#  -p --path     string --  Path to node source directory
 #
 # mflowgen param (Parameter-related options)
 #
 #  -k --key      string -- Parameter name
 #  -v --value    string -- New parameter value
-#  -s --step     int    -- Step number to update params for (or use --all)
+#  -n --node     int    -- Node number to update params for (or use --all)
 #     --all             -- Update param for all nodes in graph
 #
 
@@ -49,7 +49,7 @@ from mflowgen.stash     import StashHandler
 from mflowgen.mock      import MockHandler
 from mflowgen.param     import ParamHandler
 
-# Path hack for now to find steps and adks
+# Path hack for now to find nodes and adks
 
 os.environ[ 'MFLOWGEN_HOME' ] = \
   os.path.abspath( os.path.dirname( os.path.dirname( __file__ ) ) )
@@ -85,6 +85,7 @@ def parse_cmdline():
   p.add_argument(       "args", type=str, nargs='*' ) # positional
   p.add_argument( "-p", "--path"                                  )
   p.add_argument( "-s", "--step", type=int                        )
+  p.add_argument( "-n", "--node", type=int                        )
   p.add_argument( "-m", "--msg"                                   )
   p.add_argument(       "--hash"                                  )
   p.add_argument(       "--all",     action="store_true"          )
@@ -118,6 +119,12 @@ def main():
     dhandler.launch()
     return
 
+  # Support both opts.node (-n --node) and opts.step (-s --step) flags for
+  # nodes to be backwards compatible with deprecated step terminology
+
+  if opts.step:
+    opts.node = opts.step
+
   # Dispatch to StashHandler if positional arguments for stash are given
 
   if opts.args and opts.args[0] == 'stash':
@@ -126,7 +133,7 @@ def main():
       args    = opts.args[1:],
       help_   = opts.help,
       path    = opts.path,
-      step    = opts.step,
+      node    = opts.node,
       msg     = opts.msg,
       hash_   = opts.hash,
       all_    = opts.all,
@@ -154,7 +161,7 @@ def main():
       help_ = opts.help,
       key   = opts.key,
       value = opts.value,
-      step  = opts.step,
+      node  = opts.node,
       all_  = opts.all,
     )
     return

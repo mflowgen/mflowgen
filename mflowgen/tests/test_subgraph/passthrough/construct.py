@@ -9,7 +9,7 @@
 
 import os
 
-from mflowgen.components import Graph, Step, Subgraph
+from mflowgen.components import Graph, Node, Subgraph
 
 def construct():
 
@@ -34,23 +34,23 @@ def construct():
 
   this_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-  # ADK step
+  # ADK node
 
   g.set_adk( adk_name )
-  adk = g.get_adk_step()
+  adk = g.get_adk_node()
 
-  # Custom steps
+  # Custom nodes
 
-  passthrough = Step( this_dir + '/passthrough' )
+  passthrough = Node( this_dir + '/passthrough' )
 
-  # Default steps
+  # Default nodes
 
-  info    = Step( 'info',                 default=True )
+  info    = Node( 'info',                 default=True )
 
   # Subgraph Inputs
 
   g.add_input( 'foo', passthrough.i( 'i' ) )
-  
+
   # Subgraph Outputs
 
   g.add_output( 'bar', passthrough.o( 'o' ) )
@@ -59,8 +59,8 @@ def construct():
   # Graph -- Add nodes
   #-----------------------------------------------------------------------
 
-  g.add_step( info        )
-  g.add_step( passthrough )
+  g.add_node( info        )
+  g.add_node( passthrough )
 
   #-----------------------------------------------------------------------
   # Parameterize

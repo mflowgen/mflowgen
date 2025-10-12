@@ -20,14 +20,19 @@ any node in the graph (or update all nodes). It looks like this:
 
 .. code::
 
-    % mflowgen param update --key clock_period --value 2.0 --step 5
-    % mflowgen param update  -k   clock_period  -v     2.0  -s 5
+    % mflowgen param update --key clock_period --value 2.0 --node 5
+
+You may also use shorthand like this:
+
+.. code::
+
+    % mflowgen param update -k clock_period -v 2.0 -n 5
 
 Updating all nodes in the graph can use the ``--all`` flag:
 
 .. code::
 
-    % mflowgen param update --key clock_period --value 2.0 --all
+    % mflowgen param update -k clock_period -v 2.0 --all
 
 For example, you can update the "design_name" parameter to modify the flow
 to target a different top-level module:
@@ -44,7 +49,7 @@ push timing on just the synthesis node:
 
 .. code::
 
-    % mflowgen param update -k clock_period -v 0.9 -s 9
+    % mflowgen param update -k clock_period -v 0.9 -n 9
 
      - Update: 9-cadence-genus-synthesis -- params["clock_period"] = "0.9" (
        was "1.0" )

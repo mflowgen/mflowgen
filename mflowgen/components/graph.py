@@ -7,19 +7,19 @@
 
 import os
 
-from mflowgen.components.step     import Step
+from mflowgen.components.node     import Node
 from mflowgen.components.subgraph import Subgraph
 from mflowgen.components.edge     import Edge
 from mflowgen.utils               import get_top_dir
 
 class Graph:
-  """Graph of nodes and edges (i.e., :py:mod:`Step` and :py:mod:`Edge`)."""
+  """Graph of nodes and edges (i.e., :py:mod:`Node` and :py:mod:`Edge`)."""
 
   def __init__( s ):
 
     s._edges_i   = {}
     s._edges_o   = {}
-    s._steps     = {}
+    s._nodes     = {}
     s._subgraphs = {}
     s._inputs    = {}
     s._outputs   = {}
@@ -55,65 +55,81 @@ class Graph:
       adk: A string representing the subdirectory name of the ADK
     """
 
-    # Search for adk steps
+    # Search for adk nodes
 
     for p in s.sys_path:
       adk_path = p + '/' + adk
       try:
-        s.adk_step = Step( adk_path, default=False )
+        s.adk_node = Node( adk_path, default=False )
       except:
         pass
 
     try:
-      s.adk_step
+      s.adk_node
     except AttributeError:
       raise OSError( 'Could not find adk "{}" in system paths: {}'.format(
         adk, s.sys_path ) )
 
-    # Add the adk step to the graph
+    # Add the adk node to the graph
 
-    s.add_step( s.adk_step )
+    s.add_node( s.adk_node )
 
-  # get_adk_step
+  # get_adk_node
 
-  def get_adk_step( s ):
-    """Gets the Step object representing the ASIC design kit.
+  def get_adk_node( s ):
+    """Gets the Node object representing the ASIC design kit.
 
     Returns:
-      The Step object that was constructed from the currently set ADK.
+      The Node object that was constructed from the currently set ADK.
     """
-    return s.adk_step
+    return s.adk_node
 
-  # add_step
+  # Make 'get_adk_step' an identical reference to 'get_adk_node'
 
-  def add_step( s, step ):
-    """Adds a Step to the graph as a node.
+  get_adk_step = get_adk_node
 
-    The name of the new Step cannot conflict with any steps that already
+  # add_node
+
+  def add_node( s, node ):
+    """Adds a Node to the graph as a node.
+
+    The name of the new Node cannot conflict with any nodes that already
     exist in the graph. This method fails an assertion if given a
-    duplicate step name.
+    duplicate node name.
 
     Args:
-      step: A Step object
+      node: A Node object
     """
-    key = step.get_name()
-    assert key not in s._steps.keys(), \
-      'add_step -- Duplicate step "{}", ' \
-      'if this is intentional, first change the step name'.format( key )
-    s._steps[ key ] = step
-    if type(step) == Subgraph:
-      s._subgraphs[ key ] = step
+    key = node.get_name()
+    assert key not in s._nodes.keys(), \
+      'add_node -- Duplicate node "{}", ' \
+      'if this is intentional, first change the node name'.format( key )
+    s._nodes[ key ] = node
+    if type(node) == Subgraph:
+      s._subgraphs[ key ] = node
 
-  def get_step( s, step_name ):
-    """Gets the Step object with the given name.
+  # Make 'add_step' an identical reference to 'add_node'
+
+  add_step = add_node
+
+  def get_node( s, node_name ):
+    """Gets the Node object with the given name.
 
     Args:
-      step_name: A string representing the name of the step from :py:meth:`Step.get_name`
+      node_name: A string representing the name of the node from :py:meth:`Node.get_name`
     """
-    return s._steps[ step_name ]
+    return s._nodes[ node_name ]
 
-  def all_steps( s ):
-    return sorted( s._steps.keys() )
+  # Make 'get_step' an identical reference to 'get_node'
+
+  get_step = get_node
+
+  def all_nodes( s ):
+    return sorted( s._nodes.keys() )
+
+  # Make 'all_steps' an identical reference to 'all_nodes'
+
+  all_steps = all_nodes
 
   def all_subgraphs( s ):
     return sorted( s._subgraphs.keys() )
@@ -125,55 +141,55 @@ class Graph:
     edge_list.sort(key=lambda x: x.dst)
     return edge_list
 
-  def get_edges_i( s, step_name ):
+  def get_edges_i( s, node_name ):
     try:
-      return s.sort_edges(s._edges_i[ step_name ])
+      return s.sort_edges(s._edges_i[ node_name ])
     except KeyError:
       return []
 
-  def get_edges_o( s, step_name ):
+  def get_edges_o( s, node_name ):
     try:
-      return s.sort_edges(s._edges_o[ step_name ])
+      return s.sort_edges(s._edges_o[ node_name ])
     except KeyError:
       return []
-  
+
   def add_input( s, name, *args ):
-    """Makes the input of a step in the graph into an input of the full
+    """Makes the input of a node in the graph into an input of the full
     graph for when the graph is used as a subgraph in a hierarchical flow
 
     Args:
       name: Name to assign to the graph-level input
-      args: Handle(s) of a steps' inputs that we want to connect to graph input
+      args: Handle(s) of a nodes' inputs that we want to connect to graph input
     """
     assert name not in s._inputs.keys(), \
       f"add_input -- Duplicate input \"{name}\"."
     s._inputs[ name ] = []
     for input_handle in args:
       s._inputs[ name ].append( input_handle )
-    
+
   def get_input( s, input_name ):
     """Gets the list of input handle objects connected to the given graph input name.
     Args:
       input_name: A string representing the name of the input assigned in from :py:meth:`Graph.add_input`
     """
     return s._inputs[ input_name ]
-  
+
   def all_inputs( s ):
     return sorted( s._inputs.keys() )
 
   def add_output( s, name, output_handle ):
-    """Makes the output of a step in the graph into an output of the full
+    """Makes the output of a node in the graph into an output of the full
     graph for when the graph is used as a subgraph in a hierarchical flow
 
     Args:
       name: Name to assign to the graph-level output
-      output_step: Handle of step where graph output comes from
-      output_handle: Handle of a step's output that we want to make a graph output
+      output_node: Handle of node where graph output comes from
+      output_handle: Handle of a node's output that we want to make a graph output
     """
     assert name not in s._outputs.keys(), \
       f"add_output -- Duplicate output \"{name}\"."
     s._outputs[ name ] = output_handle
-    
+
   def get_output( s, output_name ):
     """Gets the output handle object connected to the given graph output name.
 
@@ -181,7 +197,7 @@ class Graph:
       output_name: A string representing the name of the output assigned in from :py:meth:`Graph.add_output`
     """
     return s._outputs[ output_name ]
-  
+
   def all_outputs( s ):
     return sorted( s._outputs.keys() )
 
@@ -191,22 +207,22 @@ class Graph:
 
     dangling = []
 
-    for step_name in s.all_steps():
+    for node_name in s.all_nodes():
 
-      incoming_edges        = s.get_edges_i( step_name )
+      incoming_edges        = s.get_edges_i( node_name )
       incoming_edge_f_names = [ e.get_dst()[1] for e in incoming_edges ]
 
-      inputs = s.get_step( step_name ).all_inputs()
+      inputs = s.get_node( node_name ).all_inputs()
 
       if inputs:
         for x in inputs:
           if x not in incoming_edge_f_names:
-            dangling.append( ( step_name, x ) )
+            dangling.append( ( node_name, x ) )
 
     if dangling:
-      for step_name, f_name in dangling:
-        msg = 'Dangling input in step "{}": {}'
-        msg = msg.format( step_name, f_name )
+      for node_name, f_name in dangling:
+        msg = 'Dangling input in node "{}": {}'
+        msg = msg.format( node_name, f_name )
         print( msg )
     else:
       print( 'No dangling inputs in graph' )
@@ -219,8 +235,8 @@ class Graph:
 
     # Twizzle and figure out which side is the src and which is the dst
 
-    l_step_name, l_direction, l_handle_name = l_handle
-    r_step_name, r_direction, r_handle_name = r_handle
+    l_node_name, l_direction, l_handle_name = l_handle
+    r_node_name, r_direction, r_handle_name = r_handle
 
     if l_direction == 'inputs':
       assert r_direction == 'outputs', \
@@ -238,57 +254,57 @@ class Graph:
 
     # Create an edge from src to dst
 
-    src_step_name, src_direction, src_f = src_handle
-    dst_step_name, dst_direction, dst_f = dst_handle
+    src_node_name, src_direction, src_f = src_handle
+    dst_node_name, dst_direction, dst_f = dst_handle
 
-    if dst_step_name not in s._edges_i.keys():
-      s._edges_i[ dst_step_name ] = []
-    if src_step_name not in s._edges_o.keys():
-      s._edges_o[ src_step_name ] = []
+    if dst_node_name not in s._edges_i.keys():
+      s._edges_i[ dst_node_name ] = []
+    if src_node_name not in s._edges_o.keys():
+      s._edges_o[ src_node_name ] = []
 
-    src = ( src_step_name, src_f )
-    dst = ( dst_step_name, dst_f )
+    src = ( src_node_name, src_f )
+    dst = ( dst_node_name, dst_f )
     e   = Edge( src, dst )
 
     # Add this edge to tracking
 
-    s._edges_i[ dst_step_name ].append( e )
-    s._edges_o[ src_step_name ].append( e )
+    s._edges_i[ dst_node_name ].append( e )
+    s._edges_o[ src_node_name ].append( e )
 
   def connect_by_name( s, src, dst ):
 
-    # Get the step (in case the user provided step names instead)
+    # Get the node (in case the user provided node names instead)
 
-    if (type( src ) != Step) and not issubclass( type( src ), Step ):
-      src_step = s.get_step( src )
+    if (type( src ) != Node) and not issubclass( type( src ), Node ):
+      src_node = s.get_node( src )
     else:
-      src_step = src
-    src_step_name = src_step.get_name()
-    assert src_step_name in s.all_steps(), \
+      src_node = src
+    src_node_name = src_node.get_name()
+    assert src_node_name in s.all_nodes(), \
       'connect_by_name -- ' \
-      'Step "{}" not found in graph'.format( src_step_name )
+      'Node "{}" not found in graph'.format( src_node_name )
 
-    if (type( dst ) != Step) and not issubclass( type( dst ), Step ):
-      dst_step = s.get_step( dst )
+    if (type( dst ) != Node) and not issubclass( type( dst ), Node ):
+      dst_node = s.get_node( dst )
     else:
-      dst_step = dst
-    dst_step_name = dst_step.get_name()
-    assert dst_step_name in s.all_steps(), \
+      dst_node = dst
+    dst_node_name = dst_node.get_name()
+    assert dst_node_name in s.all_nodes(), \
       'connect_by_name -- ' \
-      'Step "{}" not found in graph'.format( dst_step_name )
+      'Node "{}" not found in graph'.format( dst_node_name )
 
     # Find same-name matches between the src output and dst input
 
-    src_outputs = src_step.all_outputs()
-    dst_inputs  = dst_step.all_inputs()
+    src_outputs = src_node.all_outputs()
+    dst_inputs  = dst_node.all_inputs()
 
     overlap = set( src_outputs ).intersection( set( dst_inputs ) )
 
     # For all overlaps, connect src to dst
 
     for name in overlap:
-      l_handle = src_step.o( name )
-      r_handle = dst_step.i( name )
+      l_handle = src_node.o( name )
+      r_handle = dst_node.i( name )
       s.connect( l_handle, r_handle )
 
   #-----------------------------------------------------------------------
@@ -296,38 +312,38 @@ class Graph:
   #-----------------------------------------------------------------------
 
   def update_params( s, params ):
-    """Updates parameters for all steps in the graph.
+    """Updates parameters for all nodes in the graph.
 
-    Calls :py:meth:`Step.update_params` for each step in the graph with the
+    Calls :py:meth:`Node.update_params` for each node in the graph with the
     given parameter dictionary.
 
     Args:
       params: A dict of parameter names (strings) and values
     """
 
-    for step_name in s.all_steps():
-      s.get_step( step_name ).update_params( params )
+    for node_name in s.all_nodes():
+      s.get_node( node_name ).update_params( params )
 
   def expand_params( s ):
-    for step_name in s.all_steps():
-      s.get_step( step_name ).expand_params()
+    for node_name in s.all_nodes():
+      s.get_node( node_name ).expand_params()
 
   #-----------------------------------------------------------------------
   # Metadata
   #-----------------------------------------------------------------------
 
-  def dump_metadata_to_steps( s, build_dirs, build_ids ):
+  def dump_metadata_to_nodes( s, build_dirs, build_ids ):
 
-    for step_name in s.all_steps():
+    for node_name in s.all_nodes():
 
       edges_i = {}
       edges_o = {}
 
       try:
-        for e in s._edges_i[ step_name ]:
+        for e in s._edges_i[ node_name ]:
           f = e.get_dst()[1]
           edge = { 'f'    : e.get_src()[1],
-                   'step' : build_dirs[ e.get_src()[0] ] }
+                   'node' : build_dirs[ e.get_src()[0] ] }
           try:
             edges_i[f].append( edge )
           except KeyError:
@@ -336,10 +352,10 @@ class Graph:
         pass
 
       try:
-        for e in s._edges_o[ step_name ]:
+        for e in s._edges_o[ node_name ]:
           f = e.get_src()[1]
           edge = { 'f'    : e.get_dst()[1],
-                   'step' : build_dirs[ e.get_dst()[0] ] }
+                   'node' : build_dirs[ e.get_dst()[0] ] }
           try:
             edges_o[f].append( edge )
           except KeyError:
@@ -348,13 +364,17 @@ class Graph:
         pass
 
       data = {
-        'build_dir' : build_dirs [ step_name ],
-        'build_id'  : build_ids  [ step_name ],
+        'build_dir' : build_dirs [ node_name ],
+        'build_id'  : build_ids  [ node_name ],
         'edges_i'   : edges_i,
         'edges_o'   : edges_o,
       }
 
-      s.get_step( step_name ).update_metadata( data )
+      s.get_node( node_name ).update_metadata( data )
+
+  # Make 'dump_metadata_to_steps' an identical reference to 'dump_metadata_to_nodes'
+
+  dump_metadata_to_steps = dump_metadata_to_nodes
 
   #-----------------------------------------------------------------------
   # Design-space exploration
@@ -362,8 +382,8 @@ class Graph:
 
   # param_space
 
-  def param_space( s, step, param_name, param_space ):
-    """Spins out new copies of the step across the parameter space.
+  def param_space( s, node, param_name, param_space ):
+    """Spins out new copies of the node across the parameter space.
 
     For example, for a graph like this::
 
@@ -396,34 +416,34 @@ class Graph:
                     +-----------+    +-----------+
 
     Args:
-      step        : A string for the step name targeted for expansion
+      node        : A string for the node name targeted for expansion
       param_name  : A string for the parameter name
       param_space : A list of parameter values to expand to
 
     Returns:
-      A list of (parameterized) steps (i.e., 'bar-p-1', 'bar-p-2', and
+      A list of (parameterized) nodes (i.e., 'bar-p-1', 'bar-p-2', and
       'bar-p-3').
     """
 
-    # Get the step name (in case the user provided a step object instead)
+    # Get the node name (in case the user provided a node object instead)
 
-    if type( step ) != str:
-      step_name = step.get_name()
+    if type( node ) != str:
+      node_name = node.get_name()
     else:
-      step_name = step
-      step      = s.get_step( step_name )
+      node_name = node
+      node      = s.get_node( node_name )
 
-    assert step_name in s.all_steps(), \
+    assert node_name in s.all_nodes(), \
       'param_space -- ' \
-      'Step "{}" not found in graph'.format( step_name )
+      'Node "{}" not found in graph'.format( node_name )
 
-    # Remove the step and its incoming edges from the graph
+    # Remove the node and its incoming edges from the graph
 
-    del( s._steps[ step_name ] )
+    del( s._nodes[ node_name ] )
 
-    elist_i = s._param_space_helper_remove_incoming_edges( step_name )
+    elist_i = s._param_space_helper_remove_incoming_edges( node_name )
 
-    # Now spin out new copies of the step across the parameter space
+    # Now spin out new copies of the node across the parameter space
     #
     # Start from this:
     #
@@ -448,23 +468,23 @@ class Graph:
     #                 +-----------+
     #
 
-    new_steps = []
+    new_nodes = []
 
     for p in param_space:
-      p_step = step.clone()
-      p_step.set_param( param_name, p )
-      p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
-      s.add_step( p_step )
+      p_node = node.clone()
+      p_node.set_param( param_name, p )
+      p_node.set_name( node_name + '-' + param_name + '-' + str(p) )
+      s.add_node( p_node )
       for e in elist_i:
-        src_step_name, src_f = e.get_src()
-        dst_step_name, dst_f = e.get_dst()
-        src_step = s.get_step( src_step_name )
-        s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
-      new_steps.append( p_step )
+        src_node_name, src_f = e.get_src()
+        dst_node_name, dst_f = e.get_dst()
+        src_node = s.get_node( src_node_name )
+        s.connect( src_node.o( src_f ), p_node.i( dst_f ) )
+      new_nodes.append( p_node )
 
-    # Build a dict to map (removed) base steps to their expanded steps
+    # Build a dict to map (removed) base nodes to their expanded nodes
 
-    new_src_map = { step_name : new_steps }
+    new_src_map = { node_name : new_nodes }
 
     # Recurse on downstream nodes
     #
@@ -488,25 +508,25 @@ class Graph:
     # less clean.
     #
 
-    dep_steps = s._param_space_helper_get_dependent_steps( step_name )
-    dep_steps = s.topological_sort( seed_steps=dep_steps )
+    dep_nodes = s._param_space_helper_get_dependent_nodes( node_name )
+    dep_nodes = s.topological_sort( seed_nodes=dep_nodes )
 
-    # For each dependent step, replicate and connect to the graph
+    # For each dependent node, replicate and connect to the graph
 
     visited = set()
 
-    for dep_step in dep_steps:
-      s._param_space_helper( step_name   = dep_step,
+    for dep_node in dep_nodes:
+      s._param_space_helper( node_name   = dep_node,
                              new_src_map = new_src_map,
                              visited     = visited,
                              param_name  = param_name,
                              param_space = param_space )
 
-    return new_steps
+    return new_nodes
 
   # _param_space_helper
   #
-  # Take the dependent step (i.e., baz), replicate the step across the
+  # Take the dependent node (i.e., baz), replicate the node across the
   # parameter space, and then connect to the frontier of new_srcs (i.e.,
   # bar-p-1, bar-p-2, bar-p-3).
   #
@@ -541,102 +561,106 @@ class Graph:
   #                 +-----------+    +-----------+
   #
 
-  def _param_space_helper( s, step_name, new_src_map, visited,
+  def _param_space_helper( s, node_name, new_src_map, visited,
                                          param_name,  param_space ):
 
-    if step_name in visited:
+    if node_name in visited:
       return
     else:
-      visited.add( step_name )
+      visited.add( node_name )
 
-    step = s.get_step( step_name )
+    node = s.get_node( node_name )
 
-    # Remove the step and its incoming edges from the graph
+    # Remove the node and its incoming edges from the graph
 
-    del( s._steps[ step_name ] )
+    del( s._nodes[ node_name ] )
 
-    elist_i = s._param_space_helper_remove_incoming_edges( step_name )
+    elist_i = s._param_space_helper_remove_incoming_edges( node_name )
 
-    # Now spin out new copies of the step + attach them to new srcs
+    # Now spin out new copies of the node + attach them to new srcs
 
-    new_steps = []
+    new_nodes = []
 
     for i, p in enumerate( param_space ):
-      p_step = step.clone()
-      p_step.set_name( step_name + '-' + param_name + '-' + str(p) )
+      p_node = node.clone()
+      p_node.set_name( node_name + '-' + param_name + '-' + str(p) )
       # Propagate the new parameter value to downstream nodes
       try:
-        p_step.set_param( param_name, p )
+        p_node.set_param( param_name, p )
       # If the parameter cannot be accessed, do nothing to the parameter
       except KeyError:
         pass
-      s.add_step( p_step )
+      s.add_node( p_node )
       for e in elist_i:
-        src_step_name, src_f = e.get_src()
-        dst_step_name, dst_f = e.get_dst()
-        if src_step_name in new_src_map.keys():
-          src_step = new_src_map[src_step_name][i]
+        src_node_name, src_f = e.get_src()
+        dst_node_name, dst_f = e.get_dst()
+        if src_node_name in new_src_map.keys():
+          src_node = new_src_map[src_node_name][i]
         else:
-          src_step = s.get_step( src_step_name )
-        s.connect( src_step.o( src_f ), p_step.i( dst_f ) )
-      new_steps.append( p_step )
+          src_node = s.get_node( src_node_name )
+        s.connect( src_node.o( src_f ), p_node.i( dst_f ) )
+      new_nodes.append( p_node )
 
-    # Build a dict to map (removed) base steps to their expanded steps
+    # Build a dict to map (removed) base nodes to their expanded nodes
 
-    new_src_map.update( { step_name : new_steps } )
+    new_src_map.update( { node_name : new_nodes } )
 
     # Recurse on downstream nodes
 
-    dep_steps = s._param_space_helper_get_dependent_steps( step_name )
-    dep_steps = s.topological_sort( seed_steps=dep_steps )
+    dep_nodes = s._param_space_helper_get_dependent_nodes( node_name )
+    dep_nodes = s.topological_sort( seed_nodes=dep_nodes )
 
-    # For each dependent step, replicate and connect to the new steps
+    # For each dependent node, replicate and connect to the new nodes
 
-    for dep_step in dep_steps:
-      s._param_space_helper( step_name   = dep_step,
+    for dep_node in dep_nodes:
+      s._param_space_helper( node_name   = dep_node,
                              new_src_map = new_src_map,
                              visited     = visited,
                              param_name  = param_name,
                              param_space = param_space )
 
-    return new_steps
+    return new_nodes
 
-  def _param_space_helper_remove_incoming_edges( s, step_name ):
+  def _param_space_helper_remove_incoming_edges( s, node_name ):
 
     try:
-      elist_i = s._edges_i[ step_name ]
-      del( s._edges_i[ step_name ] ) # Delete edges in incoming edge list
+      elist_i = s._edges_i[ node_name ]
+      del( s._edges_i[ node_name ] ) # Delete edges in incoming edge list
       for e in elist_i: # Also delete these edges in outgoing edge lists
-        src_step_name, src_f = e.get_src()
-        src_elist_o = s._edges_o[src_step_name]
+        src_node_name, src_f = e.get_src()
+        src_elist_o = s._edges_o[src_node_name]
         del( src_elist_o[ src_elist_o.index( e ) ] )
     except KeyError:
       elist_i = []
 
     return elist_i
 
-  def _param_space_helper_get_dependent_steps( s, step_name ):
+  def _param_space_helper_get_dependent_nodes( s, node_name ):
 
-    dep_steps = set()
+    dep_nodes = set()
 
     try:
-      elist_o = s._edges_o[ step_name ]
+      elist_o = s._edges_o[ node_name ]
     except KeyError:
       elist_o = []
 
     for e in elist_o:
-      dst_step_name, dst_f = e.get_dst()
-      dep_steps.add( dst_step_name )
+      dst_node_name, dst_f = e.get_dst()
+      dep_nodes.add( dst_node_name )
 
-    return dep_steps
+    return dep_nodes
+
+  # Make '_param_space_helper_get_dependent_steps' an identical reference to '_param_space_helper_get_dependent_nodes'
+
+  _param_space_helper_get_dependent_steps = _param_space_helper_get_dependent_nodes
 
   #-----------------------------------------------------------------------
   # Ninja helpers
   #-----------------------------------------------------------------------
 
   def escape_dollars( s ):
-    for step_name in s.all_steps():
-      s.get_step( step_name ).escape_dollars()
+    for node_name in s.all_nodes():
+      s.get_node( node_name ).escape_dollars()
 
   #-----------------------------------------------------------------------
   # Drawing
@@ -684,9 +708,9 @@ ranksep=0.8;
     def dot_format_fix( x ):
       return x.replace( '-', '_' ).replace( '.', '_' )
 
-    # Loop over all steps and generate a graphviz node declaration
+    # Loop over all nodes and generate a graphviz node declaration
     #
-    # Each step will become a graphviz "record" shape, which has a special
+    # Each node will become a graphviz "record" shape, which has a special
     # label syntax that dot interprets to extract the ports.
     #
     # Basically, a label "{ <in1> in1_text | foobar | <out1> out1_text }"
@@ -699,26 +723,26 @@ ranksep=0.8;
 
     dot_nodes = []
 
-    for step_name in s.all_steps():
-      step     = s.get_step( step_name )
+    for node_name in s.all_nodes():
+      node     = s.get_node( node_name )
       port_str = '<{dot_port_id}> {label}'
 
       i_port_strs = []
       o_port_strs = []
 
-      for _input in sorted( step.all_inputs() ):
+      for _input in sorted( node.all_inputs() ):
         dot_port_id = dot_format_fix( 'i_' + _input )
         i_port_strs.append( \
           port_str.format( dot_port_id=dot_port_id, label=_input ) )
 
-      for _output in sorted( step.all_outputs() ):
+      for _output in sorted( node.all_outputs() ):
         dot_port_id = dot_format_fix( 'o_' + _output )
         o_port_strs.append( \
           port_str.format( dot_port_id=dot_port_id, label=_output ) )
 
       node_cfg           = {}
-      node_cfg['dot_id'] = dot_format_fix( step_name )
-      node_cfg['name']   = step_name
+      node_cfg['dot_id'] = dot_format_fix( node_name )
+      node_cfg['name']   = node_name
       node_cfg['i']      = '{ ' + ' | '.join( i_port_strs ) + ' }'
       node_cfg['o']      = '{ ' + ' | '.join( o_port_strs ) + ' }'
 
@@ -742,13 +766,13 @@ ranksep=0.8;
 
     for e in elist:
 
-        src_step_name, src_f = e.get_src()
-        dst_step_name, dst_f = e.get_dst()
+        src_node_name, src_f = e.get_src()
+        dst_node_name, dst_f = e.get_dst()
 
         e_cfg                = {}
-        e_cfg['src_dot_id']  = dot_format_fix( src_step_name )
+        e_cfg['src_dot_id']  = dot_format_fix( src_node_name )
         e_cfg['src_port_id'] = dot_format_fix( 'o_' + src_f  )
-        e_cfg['dst_dot_id']  = dot_format_fix( dst_step_name )
+        e_cfg['dst_dot_id']  = dot_format_fix( dst_node_name )
         e_cfg['dst_port_id'] = dot_format_fix( 'i_' + dst_f  )
 
         dot_edges.append( edge_template.format( **e_cfg ) )
@@ -766,62 +790,62 @@ ranksep=0.8;
   # Graph traversal order
   #-----------------------------------------------------------------------
 
-  def topological_sort( s, seed_steps=False ):
+  def topological_sort( s, seed_nodes=False ):
 
     order = []
 
     # Make a deep copy of the edges (destructive algorithm)
 
     edges_deep_copy = {}
-    for step_name, elist in s._edges_i.items():
-      edges_deep_copy[ step_name ] = list(elist)
+    for node_name, elist in s._edges_i.items():
+      edges_deep_copy[ node_name ] = list(elist)
     edges = edges_deep_copy
 
-    # Consider all steps in the graph, or if there are seed steps then
+    # Consider all nodes in the graph, or if there are seed nodes then
     # only consider that subgraph (with incoming dangling edges removed)
 
-    if type( seed_steps ) != set:
-      steps = set( s.all_steps() )
+    if type( seed_nodes ) != set:
+      nodes = set( s.all_nodes() )
     else:
-      steps = set( seed_steps )
-      # If there are no steps, just return an empty list
-      if not steps:
+      nodes = set( seed_nodes )
+      # If there are no nodes, just return an empty list
+      if not nodes:
         return []
       # Delete any edges directed to nodes not in the subgraph
-      steps_with_edges_i = list( edges.keys() )
-      for k in steps_with_edges_i:
-        if k not in seed_steps:
+      nodes_with_edges_i = list( edges.keys() )
+      for k in nodes_with_edges_i:
+        if k not in seed_nodes:
           del( edges[k] )
       # Delete any incoming edges from src nodes not in the subgraph
       keys_to_delete = []
-      for step_name, elist in edges.items():
+      for node_name, elist in edges.items():
         idx_to_delete = []
         for i, e in enumerate( elist ):
-          if e.get_src()[0] not in seed_steps:
+          if e.get_src()[0] not in seed_nodes:
             idx_to_delete.append( i )
         for i in reversed( idx_to_delete ):
           del( elist[i] )
         if elist == []:
-          keys_to_delete.append( step_name )
+          keys_to_delete.append( node_name )
       for k in keys_to_delete:
         del( edges[k] )
 
     # Topological sort
 
-    while( steps ):
+    while( nodes ):
 
-      steps_with_deps    = set( edges.keys() )
-      steps_without_deps = steps.difference( steps_with_deps )
+      nodes_with_deps    = set( edges.keys() )
+      nodes_without_deps = nodes.difference( nodes_with_deps )
 
-      assert steps_without_deps, \
+      assert nodes_without_deps, \
         'topological_sort -- Could not find a valid sort for ' \
-        '{}'.format( steps )
+        '{}'.format( nodes )
 
-      order.extend( sorted( steps_without_deps ) ) # sort for determinacy
-      steps = steps_with_deps
+      order.extend( sorted( nodes_without_deps ) ) # sort for determinacy
+      nodes = nodes_with_deps
 
       keys_to_delete = []
-      for step_name, elist in edges.items():
+      for node_name, elist in edges.items():
         idx_to_delete = []
         for i, e in enumerate( elist ):
           if e.get_src()[0] in order:
@@ -829,7 +853,7 @@ ranksep=0.8;
         for i in reversed( idx_to_delete ):
           del( elist[i] )
         if elist == []:
-          keys_to_delete.append( step_name )
+          keys_to_delete.append( node_name )
 
       for k in keys_to_delete:
         del( edges[k] )
@@ -840,42 +864,52 @@ ranksep=0.8;
   # Input node generation for hierarchical support
   #-----------------------------------------------------------------------
 
-  def generate_input_step( s ):
-    input_step_config = {}
+  def generate_input_node( s ):
+    input_node_config = {}
     graph_input_names = list(s._inputs.keys())
-    # Output step simply gathers together all the inputs
-    # from other steps in the graph.
-    input_step_config['outputs'] = graph_input_names
-    input_step_config['name'] = 'inputs'
-    input_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    # Output node simply gathers together all the inputs
+    # from other nodes in the graph.
+    input_node_config['outputs'] = graph_input_names
+    input_node_config['name'] = 'inputs'
+    input_node_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
     for input_name in s._inputs:
-      input_step_config['commands'].append(f"ln -sf ../../inputs/{input_name} .")
-    input_step = Step( input_step_config )
+      input_node_config['commands'].append(f"ln -sf ../../inputs/{input_name} .")
+    input_node = Node( input_node_config )
 
-    # Now that we've created the step, add it to the graph and connect
-    s.add_step( input_step )
+    # Now that we've created the node, add it to the graph and connect
+    s.add_node( input_node )
     for input_name, int_node_inputs in s._inputs.items():
       for int_node_input in int_node_inputs:
-        s.connect( input_step.o( input_name ), int_node_input )
-  
+        s.connect( input_node.o( input_name ), int_node_input )
+
+  # Make 'generate_input_step' an identical reference to 'generate_input_node'
+
+  generate_input_step = generate_input_node
+
   #-----------------------------------------------------------------------
   # Output node generation for hierarchical support
   #-----------------------------------------------------------------------
 
-  def generate_output_step( s ):
-    output_step_config = {}
+  def generate_output_node( s ):
+    output_node_config = {}
     graph_output_names = list(s._outputs.keys())
-    # Output step simply gathers together all the outputs
-    # from other steps in the graph.
-    output_step_config['inputs'] = graph_output_names
-    output_step_config['outputs'] = graph_output_names
-    output_step_config['name'] = 'outputs'
-    output_step_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
+    # Output node simply gathers together all the outputs
+    # from other nodes in the graph.
+    output_node_config['inputs'] = graph_output_names
+    output_node_config['outputs'] = graph_output_names
+    output_node_config['name'] = 'outputs'
+    output_node_config['commands'] = [ 'mkdir -p outputs && cd outputs' ]
     for output_name in s._outputs:
-      output_step_config['commands'].append(f"ln -sf ../inputs/{output_name} .")
-    output_step = Step( output_step_config )
+      output_node_config['commands'].append(f"ln -sf ../inputs/{output_name} .")
+    output_node = Node( output_node_config )
 
-    # Now that we've created the step, add it to the graph and connect
-    s.add_step( output_step )
+    # Now that we've created the node, add it to the graph and connect
+    s.add_node( output_node )
     for output_name, int_node_output in s._outputs.items():
-      s.connect( int_node_output, output_step.i( output_name ) )
+      s.connect( int_node_output, output_node.i( output_name ) )
+
+  # Make 'generate_output_step' an identical reference to 'generate_output_node'
+
+  generate_output_step = generate_output_node
+
+

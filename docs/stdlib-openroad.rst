@@ -72,7 +72,7 @@ You can also visualize the basic demo graph to inspect its connectivity:
 
 You can cross-check the ``construct-open.py``, the graph visualization, and
 the `node configuration files
-<https://github.com/mflowgen/mflowgen/tree/master/steps>`_ to see which
+<https://github.com/mflowgen/mflowgen/tree/master/nodes>`_ to see which
 files are passing between which nodes.
 
 At a high level, the flow relies on setting up a base docker image that

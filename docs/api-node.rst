@@ -1,18 +1,20 @@
 --------------------------------------------------------------------------
-Class Step
+Class Node
 --------------------------------------------------------------------------
 
-A Graph is composed of nodes and edges (i.e., `Step` and `Edge`
-objects).
+A Graph is composed of nodes and edges (i.e., :py:mod:`Node` and
+:py:mod:`Edge` objects).
 
 Note that for general discussion, we use the words "step" and "node"
-interchangeably in the following documentation. However, the python code
-defines a :py:mod:`Step` class.
+interchangeably in the following documentation. The python code defines a
+:py:mod:`Step` class and a :py:mod:`Node` class which are aliases of each
+other. We recommend using the :py:mod:`Node` class. The :py:mod:`Step`
+class is deprecated.
 
-.. py:class:: Step( step_path, default=False )
+.. py:class:: Node( node_path, default=False )
   :noindex:
 
-.. py:module:: Step
+.. py:module:: Node
 
 .. py:classmethod:: clone()
 .. py:classmethod:: get_input_handle( f )

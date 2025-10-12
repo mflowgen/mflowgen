@@ -33,10 +33,10 @@ class MakeBackend:
 
   # save
 
-  def save( s, order, build_dirs, step_dirs, subgraph_dirs ):
+  def save( s, order, build_dirs, node_dirs, subgraph_dirs ):
     s.order         = order
     s.build_dirs    = build_dirs
-    s.step_dirs     = step_dirs
+    s.node_dirs     = node_dirs
     s.subgraph_dirs = subgraph_dirs
 
   # gen_header
@@ -67,25 +67,25 @@ class MakeBackend:
     s.w.default( ' '.join( s.order ) )
     s.w.newline()
 
-  # gen_step_header
+  # gen_node_header
 
-  def gen_step_header( s, step_name ):
+  def gen_node_header( s, node_name ):
 
     s.w.comment( '-'*72 )
-    s.w.comment( step_name )
+    s.w.comment( node_name )
     s.w.comment( '-'*72 )
     s.w.newline()
 
-  # gen_step_directory_pre
+  # gen_node_directory_pre
   #
-  # This runs at the very start of generating rules for the step directory
+  # This runs at the very start of generating rules for the node directory
 
-  def gen_step_directory_pre( s ):
+  def gen_node_directory_pre( s ):
 
     s.w.comment( 'build dir' )
     s.w.newline()
 
-  # gen_step_directory
+  # gen_node_directory
   #
   # Expected semantics
   #
@@ -100,21 +100,21 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_directory( s, dst, src, deps, extra_deps, sandbox ):
+  def gen_node_directory( s, dst, src, deps, extra_deps, sandbox ):
 
     #.....................................................................
     # Built-in toggle for enabling/disabling this rule
     #.....................................................................
     # This is a hack -- Add a knob for Makefiles to enable/disable this
     # rule. The goal and primary use case in mind here is to allow users
-    # to copy in pre-built steps and have the build system think its
+    # to copy in pre-built nodes and have the build system think its
     # dependencies have all already been satisfied. We cannot just "touch"
-    # files from earlier steps to make it seem like they are done, since
-    # downstream steps may need those files. The only way we see to make
-    # pre-built steps always look "done" without impacting earlier steps
+    # files from earlier nodes to make it seem like they are done, since
+    # downstream nodes may need those files. The only way we see to make
+    # pre-built nodes always look "done" without impacting earlier nodes
     # is to break the dependency. Specifically, if the "directory" and
-    # "collect-inputs" substeps are removed, then a pre-built step will
-    # always look "done". So we add a knob here that checks if the step
+    # "collect-inputs" subnodes are removed, then a pre-built node will
+    # always look "done". So we add a knob here that checks if the node
     # build directory has a ".prebuilt" file and if so, ignores this rule.
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
     s.w.newline()
@@ -143,7 +143,7 @@ class MakeBackend:
     s.w.newline()
 
     return [ target ]
-  
+
   # gen_subgraph_dir
   #
   # Expected semantics
@@ -152,13 +152,13 @@ class MakeBackend:
   # - Configure {dst} as a build dir for {src}
   # - Parameterize using the saved YAML in the metadata directory
   # - This rule depends on {deps}
-  
+
   def gen_subgraph_directory( s, dst, src, deps, extra_deps ):
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst ) )
-    s.w.newline() 
-    
+    s.w.newline()
+
     all_deps = deps + extra_deps
-    
+
     target = make_subgraph_dir(
       w       = s.w,
       dst     = dst,
@@ -178,16 +178,16 @@ class MakeBackend:
 
     return [ target ]
 
-  # gen_step_collect_inputs_pre
+  # gen_node_collect_inputs_pre
   #
   # This runs at the very start of generating rules for collecting inputs
 
-  def gen_step_collect_inputs_pre( s ):
+  def gen_node_collect_inputs_pre( s ):
 
     s.w.comment( 'collect inputs' )
     s.w.newline()
 
-  # gen_step_collect_inputs
+  # gen_node_collect_inputs
   #
   # Expected semantics
   #
@@ -199,21 +199,21 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_inputs( s, dst, src, deps, extra_deps ):
+  def gen_node_collect_inputs( s, dst, src, deps, extra_deps ):
 
     #.....................................................................
     # Built-in toggle for enabling/disabling this rule
     #.....................................................................
     # This is a hack -- Add a knob for Makefiles to enable/disable this
     # rule. The goal and primary use case in mind here is to allow users
-    # to copy in pre-built steps and have the build system think its
+    # to copy in pre-built nodes and have the build system think its
     # dependencies have all already been satisfied. We cannot just "touch"
-    # files from earlier steps to make it seem like they are done, since
-    # downstream steps may need those files. The only way we see to make
-    # pre-built steps always look "done" without impacting earlier steps
+    # files from earlier nodes to make it seem like they are done, since
+    # downstream nodes may need those files. The only way we see to make
+    # pre-built nodes always look "done" without impacting earlier nodes
     # is to break the dependency. Specifically, if the "directory" and
-    # "collect-inputs" substeps are removed, then a pre-built step will
-    # always look "done". So we add a knob here that checks if the step
+    # "collect-inputs" subnodes are removed, then a pre-built node will
+    # always look "done". So we add a knob here that checks if the node
     # build directory has a ".prebuilt" file and if so, ignores this rule.
     dst_dir = dst.split('/')[0] # Assumes dst is relative to build dir
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst_dir ) )
@@ -244,16 +244,16 @@ class MakeBackend:
 
     return [ target ]
 
-  # gen_step_execute_pre
+  # gen_node_execute_pre
   #
   # This runs at the very start of generating rules for execute
 
-  def gen_step_execute_pre( s ):
+  def gen_node_execute_pre( s ):
 
     s.w.comment( 'execute' )
     s.w.newline()
 
-  # gen_step_execute
+  # gen_node_execute
   #
   # Expected semantics
   #
@@ -266,7 +266,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_execute( s, outputs, command, deps, extra_deps,
+  def gen_node_execute( s, outputs, command, deps, extra_deps,
                                                      phony=False ):
 
     all_deps = deps + extra_deps
@@ -283,14 +283,14 @@ class MakeBackend:
     #.....................................................................
     # This is a hack -- Add a knob for Makefiles to enable/disable this
     # rule. The goal and primary use case in mind here is to allow users
-    # to copy in pre-built steps and have the build system think its
+    # to copy in pre-built nodes and have the build system think its
     # dependencies have all already been satisfied. We cannot just "touch"
-    # files from earlier steps to make it seem like they are done, since
-    # downstream steps may need those files. The only way we see to make
-    # pre-built steps always look "done" without impacting earlier steps
+    # files from earlier nodes to make it seem like they are done, since
+    # downstream nodes may need those files. The only way we see to make
+    # pre-built nodes always look "done" without impacting earlier nodes
     # is to break the dependency. Specifically, if the "directory" and
-    # "collect-inputs" substeps are removed, then a pre-built step will
-    # always look "done". So we add a knob here that checks if the step
+    # "collect-inputs" subnodes are removed, then a pre-built node will
+    # always look "done". So we add a knob here that checks if the node
     # build directory has a ".prebuilt" file and if so, ignores this rule.
     dst_dir = build_dir
     s.w.write( 'ifeq ("$(wildcard {}/.prebuilt)","")'.format( dst_dir ) )
@@ -336,8 +336,8 @@ class MakeBackend:
     #.....................................................................
 
     return targets
-  
-  # gen_step_execute_command_only
+
+  # gen_node_execute_command_only
   #
   # Expected semantics
   #
@@ -349,7 +349,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_execute_command_only( s, command, deps, extra_deps, rule_name):
+  def gen_node_execute_command_only( s, command, deps, extra_deps, rule_name):
 
     all_deps = deps + extra_deps
 
@@ -374,16 +374,16 @@ class MakeBackend:
 
     return targets
 
-  # gen_step_collect_outputs_pre
+  # gen_node_collect_outputs_pre
   #
   # This runs at the very start of generating rules for collecting outputs
 
-  def gen_step_collect_outputs_pre( s ):
+  def gen_node_collect_outputs_pre( s ):
 
     s.w.comment( 'collect outputs' )
     s.w.newline()
 
-  # gen_step_collect_outputs_tagged
+  # gen_node_collect_outputs_tagged
   #
   # Expected semantics
   #
@@ -395,7 +395,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_outputs_tagged( s, dst, src, deps, extra_deps ):
+  def gen_node_collect_outputs_tagged( s, dst, src, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -411,7 +411,7 @@ class MakeBackend:
 
     return [ target ]
 
-  # gen_step_collect_outputs_untagged
+  # gen_node_collect_outputs_untagged
   #
   # Expected semantics
   #
@@ -423,7 +423,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_collect_outputs_untagged( s, f, deps, extra_deps ):
+  def gen_node_collect_outputs_untagged( s, f, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -443,16 +443,16 @@ class MakeBackend:
 
     return [ target ]
 
-  # gen_step_post_conditions_pre
+  # gen_node_post_conditions_pre
   #
   # This runs at the very start of generating rules for post-conditions
 
-  def gen_step_post_conditions_pre( s ):
+  def gen_node_post_conditions_pre( s ):
 
     s.w.comment( 'post-conditions' )
     s.w.newline()
 
-  # gen_step_post_conditions
+  # gen_node_post_conditions
   #
   # Expected semantics
   #
@@ -464,7 +464,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_post_conditions( s, command, deps, extra_deps ):
+  def gen_node_post_conditions( s, command, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -495,20 +495,20 @@ class MakeBackend:
 
     return targets
 
-  # gen_step_alias_pre
+  # gen_node_alias_pre
   #
   # This runs at the very start of generating rules for aliases
 
-  def gen_step_alias_pre( s ):
+  def gen_node_alias_pre( s ):
 
     s.w.comment( 'alias' )
     s.w.newline()
 
-  # gen_step_alias
+  # gen_node_alias
   #
   # Expected semantics
   #
-  # - Create an alias called {alias} for this step
+  # - Create an alias called {alias} for this node
   # - This rule depends on {deps}
   #
   # Expected return
@@ -516,7 +516,7 @@ class MakeBackend:
   # - Return a list that can pass to another backend call as extra_deps
   #
 
-  def gen_step_alias( s, alias, deps, extra_deps ):
+  def gen_node_alias( s, alias, deps, extra_deps ):
 
     all_deps = deps + extra_deps
 
@@ -530,16 +530,16 @@ class MakeBackend:
 
     return [ target ]
 
-  # gen_step_debug_pre
+  # gen_node_debug_pre
   #
   # This runs at the very start of generating rules for debug commands
 
-  def gen_step_debug_pre( s ):
+  def gen_node_debug_pre( s ):
 
     s.w.comment( 'debug' )
     s.w.newline()
 
-  # gen_step_debug
+  # gen_node_debug
   #
   # Expected semantics
   #
@@ -552,7 +552,7 @@ class MakeBackend:
   # - None
   #
 
-  def gen_step_debug( s, target, command, build_id ):
+  def gen_node_debug( s, target, command, build_id ):
 
     # Rules
 
@@ -597,11 +597,11 @@ class MakeBackend:
 
     # Clean subtargets (e.g., clean-0, clean-1)
 
-    for step_name, d in sorted( s.build_dirs.items(),
+    for node_name, d in sorted( s.build_dirs.items(),
                                   key=lambda x: x[1] ):
       idx     = d.split('-')[0]
       name_n  = 'clean-' + idx
-      name_s  = 'clean-' + step_name
+      name_s  = 'clean-' + node_name
       command = 'rm -rf ./' + d
       make_clean( s.w, name=name_n, command=command )
       # Named clean subtargets (e.g., clean-foo, clean-bar)
@@ -612,9 +612,9 @@ class MakeBackend:
     s.w.comment( 'Diff' )
     s.w.newline()
 
-    for step_name in s.order:
-      src     = s.step_dirs[ step_name ]
-      dst     = s.build_dirs[ step_name ]
+    for node_name in s.order:
+      src     = s.node_dirs[ node_name ]
+      dst     = s.build_dirs[ node_name ]
       idx     = dst.split('-')[0].lstrip('./')
       name    = 'diff-' + idx
       make_diff( s.w, name=name, src=src, dst=dst )
@@ -624,8 +624,8 @@ class MakeBackend:
     s.w.comment( 'Info' )
     s.w.newline()
 
-    for step_name in s.order:
-      make_info( s.w, build_dir=s.build_dirs[ step_name ] )
+    for node_name in s.order:
+      make_info( s.w, build_dir=s.build_dirs[ node_name ] )
 
     # Runtime target
 

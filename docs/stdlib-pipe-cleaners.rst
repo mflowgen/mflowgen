@@ -75,7 +75,7 @@ Here is the list of nodes:
 
 Feel free to cross-check the construct.py, the graph visualization, and
 the `node configuration files
-<https://github.com/mflowgen/mflowgen/tree/master/steps>`_ to see which
+<https://github.com/mflowgen/mflowgen/tree/master/nodes>`_ to see which
 files are passing between which nodes.
 
 You will see that the GcdUnit RTL, a constraints file, and the technology

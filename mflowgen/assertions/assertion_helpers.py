@@ -68,7 +68,7 @@ END   = '\033[0m'
 def main():
 
   print()
-  print( GREEN + '    > Checking {check_type} for step "{step}"' + END )
+  print( GREEN + '    > Checking {check_type} for node "{node}"' + END )
   print()
 
   files        = [ __file__, {pyfiles} ]
@@ -186,7 +186,7 @@ def improve_assert_messages( entry ):
 #         assert math.pi > 3.00                    #         statements
 #
 
-def dump_assertion_check_scripts( step_name, dir_name ):
+def dump_assertion_check_scripts( node_name, dir_name ):
 
   yaml_path = dir_name + '/configure.yml'
   data      = read_yaml( yaml_path )
@@ -225,7 +225,7 @@ def dump_assertion_check_scripts( step_name, dir_name ):
           pyfile = "'{}'".format( entry['pytest'] )
         except KeyError:
           msg = '\nUnsupported assertion of type "dict" ' + \
-                'in step "{}". '.format( step_name ) + \
+                'in node "{}". '.format( node_name ) + \
                 'If there is a colon in this assertion, you must ' + \
                 'put quotes around the entire string ' + \
                 'and properly escape the special characters inside ' + \
@@ -245,8 +245,8 @@ def dump_assertion_check_scripts( step_name, dir_name ):
 
         except Exception as e: # if it does not compile, complain nicely
           print()
-          print( 'Exception in {} #{} for step {}'.format( t[:-1], i,
-                                                           step_name ) )
+          print( 'Exception in {} #{} for node {}'.format( t[:-1], i,
+                                                           node_name ) )
           print()
           print( '    >>> ' + entry )
           print()
@@ -273,7 +273,7 @@ def dump_assertion_check_scripts( step_name, dir_name ):
 
     with open( fpath, 'w' ) as fd:
       fd.write( template_pytest_file.format(
-                  step       = step_name,
+                  node       = node_name,
                   tests      = tests_str,
                   check_type = t,
                   gen        = os.path.abspath( __file__ ).rstrip('c'),

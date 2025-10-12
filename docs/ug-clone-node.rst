@@ -8,16 +8,16 @@ For example, say you wanted a graph that looks like this, with the same
 node (i.e., GDS merge) instantiated twice and two nodes feeding different
 inputs to each (i.e., foo-gds and bar-gds):
 
-.. image:: _static/images/step-clone.jpg
+.. image:: _static/images/node-clone.jpg
   :width: 400px
 
-You can use :py:mod:`Step.clone` to build this graph:
+You can use :py:mod:`Node.clone` to build this graph:
 
 .. code::
 
     # This is the default node
 
-    gdsmerge = Step( 'mentor-calibre-gdsmerge', default=True )
+    gdsmerge = Node( 'mentor-calibre-gdsmerge', default=True )
 
     # Clone the node however many times you need
 
@@ -31,8 +31,8 @@ You can use :py:mod:`Step.clone` to build this graph:
 
     # Add both nodes to the graph
 
-    g.add_step( gdsmerge_for_foo )
-    g.add_step( gdsmerge_for_bar )
+    g.add_node( gdsmerge_for_foo )
+    g.add_node( gdsmerge_for_bar )
 
     # Connect up both nodes
 

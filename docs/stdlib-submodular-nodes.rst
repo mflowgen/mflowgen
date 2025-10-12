@@ -17,7 +17,7 @@ Take a look at the design initialization node (i.e.,
 ``cadence-innovus-init``), which is responsible for reading in the
 post-synthesis design files from Synopsys DC and executing floorplanning.
 This `node configuration file
-<https://github.com/mflowgen/mflowgen/blob/master/steps/cadence-innovus-init/configure.yml>`__
+<https://github.com/mflowgen/mflowgen/blob/master/nodes/cadence-innovus-init/configure.yml>`__
 lists the following inputs and outputs:
 
 +--------+-------------------------+------------------------------------------------------------------------+
@@ -60,7 +60,7 @@ the parameter can be printed like this:
 
 .. code:: python
 
-    >>> init = Step( 'cadence-innovus-init', default=True )
+    >>> init = Node( 'cadence-innovus-init', default=True )
     >>> order = init.get_param( 'order' )
     >>> print( order )
     ['main.tcl', 'quality-of-life.tcl', 'floorplan.tcl',
@@ -107,14 +107,14 @@ The mflowgen construct script that does the above would look like this:
 
 .. code:: python
 
-    init        = Step( 'cadence-innovus-init', default=True )
-    custom_init = Step( ... ) # Comes from somewhere and
+    init        = Node( 'cadence-innovus-init', default=True )
+    custom_init = Node( ... ) # Comes from somewhere and
                               # has an output 'new-last-step.tcl'
 
     init.extend_inputs( custom_init.all_outputs() )
 
-    g.add_step( init )
-    g.add_step( custom_init )
+    g.add_node( init )
+    g.add_node( custom_init )
     g.connect_by_name( custom_init, init )
 
 Finally, we would parameterize the order of the init node to include the

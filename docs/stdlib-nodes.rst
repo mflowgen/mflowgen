@@ -8,13 +8,13 @@ List of mflowgen Common Library Nodes
 +-----------------------------+-------+------------------------------------------------------+
 | Cadence Genus               | 1     | Synthesis                                            |
 +-----------------------------+-------+------------------------------------------------------+
-| Cadence Innovus             | 14    | Init, place, cts, route, postroute, signoff,         |
+| Cadence Innovus             | 15    | Init, place, cts, route, postroute, signoff,         |
 |                             |       | post-pnr ecos, foundation flow setup,                |
-|                             |       | hold-fixing nodes, power grid setup                  |
+|                             |       | hold-fixing nodes, power grid setup, genlib          |
 +-----------------------------+-------+------------------------------------------------------+
 | Cadence Pegasus             | 4     | DRC, LVS, GDS merging, metal fill                    |
 +-----------------------------+-------+------------------------------------------------------+
-| Synopsys DC                 | 1     | Synthesis                                            |
+| Synopsys DC                 | 2     | Synthesis, lib2db                                    |
 +-----------------------------+-------+------------------------------------------------------+
 | Synopsys Formality          | 1     | Logical equivalence check                            |
 +-----------------------------+-------+------------------------------------------------------+
@@ -36,7 +36,7 @@ List of mflowgen Common Library Nodes
 |                             |       | LVS (netgen), DRC (magic)                            |
 |                             |       | gds2spice and def2spice (magic)                      |
 +-----------------------------+-------+------------------------------------------------------+
-| **Total # of Nodes**        | 51    |                                                      |
+| **Total # of Nodes**        | 53    |                                                      |
 +-----------------------------+-------+------------------------------------------------------+
 | Open-Source Technologies    | 2     | SkyWater 130nm, FreePDK45 with                       |
 |                             |       | NanGate Open Cell Library                            |
