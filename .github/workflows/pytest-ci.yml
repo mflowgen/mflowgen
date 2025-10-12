@@ -3,7 +3,7 @@ name: mflowgen pytest CI
 on:
   # Every push
   push:
-  
+
   # Every PR
   pull_request:
 
@@ -17,12 +17,12 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python 3.8
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: "3.8"
     - name: Install dependencies
