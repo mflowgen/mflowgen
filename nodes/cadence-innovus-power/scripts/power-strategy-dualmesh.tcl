@@ -76,7 +76,7 @@ setViaGenMode -viarule_preference default
 setViaGenMode -ignore_DRC false
 
 setAddStripeMode -reset
-setAddStripeMode -stacked_via_bottom_layer 2 \
+setAddStripeMode -stacked_via_bottom_layer 1 \
                  -stacked_via_top_layer    3
 
 addStripe -nets {VSS VDD} -layer 3 -direction vertical \

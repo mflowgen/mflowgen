@@ -17,6 +17,13 @@ writeTimingCon $vars(results_dir)/$vars(design).pt.sdc
 sed -i "s/^current_design/\#current_design/" $vars(results_dir)/$vars(design).pt.sdc
 sed -i "s/get_design.*$/current_design\]/" $vars(results_dir)/$vars(design).pt.sdc
 
+# Write netlist for top-down integration
+#
+# There are no exclusions for this netlist. This netlist will be used
+# during assembleDesign in a top-down hierarchical flow.
+
+saveNetlist $vars(results_dir)/$vars(design).topdown.v
+
 # Write netlist for LVS
 #
 # Exclude physical cells that have no devices in them (or else LVS will
