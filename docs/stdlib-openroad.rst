@@ -72,7 +72,7 @@ You can also visualize the basic demo graph to inspect its connectivity:
 
 You can cross-check the ``construct-open.py``, the graph visualization, and
 the `node configuration files
-<https://github.com/mflowgen/mflowgen/tree/master/nodes>`_ to see which
+<https://github.com/mflowgen/mflowgen/tree/main/nodes>`_ to see which
 files are passing between which nodes.
 
 At a high level, the flow relies on setting up a base docker image that
@@ -128,9 +128,9 @@ container shell:
 You can pass your own design into the flow by creating your own custom
 ``orfs-design`` node and connecting it to the synthesis node. See the
 example provided in the `demo orfs-design node
-<https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/orfs-design>`_
+<https://github.com/mflowgen/mflowgen/tree/main/designs/GcdUnit/orfs-design>`_
 and see how it is used in the `demo graph
-<https://github.com/mflowgen/mflowgen/tree/master/designs/GcdUnit/construct-open.py>`_
+<https://github.com/mflowgen/mflowgen/tree/main/designs/GcdUnit/construct-open.py>`_
 that you just ran. Refer to the OpenROAD Flow Scripts Documentation
 `Adding New Designs
 <https://openroad-flow-scripts.readthedocs.io/en/latest/user/AddingNewDesign.html>`_

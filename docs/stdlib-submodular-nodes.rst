@@ -17,7 +17,7 @@ Take a look at the design initialization node (i.e.,
 ``cadence-innovus-init``), which is responsible for reading in the
 post-synthesis design files from Synopsys DC and executing floorplanning.
 This `node configuration file
-<https://github.com/mflowgen/mflowgen/blob/master/nodes/cadence-innovus-init/configure.yml>`__
+<https://github.com/mflowgen/mflowgen/blob/main/nodes/cadence-innovus-init/configure.yml>`__
 lists the following inputs and outputs:
 
 +--------+-------------------------+------------------------------------------------------------------------+
