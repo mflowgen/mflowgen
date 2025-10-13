@@ -475,7 +475,7 @@ def main():
   #
 
   def print_list_section( key ):
-    if key in data.keys():
+    if key in data.keys() and data[key]:
       title = key.capitalize()
       print( title + '\n' )
       print_list( data[key] )
@@ -496,7 +496,7 @@ def main():
 
   def print_dict_section( key ):
 
-    if key in data.keys():
+    if key in data.keys() and data[key]:
 
       p_width      = max( [ len(p) for p in data[key] ] )
       template_str ='- {:' + str(p_width) + '} : {}'
