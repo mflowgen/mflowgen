@@ -1,7 +1,7 @@
 #=========================================================================
-# Synopsys VCS -- Sim
+# Synopsys VCS -- File Funnel
 #=========================================================================
-# This step is a sim node for Synopsys VCS simulations
+# This step gathers files to funnel to builds for Synopsys VCS simulations
 #
 # The mflowgen nodes that handle VCS simulations are:
 #
@@ -40,47 +40,60 @@
 # Date   : January 20, 2025
 #
 
-name: synopsys-vcs-sim
+name: synopsys-vcs-file-funnel
 
 #-------------------------------------------------------------------------
 # Inputs and Outputs
 #-------------------------------------------------------------------------
 
-inputs:
-  - simv
-  - simv.daidir
+# IMPORTANT -- The biggest responsibility of this node is to produce a
+# file list order (i.e., files-order.yml) in dependency order for the VCS
+# build. Normally, this is a manual step for humans to determine an order
+# in which VCS can analyze all files successfully. Here, we have a
+# reasonable approach to topologically sort the dependencies to automate
+# it.
+#
+# If the automated file dependency ordering does not work, then VCS may
+# not be able to build. Then there are two solutions:
+#
+# 1. Users may override the "order" parameter below to manually specify
+# 2. Users may replace this node with their own custom file funnel node
+#
+# Finding a manual file ordering is very antagonistic to mflowgen's
+# philosophy (you must first construct a graph and gather all files before
+# you can think about what order they should be in). So, we are investing
+# in the automated dependency discovery to make it work in most cases.
+
+# inputs
+#
+# The inputs should be extended to accept files from many places (e.g.,
+# design RTL verilog, test verilog, gate-level verilog netlists, memory
+# macro verilog models)
+#
+# Use the Node.extend_inputs() method when constructing an mflowgen graph
+
+inputs: []
 
 outputs:
-  - sim.log
+  - files           # directory
+  - files-order.yml # read dependency order of the files
 
 #-------------------------------------------------------------------------
 # Commands
 #-------------------------------------------------------------------------
 
 commands:
-  # Prepare simulator
-  - ln -sf inputs/simv
-  - ln -sf inputs/simv.daidir
-  # Run simulator
-  - ./simv | tee sim.log
-  # Prepare outputs
+  # Discover file dependencies and produce a files-order.yml
+  # If the "order" parameter is defined, then use that instead
+  #- discover-file-dep-order.py --out files-order.yml
   - mkdir -p outputs && cd outputs
-  - ln -sf ../sim.log
+  - ln -sf ../files-order.yml
 
 #-------------------------------------------------------------------------
 # Parameters
 #-------------------------------------------------------------------------
 
-#parameters: []
-
-#-------------------------------------------------------------------------
-# Assertions
-#-------------------------------------------------------------------------
-
-preconditions:
-
-  - assert Tool( 'vcs' )                 # tool check
-  - assert File( 'inputs/simv' )         # must exist
-  - assert File( 'inputs/simv.daidir' )  # must exist
+parameters:
+  order: []
 
 
