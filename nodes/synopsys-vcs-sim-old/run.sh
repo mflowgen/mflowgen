@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Default arguments
-ARGS="-R -sverilog -timescale=1ns/1ps"
+ARGS="-R -full64 -sverilog -timescale=1ns/1ps"
 ARGS="$ARGS -hsopt"
 
 # Dump waveform
