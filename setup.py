@@ -108,7 +108,8 @@ setup(
       "nodes/**/*",
       "designs/**/*",
     ]
-  }
+  },
+
   include_package_data = True,
   setup_requires = [ 'setuptools_scm' ], # include any files that git sees
 
