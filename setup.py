@@ -102,7 +102,13 @@ setup(
   #     - if "include_package_data" is True, then MANIFEST.in files get
   #       included... but only _if_ they are inside a package
   #
-
+  package_data = {
+    'mflowgen': [
+      "adks/**/*",
+      "nodes/**/*",
+      "designs/**/*",
+    ]
+  }
   include_package_data = True,
   setup_requires = [ 'setuptools_scm' ], # include any files that git sees
 
