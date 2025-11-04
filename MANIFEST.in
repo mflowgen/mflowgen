@@ -1,2 +1,6 @@
 global-exclude *.py[cod] __pycache__ *.so *.git
+recursive-include nodes *
+recursive-include steps *
+recursive-include designs *
+recursive-include adks *
 
