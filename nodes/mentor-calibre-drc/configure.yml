@@ -37,6 +37,7 @@ commands:
 
 parameters:
   design_name: undefined
+  drc_nthreads: 16
   # Use the rule deck "inputs/adk/${drc_rule_deck}"
   drc_rule_deck: calibre-drc-block.rule
   # Optional: if the technology accepts DRC params

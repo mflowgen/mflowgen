@@ -1,12 +1,15 @@
-*drcRulesFile: inputs/adk/${drc_rule_deck}
-*drcRunDir: ./
-*drcLayoutPaths: inputs/design_merged.gds
-*drcLayoutPrimary: ${design_name}
-*drcResultsFile: drc.results
-*drcSummaryFile: drc.summary
-*cmnShowOptions: 1
-*cmnTranscriptFile: drc.log
-*cmnTranscriptEchoToFile: 1
-*drcIncludeCmdsType: SVRF
-*cmnRunMT: 1
-*cmnRunHyper: 1
+cmn.showOptionPages.value = [ "Database", "Options" ]
+drc.rulesFile.value = "inputs/adk/${drc_rule_deck}"
+drc.runDir.value = "./"
+drc.layout.layoutFile.value = "inputs/design_merged.gds"
+drc.layout.topCell.value = "${design_name}"
+drc.drcdb.resultsFile.value = "drc.results"
+drc.reports.drcSummaryReport.value = "drc.summary"
+drc.svrfIncludes.specified = true
+drc.svrfIncludes.statementType.value = "SVRF"
+cmn.turboCommand.runHow.value = "multi"
+cmn.turboCommand.numProcessors.value = ${drc_nthreads}
+cmn.turboCommand.numLithoProcessors.value = ${drc_nthreads}
+cmn.turboCommand.runHyper.value = true
+cmn.transcriptPrefs.specified = true
+cmn.transcriptPrefs.transcriptEchoFile.value = "drc.log"
