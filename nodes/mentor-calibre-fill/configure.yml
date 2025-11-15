@@ -27,8 +27,7 @@ commands:
   - envsubst < fill.runset.template > fill.runset
   - calibre -gui -drc -batch -runset fill.runset
   - mkdir -p outputs && cd outputs
-  - ln -sf ../{fill_gds} fill.gds
-
+  - ln -sf ../{gds_prefix}{design_name}.gds fill.gds
 
 #-------------------------------------------------------------------------
 # Parameters
@@ -38,7 +37,8 @@ parameters:
   design_name: undefined
   # Use the rule deck "inputs/adk/${fill_rule_deck}"
   fill_rule_deck: calibre-fill.rule
-  fill_gds: FEOL.gds
+  # The output fill gds will have cells prefixed with this name
+  gds_prefix: fill_
 
 #-------------------------------------------------------------------------
 # Debug
