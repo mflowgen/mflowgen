@@ -27,8 +27,10 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
+  # Set some variables for substitution into the template runset
   - if [ -z "$lvs_hcells_file" ]; then export lvs_use_hcells=0; else export lvs_use_hcells=1; fi
   - if [ -z "$lvs_connect_names" ]; then export lvs_connect_names_state=NONE; else export lvs_connect_names_state=SOME; fi
+  # Set up spice includes from the adk, only including file extensions that exist
   - export lvs_spice_include=""
   - if ls inputs/adk/*.cdl 1> /dev/null 2>&1; then
       export lvs_spice_include="${{lvs_spice_include}} inputs/adk/*.cdl";
@@ -42,9 +44,12 @@ commands:
   - if ls inputs/adk/*source.added 1> /dev/null 2>&1; then
       export lvs_spice_include="${{lvs_spice_include}} inputs/adk/*source.added";
     fi
+  # Substitute variables into the template runset
   - envsubst < lvs.runset.template > lvs.runset
+  # Misc file prep
   - if [ ! -f inputs/*.svrf ]; then touch inputs/rules.svrf; fi
   - cat inputs/*.lvs.v > merged.lvs.v
+  # Run LVS
   - calibre -gui -lvs -batch -runset lvs.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../lvs.report
@@ -57,6 +62,7 @@ commands:
 
 parameters:
   design_name: undefined
+  lvs_nthreads: 16
   #
   # lvs_hcells_file:
   #

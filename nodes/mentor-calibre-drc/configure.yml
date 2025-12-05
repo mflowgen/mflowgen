@@ -24,8 +24,11 @@ outputs:
 #-------------------------------------------------------------------------
 
 commands:
+  # Set some variables for substitution into the template runset
   - if [ -f "inputs/adk/{drc_env_setup}" ]; then source inputs/adk/{drc_env_setup}; fi
+  # Substitute variables into the template runset
   - envsubst < drc.runset.template > drc.runset
+  # Run DRC
   - calibre -gui -drc -batch -runset drc.runset
   - mkdir -p outputs && cd outputs
   - ln -sf ../drc.results
