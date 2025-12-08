@@ -42,7 +42,7 @@ proc load_calibre {} {
     }
   }
 
-  set etclf [file join $CALIBRE_HOME lib cal_enc.tcl]
+  set etclf [file join $env(CALIBRE_HOME) lib cal_enc.tcl]
 
   if {![file readable $etclf]} {
     puts "Could not find Calibre initialization files."
