@@ -173,6 +173,18 @@ def main():
 
   if legacy or opts.args and opts.args[0] == 'run':
     rhandler = RunHandler()
+    # Parse --graph-kwargs (Python-literal dict) once and hand to the handler.
+    graph_kwargs = {}
+    if getattr(opts, 'graph_kwargs', None):
+      import ast
+      try:
+        graph_kwargs = ast.literal_eval(opts.graph_kwargs)
+      except Exception as e:
+        ArgumentParserWithCustomError().error(
+          f'--graph-kwargs must be a Python-literal dict (got error: {e})')
+      if not isinstance(graph_kwargs, dict):
+        ArgumentParserWithCustomError().error(
+          '--graph-kwargs must be a dict literal')
     rhandler.launch(
       help_        = opts.help,
       design       = opts.design,
