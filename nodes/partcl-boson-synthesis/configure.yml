@@ -1,0 +1,57 @@
+#=========================================================================
+# partcl boson Synthesis
+#=========================================================================
+# Logic synthesis and technology mapping with partcl's boson, as an mflowgen
+# node. Reads the design RTL and the ADK standard cells and produces a gate
+# netlist mapped to the ADK -- a drop-in alternative to the open-yosys /
+# cadence-genus / synopsys-dc synthesis nodes. boson reads its parameters from
+# the environment (mflowgen sets each step parameter there), so no
+# script-generation pass is needed.
+#
+# Author : partcl
+# Date   : September 24, 2026
+#
+
+name: partcl-boson-synthesis
+
+#-------------------------------------------------------------------------
+# Inputs and Outputs
+#-------------------------------------------------------------------------
+
+inputs:
+  - adk
+  - design.v
+
+outputs:
+  - design.v
+  - synth.stats.txt
+
+#-------------------------------------------------------------------------
+# Commands
+#-------------------------------------------------------------------------
+
+commands:
+  # synthesis + technology mapping with boson (parameters arrive as env vars).
+  # boson emits real Verilog vector bus ports (e.g. `input [7:0] a`) directly,
+  # so the netlist is handed to the downstream P&R node as-is.
+  - $boson_bin --no-color -f boson-synth.tcl 2>&1 | tee synth.log
+  # stats
+  - grep -A20 -iE 'qor|area|instance' synth.log > synth.stats.txt || true
+  # outputs
+  - mkdir -p outputs && cd outputs
+  - ln -sf ../design.boson.nl.v design.v
+  - ln -sf ../synth.stats.txt synth.stats.txt
+
+#-------------------------------------------------------------------------
+# Parameters
+#-------------------------------------------------------------------------
+
+parameters:
+  design_name: undefined
+  clock_period: 2.0
+  # top-level clock port the SDC constrains
+  clock_port: clk
+  # path to (or name on $PATH of) the boson binary
+  boson_bin: boson
+  # boson compile effort
+  effort: high
